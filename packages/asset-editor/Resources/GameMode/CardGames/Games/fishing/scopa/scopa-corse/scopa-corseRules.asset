@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Scopa Corse. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Corsican Scopa variant.',
+    LLM: "Players take turns playing one card. The played card may capture one card of equal value, or a set of table cards whose values sum to the played card's value. In Scopa Corse capturing is optional: a player may leave a card on the table even if it could capture. Clearing the table scores a scopa (1 point). After each round of plays, new cards are dealt. Play and scoring otherwise match basic Scopa.",
+    Player: "Players take turns playing one card. The played card may capture one card of equal value, or a set of table cards whose values sum to the played card's value. In Scopa Corse capturing is optional: a player may leave a card on the table even if it could capture. Clearing the table scores a scopa (1 point). After each round of plays, new cards are dealt. Play and scoring otherwise match basic Scopa.",
     objective: 'Capture cards from the table by playing a card that matches a single table card or the sum of a set; score for most cards, most coins, settebello, primiera, and sweeps. First to 21 points wins.',
     gameplay: "Players take turns playing one card. The played card may capture one card of equal value, or a set of table cards whose values sum to the played card's value. In Scopa Corse capturing is optional: a player may leave a card on the table even if it could capture. Clearing the table scores a scopa (1 point). After each round of plays, new cards are dealt. Play and scoring otherwise match basic Scopa.",
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: As basic Scopa: 1 point per scopa (sweep), 1 for most cards, 1 for most coins, 1 for settebello (7 of coins), 1 for best primiera. Expected outcome: 21.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Capture cards from the table by playing a card that matches a single table card or the sum of a set; score for most cards, most coins, settebello, primiera, and sweeps. First to 21 points wins.',
+      "Turn-flow example: Players take turns playing one card. The played card may capture one card of equal value, or a set of table cards whose values sum to the played card's value. In Scopa Corse capturing is optional: a player may leave a card on the table even if it could capture. Clearing the table scores a scopa (1 point). After each round of plays, new cards are dealt. Play and scoring otherwise match basic Scopa.",
+      'Scoring example: As basic Scopa: 1 point per scopa (sweep), 1 for most cards, 1 for most coins, 1 for settebello (7 of coins), 1 for best primiera. First player or team to reach the target score (usually 21) wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'scopa-corse.rules.objective',
+        title: 'Objective',
+        text: 'Capture cards from the table by playing a card that matches a single table card or the sum of a set; score for most cards, most coins, settebello, primiera, and sweeps. First to 21 points wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'scopa-corse.rules.gameplay',
+        title: 'Turn flow',
+        text: "Players take turns playing one card. The played card may capture one card of equal value, or a set of table cards whose values sum to the played card's value. In Scopa Corse capturing is optional: a player may leave a card on the table even if it could capture. Clearing the table scores a scopa (1 point). After each round of plays, new cards are dealt. Play and scoring otherwise match basic Scopa.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'scopa-corse.setup.players',
+        title: 'Players',
+        text: '2 or 4 in fixed partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'scopa-corse.setup.deck',
+        title: 'Deck',
+        text: '36-card Italian deck: each suit has Ace, 3, 4, 5, 6, 7, Jack, Queen, King (no 2s).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'scopa-corse.setup.equipment',
+        title: 'Equipment',
+        text: '36-card Italian deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'scopa-corse.setup.dealing',
+        title: 'Deal',
+        text: '3 cards to each player, 4 face-up on the table. Two players: next three deals 3 cards each, last two deals 4 cards each. Four players: second deal 3 each, third deal 2 each.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'scopa-corse.score.win-condition',
+        title: 'Win condition',
+        text: 'First player or team to reach the target score (usually 21) wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'scopa-corse.score.description',
+        title: 'Scoring',
+        text: 'As basic Scopa: 1 point per scopa (sweep), 1 for most cards, 1 for most coins, 1 for settebello (7 of coins), 1 for best primiera.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'scopa-corse.rules.key.1',
+        title: 'Key rule 1',
+        text: '36-card deck with no 2s.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'scopa-corse.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Capturing is optional (unlike basic Scopa).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'scopa-corse.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Target score usually 21; may be 16 or 11 by agreement.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'scopa-corse.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'scopa-corse.rules.objective',
+          'scopa-corse.rules.gameplay',
+        ],
+      },
+      {
+        id: 'scopa-corse.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'scopa-corse.setup.players',
+          'scopa-corse.setup.deck',
+          'scopa-corse.setup.equipment',
+          'scopa-corse.setup.dealing',
+        ],
+      },
+      {
+        id: 'scopa-corse.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'scopa-corse.rules.key.1',
+          'scopa-corse.rules.key.2',
+          'scopa-corse.rules.key.3',
+        ],
+      },
+      {
+        id: 'scopa-corse.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'scopa-corse.score.description',
+          'scopa-corse.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'scopa-corse.setup.dealing',
+        'scopa-corse.rules.objective',
+      ],
+      play_card: [
+        'scopa-corse.rules.gameplay',
+      ],
+    },
   },
 }

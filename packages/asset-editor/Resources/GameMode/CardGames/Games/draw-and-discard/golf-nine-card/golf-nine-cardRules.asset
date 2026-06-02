@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Nine-Card Golf (Crazy Nines). Setup: Each player receives 9 cards arranged in a 3Ã—3 grid; 3 cards are revealed face-up initially. Gameplay: Draw stock or discard; use the card to replace one grid card (face-down cards are revealed when replaced). Scoring: Aces=1, 2-10=face value, J/Q=10, K=0. Three identical cards in a vertical column=0 (instead of their combined value). End: Round ends when any player reveals their final face-down card. Lowest score wins that round. Play multiple rounds; lowest cumulative score wins the game.',
-    Player: 'Welcome to Nine-Card Golf, where you manage a 3Ã—3 grid of cards. Draw from the stock or discard pile each turn, then replace one card in your grid to reveal hidden cards. Achieve the lowest score by strategically creating zero-point column matches (three identical cards stacked vertically). Be first to reveal all your cardsâ€”or last, if your score is low enough to win!',
+    LLM: "1. **Turn Sequence**: Players take turns in clockwise order, starting with the player to the dealer's left. 2. **Draw Phase**: On your turn, you must draw either the top card of the face-down stock OR the top card of the discard pile. 3. **Replacement Phase**: You must use the drawn card to replace exactly one card in your 3Ã—3 grid (if you drew from the discard pile, you cannot simply discard it again). Replace either a face-down card (revealing it) or a face-up card (which goes to the discard pile). 4. **Revealing**: If you replace a face-down card, it is now revealed to all players. 5. **End of Round**: The round ends immediately when one player has all nine cards face-up. That player does NOT take the remaining turns in that round.",
+    Player: "1. **Turn Sequence**: Players take turns in clockwise order, starting with the player to the dealer's left. 2. **Draw Phase**: On your turn, you must draw either the top card of the face-down stock OR the top card of the discard pile. 3. **Replacement Phase**: You must use the drawn card to replace exactly one card in your 3Ã—3 grid (if you drew from the discard pile, you cannot simply discard it again). Replace either a face-down card (revealing it) or a face-up card (which goes to the discard pile). 4. **Revealing**: If you replace a face-down card, it is now revealed to all players. 5. **End of Round**: The round ends immediately when one player has all nine cards face-up. That player does NOT take the remaining turns in that round.",
     objective: 'Win the round by achieving the lowest total score when all nine cards in your grid are face-up.',
     gameplay: "1. **Turn Sequence**: Players take turns in clockwise order, starting with the player to the dealer's left. 2. **Draw Phase**: On your turn, you must draw either the top card of the face-down stock OR the top card of the discard pile. 3. **Replacement Phase**: You must use the drawn card to replace exactly one card in your 3Ã—3 grid (if you drew from the discard pile, you cannot simply discard it again). Replace either a face-down card (revealing it) or a face-up card (which goes to the discard pile). 4. **Revealing**: If you replace a face-down card, it is now revealed to all players. 5. **End of Round**: The round ends immediately when one player has all nine cards face-up. That player does NOT take the remaining turns in that round.",
     keyRules: [
@@ -55,10 +55,192 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 9 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in setup; all_simultaneous may use arrange_9_cards, select_3_faceup before round end.',
-      'Scoring check: Players sum the point values of their nine cards. Lower scores are better. Certain combinations score zero. Expected outcome: NA.',
+      'Setup example: 9 card(s) per player.',
+      'Rule example: Win the round by achieving the lowest total score when all nine cards in your grid are face-up.',
+      "Turn-flow example: 1. **Turn Sequence**: Players take turns in clockwise order, starting with the player to the dealer's left. 2. **Draw Phase**: On your turn, you must draw either the top card of the face-down stock OR the top card of the discard pile. 3. **Replacement Phase**: You must use the drawn card to replace exactly one card in your 3Ã—3 grid (if you drew from the discard pile, you cannot simply discard it again). Replace either a face-down card (revealing it) or a face-up card (which goes to the discard pile). 4. **Revealing**: If you replace a face-down card, it is now revealed to all players. 5. **End of Round**: The round ends immediately when one player has all nine cards face-up. That player does NOT take the remaining turns in that round.",
+      'Scoring example: Players sum the point values of their nine cards. Lower scores are better. Certain combinations score zero. The player with the lowest total score at the end of a round wins that round. Multiple rounds are played, and the player with the lowest cumulative score across all rounds wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'golf-nine-card.rules.objective',
+        title: 'Objective',
+        text: 'Win the round by achieving the lowest total score when all nine cards in your grid are face-up.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'golf-nine-card.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Turn Sequence**: Players take turns in clockwise order, starting with the player to the dealer's left. 2. **Draw Phase**: On your turn, you must draw either the top card of the face-down stock OR the top card of the discard pile. 3. **Replacement Phase**: You must use the drawn card to replace exactly one card in your 3Ã—3 grid (if you drew from the discard pile, you cannot simply discard it again). Replace either a face-down card (revealing it) or a face-up card (which goes to the discard pile). 4. **Revealing**: If you replace a face-down card, it is now revealed to all players. 5. **End of Round**: The round ends immediately when one player has all nine cards face-up. That player does NOT take the remaining turns in that round.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'golf-nine-card.setup.players',
+        title: 'Players',
+        text: '2 to 8 players (optimal with 3-5).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'golf-nine-card.setup.deck',
+        title: 'Deck',
+        text: 'One or two standard 52-card decks (one deck sufficient for 2-4 players; two decks for 5-8 players).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'golf-nine-card.setup.equipment',
+        title: 'Equipment',
+        text: 'Scorepad and pencils for tracking round scores.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'golf-nine-card.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer distributes nine cards face-down to each player, one at a time, in clockwise order. Each player arranges their cards in a 3Ã—3 grid (three rows of three cards). Before play begins, each player selects three of their nine cards to turn face-up; the remaining six stay face-down. The remaining deck is placed in the center as the stock, and the top card is flipped face-up beside it to start the discard pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'golf-nine-card.score.win-condition',
+        title: 'Win condition',
+        text: 'The player with the lowest total score at the end of a round wins that round. Multiple rounds are played, and the player with the lowest cumulative score across all rounds wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'golf-nine-card.score.description',
+        title: 'Scoring',
+        text: 'Players sum the point values of their nine cards. Lower scores are better. Certain combinations score zero.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'golf-nine-card.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Grid Layout: Maintain a strict 3Ã—3 arrangement; cards cannot be rearranged after initial placement.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'golf-nine-card.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Face-Up Requirement: You must turn face-down cards face-up by replacing them.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'golf-nine-card.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Column Matching Bonus: Three cards of identical rank in the same vertical column score zero points (not horizontal or diagonal).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'golf-nine-card.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Discard Rule: If you take the top discard, you MUST use it to replace a card in your grid (cannot simply discard it).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'golf-nine-card.rules.key.5',
+        title: 'Key rule 5',
+        text: 'No Card Rearrangement: Once cards are placed, you cannot move themâ€”only replace them.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'golf-nine-card.rules.key.6',
+        title: 'Key rule 6',
+        text: 'End Condition: The round ends as soon as any player turns their final face-down card face-up.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'golf-nine-card.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'golf-nine-card.rules.objective',
+          'golf-nine-card.rules.gameplay',
+        ],
+      },
+      {
+        id: 'golf-nine-card.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'golf-nine-card.setup.players',
+          'golf-nine-card.setup.deck',
+          'golf-nine-card.setup.equipment',
+          'golf-nine-card.setup.dealing',
+        ],
+      },
+      {
+        id: 'golf-nine-card.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'golf-nine-card.rules.key.1',
+          'golf-nine-card.rules.key.2',
+          'golf-nine-card.rules.key.3',
+          'golf-nine-card.rules.key.4',
+          'golf-nine-card.rules.key.5',
+          'golf-nine-card.rules.key.6',
+        ],
+      },
+      {
+        id: 'golf-nine-card.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'golf-nine-card.score.description',
+          'golf-nine-card.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'golf-nine-card.setup.dealing',
+        'golf-nine-card.rules.objective',
+      ],
+      arrange_9_cards: [
+        'golf-nine-card.rules.gameplay',
+      ],
+      select_3_faceup: [
+        'golf-nine-card.rules.gameplay',
+      ],
+      draw_stock: [
+        'golf-nine-card.rules.gameplay',
+      ],
+      draw_discard: [
+        'golf-nine-card.rules.gameplay',
+      ],
+      replace_facedown_card: [
+        'golf-nine-card.rules.gameplay',
+      ],
+      replace_faceup_card: [
+        'golf-nine-card.rules.gameplay',
+      ],
+      check_round_end_action: [
+        'golf-nine-card.rules.gameplay',
+      ],
+    },
   },
 }

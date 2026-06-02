@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Matgo (Korean Go-Stop). Logic: See rules.objective and rules.gameplay.',
-    Player: "Matgo is the quintessential two-player variant of 'Go-Stop', a popular Korean fishing game played with Hwatu ('Flower Cards'). Using a 48-card deck where each group of four represents a month/flower, players attempt to capture cards to form scoring combinations (Yaku). The name 'Matgo' distinguishes the 2-player competitive style from the 3-player 'Go-Stop'. It is arguably the most popular mobile and online game in South Korea.",
+    LLM: "1. Match a card from your hand with a card on the table of the same month.\n2. Flip the top card of the deck; if it matches a table card, take that pair too.\n3. **The Kiss**: If you match your hand card AND the deck flip matches the same pair, it's a 'Kiss' (Sseok), and you take all three.",
+    Player: "1. Match a card from your hand with a card on the table of the same month.\n2. Flip the top card of the deck; if it matches a table card, take that pair too.\n3. **The Kiss**: If you match your hand card AND the deck flip matches the same pair, it's a 'Kiss' (Sseok), and you take all three.",
     objective: "Score 7 or more points to 'Go' (continue for more points) or 'Stop' (end and win).",
     gameplay: "1. Match a card from your hand with a card on the table of the same month.\n2. Flip the top card of the deck; if it matches a table card, take that pair too.\n3. **The Kiss**: If you match your hand card AND the deck flip matches the same pair, it's a 'Kiss' (Sseok), and you take all three.",
     keyRules: [
@@ -53,10 +53,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play_round.',
-      "Scoring check: Score 7 or more points to 'Go' (continue for more points) or 'Stop' (end and win). Expected outcome: Score 7 or more points to 'Go' (continue for more points) or 'Stop' (end and win)..",
+      'Setup example: 10 card(s) per player.',
+      "Rule example: Score 7 or more points to 'Go' (continue for more points) or 'Stop' (end and win).",
+      "Turn-flow example: 1. Match a card from your hand with a card on the table of the same month.\n2. Flip the top card of the deck; if it matches a table card, take that pair too.\n3. **The Kiss**: If you match your hand card AND the deck flip matches the same pair, it's a 'Kiss' (Sseok), and you take all three.",
+      "Scoring example: Score 7 or more points to 'Go' (continue for more points) or 'Stop' (end and win). Score 7 or more points to 'Go' (continue for more points) or 'Stop' (end and win)..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'matgo-hwatu.rules.objective',
+        title: 'Objective',
+        text: "Score 7 or more points to 'Go' (continue for more points) or 'Stop' (end and win).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'matgo-hwatu.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Match a card from your hand with a card on the table of the same month.\n2. Flip the top card of the deck; if it matches a table card, take that pair too.\n3. **The Kiss**: If you match your hand card AND the deck flip matches the same pair, it's a 'Kiss' (Sseok), and you take all three.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'matgo-hwatu.setup.players',
+        title: 'Players',
+        text: 'Matgo is played by exactly two players: one dealer (seon) and one opponent. Play proceeds counterclockwise from the dealer. The two-player variant uses a higher point target (typically seven) than three-player Go-Stop (typically three).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'matgo-hwatu.setup.deck',
+        title: 'Deck',
+        text: '48 cards: 12 months, 4 cards each. Themes: Pine (Jan), Plum (Feb), Cherry (Mar)... Paulownia (Dec).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'matgo-hwatu.setup.equipment',
+        title: 'Equipment',
+        text: '48 cards: 12 months, 4 cards each. Themes: Pine (Jan), Plum (Feb), Cherry (Mar)... Paulownia (Dec).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'matgo-hwatu.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 10 cards. 8 cards are placed face-up on the table.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'matgo-hwatu.score.win-condition',
+        title: 'Win condition',
+        text: "Score 7 or more points to 'Go' (continue for more points) or 'Stop' (end and win).",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'matgo-hwatu.score.description',
+        title: 'Scoring',
+        text: "Score 7 or more points to 'Go' (continue for more points) or 'Stop' (end and win).",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'matgo-hwatu.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Cards match by month (flower); capture matching cards to your area.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'matgo-hwatu.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Each turn: flip top card of stock to table, then play one card from hand; resolve captures after each step.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'matgo-hwatu.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Reach agreed target (usually 5 or 7 points) then declare Stop to win the hand or Go to continue for higher score at risk of opponent winning.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'matgo-hwatu.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Scoring from captured combinations: brights (kwang), animals (yul), ribbons (tti), junk (pi); special events (bomb, shake) apply.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'matgo-hwatu.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'matgo-hwatu.rules.objective',
+          'matgo-hwatu.rules.gameplay',
+        ],
+      },
+      {
+        id: 'matgo-hwatu.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'matgo-hwatu.setup.players',
+          'matgo-hwatu.setup.deck',
+          'matgo-hwatu.setup.equipment',
+          'matgo-hwatu.setup.dealing',
+        ],
+      },
+      {
+        id: 'matgo-hwatu.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'matgo-hwatu.rules.key.1',
+          'matgo-hwatu.rules.key.2',
+          'matgo-hwatu.rules.key.3',
+          'matgo-hwatu.rules.key.4',
+        ],
+      },
+      {
+        id: 'matgo-hwatu.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'matgo-hwatu.score.description',
+          'matgo-hwatu.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'matgo-hwatu.setup.dealing',
+        'matgo-hwatu.rules.objective',
+      ],
+      deal: [
+        'matgo-hwatu.rules.gameplay',
+      ],
+      play_card: [
+        'matgo-hwatu.rules.gameplay',
+      ],
+      draw_stock: [
+        'matgo-hwatu.rules.gameplay',
+      ],
+      go: [
+        'matgo-hwatu.rules.gameplay',
+      ],
+      stop: [
+        'matgo-hwatu.rules.gameplay',
+      ],
+      system_compute_score: [
+        'matgo-hwatu.rules.gameplay',
+      ],
+      system_end_hand: [
+        'matgo-hwatu.rules.gameplay',
+      ],
+    },
   },
 }

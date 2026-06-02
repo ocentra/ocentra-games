@@ -10,7 +10,33 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'At the end of each hand both teams total the tile values of all tiles in their melds, subtract the values of tiles left in hand, and apply bonuses and penalties for canastas, going out, and unused muertos.',
+      winCondition: 'Teams accumulate scores over multiple hands; when a team reaches or exceeds 3000 points, the team with the higher total score wins the game.',
+      targetScore: 3000,
+      scoringDirection: 'high_wins',
+      cardValues: {
+        '1': '15',
+        '2': '20',
+        Joker: '50',
+        '8-13': '10',
+        '3-7': '5',
+      },
+      nullReasons: {
+        targetScore: 'Standard Argentine Burako uses a fixed target of 3000 points for the winning team across the session.',
+        scoringDirection: 'Scoring direction is high_wins; the team with the higher cumulative score wins the overall game.',
+      },
+      splitRules: 'If no team goes out and no canasta has been made, the hand scores zero for both sides; if at least one canasta exists but no one goes out, teams score melds minus tiles in hand without the going-out bonus.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],
@@ -22,7 +48,7 @@
       '8-13': 10,
       '3-7': 5,
     },
-    penalties: '{\n  "tiles_in_hand": "When play ends, each team subtracts the tile values of any tiles still held in hand from their meld total.",\n  "unused_muerto": "If a team has not taken its muerto when play ends, that team scores a penalty of 100 points instead of counting tiles from that extra hand."\n}',
+    penalties: '{"tiles_in_hand":"When play ends, each team subtracts the tile values of any tiles still held in hand from their meld total.","unused_muerto":"If a team has not taken its muerto when play ends, that team scores a penalty of 100 points instead of counting tiles from that extra hand."}',
     targetScore: 3000,
     scoringDirection: 'high_wins',
     rankingAsset: {

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Let It Ride. Casino poker. 3 player cards, 2 community cards. Three equal bets: (1), (2), ($). ($) cannot be withdrawn. After seeing 3 cards: can pull back (1). After 1st community: can pull back (2). Final hand = 5 cards. Paytable: Royal=1000:1, SF=200:1, 4K=50:1, FH=11:1, Flush=8:1, Straight=5:1, 3K=3:1, 2P=2:1, 10s+=1:1.',
-    Player: "Welcome to Let It Ride! Place three equal bets and I'll deal you three cards, plus two community cards face-down. Look at your handâ€”you can pull back your first bet or let it ride. Then I'll reveal the first community cardâ€”pull back your second bet or let it ride. Finally, the last community card is revealed. If you have a pair of 10s or better, you win on whatever bets remain!",
+    LLM: "1. **Initial Bets**: Player places three equal bets in circles (1), (2), and ($). 2. **Dealing**: Dealer gives each player 3 cards face-down and places 2 cards face-down as community cards. 3. **Decision 1**: Player looks at their 3 cards. They can 'Pull Back' bet (1) or 'Let It Ride.' 4. **Community 1**: Dealer reveals the first community card. 5. **Decision 2**: Player can 'Pull Back' bet (2) or 'Let It Ride.' 6. **Community 2**: Dealer reveals the second community card. 7. **Final Evaluation**: The ($) bet is locked and cannot be withdrawn. 8. **Payout**: If the 5-card hand is Tens or Better, remaining wagers are paid according to the paytable.",
+    Player: "1. **Initial Bets**: Player places three equal bets in circles (1), (2), and ($). 2. **Dealing**: Dealer gives each player 3 cards face-down and places 2 cards face-down as community cards. 3. **Decision 1**: Player looks at their 3 cards. They can 'Pull Back' bet (1) or 'Let It Ride.' 4. **Community 1**: Dealer reveals the first community card. 5. **Decision 2**: Player can 'Pull Back' bet (2) or 'Let It Ride.' 6. **Community 2**: Dealer reveals the second community card. 7. **Final Evaluation**: The ($) bet is locked and cannot be withdrawn. 8. **Payout**: If the 5-card hand is Tens or Better, remaining wagers are paid according to the paytable.",
     objective: 'Form a 5-card poker hand of Pair of 10s or better to win according to the paytable.',
     gameplay: "1. **Initial Bets**: Player places three equal bets in circles (1), (2), and ($). 2. **Dealing**: Dealer gives each player 3 cards face-down and places 2 cards face-down as community cards. 3. **Decision 1**: Player looks at their 3 cards. They can 'Pull Back' bet (1) or 'Let It Ride.' 4. **Community 1**: Dealer reveals the first community card. 5. **Decision 2**: Player can 'Pull Back' bet (2) or 'Let It Ride.' 6. **Community 2**: Dealer reveals the second community card. 7. **Final Evaluation**: The ($) bet is locked and cannot be withdrawn. 8. **Payout**: If the 5-card hand is Tens or Better, remaining wagers are paid according to the paytable.",
     keyRules: [
@@ -55,10 +55,189 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-7 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in place_bets; current_player may use bet before deal.',
-      'Scoring check: Payouts based on final 5-card poker hand strength. Each remaining bet is paid separately. Expected outcome: Pair of 10s or better wins according to paytable. Lower hands lose all remaining bets..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Form a 5-card poker hand of Pair of 10s or better to win according to the paytable.',
+      "Turn-flow example: 1. **Initial Bets**: Player places three equal bets in circles (1), (2), and ($). 2. **Dealing**: Dealer gives each player 3 cards face-down and places 2 cards face-down as community cards. 3. **Decision 1**: Player looks at their 3 cards. They can 'Pull Back' bet (1) or 'Let It Ride.' 4. **Community 1**: Dealer reveals the first community card. 5. **Decision 2**: Player can 'Pull Back' bet (2) or 'Let It Ride.' 6. **Community 2**: Dealer reveals the second community card. 7. **Final Evaluation**: The ($) bet is locked and cannot be withdrawn. 8. **Payout**: If the 5-card hand is Tens or Better, remaining wagers are paid according to the paytable.",
+      'Scoring example: Payouts based on final 5-card poker hand strength. Each remaining bet is paid separately. Pair of 10s or better wins according to paytable. Lower hands lose all remaining bets..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'let-it-ride.rules.objective',
+        title: 'Objective',
+        text: 'Form a 5-card poker hand of Pair of 10s or better to win according to the paytable.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'let-it-ride.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Initial Bets**: Player places three equal bets in circles (1), (2), and ($). 2. **Dealing**: Dealer gives each player 3 cards face-down and places 2 cards face-down as community cards. 3. **Decision 1**: Player looks at their 3 cards. They can 'Pull Back' bet (1) or 'Let It Ride.' 4. **Community 1**: Dealer reveals the first community card. 5. **Decision 2**: Player can 'Pull Back' bet (2) or 'Let It Ride.' 6. **Community 2**: Dealer reveals the second community card. 7. **Final Evaluation**: The ($) bet is locked and cannot be withdrawn. 8. **Payout**: If the 5-card hand is Tens or Better, remaining wagers are paid according to the paytable.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'let-it-ride.setup.players',
+        title: 'Players',
+        text: '1-7 players each playing against the house. No player-vs-player competition.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'let-it-ride.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck, shuffled after every hand (typically by automatic shuffler).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'let-it-ride.setup.equipment',
+        title: 'Equipment',
+        text: 'Specialized table with three betting circles per player: (1), (2), and ($). Also features a side bet area for Three Card Bonus.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'let-it-ride.setup.dealing',
+        title: 'Deal',
+        text: 'Each player places three equal bets in the three betting circles. The ($) bet cannot be withdrawn; (1) and (2) can be pulled back during play.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'let-it-ride.score.win-condition',
+        title: 'Win condition',
+        text: 'Pair of 10s or better wins according to paytable. Lower hands lose all remaining bets.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'let-it-ride.score.description',
+        title: 'Scoring',
+        text: 'Payouts based on final 5-card poker hand strength. Each remaining bet is paid separately.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'let-it-ride.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Players never compete against each other or a dealer hand.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'let-it-ride.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The ($) bet is mandatory and cannot be withdrawn.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'let-it-ride.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Bets (1) and (2) can each be withdrawn once during play.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'let-it-ride.rules.key.4',
+        title: 'Key rule 4',
+        text: 'All payouts are based on the final 5-card hand strength.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'let-it-ride.rules.key.5',
+        title: 'Key rule 5',
+        text: "Players cannot show cards or see other players' cards during play.",
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'let-it-ride.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Minimum winning hand: Pair of 10s or better.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'let-it-ride.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'let-it-ride.rules.objective',
+          'let-it-ride.rules.gameplay',
+        ],
+      },
+      {
+        id: 'let-it-ride.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'let-it-ride.setup.players',
+          'let-it-ride.setup.deck',
+          'let-it-ride.setup.equipment',
+          'let-it-ride.setup.dealing',
+        ],
+      },
+      {
+        id: 'let-it-ride.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'let-it-ride.rules.key.1',
+          'let-it-ride.rules.key.2',
+          'let-it-ride.rules.key.3',
+          'let-it-ride.rules.key.4',
+          'let-it-ride.rules.key.5',
+          'let-it-ride.rules.key.6',
+        ],
+      },
+      {
+        id: 'let-it-ride.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'let-it-ride.score.description',
+          'let-it-ride.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'let-it-ride.setup.dealing',
+        'let-it-ride.rules.objective',
+      ],
+      deal: [
+        'let-it-ride.rules.gameplay',
+      ],
+      bet: [
+        'let-it-ride.rules.gameplay',
+      ],
+      let_it_ride: [
+        'let-it-ride.rules.gameplay',
+      ],
+      pull_back: [
+        'let-it-ride.rules.gameplay',
+      ],
+      reveal: [
+        'let-it-ride.rules.gameplay',
+      ],
+      pay: [
+        'let-it-ride.rules.gameplay',
+      ],
+    },
   },
 }

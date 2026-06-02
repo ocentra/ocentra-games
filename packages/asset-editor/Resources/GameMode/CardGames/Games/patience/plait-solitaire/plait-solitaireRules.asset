@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Plait Solitaire. Logic: See rules.objective and rules.gameplay.',
-    Player: "Plait Solitaire (also known as 'Plaits' or 'The Braid') is a double-deck solitaire game of significant complexity and visual appeal. It is distinguished by the 'Plait'â€”a central reserve of 13 cards arranged in a braid-like pattern, where only specific cards are accessible at any time. Requiring the player to manage two sets of foundations and eight tableau piles, it is a game of foresight, sequence planning, and careful reserve management.",
+    LLM: 'Build tableaus down in sequence and alternating color. Only the top card of each tableau pile and the reserve (plait) is available for play on the foundations. One card or a group of cards in proper sequence may move to another tableau pile. When a tableau is empty, any card or legal sequence may fill it. When no moves are available, turn cards from the stock one at a time; cards from stock may move to tableau or foundations. No redeal.',
+    Player: 'Build tableaus down in sequence and alternating color. Only the top card of each tableau pile and the reserve (plait) is available for play on the foundations. One card or a group of cards in proper sequence may move to another tableau pile. When a tableau is empty, any card or legal sequence may fill it. When no moves are available, turn cards from the stock one at a time; cards from stock may move to tableau or foundations. No redeal.',
     objective: 'Move all 104 cards to 8 foundation piles, building up in suit from the Base rank (wrapping K to A).',
     gameplay: 'Build tableaus down in sequence and alternating color. Only the top card of each tableau pile and the reserve (plait) is available for play on the foundations. One card or a group of cards in proper sequence may move to another tableau pile. When a tableau is empty, any card or legal sequence may fill it. When no moves are available, turn cards from the stock one at a time; cards from stock may move to tableau or foundations. No redeal.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: Move all 104 cards to 8 foundation piles, building up in suit from the Base rank (wrapping K to A). Expected outcome: Move all 104 cards to 8 foundation piles, building up in suit from the Base rank (wrapping K to A)..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Move all 104 cards to 8 foundation piles, building up in suit from the Base rank (wrapping K to A).',
+      'Turn-flow example: Build tableaus down in sequence and alternating color. Only the top card of each tableau pile and the reserve (plait) is available for play on the foundations. One card or a group of cards in proper sequence may move to another tableau pile. When a tableau is empty, any card or legal sequence may fill it. When no moves are available, turn cards from the stock one at a time; cards from stock may move to tableau or foundations. No redeal.',
+      'Scoring example: Move all 104 cards to 8 foundation piles, building up in suit from the Base rank (wrapping K to A). Move all 104 cards to 8 foundation piles, building up in suit from the Base rank (wrapping K to A)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'plait-solitaire.rules.objective',
+        title: 'Objective',
+        text: 'Move all 104 cards to 8 foundation piles, building up in suit from the Base rank (wrapping K to A).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'plait-solitaire.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Build tableaus down in sequence and alternating color. Only the top card of each tableau pile and the reserve (plait) is available for play on the foundations. One card or a group of cards in proper sequence may move to another tableau pile. When a tableau is empty, any card or legal sequence may fill it. When no moves are available, turn cards from the stock one at a time; cards from stock may move to tableau or foundations. No redeal.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'plait-solitaire.setup.players',
+        title: 'Players',
+        text: 'One player. Plait is a solo patience game played by a single person; BVS and historical sources describe it as a single-player card game with no opponents or partners.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'plait-solitaire.setup.deck',
+        title: 'Deck',
+        text: '104 cards (two standard 52-card decks).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'plait-solitaire.setup.equipment',
+        title: 'Equipment',
+        text: '104 cards (two standard 52-card decks).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'plait-solitaire.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 13 cards in a plait (open reserve). Deal 32 cards into 8 tableau piles (4 cards per pile). Place one card above as the first foundation base; the seven other cards of the same rank become foundation bases as they appear. Remainder is stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'plait-solitaire.score.win-condition',
+        title: 'Win condition',
+        text: 'Move all 104 cards to 8 foundation piles, building up in suit from the Base rank (wrapping K to A).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'plait-solitaire.score.description',
+        title: 'Scoring',
+        text: 'Move all 104 cards to 8 foundation piles, building up in suit from the Base rank (wrapping K to A).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'plait-solitaire.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Foundations build up in same suit from base rank, wrapping King to Ace.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'plait-solitaire.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Tableau builds down in alternating color; only top cards and plait top are available for foundations.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'plait-solitaire.rules.key.3',
+        title: 'Key rule 3',
+        text: 'One card or a legal sequence may move to another tableau; empty tableau accepts any card or legal sequence.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'plait-solitaire.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Turn stock one card at a time when no other moves; no redeal.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'plait-solitaire.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'plait-solitaire.rules.objective',
+          'plait-solitaire.rules.gameplay',
+        ],
+      },
+      {
+        id: 'plait-solitaire.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'plait-solitaire.setup.players',
+          'plait-solitaire.setup.deck',
+          'plait-solitaire.setup.equipment',
+          'plait-solitaire.setup.dealing',
+        ],
+      },
+      {
+        id: 'plait-solitaire.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'plait-solitaire.rules.key.1',
+          'plait-solitaire.rules.key.2',
+          'plait-solitaire.rules.key.3',
+          'plait-solitaire.rules.key.4',
+        ],
+      },
+      {
+        id: 'plait-solitaire.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'plait-solitaire.score.description',
+          'plait-solitaire.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'plait-solitaire.setup.dealing',
+        'plait-solitaire.rules.objective',
+      ],
+      deal: [
+        'plait-solitaire.rules.gameplay',
+      ],
+      play_card: [
+        'plait-solitaire.rules.gameplay',
+      ],
+      draw: [
+        'plait-solitaire.rules.gameplay',
+      ],
+    },
   },
 }

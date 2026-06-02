@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Knektpass. Logic: Win the tricks, card points, or contract result required by the local form of the game.',
-    Player: 'Knektpass is a traditional trick-taking card game using 36-card or 52-card French-suited Swedish pack for 2 or more players. It is a Rams-family game with dropping out, exchanging, and countdown points.',
+    LLM: 'Players lead to tricks, follow suit when able, and compare the led suit, trumps, or special ranking to decide the winner of each trick.',
+    Player: 'Players lead to tricks, follow suit when able, and compare the led suit, trumps, or special ranking to decide the winner of each trick.',
     objective: 'Win the tricks, card points, or contract result required by the local form of the game.',
     gameplay: 'Players lead to tricks, follow suit when able, and compare the led suit, trumps, or special ranking to decide the winner of each trick.',
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Tricks, card points, or contract success determine scoring. Expected outcome: Win the tricks, card points, or contract result required by the local form of the game..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win the tricks, card points, or contract result required by the local form of the game.',
+      'Turn-flow example: Players lead to tricks, follow suit when able, and compare the led suit, trumps, or special ranking to decide the winner of each trick.',
+      'Scoring example: Tricks, card points, or contract success determine scoring. Win the tricks, card points, or contract result required by the local form of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'knektpass.rules.objective',
+        title: 'Objective',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'knektpass.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players lead to tricks, follow suit when able, and compare the led suit, trumps, or special ranking to decide the winner of each trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'knektpass.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Knektpass.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'knektpass.setup.deck',
+        title: 'Deck',
+        text: '36-card or 52-card French-suited Swedish pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'knektpass.setup.equipment',
+        title: 'Equipment',
+        text: '36-card or 52-card French-suited Swedish pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'knektpass.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 36-card or 52-card French-suited Swedish pack to 2 or more players according to the local rules before trick play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'knektpass.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'knektpass.score.description',
+        title: 'Scoring',
+        text: 'Tricks, card points, or contract success determine scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'knektpass.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trick-taking structure.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'knektpass.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Follow suit when able.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'knektpass.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trump or rank hierarchy controls trick winners.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'knektpass.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Captured tricks or card points decide the hand.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'knektpass.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'knektpass.rules.objective',
+          'knektpass.rules.gameplay',
+        ],
+      },
+      {
+        id: 'knektpass.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'knektpass.setup.players',
+          'knektpass.setup.deck',
+          'knektpass.setup.equipment',
+          'knektpass.setup.dealing',
+        ],
+      },
+      {
+        id: 'knektpass.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'knektpass.rules.key.1',
+          'knektpass.rules.key.2',
+          'knektpass.rules.key.3',
+          'knektpass.rules.key.4',
+        ],
+      },
+      {
+        id: 'knektpass.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'knektpass.score.description',
+          'knektpass.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'knektpass.setup.dealing',
+        'knektpass.rules.objective',
+      ],
+      play_card: [
+        'knektpass.rules.gameplay',
+      ],
+      discard: [
+        'knektpass.rules.gameplay',
+      ],
+      pass: [
+        'knektpass.rules.gameplay',
+      ],
+      bid: [
+        'knektpass.rules.gameplay',
+      ],
+    },
   },
 }

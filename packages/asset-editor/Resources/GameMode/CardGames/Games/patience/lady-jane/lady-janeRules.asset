@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Lady Jane. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Lady Jane is a complex two-deck solitaire game belonging to the Spider family. It is characterized by its large tableau of 10 piles and the requirement to build up eight foundations in suit. While it allows building down on the tableau regardless of suit (making it easier to move cards), only same-suit sequences can be moved as a unit, requiring deep tactical planning to keep suits together.',
+    LLM: '1. **Foundations**: Build up in suit from Ace to King. Cards are moved individually.\n2. **Tableau**: Build down alternating colors. Cards may be moved individually or as a group if built down in suit. An empty tableau pile may be filled by any exposed card or in-suit sequence from another tableau.\n3. **Stock**: Tap the stock to turn up 3 cards at a time to the waste pile. Only one redeal is allowed.\n4. **Waste**: The top card is available for play onto the tableau or foundations.',
+    Player: '1. **Foundations**: Build up in suit from Ace to King. Cards are moved individually.\n2. **Tableau**: Build down alternating colors. Cards may be moved individually or as a group if built down in suit. An empty tableau pile may be filled by any exposed card or in-suit sequence from another tableau.\n3. **Stock**: Tap the stock to turn up 3 cards at a time to the waste pile. Only one redeal is allowed.\n4. **Waste**: The top card is available for play onto the tableau or foundations.',
     objective: 'Move all 104 cards to the eight foundation piles, building up in suit from Ace to King.',
     gameplay: '1. **Foundations**: Build up in suit from Ace to King. Cards are moved individually.\n2. **Tableau**: Build down alternating colors. Cards may be moved individually or as a group if built down in suit. An empty tableau pile may be filled by any exposed card or in-suit sequence from another tableau.\n3. **Stock**: Tap the stock to turn up 3 cards at a time to the waste pile. Only one redeal is allowed.\n4. **Waste**: The top card is available for play onto the tableau or foundations.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: Move all 104 cards to the eight foundation piles, building up in suit from Ace to King. Expected outcome: Move all 104 cards to the eight foundation piles, building up in suit from Ace to King..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Move all 104 cards to the eight foundation piles, building up in suit from Ace to King.',
+      'Turn-flow example: 1. **Foundations**: Build up in suit from Ace to King. Cards are moved individually.\n2. **Tableau**: Build down alternating colors. Cards may be moved individually or as a group if built down in suit. An empty tableau pile may be filled by any exposed card or in-suit sequence from another tableau.\n3. **Stock**: Tap the stock to turn up 3 cards at a time to the waste pile. Only one redeal is allowed.\n4. **Waste**: The top card is available for play onto the tableau or foundations.',
+      'Scoring example: Move all 104 cards to the eight foundation piles, building up in suit from Ace to King. Move all 104 cards to the eight foundation piles, building up in suit from Ace to King..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'lady-jane.rules.objective',
+        title: 'Objective',
+        text: 'Move all 104 cards to the eight foundation piles, building up in suit from Ace to King.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'lady-jane.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Foundations**: Build up in suit from Ace to King. Cards are moved individually.\n2. **Tableau**: Build down alternating colors. Cards may be moved individually or as a group if built down in suit. An empty tableau pile may be filled by any exposed card or in-suit sequence from another tableau.\n3. **Stock**: Tap the stock to turn up 3 cards at a time to the waste pile. Only one redeal is allowed.\n4. **Waste**: The top card is available for play onto the tableau or foundations.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'lady-jane.setup.players',
+        title: 'Players',
+        text: 'One player only. Lady Jane is a solitaire (patience) game; the player manages the entire layout—ten tableau piles, eight foundations, stock, and waste—making all moves alone.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'lady-jane.setup.deck',
+        title: 'Deck',
+        text: '104 cards (2 standard 52-card decks).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'lady-jane.setup.equipment',
+        title: 'Equipment',
+        text: 'Table space for 10 tableau piles, 8 foundation piles, stock and waste.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'lady-jane.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 10 tableau piles: first pile 1 card, second 2, third 3, and so on up to 10 (55 cards total). Place the remaining 49 cards face down as stock. Eight foundation piles and waste start empty.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'lady-jane.score.win-condition',
+        title: 'Win condition',
+        text: 'Move all 104 cards to the eight foundation piles, building up in suit from Ace to King.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'lady-jane.score.description',
+        title: 'Scoring',
+        text: 'Move all 104 cards to the eight foundation piles, building up in suit from Ace to King.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'lady-jane.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Foundations: build up in suit from Ace to King; cards moved individually.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'lady-jane.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Tableau: build down alternating colors; in-suit sequences may move as a unit; empty pile accepts any card or valid sequence.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'lady-jane.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Stock: tap to turn 3 cards to waste; only one redeal allowed.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'lady-jane.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Waste: top card is available for play to tableau or foundations.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'lady-jane.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'lady-jane.rules.objective',
+          'lady-jane.rules.gameplay',
+        ],
+      },
+      {
+        id: 'lady-jane.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'lady-jane.setup.players',
+          'lady-jane.setup.deck',
+          'lady-jane.setup.equipment',
+          'lady-jane.setup.dealing',
+        ],
+      },
+      {
+        id: 'lady-jane.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'lady-jane.rules.key.1',
+          'lady-jane.rules.key.2',
+          'lady-jane.rules.key.3',
+          'lady-jane.rules.key.4',
+        ],
+      },
+      {
+        id: 'lady-jane.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'lady-jane.score.description',
+          'lady-jane.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'lady-jane.setup.dealing',
+        'lady-jane.rules.objective',
+      ],
+      deal: [
+        'lady-jane.rules.gameplay',
+      ],
+      play_card: [
+        'lady-jane.rules.gameplay',
+      ],
+      draw: [
+        'lady-jane.rules.gameplay',
+      ],
+    },
   },
 }

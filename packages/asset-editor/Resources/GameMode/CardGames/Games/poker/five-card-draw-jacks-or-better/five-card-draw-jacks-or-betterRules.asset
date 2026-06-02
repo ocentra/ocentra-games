@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Jacks or Better (Five Card Draw variant). Setup: Ante, deal 5 cards per player. Opening requirement: First player may only open betting with pair of Jacks, Queens, Kings, Aces, or better (3-of-a-Kind, Straight, Flush, etc.). Others may call/fold. Draw phase: discard and draw up to 5 cards. Final betting: standard poker betting. Showdown: highest hand wins. Objective: only qualified hands can initiate action.',
-    Player: 'Welcome to Jacks or Better! This is Five Card Draw with a twist: you can only open betting if you have at least a pair of Jacks (or betterâ€”Queens, Kings, Aces, or any made hand). This prevents weak opening bets and keeps the game tight and strategic.',
+    LLM: 'Each player receives five cards face down. Before the first bet, only a player with a pair of jacks or better (or a stronger hand) may open; others must pass. Once someone opens, remaining players may call, raise, or fold. After the first betting round, each active player may discard up to three cards and receive replacements. A second betting round follows, then showdown: the highest hand wins the pot. If the opener split openers (discarded part of the qualifying hand), those discards must be shown when the pot is awarded.',
+    Player: 'Each player receives five cards face down. Before the first bet, only a player with a pair of jacks or better (or a stronger hand) may open; others must pass. Once someone opens, remaining players may call, raise, or fold. After the first betting round, each active player may discard up to three cards and receive replacements. A second betting round follows, then showdown: the highest hand wins the pot. If the opener split openers (discarded part of the qualifying hand), those discards must be shown when the pot is awarded.',
     objective: 'Win the pot by having the best five-card poker hand at showdown. Betting may only be opened by a player holding a pair of jacks or better (or any hand that beats a pair of tens).',
     gameplay: 'Each player receives five cards face down. Before the first bet, only a player with a pair of jacks or better (or a stronger hand) may open; others must pass. Once someone opens, remaining players may call, raise, or fold. After the first betting round, each active player may discard up to three cards and receive replacements. A second betting round follows, then showdown: the highest hand wins the pot. If the opener split openers (discarded part of the qualifying hand), those discards must be shown when the pot is awarded.',
     keyRules: [
@@ -52,10 +52,177 @@
       go_out: 'This game does not support go out.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in ante; all_simultaneous may use post_ante before round end.',
-      'Scoring check: Standard Five Card Draw scoring. Opener requirement ensures qualified hands only. Expected outcome: NA.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the pot by having the best five-card poker hand at showdown. Betting may only be opened by a player holding a pair of jacks or better (or any hand that beats a pair of tens).',
+      'Turn-flow example: Each player receives five cards face down. Before the first bet, only a player with a pair of jacks or better (or a stronger hand) may open; others must pass. Once someone opens, remaining players may call, raise, or fold. After the first betting round, each active player may discard up to three cards and receive replacements. A second betting round follows, then showdown: the highest hand wins the pot. If the opener split openers (discarded part of the qualifying hand), those discards must be shown when the pot is awarded.',
+      'Scoring example: Standard Five Card Draw scoring. Opener requirement ensures qualified hands only. Highest 5-card Poker hand at showdown wins pot. Only players with Jacks or better can open..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'five-card-draw-jacks-or-better.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the best five-card poker hand at showdown. Betting may only be opened by a player holding a pair of jacks or better (or any hand that beats a pair of tens).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-or-better.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Each player receives five cards face down. Before the first bet, only a player with a pair of jacks or better (or a stronger hand) may open; others must pass. Once someone opens, remaining players may call, raise, or fold. After the first betting round, each active player may discard up to three cards and receive replacements. A second betting round follows, then showdown: the highest hand wins the pot. If the opener split openers (discarded part of the qualifying hand), those discards must be shown when the pot is awarded.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-or-better.setup.players',
+        title: 'Players',
+        text: 'Two to six players; standard Five Card Draw allows this range. For Jacks or Better, at least four players are recommended so that hands are not frequently thrown in when no one can open.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-or-better.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-or-better.setup.equipment',
+        title: 'Equipment',
+        text: 'Chips.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-or-better.setup.dealing',
+        title: 'Deal',
+        text: '5 each; open only with pair of Jacks or better.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-or-better.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest 5-card Poker hand at showdown wins pot. Only players with Jacks or better can open.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-or-better.score.description',
+        title: 'Scoring',
+        text: 'Standard Five Card Draw scoring. Opener requirement ensures qualified hands only.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-or-better.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Open only with Jacks or better',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-or-better.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: Scoring summary: Standard Five Card Draw scoring.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-or-better.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Best hand.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'five-card-draw-jacks-or-better.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'five-card-draw-jacks-or-better.rules.objective',
+          'five-card-draw-jacks-or-better.rules.gameplay',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-or-better.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'five-card-draw-jacks-or-better.setup.players',
+          'five-card-draw-jacks-or-better.setup.deck',
+          'five-card-draw-jacks-or-better.setup.equipment',
+          'five-card-draw-jacks-or-better.setup.dealing',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-or-better.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'five-card-draw-jacks-or-better.rules.key.1',
+          'five-card-draw-jacks-or-better.rules.key.2',
+          'five-card-draw-jacks-or-better.rules.key.3',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-or-better.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'five-card-draw-jacks-or-better.score.description',
+          'five-card-draw-jacks-or-better.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'five-card-draw-jacks-or-better.setup.dealing',
+        'five-card-draw-jacks-or-better.rules.objective',
+      ],
+      deal: [
+        'five-card-draw-jacks-or-better.rules.gameplay',
+      ],
+      fold: [
+        'five-card-draw-jacks-or-better.rules.gameplay',
+      ],
+      check: [
+        'five-card-draw-jacks-or-better.rules.gameplay',
+      ],
+      call: [
+        'five-card-draw-jacks-or-better.rules.gameplay',
+      ],
+      bet: [
+        'five-card-draw-jacks-or-better.rules.gameplay',
+      ],
+      raise: [
+        'five-card-draw-jacks-or-better.rules.gameplay',
+      ],
+      pass: [
+        'five-card-draw-jacks-or-better.rules.gameplay',
+      ],
+      post_ante: [
+        'five-card-draw-jacks-or-better.rules.gameplay',
+      ],
+      open_if_qualified: [
+        'five-card-draw-jacks-or-better.rules.gameplay',
+      ],
+      discard_and_draw: [
+        'five-card-draw-jacks-or-better.rules.gameplay',
+      ],
+      show_hand: [
+        'five-card-draw-jacks-or-better.rules.gameplay',
+      ],
+    },
   },
 }

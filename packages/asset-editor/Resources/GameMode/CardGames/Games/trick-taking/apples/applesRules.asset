@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Apples. Logic: Reach 250 points before the other players by winning scoring sets in tricks and matching the selected target card.',
-    Player: 'Apples is a four-player trick-taking game with bidding, a chosen trump suit, target cards, and scoring from pairs, triples, and four-of-a-kind groups won in tricks.',
+    LLM: 'Players bid a number and suit to establish trump. The winning bidder contributes that many trump cards to a shuffled bidding pile, others contribute the same count, and cards are redealt. Each player sets aside a target card, then twelve tricks are played with follow-suit rules and trump. Won cards score only when they form pairs, triples, or four-of-a-kinds.',
+    Player: 'Players bid a number and suit to establish trump. The winning bidder contributes that many trump cards to a shuffled bidding pile, others contribute the same count, and cards are redealt. Each player sets aside a target card, then twelve tricks are played with follow-suit rules and trump. Won cards score only when they form pairs, triples, or four-of-a-kinds.',
     objective: 'Reach 250 points before the other players by winning scoring sets in tricks and matching the selected target card.',
     gameplay: 'Players bid a number and suit to establish trump. The winning bidder contributes that many trump cards to a shuffled bidding pile, others contribute the same count, and cards are redealt. Each player sets aside a target card, then twelve tricks are played with follow-suit rules and trump. Won cards score only when they form pairs, triples, or four-of-a-kinds.',
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Card sets won in tricks score by rank value; target-card triples and four-of-a-kinds have bonus values. First to 250 wins. Expected outcome: 250.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Reach 250 points before the other players by winning scoring sets in tricks and matching the selected target card.',
+      'Turn-flow example: Players bid a number and suit to establish trump. The winning bidder contributes that many trump cards to a shuffled bidding pile, others contribute the same count, and cards are redealt. Each player sets aside a target card, then twelve tricks are played with follow-suit rules and trump. Won cards score only when they form pairs, triples, or four-of-a-kinds.',
+      'Scoring example: Card sets won in tricks score by rank value; target-card triples and four-of-a-kinds have bonus values. First to 250 wins. Reach 250 points before the other players by winning scoring sets in tricks and matching the selected target card..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'apples.rules.objective',
+        title: 'Objective',
+        text: 'Reach 250 points before the other players by winning scoring sets in tricks and matching the selected target card.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'apples.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players bid a number and suit to establish trump. The winning bidder contributes that many trump cards to a shuffled bidding pile, others contribute the same count, and cards are redealt. Each player sets aside a target card, then twelve tricks are played with follow-suit rules and trump. Won cards score only when they form pairs, triples, or four-of-a-kinds.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'apples.setup.players',
+        title: 'Players',
+        text: 'Four players each receive thirteen cards before bidding.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'apples.setup.deck',
+        title: 'Deck',
+        text: 'Use one standard 52-card deck, ranking ace high.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'apples.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'apples.setup.dealing',
+        title: 'Deal',
+        text: 'Deal all cards clockwise, then run bidding to set trump and exchange cards through the bidding pile before each player sets a target card aside.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'apples.score.win-condition',
+        title: 'Win condition',
+        text: 'Reach 250 points before the other players by winning scoring sets in tricks and matching the selected target card.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'apples.score.description',
+        title: 'Scoring',
+        text: 'Card sets won in tricks score by rank value; target-card triples and four-of-a-kinds have bonus values. First to 250 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'apples.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Four players use all 52 cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'apples.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Bidding chooses trump and creates a shuffled bidding pile.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'apples.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Each player sets one target card aside before play.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'apples.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Pairs, triples, and four-of-a-kinds in won tricks score toward 250.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'apples.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'apples.rules.objective',
+          'apples.rules.gameplay',
+        ],
+      },
+      {
+        id: 'apples.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'apples.setup.players',
+          'apples.setup.deck',
+          'apples.setup.equipment',
+          'apples.setup.dealing',
+        ],
+      },
+      {
+        id: 'apples.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'apples.rules.key.1',
+          'apples.rules.key.2',
+          'apples.rules.key.3',
+          'apples.rules.key.4',
+        ],
+      },
+      {
+        id: 'apples.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'apples.score.description',
+          'apples.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'apples.setup.dealing',
+        'apples.rules.objective',
+      ],
+      play_card: [
+        'apples.rules.gameplay',
+      ],
+      discard: [
+        'apples.rules.gameplay',
+      ],
+      pass: [
+        'apples.rules.gameplay',
+      ],
+      bid: [
+        'apples.rules.gameplay',
+      ],
+    },
   },
 }

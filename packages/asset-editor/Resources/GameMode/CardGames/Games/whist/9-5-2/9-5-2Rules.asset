@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 9-5-2. Logic: See rules.objective and rules.gameplay.',
-    Player: '9-5-2: trick-taking game; name may refer to card ranks or deal (e.g. 9, 5, 2 cards). Trump and follow suit; point or trick count to win. Played in India and elsewhere.',
+    LLM: 'Trick-taking; dealer names trump (or no trump). Follow suit; trump if void. Each player has a target number of tricks (e.g. 9 for dealer, 5 for left, 2 for right). Pay or receive stakes per trick above/below target.',
+    Player: 'Trick-taking; dealer names trump (or no trump). Follow suit; trump if void. Each player has a target number of tricks (e.g. 9 for dealer, 5 for left, 2 for right). Pay or receive stakes per trick above/below target.',
     objective: 'Meet your trick quota (e.g. 9, 5, or 2 tricks depending on position); overtricks score, shortfall penalised.',
     gameplay: 'Trick-taking; dealer names trump (or no trump). Follow suit; trump if void. Each player has a target number of tricks (e.g. 9 for dealer, 5 for left, 2 for right). Pay or receive stakes per trick above/below target.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Stakes per overtrick (up) or shortfall (down); game may end when one player reaches a target score. Expected outcome: Meet your trick quota (e.g. 9, 5, or 2 tricks depending on position); overtricks score, shortfall penalised..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Meet your trick quota (e.g. 9, 5, or 2 tricks depending on position); overtricks score, shortfall penalised.',
+      'Turn-flow example: Trick-taking; dealer names trump (or no trump). Follow suit; trump if void. Each player has a target number of tricks (e.g. 9 for dealer, 5 for left, 2 for right). Pay or receive stakes per trick above/below target.',
+      'Scoring example: Stakes per overtrick (up) or shortfall (down); game may end when one player reaches a target score. Meet your trick quota (e.g. 9, 5, or 2 tricks depending on position); overtricks score, shortfall penalised..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '9-5-2.rules.objective',
+        title: 'Objective',
+        text: 'Meet your trick quota (e.g. 9, 5, or 2 tricks depending on position); overtricks score, shortfall penalised.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '9-5-2.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Trick-taking; dealer names trump (or no trump). Follow suit; trump if void. Each player has a target number of tricks (e.g. 9 for dealer, 5 for left, 2 for right). Pay or receive stakes per trick above/below target.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '9-5-2.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '9-5-2.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '9-5-2.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '9-5-2.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '9-5-2.score.win-condition',
+        title: 'Win condition',
+        text: 'Meet your trick quota (e.g. 9, 5, or 2 tricks depending on position); overtricks score, shortfall penalised.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '9-5-2.score.description',
+        title: 'Scoring',
+        text: 'Stakes per overtrick (up) or shortfall (down); game may end when one player reaches a target score.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '9-5-2.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trick quotas (e.g. 9-5-2 or 8-5-3)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '9-5-2.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Dealer chooses trump; kitty in some variants',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '9-5-2.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Pay/receive per trick above or below quota',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '9-5-2.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '9-5-2.rules.objective',
+          '9-5-2.rules.gameplay',
+        ],
+      },
+      {
+        id: '9-5-2.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '9-5-2.setup.players',
+          '9-5-2.setup.deck',
+          '9-5-2.setup.equipment',
+          '9-5-2.setup.dealing',
+        ],
+      },
+      {
+        id: '9-5-2.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '9-5-2.rules.key.1',
+          '9-5-2.rules.key.2',
+          '9-5-2.rules.key.3',
+        ],
+      },
+      {
+        id: '9-5-2.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '9-5-2.score.description',
+          '9-5-2.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '9-5-2.setup.dealing',
+        '9-5-2.rules.objective',
+      ],
+      play_card: [
+        '9-5-2.rules.gameplay',
+      ],
+    },
   },
 }

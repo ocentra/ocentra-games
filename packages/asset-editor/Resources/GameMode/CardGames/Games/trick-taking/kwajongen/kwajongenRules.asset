@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kwajongen. Logic: Partnership trick-taking. Key: 21-point threshold, branch-erasing scoring, Kapot bonus for all tricks.',
-    Player: 'Kwajongen is a Flemish trick-taking game for 4 players in partnerships. 24-card deck (A-K-Q-J-10-9). Ace=4, King=3, Queen=2, Jack=1. Turned card is trump. Must win 21 of 40 points to erase a branch. First team to zero wins.',
+    LLM: '1. Must follow suit if possible.\n2. Highest Trump wins the trick; otherwise, highest card of the led suit.\n3. **The Target**: Each round has 40 total points. The bidding team must win at least 21 points to reduce their score by 1 branch.',
+    Player: '1. Must follow suit if possible.\n2. Highest Trump wins the trick; otherwise, highest card of the led suit.\n3. **The Target**: Each round has 40 total points. The bidding team must win at least 21 points to reduce their score by 1 branch.',
     objective: 'Be the first team to reduce your starting score (e.g., 10 points) to zero.',
     gameplay: '1. Must follow suit if possible.\n2. Highest Trump wins the trick; otherwise, highest card of the led suit.\n3. **The Target**: Each round has 40 total points. The bidding team must win at least 21 points to reduce their score by 1 branch.',
     keyRules: [
@@ -54,10 +54,180 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal, reveal_trump before trump_decision.',
-      'Scoring check: Win 21+ of 40 points to erase a branch. First team to erase all branches wins. Expected outcome: 10.',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Be the first team to reduce your starting score (e.g., 10 points) to zero.',
+      'Turn-flow example: 1. Must follow suit if possible.\n2. Highest Trump wins the trick; otherwise, highest card of the led suit.\n3. **The Target**: Each round has 40 total points. The bidding team must win at least 21 points to reduce their score by 1 branch.',
+      'Scoring example: Win 21+ of 40 points to erase a branch. First team to erase all branches wins. First team to erase all branches.',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'kwajongen.rules.objective',
+        title: 'Objective',
+        text: 'Be the first team to reduce your starting score (e.g., 10 points) to zero.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kwajongen.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Must follow suit if possible.\n2. Highest Trump wins the trick; otherwise, highest card of the led suit.\n3. **The Target**: Each round has 40 total points. The bidding team must win at least 21 points to reduce their score by 1 branch.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kwajongen.setup.players',
+        title: 'Players',
+        text: '4 players in two fixed partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kwajongen.setup.deck',
+        title: 'Deck',
+        text: '24 cards (standard ranks 9, 10, Jack, Queen, King, Ace).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kwajongen.setup.equipment',
+        title: 'Equipment',
+        text: '24 cards (standard ranks 9, 10, Jack, Queen, King, Ace).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kwajongen.setup.dealing',
+        title: 'Deal',
+        text: "Each player is dealt 4 cards (in some variants, 5). A trump suit is determined by turning the next card or by the first player's choice.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kwajongen.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to erase all branches',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kwajongen.score.description',
+        title: 'Scoring',
+        text: 'Win 21+ of 40 points to erase a branch. First team to erase all branches wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kwajongen.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Ace = 4 points, King = 3, Queen = 2, Jack = 1, 10/9 = 0',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kwajongen.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Total points per round: 40',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kwajongen.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Must win 21+ points to erase a branch',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kwajongen.rules.key.4',
+        title: 'Key rule 4',
+        text: "Going 'Nat' (failing) increases your score",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'kwajongen.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Kapot (all tricks) erases 2-3 branches',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kwajongen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kwajongen.rules.objective',
+          'kwajongen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kwajongen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kwajongen.setup.players',
+          'kwajongen.setup.deck',
+          'kwajongen.setup.equipment',
+          'kwajongen.setup.dealing',
+        ],
+      },
+      {
+        id: 'kwajongen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kwajongen.rules.key.1',
+          'kwajongen.rules.key.2',
+          'kwajongen.rules.key.3',
+          'kwajongen.rules.key.4',
+          'kwajongen.rules.key.5',
+        ],
+      },
+      {
+        id: 'kwajongen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kwajongen.score.description',
+          'kwajongen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kwajongen.setup.dealing',
+        'kwajongen.rules.objective',
+      ],
+      deal: [
+        'kwajongen.rules.gameplay',
+      ],
+      call: [
+        'kwajongen.rules.gameplay',
+      ],
+      play_card: [
+        'kwajongen.rules.gameplay',
+      ],
+      pass: [
+        'kwajongen.rules.gameplay',
+      ],
+      reveal_trump: [
+        'kwajongen.rules.gameplay',
+      ],
+      count_points: [
+        'kwajongen.rules.gameplay',
+      ],
+    },
   },
 }

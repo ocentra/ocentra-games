@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Alkort. Type: Karnöffel Trick-taking. Deck: 44 cards. Rankings: Non-linear (K♦ > Honors > A > J > 6 > 8 > Rubbish). Rule: First card wins ties. No follow-suit. Goal: 5+ tricks. 'Stroke' bonus for early runs.",
-    Player: "Welcome to Alkort. You have 9 cards and a very strange ranking to learn. K♦ is king, but the 2♥ and 4♣ are his guards. You don't have to follow suit here—just play better cards. If you lead a Seven, no one can beat you. Try to win the first 5 tricks for a 'Múk' bonus!",
+    LLM: '1. **Showing**: Partners show each other their highest-ranking card before play starts. 2. **Friðufær Check**: If a player has no cards high enough to beat an 8, they can show their hand and swap it for the 8-card stock. 3. **The Trick**: Play is clockwise. There is NO requirement to follow suit. 4. **Ties**: If two cards of equal rank are played (e.g., two Jacks), the first one played wins the trick. 5. **Leading Sevens**: You cannot lead a Seven until you have won at least one trick previously.',
+    Player: '1. **Showing**: Partners show each other their highest-ranking card before play starts. 2. **Friðufær Check**: If a player has no cards high enough to beat an 8, they can show their hand and swap it for the 8-card stock. 3. **The Trick**: Play is clockwise. There is NO requirement to follow suit. 4. **Ties**: If two cards of equal rank are played (e.g., two Jacks), the first one played wins the trick. 5. **Leading Sevens**: You cannot lead a Seven until you have won at least one trick previously.',
     objective: "Win at least 5 tricks (out of 9) to score. Bonus points for 'Múk' (first 5 tricks) or a 'Stroke' (uninterrupted run of tricks).",
     gameplay: '1. **Showing**: Partners show each other their highest-ranking card before play starts. 2. **Friðufær Check**: If a player has no cards high enough to beat an 8, they can show their hand and swap it for the 8-card stock. 3. **The Trick**: Play is clockwise. There is NO requirement to follow suit. 4. **Ties**: If two cards of equal rank are played (e.g., two Jacks), the first one played wins the trick. 5. **Leading Sevens**: You cannot lead a Seven until you have won at least one trick previously.',
     keyRules: [
@@ -54,10 +54,180 @@
       go_out: 'Hand ends after 9 tricks; scoring is Múk/Stroke, not go-out.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 9 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before show_partner.',
-      'Scoring check: Points awarded at the end of each deal. Expected outcome: 21.',
+      'Setup example: 9 card(s) per player.',
+      "Rule example: Win at least 5 tricks (out of 9) to score. Bonus points for 'Múk' (first 5 tricks) or a 'Stroke' (uninterrupted run of tricks).",
+      'Turn-flow example: 1. **Showing**: Partners show each other their highest-ranking card before play starts. 2. **Friðufær Check**: If a player has no cards high enough to beat an 8, they can show their hand and swap it for the 8-card stock. 3. **The Trick**: Play is clockwise. There is NO requirement to follow suit. 4. **Ties**: If two cards of equal rank are played (e.g., two Jacks), the first one played wins the trick. 5. **Leading Sevens**: You cannot lead a Seven until you have won at least one trick previously.',
+      'Scoring example: Points awarded at the end of each deal. First partnership to reach a target point total (traditionally measured in stakes or 20-50 points)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'alkort.rules.objective',
+        title: 'Objective',
+        text: "Win at least 5 tricks (out of 9) to score. Bonus points for 'Múk' (first 5 tricks) or a 'Stroke' (uninterrupted run of tricks).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'alkort.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Showing**: Partners show each other their highest-ranking card before play starts. 2. **Friðufær Check**: If a player has no cards high enough to beat an 8, they can show their hand and swap it for the 8-card stock. 3. **The Trick**: Play is clockwise. There is NO requirement to follow suit. 4. **Ties**: If two cards of equal rank are played (e.g., two Jacks), the first one played wins the trick. 5. **Leading Sevens**: You cannot lead a Seven until you have won at least one trick previously.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'alkort.setup.players',
+        title: 'Players',
+        text: '4 players in two fixed partnerships (North-South vs East-West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'alkort.setup.deck',
+        title: 'Deck',
+        text: '44 cards (52 minus the 10s and 5s). Ace is high, but rankings are non-linear.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'alkort.setup.equipment',
+        title: 'Equipment',
+        text: '44-card deck, scoreboard.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'alkort.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer gives 9 cards to each player in batches of 3. The remaining 8 cards form a face-down stock (hidden).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'alkort.score.win-condition',
+        title: 'Win condition',
+        text: 'First partnership to reach a target point total (traditionally measured in stakes or 20-50 points).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'alkort.score.description',
+        title: 'Scoring',
+        text: 'Points awarded at the end of each deal.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'alkort.rules.key.1',
+        title: 'Key rule 1',
+        text: "Hierarchy: K♦ is top. Then 'The Honors' (2♥, 4♣, 8♠, 9♥, 9♦). Then Aces, then Jacks, then Sixes (Póstarnir), then Eights (Friðurnar).",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'alkort.rules.key.2',
+        title: 'Key rule 2',
+        text: "Rubbish: Kings (except K♦), Queens, and low numbers (2, 3, 4, 9 except honors) are 'rubbish'. They only win if everyone plays rubbish.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'alkort.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The Seven: If led, it cannot be beaten. If following, it beats nothing.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'alkort.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Múk: Taking the first 5 tricks scores 5 points.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'alkort.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Stroke: Taking 6-9 tricks in a row from the start scores points equal to the number of tricks.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'alkort.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'alkort.rules.objective',
+          'alkort.rules.gameplay',
+        ],
+      },
+      {
+        id: 'alkort.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'alkort.setup.players',
+          'alkort.setup.deck',
+          'alkort.setup.equipment',
+          'alkort.setup.dealing',
+        ],
+      },
+      {
+        id: 'alkort.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'alkort.rules.key.1',
+          'alkort.rules.key.2',
+          'alkort.rules.key.3',
+          'alkort.rules.key.4',
+          'alkort.rules.key.5',
+        ],
+      },
+      {
+        id: 'alkort.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'alkort.score.description',
+          'alkort.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'alkort.setup.dealing',
+        'alkort.rules.objective',
+      ],
+      deal: [
+        'alkort.rules.gameplay',
+      ],
+      buy_stock: [
+        'alkort.rules.gameplay',
+      ],
+      reveal_hand: [
+        'alkort.rules.gameplay',
+      ],
+      award_pot: [
+        'alkort.rules.gameplay',
+      ],
+      play_card: [
+        'alkort.rules.gameplay',
+      ],
+      pass: [
+        'alkort.rules.gameplay',
+      ],
+    },
   },
 }

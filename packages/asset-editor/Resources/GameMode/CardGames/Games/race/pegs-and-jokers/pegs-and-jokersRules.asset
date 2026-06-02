@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Pegs and Jokers. Race. Cards = movement. 5 pegs each. Partnership.',
-    Player: 'Pegs and Jokers: cards move pegs. 5 each. Come out with A/J/Q/K. 7 splits. Joker jumps. First team home wins.',
+    LLM: '1. Draw 1, play 1, move. 2. To come out: Jack/Q/K/Ace or Joker. 3. 2-6, 9-10: move forward that many. Ace: come out or move 1. J/Q/K: come out or move 10. 7: forward 7 or split between 2 pegs. 8: move backward 8. Joker: jump to opponent/partner peg (sends opponent to start, partner to in-spot). 4. Land on opponent = send to start; land on partner = send to in-spot. 5. Must play a moving card if possible; Joker never forced.',
+    Player: '1. Draw 1, play 1, move. 2. To come out: Jack/Q/K/Ace or Joker. 3. 2-6, 9-10: move forward that many. Ace: come out or move 1. J/Q/K: come out or move 10. 7: forward 7 or split between 2 pegs. 8: move backward 8. Joker: jump to opponent/partner peg (sends opponent to start, partner to in-spot). 4. Land on opponent = send to start; land on partner = send to in-spot. 5. Must play a moving card if possible; Joker never forced.',
     objective: 'Each player has five pegs; the winners are the first team to move all their pegs from their START area to their HOME areas.',
     gameplay: '1. Draw 1, play 1, move. 2. To come out: Jack/Q/K/Ace or Joker. 3. 2-6, 9-10: move forward that many. Ace: come out or move 1. J/Q/K: come out or move 10. 7: forward 7 or split between 2 pegs. 8: move backward 8. Joker: jump to opponent/partner peg (sends opponent to start, partner to in-spot). 4. Land on opponent = send to start; land on partner = send to in-spot. 5. Must play a moving card if possible; Joker never forced.',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-8 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: First team with all pegs in HOME wins. Expected outcome: All team pegs in home tracks..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Each player has five pegs; the winners are the first team to move all their pegs from their START area to their HOME areas.',
+      'Turn-flow example: 1. Draw 1, play 1, move. 2. To come out: Jack/Q/K/Ace or Joker. 3. 2-6, 9-10: move forward that many. Ace: come out or move 1. J/Q/K: come out or move 10. 7: forward 7 or split between 2 pegs. 8: move backward 8. Joker: jump to opponent/partner peg (sends opponent to start, partner to in-spot). 4. Land on opponent = send to start; land on partner = send to in-spot. 5. Must play a moving card if possible; Joker never forced.',
+      'Scoring example: First team with all pegs in HOME wins. All team pegs in home tracks..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pegs-and-jokers.rules.objective',
+        title: 'Objective',
+        text: 'Each player has five pegs; the winners are the first team to move all their pegs from their START area to their HOME areas.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pegs-and-jokers.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Draw 1, play 1, move. 2. To come out: Jack/Q/K/Ace or Joker. 3. 2-6, 9-10: move forward that many. Ace: come out or move 1. J/Q/K: come out or move 10. 7: forward 7 or split between 2 pegs. 8: move backward 8. Joker: jump to opponent/partner peg (sends opponent to start, partner to in-spot). 4. Land on opponent = send to start; land on partner = send to in-spot. 5. Must play a moving card if possible; Joker never forced.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pegs-and-jokers.setup.players',
+        title: 'Players',
+        text: '4, 6, or 8 in two teams. Sit alternately (or opposite in 6/8).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pegs-and-jokers.setup.deck',
+        title: 'Deck',
+        text: '3 decks + 6 jokers (6p); 4 decks + 8 jokers (8p).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pegs-and-jokers.setup.equipment',
+        title: 'Equipment',
+        text: 'Board (4/6/8 sides), 5 pegs per player (or marbles).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pegs-and-jokers.setup.dealing',
+        title: 'Deal',
+        text: '5 cards each. Remainder face-down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pegs-and-jokers.score.win-condition',
+        title: 'Win condition',
+        text: 'All team pegs in home tracks.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pegs-and-jokers.score.description',
+        title: 'Scoring',
+        text: 'First team with all pegs in HOME wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pegs-and-jokers.rules.key.1',
+        title: 'Key rule 1',
+        text: '5 pegs each. Come out, go around, turn into HOME at in-spot.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pegs-and-jokers.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Joker: jump to any peg of different color; cannot move to empty hole.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pegs-and-jokers.rules.key.3',
+        title: 'Key rule 3',
+        text: '7: split between two pegs (1+6, 2+5, 3+4).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pegs-and-jokers.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Arizona: play then draw; move any team peg; 9 can split forward/back.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'pegs-and-jokers.rules.key.5',
+        title: 'Key rule 5',
+        text: "All five home = move partner's pegs.",
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pegs-and-jokers.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pegs-and-jokers.rules.objective',
+          'pegs-and-jokers.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pegs-and-jokers.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pegs-and-jokers.setup.players',
+          'pegs-and-jokers.setup.deck',
+          'pegs-and-jokers.setup.equipment',
+          'pegs-and-jokers.setup.dealing',
+        ],
+      },
+      {
+        id: 'pegs-and-jokers.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pegs-and-jokers.rules.key.1',
+          'pegs-and-jokers.rules.key.2',
+          'pegs-and-jokers.rules.key.3',
+          'pegs-and-jokers.rules.key.4',
+          'pegs-and-jokers.rules.key.5',
+        ],
+      },
+      {
+        id: 'pegs-and-jokers.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pegs-and-jokers.score.description',
+          'pegs-and-jokers.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pegs-and-jokers.setup.dealing',
+        'pegs-and-jokers.rules.objective',
+      ],
+      deal: [
+        'pegs-and-jokers.rules.gameplay',
+      ],
+      play_card: [
+        'pegs-and-jokers.rules.gameplay',
+      ],
+      draw: [
+        'pegs-and-jokers.rules.gameplay',
+      ],
+      move_peg: [
+        'pegs-and-jokers.rules.gameplay',
+      ],
+    },
   },
 }

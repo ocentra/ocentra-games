@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Austrian Dominoes. Type: Match-and-Draw. Rules: Double-8 set, 9 doubles removed (36 total). Matching: Side-to-side brick style. Goal: 100 points (opponents' pips).",
-    Player: "Welcome to Austrian Dominoes! We've removed all nine doubles, so you have 36 tiles in play. The 8-7 is the highest card out there. Match your tiles to the sides of the bricks and see if you can reach 100 points first!",
+    LLM: "1. **Leading**: The player with the heaviest tile (8-7 being the heaviest in this set) leads first. 2. **Matching**: On your turn, you must place a tile where one of its ends matches an available end on the board. 3. **The Draw**: If you cannot play, you must draw from the boneyard until you find a playable tile. (Common house rule: maximum of 3 draws). 4. **Passing**: If the boneyard is empty and you cannot play, you pass. 5. **Ending**: A round ends when one player 'Dominoes' (empties their hand) or when the game is blocked.",
+    Player: "1. **Leading**: The player with the heaviest tile (8-7 being the heaviest in this set) leads first. 2. **Matching**: On your turn, you must place a tile where one of its ends matches an available end on the board. 3. **The Draw**: If you cannot play, you must draw from the boneyard until you find a playable tile. (Common house rule: maximum of 3 draws). 4. **Passing**: If the boneyard is empty and you cannot play, you pass. 5. **Ending**: A round ends when one player 'Dominoes' (empties their hand) or when the game is blocked.",
     objective: 'To be the first player to reach 100 points across multiple rounds.',
     gameplay: "1. **Leading**: The player with the heaviest tile (8-7 being the heaviest in this set) leads first. 2. **Matching**: On your turn, you must place a tile where one of its ends matches an available end on the board. 3. **The Draw**: If you cannot play, you must draw from the boneyard until you find a playable tile. (Common house rule: maximum of 3 draws). 4. **Passing**: If the boneyard is empty and you cannot play, you pass. 5. **Ending**: A round ends when one player 'Dominoes' (empties their hand) or when the game is blocked.",
     keyRules: [
@@ -52,10 +52,159 @@
       go_out: 'Round ends when a player dominoes or game is blocked; no go_out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in setup; system may use remove_doubles before deal.',
-      'Scoring check: Round-based point accumulation. Expected outcome: 100.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: To be the first player to reach 100 points across multiple rounds.',
+      "Turn-flow example: 1. **Leading**: The player with the heaviest tile (8-7 being the heaviest in this set) leads first. 2. **Matching**: On your turn, you must place a tile where one of its ends matches an available end on the board. 3. **The Draw**: If you cannot play, you must draw from the boneyard until you find a playable tile. (Common house rule: maximum of 3 draws). 4. **Passing**: If the boneyard is empty and you cannot play, you pass. 5. **Ending**: A round ends when one player 'Dominoes' (empties their hand) or when the game is blocked.",
+      'Scoring example: Round-based point accumulation. First player to 100 points wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'austrian-dominoes.rules.objective',
+        title: 'Objective',
+        text: 'To be the first player to reach 100 points across multiple rounds.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'austrian-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Leading**: The player with the heaviest tile (8-7 being the heaviest in this set) leads first. 2. **Matching**: On your turn, you must place a tile where one of its ends matches an available end on the board. 3. **The Draw**: If you cannot play, you must draw from the boneyard until you find a playable tile. (Common house rule: maximum of 3 draws). 4. **Passing**: If the boneyard is empty and you cannot play, you pass. 5. **Ending**: A round ends when one player 'Dominoes' (empties their hand) or when the game is blocked.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'austrian-dominoes.setup.players',
+        title: 'Players',
+        text: '2-3 players (Draw game) or 4 players (Block game).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'austrian-dominoes.setup.deck',
+        title: 'Deck',
+        text: '36 tiles. To prepare, take a Double-Eight set (45 tiles) and discard all 9 doubles (0-0, 1-1... up to 8-8).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'austrian-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'Domino set, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'austrian-dominoes.setup.dealing',
+        title: 'Deal',
+        text: "2 players: 8-9 tiles each. 3 players: 7 tiles each. 4 players: 8 tiles each. Remaining tiles form the 'Stamm' (Boneyard).",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'austrian-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to 100 points wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'austrian-dominoes.score.description',
+        title: 'Scoring',
+        text: 'Round-based point accumulation.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'austrian-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No Doubles: The absence of doubles means every tile is distinct and has two different numbers.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'austrian-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The 8-7 Lead: The highest tile in play (8-7) always starts the first hand.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'austrian-dominoes.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Brick Formation: The tableau grows in two directions from the starting tile, but specifically in a side-by-side matching manner.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'austrian-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'austrian-dominoes.rules.objective',
+          'austrian-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: 'austrian-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'austrian-dominoes.setup.players',
+          'austrian-dominoes.setup.deck',
+          'austrian-dominoes.setup.equipment',
+          'austrian-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: 'austrian-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'austrian-dominoes.rules.key.1',
+          'austrian-dominoes.rules.key.2',
+          'austrian-dominoes.rules.key.3',
+        ],
+      },
+      {
+        id: 'austrian-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'austrian-dominoes.score.description',
+          'austrian-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'austrian-dominoes.setup.dealing',
+        'austrian-dominoes.rules.objective',
+      ],
+      remove_doubles: [
+        'austrian-dominoes.rules.gameplay',
+      ],
+      deal_tiles: [
+        'austrian-dominoes.rules.gameplay',
+      ],
+      match_tile_brick: [
+        'austrian-dominoes.rules.gameplay',
+      ],
+      draw_from_talon: [
+        'austrian-dominoes.rules.gameplay',
+      ],
+      count_opposing_pips: [
+        'austrian-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

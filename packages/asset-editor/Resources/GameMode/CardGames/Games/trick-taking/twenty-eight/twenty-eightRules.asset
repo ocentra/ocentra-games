@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kaiserspiel. Logic: Win the tricks, card points, or contract result required by the local form of the game.',
-    Player: 'Kaiserspiel is a traditional trick-taking card game using 40 or 48-card Swiss Kaiserspiel deck for 2, 4, or 6 players. It uses one chosen suit and belongs to the Karnöffel environment.',
+    LLM: "Deal cards to four players in partnerships, conduct bidding to set a target and trump, then play tricks with mandatory following suit when possible. Jacks and nines are high-value cards, and the bidder's side must collect at least the bid value.",
+    Player: "Deal cards to four players in partnerships, conduct bidding to set a target and trump, then play tricks with mandatory following suit when possible. Jacks and nines are high-value cards, and the bidder's side must collect at least the bid value.",
     objective: 'Win enough card points in tricks for the partnership to satisfy its bid.',
     gameplay: "Deal cards to four players in partnerships, conduct bidding to set a target and trump, then play tricks with mandatory following suit when possible. Jacks and nines are high-value cards, and the bidder's side must collect at least the bid value.",
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Tricks, card points, or contract success determine scoring. Expected outcome: 1.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win enough card points in tricks for the partnership to satisfy its bid.',
+      "Turn-flow example: Deal cards to four players in partnerships, conduct bidding to set a target and trump, then play tricks with mandatory following suit when possible. Jacks and nines are high-value cards, and the bidder's side must collect at least the bid value.",
+      'Scoring example: Tricks, card points, or contract success determine scoring. Win the tricks, card points, or contract result required by the local form of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'twenty-eight.rules.objective',
+        title: 'Objective',
+        text: 'Win enough card points in tricks for the partnership to satisfy its bid.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'twenty-eight.rules.gameplay',
+        title: 'Turn flow',
+        text: "Deal cards to four players in partnerships, conduct bidding to set a target and trump, then play tricks with mandatory following suit when possible. Jacks and nines are high-value cards, and the bidder's side must collect at least the bid value.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'twenty-eight.setup.players',
+        title: 'Players',
+        text: '4 players use the table arrangement described for Twenty-Eight.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'twenty-eight.setup.deck',
+        title: 'Deck',
+        text: '32-card pack, usually 7 through Ace in each suit',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'twenty-eight.setup.equipment',
+        title: 'Equipment',
+        text: '32-card pack, usually 7 through Ace in each suit, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'twenty-eight.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare 32-card pack, usually 7 through Ace in each suit and deal or lay out cards according to the documented Twenty-Eight rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'twenty-eight.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'twenty-eight.score.description',
+        title: 'Scoring',
+        text: 'Tricks, card points, or contract success determine scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'twenty-eight.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Four players play in two partnerships.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'twenty-eight.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The 32-card pack uses Jass-style point values with jacks and nines important.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'twenty-eight.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The bidding partnership must make its contracted point target.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'twenty-eight.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'twenty-eight.rules.objective',
+          'twenty-eight.rules.gameplay',
+        ],
+      },
+      {
+        id: 'twenty-eight.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'twenty-eight.setup.players',
+          'twenty-eight.setup.deck',
+          'twenty-eight.setup.equipment',
+          'twenty-eight.setup.dealing',
+        ],
+      },
+      {
+        id: 'twenty-eight.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'twenty-eight.rules.key.1',
+          'twenty-eight.rules.key.2',
+          'twenty-eight.rules.key.3',
+        ],
+      },
+      {
+        id: 'twenty-eight.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'twenty-eight.score.description',
+          'twenty-eight.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'twenty-eight.setup.dealing',
+        'twenty-eight.rules.objective',
+      ],
+      play_card: [
+        'twenty-eight.rules.gameplay',
+      ],
+      discard: [
+        'twenty-eight.rules.gameplay',
+      ],
+      pass: [
+        'twenty-eight.rules.gameplay',
+      ],
+      bid: [
+        'twenty-eight.rules.gameplay',
+      ],
+    },
   },
 }

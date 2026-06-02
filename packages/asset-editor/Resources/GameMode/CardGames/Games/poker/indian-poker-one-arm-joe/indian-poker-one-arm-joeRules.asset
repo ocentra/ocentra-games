@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: One Arm Joe (Indian Poker one-card). 1 card each, held to forehead. Player sees all cards except own. Betting round. Highest card at showdown wins. Ties split.',
-    Player: "Welcome to One Arm Joe. You get one card. Don't look at itâ€”hold it to your forehead so everyone else can see it. They see yours; you see theirs. Now bet. Highest card wins.",
+    LLM: '1. After cards are on foreheads, a round of betting occurs (ante, then betting as agreedâ€”limit, pot-limit, or no-limit). 2. Players act in turn: fold, check, call, or raise. 3. Showdown: all remaining players reveal. Highest card wins. Ties split the pot. 4. Optional: play lowest wins, or high-low split.',
+    Player: '1. After cards are on foreheads, a round of betting occurs (ante, then betting as agreedâ€”limit, pot-limit, or no-limit). 2. Players act in turn: fold, check, call, or raise. 3. Showdown: all remaining players reveal. Highest card wins. Ties split the pot. 4. Optional: play lowest wins, or high-low split.',
     objective: 'Win the pot by holding the highest card among those who did not fold, or by making all others fold.',
     gameplay: '1. After cards are on foreheads, a round of betting occurs (ante, then betting as agreedâ€”limit, pot-limit, or no-limit). 2. Players act in turn: fold, check, call, or raise. 3. Showdown: all remaining players reveal. Highest card wins. Ties split the pot. 4. Optional: play lowest wins, or high-low split.',
     keyRules: [
@@ -53,10 +53,183 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 1 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; each_player_clockwise may use ante before deal.',
-      'Scoring check: Pot-based. No point scoring. Expected outcome: Highest card at showdown, or last player remaining after others fold..',
+      'Setup example: 1 card(s) per player.',
+      'Rule example: Win the pot by holding the highest card among those who did not fold, or by making all others fold.',
+      'Turn-flow example: 1. After cards are on foreheads, a round of betting occurs (ante, then betting as agreedâ€”limit, pot-limit, or no-limit). 2. Players act in turn: fold, check, call, or raise. 3. Showdown: all remaining players reveal. Highest card wins. Ties split the pot. 4. Optional: play lowest wins, or high-low split.',
+      'Scoring example: Pot-based. No point scoring. Highest card at showdown, or last player remaining after others fold..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'indian-poker-one-arm-joe.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by holding the highest card among those who did not fold, or by making all others fold.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'indian-poker-one-arm-joe.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. After cards are on foreheads, a round of betting occurs (ante, then betting as agreedâ€”limit, pot-limit, or no-limit). 2. Players act in turn: fold, check, call, or raise. 3. Showdown: all remaining players reveal. Highest card wins. Ties split the pot. 4. Optional: play lowest wins, or high-low split.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'indian-poker-one-arm-joe.setup.players',
+        title: 'Players',
+        text: "Two to eight players. The one-card variant is the basic form: each player is dealt one card face down, picks it up without looking, and holds it against the forehead so all others can see its value. A round of betting follows; at showdown the highest card among those who did not fold wins the pot. The game is usually played with 2–8; skills involved are probability and reading other players' actions and bets.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'indian-poker-one-arm-joe.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Ace high; no suit ranking for ties.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'indian-poker-one-arm-joe.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, poker chips.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'indian-poker-one-arm-joe.setup.dealing',
+        title: 'Deal',
+        text: 'Each player antes. Dealer deals one card face-down to each player. Players pick up their card without looking, hold it facing outward, and place it against their forehead so all others can see it.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'indian-poker-one-arm-joe.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest card at showdown, or last player remaining after others fold.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'indian-poker-one-arm-joe.score.description',
+        title: 'Scoring',
+        text: 'Pot-based. No point scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'indian-poker-one-arm-joe.rules.key.1',
+        title: 'Key rule 1',
+        text: "Each player sees all other players' cards but not their own.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'indian-poker-one-arm-joe.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Ace is high; no suit order for tie-breakingâ€”tied cards split.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'indian-poker-one-arm-joe.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Match-pot variant: players declare stay or drop (simultaneously or in turn); best card of those who stayed wins; others who stayed must match the pot.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'indian-poker-one-arm-joe.rules.key.4',
+        title: 'Key rule 4',
+        text: 'With simultaneous declaration, two high-card holders can both drop seeing each other; savvy players may exploit this.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'indian-poker-one-arm-joe.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'indian-poker-one-arm-joe.rules.objective',
+          'indian-poker-one-arm-joe.rules.gameplay',
+        ],
+      },
+      {
+        id: 'indian-poker-one-arm-joe.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'indian-poker-one-arm-joe.setup.players',
+          'indian-poker-one-arm-joe.setup.deck',
+          'indian-poker-one-arm-joe.setup.equipment',
+          'indian-poker-one-arm-joe.setup.dealing',
+        ],
+      },
+      {
+        id: 'indian-poker-one-arm-joe.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'indian-poker-one-arm-joe.rules.key.1',
+          'indian-poker-one-arm-joe.rules.key.2',
+          'indian-poker-one-arm-joe.rules.key.3',
+          'indian-poker-one-arm-joe.rules.key.4',
+        ],
+      },
+      {
+        id: 'indian-poker-one-arm-joe.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'indian-poker-one-arm-joe.score.description',
+          'indian-poker-one-arm-joe.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'indian-poker-one-arm-joe.setup.dealing',
+        'indian-poker-one-arm-joe.rules.objective',
+      ],
+      ante: [
+        'indian-poker-one-arm-joe.rules.gameplay',
+      ],
+      deal: [
+        'indian-poker-one-arm-joe.rules.gameplay',
+      ],
+      fold: [
+        'indian-poker-one-arm-joe.rules.gameplay',
+      ],
+      check: [
+        'indian-poker-one-arm-joe.rules.gameplay',
+      ],
+      call: [
+        'indian-poker-one-arm-joe.rules.gameplay',
+      ],
+      bet: [
+        'indian-poker-one-arm-joe.rules.gameplay',
+      ],
+      raise: [
+        'indian-poker-one-arm-joe.rules.gameplay',
+      ],
+      award_pot: [
+        'indian-poker-one-arm-joe.rules.gameplay',
+      ],
+      place_card: [
+        'indian-poker-one-arm-joe.rules.gameplay',
+      ],
+      reveal: [
+        'indian-poker-one-arm-joe.rules.gameplay',
+      ],
+    },
   },
 }

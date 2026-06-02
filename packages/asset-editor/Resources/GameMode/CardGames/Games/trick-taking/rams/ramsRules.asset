@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kaiserspiel. Logic: Win the tricks, card points, or contract result required by the local form of the game.',
-    Player: 'Kaiserspiel is a traditional trick-taking card game using 40 or 48-card Swiss Kaiserspiel deck for 2, 4, or 6 players. It uses one chosen suit and belongs to the Karnöffel environment.',
+    LLM: 'Deal the agreed number of cards, reveal or declare trump, and allow players to stay in or drop out. Active players play tricks under follow-suit and trump rules, then settle stakes by tricks won and any special cards or bonuses used by the local variant.',
+    Player: 'Deal the agreed number of cards, reveal or declare trump, and allow players to stay in or drop out. Active players play tricks under follow-suit and trump rules, then settle stakes by tricks won and any special cards or bonuses used by the local variant.',
     objective: 'Win enough tricks after entering the hand and avoid paying penalties to the pot.',
     gameplay: 'Deal the agreed number of cards, reveal or declare trump, and allow players to stay in or drop out. Active players play tricks under follow-suit and trump rules, then settle stakes by tricks won and any special cards or bonuses used by the local variant.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-9 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Tricks, card points, or contract success determine scoring. Expected outcome: 1.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win enough tricks after entering the hand and avoid paying penalties to the pot.',
+      'Turn-flow example: Deal the agreed number of cards, reveal or declare trump, and allow players to stay in or drop out. Active players play tricks under follow-suit and trump rules, then settle stakes by tricks won and any special cards or bonuses used by the local variant.',
+      'Scoring example: Tricks, card points, or contract success determine scoring. Win the tricks, card points, or contract result required by the local form of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'rams.rules.objective',
+        title: 'Objective',
+        text: 'Win enough tricks after entering the hand and avoid paying penalties to the pot.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'rams.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Deal the agreed number of cards, reveal or declare trump, and allow players to stay in or drop out. Active players play tricks under follow-suit and trump rules, then settle stakes by tricks won and any special cards or bonuses used by the local variant.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'rams.setup.players',
+        title: 'Players',
+        text: '3-9 players use the table arrangement described for Rams.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'rams.setup.deck',
+        title: 'Deck',
+        text: 'Usually 32-card piquet or regional equivalent; variants use 52 cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'rams.setup.equipment',
+        title: 'Equipment',
+        text: 'Usually 32-card piquet or regional equivalent; variants use 52 cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'rams.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Usually 32-card piquet or regional equivalent; variants use 52 cards and deal or lay out cards according to the documented Rams rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'rams.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'rams.score.description',
+        title: 'Scoring',
+        text: 'Tricks, card points, or contract success determine scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'rams.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Players may drop out before trick play under many Rams rules.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'rams.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The game often uses a trump suit and a 32-card pack.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'rams.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Regional variants alter scoring, special trumps, and pot penalties.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'rams.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'rams.rules.objective',
+          'rams.rules.gameplay',
+        ],
+      },
+      {
+        id: 'rams.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'rams.setup.players',
+          'rams.setup.deck',
+          'rams.setup.equipment',
+          'rams.setup.dealing',
+        ],
+      },
+      {
+        id: 'rams.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'rams.rules.key.1',
+          'rams.rules.key.2',
+          'rams.rules.key.3',
+        ],
+      },
+      {
+        id: 'rams.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'rams.score.description',
+          'rams.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'rams.setup.dealing',
+        'rams.rules.objective',
+      ],
+      play_card: [
+        'rams.rules.gameplay',
+      ],
+      discard: [
+        'rams.rules.gameplay',
+      ],
+      pass: [
+        'rams.rules.gameplay',
+      ],
+      bid: [
+        'rams.rules.gameplay',
+      ],
+    },
   },
 }

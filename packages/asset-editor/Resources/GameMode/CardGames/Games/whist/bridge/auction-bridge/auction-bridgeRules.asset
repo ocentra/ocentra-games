@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Auction Bridge. Type: Partnership bidding. Rules: 52 cards. Ranks: NT=10, S=9, H=8, D=7, C=6. All tricks over 6 count for game if contract made. Goal: Win two games (30 pts each) for the Rubber.',
-    Player: 'Welcome to Auction Bridge. You have 13 cards. Unlike modern Bridge, every trick you win above six will count toward the game if you make your contract. The target is 30 points. Will you start with 1 Heart or try for a No Trump?',
+    LLM: "1. **Lead**: Player to declarer's left leads. 2. **Dummy**: Declarer's partner lays cards face up. Declarer plays both hands. 3. **Trick Rules**: Must follow suit if possible. Highest trump or led suit wins. 4. **Scoring**: If contract is made, ALL tricks over 6 score towards the game (e.g., if you bid 1 and win 3, all 3 count toward the game).",
+    Player: "1. **Lead**: Player to declarer's left leads. 2. **Dummy**: Declarer's partner lays cards face up. Declarer plays both hands. 3. **Trick Rules**: Must follow suit if possible. Highest trump or led suit wins. 4. **Scoring**: If contract is made, ALL tricks over 6 score towards the game (e.g., if you bid 1 and win 3, all 3 count toward the game).",
     objective: "Score 'Below the Line' points by winning tricks to reach 30 points for a 'Game'. Win two games to win the 'Rubber'.",
     gameplay: "1. **Lead**: Player to declarer's left leads. 2. **Dummy**: Declarer's partner lays cards face up. Declarer plays both hands. 3. **Trick Rules**: Must follow suit if possible. Highest trump or led suit wins. 4. **Scoring**: If contract is made, ALL tricks over 6 score towards the game (e.g., if you bid 1 and win 3, all 3 count toward the game).",
     keyRules: [
@@ -52,10 +52,171 @@
       go_out: 'Game ends when a team wins two games (30 pts each).',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_thirteen before bidding.',
-      "Scoring check: Score is divided into 'Above the Line' (bonuses/honors) and 'Below the Line' (tricks toward game). Expected outcome: 30.",
+      'Setup example: 13 card(s) per player.',
+      "Rule example: Score 'Below the Line' points by winning tricks to reach 30 points for a 'Game'. Win two games to win the 'Rubber'.",
+      "Turn-flow example: 1. **Lead**: Player to declarer's left leads. 2. **Dummy**: Declarer's partner lays cards face up. Declarer plays both hands. 3. **Trick Rules**: Must follow suit if possible. Highest trump or led suit wins. 4. **Scoring**: If contract is made, ALL tricks over 6 score towards the game (e.g., if you bid 1 and win 3, all 3 count toward the game).",
+      "Scoring example: Score is divided into 'Above the Line' (bonuses/honors) and 'Below the Line' (tricks toward game). The partnership with the highest cumulative total (Above + Below) after a team wins two games wins the Rubber..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'auction-bridge.rules.objective',
+        title: 'Objective',
+        text: "Score 'Below the Line' points by winning tricks to reach 30 points for a 'Game'. Win two games to win the 'Rubber'.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'auction-bridge.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Lead**: Player to declarer's left leads. 2. **Dummy**: Declarer's partner lays cards face up. Declarer plays both hands. 3. **Trick Rules**: Must follow suit if possible. Highest trump or led suit wins. 4. **Scoring**: If contract is made, ALL tricks over 6 score towards the game (e.g., if you bid 1 and win 3, all 3 count toward the game).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'auction-bridge.setup.players',
+        title: 'Players',
+        text: '4 players in two partnerships (North-South, East-West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'auction-bridge.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Ranks A(high)-2(low). Suit priorities: No Trumps, Spades, Hearts, Diamonds, Clubs.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'auction-bridge.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, score sheet with a line drawn horizontally in the middle.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'auction-bridge.setup.dealing',
+        title: 'Deal',
+        text: 'The entire deck is dealt out, 13 cards per player.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'auction-bridge.score.win-condition',
+        title: 'Win condition',
+        text: 'The partnership with the highest cumulative total (Above + Below) after a team wins two games wins the Rubber.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'auction-bridge.score.description',
+        title: 'Scoring',
+        text: "Score is divided into 'Above the Line' (bonuses/honors) and 'Below the Line' (tricks toward game).",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'auction-bridge.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trick Values: No Trump (10), Spades (9), Hearts (8), Diamonds (7), Clubs (6).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'auction-bridge.rules.key.2',
+        title: 'Key rule 2',
+        text: "Honors: High cards (A, K, Q, J, 10 of trumps) score separate bonus points 'Above the Line'.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'auction-bridge.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Rubber: The first team to win two games of 30 points each wins the Rubber bonus (250 points).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'auction-bridge.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'auction-bridge.rules.objective',
+          'auction-bridge.rules.gameplay',
+        ],
+      },
+      {
+        id: 'auction-bridge.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'auction-bridge.setup.players',
+          'auction-bridge.setup.deck',
+          'auction-bridge.setup.equipment',
+          'auction-bridge.setup.dealing',
+        ],
+      },
+      {
+        id: 'auction-bridge.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'auction-bridge.rules.key.1',
+          'auction-bridge.rules.key.2',
+          'auction-bridge.rules.key.3',
+        ],
+      },
+      {
+        id: 'auction-bridge.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'auction-bridge.score.description',
+          'auction-bridge.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'auction-bridge.setup.dealing',
+        'auction-bridge.rules.objective',
+      ],
+      play_card: [
+        'auction-bridge.rules.gameplay',
+      ],
+      pass: [
+        'auction-bridge.rules.gameplay',
+      ],
+      bid: [
+        'auction-bridge.rules.gameplay',
+      ],
+      deal_thirteen: [
+        'auction-bridge.rules.gameplay',
+      ],
+      double: [
+        'auction-bridge.rules.gameplay',
+      ],
+      redouble: [
+        'auction-bridge.rules.gameplay',
+      ],
+      score_honors: [
+        'auction-bridge.rules.gameplay',
+      ],
+      score_game_tricks: [
+        'auction-bridge.rules.gameplay',
+      ],
+      score_bonuses: [
+        'auction-bridge.rules.gameplay',
+      ],
+    },
   },
 }

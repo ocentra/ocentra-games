@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: In Between (Acey Deucey / Red Dog style). Flow: expose two cards, bet or fold, expose third, settle by interval rule.',
-    Player: 'In Between: decide whether to bet on the third card landing strictly between the first two ranks.',
+    LLM: "In the dealer-as-banker form, each non-dealer player is resolved in turn. Dealer reveals first card, then second card for that player. Player may fold or bet up to the pot limit. Dealer reveals third card and settles: strictly between = win amount equal to bet, outside range = lose bet, equal to an endpoint = lose double ('hitting the post').",
+    Player: "In the dealer-as-banker form, each non-dealer player is resolved in turn. Dealer reveals first card, then second card for that player. Player may fold or bet up to the pot limit. Dealer reveals third card and settles: strictly between = win amount equal to bet, outside range = lose bet, equal to an endpoint = lose double ('hitting the post').",
     objective: 'Win bets by correctly calling that the third card falls strictly between the first two card ranks.',
     gameplay: "In the dealer-as-banker form, each non-dealer player is resolved in turn. Dealer reveals first card, then second card for that player. Player may fold or bet up to the pot limit. Dealer reveals third card and settles: strictly between = win amount equal to bet, outside range = lose bet, equal to an endpoint = lose double ('hitting the post').",
     keyRules: [
@@ -54,10 +54,177 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in ante; each_player_clockwise may use ante before deal_two.',
-      'Scoring check: Wager-settlement game with table-defined payout rules. Expected outcome: NA.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Win bets by correctly calling that the third card falls strictly between the first two card ranks.',
+      "Turn-flow example: In the dealer-as-banker form, each non-dealer player is resolved in turn. Dealer reveals first card, then second card for that player. Player may fold or bet up to the pot limit. Dealer reveals third card and settles: strictly between = win amount equal to bet, outside range = lose bet, equal to an endpoint = lose double ('hitting the post').",
+      'Scoring example: Wager-settlement game with table-defined payout rules. Finish agreed rounds with positive net chips versus the banker or empty the pot as bettor..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'in-between.rules.objective',
+        title: 'Objective',
+        text: 'Win bets by correctly calling that the third card falls strictly between the first two card ranks.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'in-between.rules.gameplay',
+        title: 'Turn flow',
+        text: "In the dealer-as-banker form, each non-dealer player is resolved in turn. Dealer reveals first card, then second card for that player. Player may fold or bet up to the pot limit. Dealer reveals third card and settles: strictly between = win amount equal to bet, outside range = lose bet, equal to an endpoint = lose double ('hitting the post').",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'in-between.setup.players',
+        title: 'Players',
+        text: '2-8 players; often best around 5-8.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'in-between.setup.deck',
+        title: 'Deck',
+        text: 'One standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'in-between.setup.equipment',
+        title: 'Equipment',
+        text: 'Deck, chips, and a banker/dealer position.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'in-between.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer gives two initial face-up cards for a wager decision, then a third resolving card.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'in-between.score.win-condition',
+        title: 'Win condition',
+        text: 'Finish agreed rounds with positive net chips versus the banker or empty the pot as bettor.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'in-between.score.description',
+        title: 'Scoring',
+        text: 'Wager-settlement game with table-defined payout rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'in-between.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Third card strictly between first two ranks is a win.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'in-between.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Third card outside interval is a loss.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'in-between.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Third card equal to an endpoint commonly loses double (hitting the post) in many rulesets.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'in-between.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Consecutive first two cards usually produce a push in several versions.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'in-between.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Pair starts are handled by special house payout rules.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'in-between.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'in-between.rules.objective',
+          'in-between.rules.gameplay',
+        ],
+      },
+      {
+        id: 'in-between.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'in-between.setup.players',
+          'in-between.setup.deck',
+          'in-between.setup.equipment',
+          'in-between.setup.dealing',
+        ],
+      },
+      {
+        id: 'in-between.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'in-between.rules.key.1',
+          'in-between.rules.key.2',
+          'in-between.rules.key.3',
+          'in-between.rules.key.4',
+          'in-between.rules.key.5',
+        ],
+      },
+      {
+        id: 'in-between.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'in-between.score.description',
+          'in-between.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'in-between.setup.dealing',
+        'in-between.rules.objective',
+      ],
+      ante: [
+        'in-between.rules.gameplay',
+      ],
+      deal: [
+        'in-between.rules.gameplay',
+      ],
+      fold: [
+        'in-between.rules.gameplay',
+      ],
+      bet: [
+        'in-between.rules.gameplay',
+      ],
+      award_pot: [
+        'in-between.rules.gameplay',
+      ],
+    },
   },
 }

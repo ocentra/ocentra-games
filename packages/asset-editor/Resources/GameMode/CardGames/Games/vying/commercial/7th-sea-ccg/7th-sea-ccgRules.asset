@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 7th Sea CCG. Logic: Defeat the opposing player under the scenario and faction victory rules.',
-    Player: '7th Sea CCG is a commercial collectible card game set in the 7th Sea universe, with players building decks and resolving conflicts through faction cards and tactical play.',
+    LLM: 'Players alternate playing cards, committing resources, and resolving conflicts through the games custom card text. Deck construction and faction identity define most strategy.',
+    Player: 'Players alternate playing cards, committing resources, and resolving conflicts through the games custom card text. Deck construction and faction identity define most strategy.',
     objective: 'Defeat the opposing player under the scenario and faction victory rules.',
     gameplay: 'Players alternate playing cards, committing resources, and resolving conflicts through the games custom card text. Deck construction and faction identity define most strategy.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The winner satisfies the games faction or scenario victory condition. Expected outcome: Defeat the opposing player under the scenario and faction victory rules..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Defeat the opposing player under the scenario and faction victory rules.',
+      'Turn-flow example: Players alternate playing cards, committing resources, and resolving conflicts through the games custom card text. Deck construction and faction identity define most strategy.',
+      'Scoring example: The winner satisfies the games faction or scenario victory condition. Defeat the opposing player under the scenario and faction victory rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '7th-sea-ccg.rules.objective',
+        title: 'Objective',
+        text: 'Defeat the opposing player under the scenario and faction victory rules.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '7th-sea-ccg.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players alternate playing cards, committing resources, and resolving conflicts through the games custom card text. Deck construction and faction identity define most strategy.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '7th-sea-ccg.setup.players',
+        title: 'Players',
+        text: 'Two players bring constructed decks and any faction-specific starting material.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '7th-sea-ccg.setup.deck',
+        title: 'Deck',
+        text: 'Use legal constructed decks from the commercial card pool.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '7th-sea-ccg.setup.equipment',
+        title: 'Equipment',
+        text: 'Collectible custom decks built from 7th Sea cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '7th-sea-ccg.setup.dealing',
+        title: 'Deal',
+        text: 'Shuffle each deck, draw opening hands, and set up any starting cards required by the format.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '7th-sea-ccg.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player under the scenario and faction victory rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '7th-sea-ccg.score.description',
+        title: 'Scoring',
+        text: 'The winner satisfies the games faction or scenario victory condition.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '7th-sea-ccg.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Constructed collectible decks are required.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '7th-sea-ccg.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Faction and card text define legal actions.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '7th-sea-ccg.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Conflicts are resolved through custom mechanics.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: '7th-sea-ccg.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Victory depends on the commercial rules set.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '7th-sea-ccg.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '7th-sea-ccg.rules.objective',
+          '7th-sea-ccg.rules.gameplay',
+        ],
+      },
+      {
+        id: '7th-sea-ccg.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '7th-sea-ccg.setup.players',
+          '7th-sea-ccg.setup.deck',
+          '7th-sea-ccg.setup.equipment',
+          '7th-sea-ccg.setup.dealing',
+        ],
+      },
+      {
+        id: '7th-sea-ccg.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '7th-sea-ccg.rules.key.1',
+          '7th-sea-ccg.rules.key.2',
+          '7th-sea-ccg.rules.key.3',
+          '7th-sea-ccg.rules.key.4',
+        ],
+      },
+      {
+        id: '7th-sea-ccg.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '7th-sea-ccg.score.description',
+          '7th-sea-ccg.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '7th-sea-ccg.setup.dealing',
+        '7th-sea-ccg.rules.objective',
+      ],
+      play_card: [
+        '7th-sea-ccg.rules.gameplay',
+      ],
+    },
   },
 }

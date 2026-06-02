@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the first player to achieve the winning condition through strategic play of cards.',
+      'Turn-flow example: 1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'cribbage-partnership.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to achieve the winning condition through strategic play of cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'cribbage-partnership.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'cribbage-partnership.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'cribbage-partnership.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'cribbage-partnership.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'cribbage-partnership.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'cribbage-partnership.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'cribbage-partnership.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'cribbage-partnership.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Play proceeds in turn order with only legal actions allowed.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'cribbage-partnership.rules.key.2',
+        title: 'Key rule 2',
+        text: "Round resolution follows the variant's scoring and bonus conditions.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'cribbage-partnership.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Match winner is determined by agreed target score or elimination condition.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'cribbage-partnership.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'cribbage-partnership.rules.objective',
+          'cribbage-partnership.rules.gameplay',
+        ],
+      },
+      {
+        id: 'cribbage-partnership.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'cribbage-partnership.setup.players',
+          'cribbage-partnership.setup.deck',
+          'cribbage-partnership.setup.equipment',
+          'cribbage-partnership.setup.dealing',
+        ],
+      },
+      {
+        id: 'cribbage-partnership.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'cribbage-partnership.rules.key.1',
+          'cribbage-partnership.rules.key.2',
+          'cribbage-partnership.rules.key.3',
+        ],
+      },
+      {
+        id: 'cribbage-partnership.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'cribbage-partnership.score.description',
+          'cribbage-partnership.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'cribbage-partnership.setup.dealing',
+        'cribbage-partnership.rules.objective',
+      ],
+      play_card: [
+        'cribbage-partnership.rules.gameplay',
+      ],
+    },
   },
 }

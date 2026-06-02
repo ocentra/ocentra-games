@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Call Bridge. 52-card. 4 players individual. Spades always trump. Bid 1-8 tricks. Must follow suit; if void must play spade if held. Score: met bid = bid + 0.1Ã—overs; fail = -bid. 5 rounds.',
-    Player: 'You hold: Aâ™ , Kâ™ , Qâ™£, Jâ™¦, 10â™¥, 9â™¥, 8â™ , 7â™ , 6â™¦, 5â™£, 4â™ , 3â™¥, 2â™¦. Count your tricks: Aâ™  (certain), Kâ™  (very likely), 8â™ +7â™ +4â™  might win if opponents are out of spades. Bid 3 safely. With luck, score 3+.',
+    LLM: '1. Deal 13 cards each. 2. Each player bids number of tricks they will win (min 1). 3. Player left of dealer leads. 4. Follow suit; must trump if void and holding spades. 5. Spades are permanent trump. 6. Highest card of led suit or trump wins trick. 7. Win at least your bid: +bid; fail: -bid; over-tricks +0.1 each.',
+    Player: '1. Deal 13 cards each. 2. Each player bids number of tricks they will win (min 1). 3. Player left of dealer leads. 4. Follow suit; must trump if void and holding spades. 5. Spades are permanent trump. 6. Highest card of led suit or trump wins trick. 7. Win at least your bid: +bid; fail: -bid; over-tricks +0.1 each.',
     objective: 'Score the most points over agreed rounds (usually 5) by winning at least your bid each hand.',
     gameplay: '1. Deal 13 cards each. 2. Each player bids number of tricks they will win (min 1). 3. Player left of dealer leads. 4. Follow suit; must trump if void and holding spades. 5. Spades are permanent trump. 6. Highest card of led suit or trump wins trick. 7. Win at least your bid: +bid; fail: -bid; over-tricks +0.1 each.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'Hand ends after 13 tricks; no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before bidding.',
-      'Scoring check: Decimal scoring: met bid = bid value + 0.1 per over-trick; failed = -bid. Expected outcome: Highest score after agreed number of rounds (typically 5)..',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Score the most points over agreed rounds (usually 5) by winning at least your bid each hand.',
+      'Turn-flow example: 1. Deal 13 cards each. 2. Each player bids number of tricks they will win (min 1). 3. Player left of dealer leads. 4. Follow suit; must trump if void and holding spades. 5. Spades are permanent trump. 6. Highest card of led suit or trump wins trick. 7. Win at least your bid: +bid; fail: -bid; over-tricks +0.1 each.',
+      'Scoring example: Decimal scoring: met bid = bid value + 0.1 per over-trick; failed = -bid. Highest score after agreed number of rounds (typically 5)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'call-bridge.rules.objective',
+        title: 'Objective',
+        text: 'Score the most points over agreed rounds (usually 5) by winning at least your bid each hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'call-bridge.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Deal 13 cards each. 2. Each player bids number of tricks they will win (min 1). 3. Player left of dealer leads. 4. Follow suit; must trump if void and holding spades. 5. Spades are permanent trump. 6. Highest card of led suit or trump wins trick. 7. Win at least your bid: +bid; fail: -bid; over-tricks +0.1 each.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'call-bridge.setup.players',
+        title: 'Players',
+        text: '4. Individual play (no fixed partnerships).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'call-bridge.setup.deck',
+        title: 'Deck',
+        text: '52 standard cards. Spades are permanent trump.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'call-bridge.setup.equipment',
+        title: 'Equipment',
+        text: '52-card deck. Score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'call-bridge.setup.dealing',
+        title: 'Deal',
+        text: '13 cards each. Entire deck dealt.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'call-bridge.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest score after agreed number of rounds (typically 5).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'call-bridge.score.description',
+        title: 'Scoring',
+        text: 'Decimal scoring: met bid = bid value + 0.1 per over-trick; failed = -bid.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'call-bridge.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Spades are ALWAYS trump â€” no other suit can be called.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'call-bridge.rules.key.2',
+        title: 'Key rule 2',
+        text: 'You MUST trump if you cannot follow suit and hold spades.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'call-bridge.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Over-tricks count as 0.1 points each (minor bonus).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'call-bridge.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Under-bidding (failing to make your bid) results in a penalty of -bid.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'call-bridge.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'call-bridge.rules.objective',
+          'call-bridge.rules.gameplay',
+        ],
+      },
+      {
+        id: 'call-bridge.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'call-bridge.setup.players',
+          'call-bridge.setup.deck',
+          'call-bridge.setup.equipment',
+          'call-bridge.setup.dealing',
+        ],
+      },
+      {
+        id: 'call-bridge.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'call-bridge.rules.key.1',
+          'call-bridge.rules.key.2',
+          'call-bridge.rules.key.3',
+          'call-bridge.rules.key.4',
+        ],
+      },
+      {
+        id: 'call-bridge.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'call-bridge.score.description',
+          'call-bridge.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'call-bridge.setup.dealing',
+        'call-bridge.rules.objective',
+      ],
+      deal: [
+        'call-bridge.rules.gameplay',
+      ],
+      play_card: [
+        'call-bridge.rules.gameplay',
+      ],
+      bid: [
+        'call-bridge.rules.gameplay',
+      ],
+    },
   },
 }

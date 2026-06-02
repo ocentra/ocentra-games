@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Sequence Poker. Logic: See rules.',
-    Player: 'Poker variant where hands include sequences. Combines poker with sequence-building mechanics.',
+    LLM: 'Poker variant where hands include sequences. Each player receives five cards. After the deal, hands are compared at showdown; the highest hand wins. No betting rounds in the basic form.',
+    Player: 'Poker variant where hands include sequences. Each player receives five cards. After the deal, hands are compared at showdown; the highest hand wins. No betting rounds in the basic form.',
     objective: 'Win by having the best five-card hand at showdown. Hand values use standard poker rankings with sequences (straights) counting in hand evaluation.',
     gameplay: 'Poker variant where hands include sequences. Each player receives five cards. After the deal, hands are compared at showdown; the highest hand wins. No betting rounds in the basic form.',
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before showdown.',
-      'Scoring check: No betting; winner is the player with the highest five-card hand at showdown. Standard poker hand order applies, with straights (sequences) counting. Expected outcome: Highest five-card hand at showdown wins. Standard poker rankings: straight flush down to high card..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win by having the best five-card hand at showdown. Hand values use standard poker rankings with sequences (straights) counting in hand evaluation.',
+      'Turn-flow example: Poker variant where hands include sequences. Each player receives five cards. After the deal, hands are compared at showdown; the highest hand wins. No betting rounds in the basic form.',
+      'Scoring example: No betting; winner is the player with the highest five-card hand at showdown. Standard poker hand order applies, with straights (sequences) counting. Highest five-card hand at showdown wins. Standard poker rankings: straight flush down to high card..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'sequence-poker.rules.objective',
+        title: 'Objective',
+        text: 'Win by having the best five-card hand at showdown. Hand values use standard poker rankings with sequences (straights) counting in hand evaluation.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'sequence-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Poker variant where hands include sequences. Each player receives five cards. After the deal, hands are compared at showdown; the highest hand wins. No betting rounds in the basic form.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'sequence-poker.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'sequence-poker.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card French deck; four suits (Hearts, Diamonds, Clubs, Spades), thirteen ranks per suit (Ace through King). Used for five-card hands and standard poker hand rankings including straights.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'sequence-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards or tiles',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'sequence-poker.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt five cards one at a time, face down. No further cards are dealt during the hand.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'sequence-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest five-card hand at showdown wins. Standard poker rankings: straight flush down to high card.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'sequence-poker.score.description',
+        title: 'Scoring',
+        text: 'No betting; winner is the player with the highest five-card hand at showdown. Standard poker hand order applies, with straights (sequences) counting.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'sequence-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Standard 52-card deck, five cards per player.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'sequence-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Hands ranked by standard poker order: straight flush, four of a kind, full house, flush, straight, three of a kind, two pair, one pair, high card.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'sequence-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Sequence (straight) is five consecutive ranks; A-2-3-4-5 (wheel) and 10-J-Q-K-A (broadway) are valid straights.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'sequence-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'sequence-poker.rules.objective',
+          'sequence-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'sequence-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'sequence-poker.setup.players',
+          'sequence-poker.setup.deck',
+          'sequence-poker.setup.equipment',
+          'sequence-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'sequence-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'sequence-poker.rules.key.1',
+          'sequence-poker.rules.key.2',
+          'sequence-poker.rules.key.3',
+        ],
+      },
+      {
+        id: 'sequence-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'sequence-poker.score.description',
+          'sequence-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'sequence-poker.setup.dealing',
+        'sequence-poker.rules.objective',
+      ],
+      deal: [
+        'sequence-poker.rules.gameplay',
+      ],
+      reveal_hand: [
+        'sequence-poker.rules.gameplay',
+      ],
+      award_pot: [
+        'sequence-poker.rules.gameplay',
+      ],
+    },
   },
 }

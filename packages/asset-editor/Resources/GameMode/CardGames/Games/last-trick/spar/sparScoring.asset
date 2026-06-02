@@ -10,7 +10,31 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Winner of the last trick scores: 3 points if the winning card is a 6, 2 if a 7, 1 if 8 or higher. No fixed target; session continues as players wish. When played for money, winner is paid 1, 2 or 3 stakes by each other player.',
+      winCondition: 'Win the last (fifth) trick; score 3, 2 or 1 point depending on the winning card (6, 7, or 8+).',
+      targetScore: null,
+      scoringDirection: null,
+      cardValues: {
+        '6_on_last_trick': '3',
+        '7_on_last_trick': '2',
+        '8_or_higher_on_last_trick': '1',
+      },
+      nullReasons: {
+        targetScore: 'Session has no fixed target; players continue for as long as they wish.',
+        scoringDirection: 'Not applicable; cumulative points or stakes per hand.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Reach 20 or 21 without busting; banker settles winnings. Expected outcome: First to 20 or 21 without exceeding beats banker..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Reach a total of 20 or 21 (or as close as possible without busting) to beat the banker. Stick to stop; bust if over 21 and lose the wager.',
+      'Turn-flow example: Players take turns buying tiles from the banker, keeping a running total. Beyond the first two tiles, one tile is turned face-up so each player has two face-down and the rest face-up. Stick to stop; bust if over 21. Banker then draws without exceeding 21; banker bust pays all remaining players; otherwise banker collects from lower or equal totals and pays higher.',
+      'Scoring example: Reach 20 or 21 without busting; banker settles winnings. First to 20 or 21 without exceeding beats banker..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '20-dominoes.rules.objective',
+        title: 'Objective',
+        text: 'Reach a total of 20 or 21 (or as close as possible without busting) to beat the banker. Stick to stop; bust if over 21 and lose the wager.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '20-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players take turns buying tiles from the banker, keeping a running total. Beyond the first two tiles, one tile is turned face-up so each player has two face-down and the rest face-up. Stick to stop; bust if over 21. Banker then draws without exceeding 21; banker bust pays all remaining players; otherwise banker collects from lower or equal totals and pays higher.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '20-dominoes.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '20-dominoes.setup.deck',
+        title: 'Deck',
+        text: 'Double-six domino set (28 tiles)',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '20-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'Double-six domino set, chips or stakes',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '20-dominoes.setup.dealing',
+        title: 'Deal',
+        text: 'Banker chosen (e.g. by drawing highest tile). Players buy tiles from the banker for a stake; max nine tiles per hand.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '20-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 20 or 21 without exceeding beats banker.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '20-dominoes.score.description',
+        title: 'Scoring',
+        text: 'Reach 20 or 21 without busting; banker settles winnings.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '20-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Aim for 20 or 21; bust over 21',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '20-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Max nine tiles per hand',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '20-dominoes.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Blank = 0 or 7',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: '20-dominoes.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Banker draws last; settles with each player',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '20-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '20-dominoes.rules.objective',
+          '20-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: '20-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '20-dominoes.setup.players',
+          '20-dominoes.setup.deck',
+          '20-dominoes.setup.equipment',
+          '20-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: '20-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '20-dominoes.rules.key.1',
+          '20-dominoes.rules.key.2',
+          '20-dominoes.rules.key.3',
+          '20-dominoes.rules.key.4',
+        ],
+      },
+      {
+        id: '20-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '20-dominoes.score.description',
+          '20-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '20-dominoes.setup.dealing',
+        '20-dominoes.rules.objective',
+      ],
+      play_card: [
+        '20-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Deal and bet according to the selected lowball variant, then compare hands using the agreed low ranking. Ace-to-five generally ignores straights and flushes for low hands, while deuce-to-seven treats them as bad and makes 7-5-4-3-2 the best low.',
+    Player: 'Deal and bet according to the selected lowball variant, then compare hands using the agreed low ranking. Ace-to-five generally ignores straights and flushes for low hands, while deuce-to-seven treats them as bad and makes 7-5-4-3-2 the best low.',
     objective: 'Make the best qualifying low hand under the selected lowball ranking system and betting structure.',
     gameplay: 'Deal and bet according to the selected lowball variant, then compare hands using the agreed low ranking. Ace-to-five generally ignores straights and flushes for low hands, while deuce-to-seven treats them as bad and makes 7-5-4-3-2 the best low.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Make the best qualifying low hand under the selected lowball ranking system and betting structure.',
+      'Turn-flow example: Deal and bet according to the selected lowball variant, then compare hands using the agreed low ranking. Ace-to-five generally ignores straights and flushes for low hands, while deuce-to-seven treats them as bad and makes 7-5-4-3-2 the best low.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'lowball-poker.rules.objective',
+        title: 'Objective',
+        text: 'Make the best qualifying low hand under the selected lowball ranking system and betting structure.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'lowball-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Deal and bet according to the selected lowball variant, then compare hands using the agreed low ranking. Ace-to-five generally ignores straights and flushes for low hands, while deuce-to-seven treats them as bad and makes 7-5-4-3-2 the best low.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'lowball-poker.setup.players',
+        title: 'Players',
+        text: '2-8 players use the table arrangement described for Lowball Poker.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'lowball-poker.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'lowball-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'lowball-poker.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Standard 52-card deck and deal or lay out cards according to the documented Lowball Poker rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'lowball-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'lowball-poker.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'lowball-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Lowball inverts normal poker hand ranking.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'lowball-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The ranking method must be chosen before play: ace-to-five, deuce-to-seven, or ace-to-six.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'lowball-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'High-low split variants may award both the high and low halves of the pot.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'lowball-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'lowball-poker.rules.objective',
+          'lowball-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'lowball-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'lowball-poker.setup.players',
+          'lowball-poker.setup.deck',
+          'lowball-poker.setup.equipment',
+          'lowball-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'lowball-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'lowball-poker.rules.key.1',
+          'lowball-poker.rules.key.2',
+          'lowball-poker.rules.key.3',
+        ],
+      },
+      {
+        id: 'lowball-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'lowball-poker.score.description',
+          'lowball-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'lowball-poker.setup.dealing',
+        'lowball-poker.rules.objective',
+      ],
+      play_card: [
+        'lowball-poker.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players play cards representing conjured creatures and magical effects. The sparse source identifies wizard duels as the core play pattern, so exact effects should come from the published rules.',
+    Player: 'Players play cards representing conjured creatures and magical effects. The sparse source identifies wizard duels as the core play pattern, so exact effects should come from the published rules.',
     objective: 'Defeat rival wizards by deploying stronger creatures and effects.',
     gameplay: 'Players play cards representing conjured creatures and magical effects. The sparse source identifies wizard duels as the core play pattern, so exact effects should come from the published rules.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Defeat rival wizards by deploying stronger creatures and effects.',
+      'Turn-flow example: Players play cards representing conjured creatures and magical effects. The sparse source identifies wizard duels as the core play pattern, so exact effects should come from the published rules.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'warlock.rules.objective',
+        title: 'Objective',
+        text: 'Defeat rival wizards by deploying stronger creatures and effects.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'warlock.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play cards representing conjured creatures and magical effects. The sparse source identifies wizard duels as the core play pattern, so exact effects should come from the published rules.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'warlock.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Warlock.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'warlock.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Warlock fantasy card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'warlock.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Warlock fantasy card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'warlock.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Warlock fantasy card deck and deal or lay out cards according to the documented Warlock rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'warlock.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'warlock.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'warlock.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Players are wizards dueling with summoned creatures.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'warlock.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Fantasy creatures include dragons, dwarves, and heroes.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'warlock.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Commercial rulebook and card text should be treated as protected.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'warlock.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'warlock.rules.objective',
+          'warlock.rules.gameplay',
+        ],
+      },
+      {
+        id: 'warlock.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'warlock.setup.players',
+          'warlock.setup.deck',
+          'warlock.setup.equipment',
+          'warlock.setup.dealing',
+        ],
+      },
+      {
+        id: 'warlock.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'warlock.rules.key.1',
+          'warlock.rules.key.2',
+          'warlock.rules.key.3',
+        ],
+      },
+      {
+        id: 'warlock.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'warlock.score.description',
+          'warlock.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'warlock.setup.dealing',
+        'warlock.rules.objective',
+      ],
+      play_card: [
+        'warlock.rules.gameplay',
+      ],
+    },
   },
 }

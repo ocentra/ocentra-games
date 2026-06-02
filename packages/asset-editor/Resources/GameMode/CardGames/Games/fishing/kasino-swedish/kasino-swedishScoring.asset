@@ -11,11 +11,36 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Most spades 2, most cards 1, each Ace 1, 10 of Diamonds (Storan) 2, 2 of Spades (Lillan) 1, last capture (sistan) 1, each tabbe 1. First to 16 points wins.',
+      winCondition: 'First player to reach 16 or more cumulative points wins; if tie at 16+, highest total wins, then most spades.',
+      targetScore: 16,
+      scoringDirection: 'high_wins',
+      cardValues: {
         Ace: '1 point each',
         '10_of_diamonds': '2 points (Storan)',
         '2_of_spades': '1 point (Lillan)',
       },
+      sourceCardValues: {
+        raw: {
+          Ace: '1 point each',
+          '10_of_diamonds': '2 points (Storan)',
+          '2_of_spades': '1 point (Lillan)',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,

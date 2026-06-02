@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 52 Pick-up. Logic: See rules.objective and rules.gameplay.',
-    Player: '52 Pick-up is a social prank using a standard pack: one player offers a game, scatters the cards, and the other player is left to pick them up. It is recorded as a social card-game joke rather than a strategic contest.',
+    LLM: 'Players draw and discard goods cards, secretly load goods into bags, declare a legal good type and quantity, then negotiate with the current sheriff. The sheriff may allow a bag through or inspect it; truthful players are compensated if inspected, while liars lose undeclared goods and pay penalties.',
+    Player: 'Players draw and discard goods cards, secretly load goods into bags, declare a legal good type and quantity, then negotiate with the current sheriff. The sheriff may allow a bag through or inspect it; truthful players are compensated if inspected, while liars lose undeclared goods and pay penalties.',
     objective: 'Earn the most points from legal goods, contraband, bonuses, and remaining coins after everyone has served as sheriff equally.',
     gameplay: 'Players draw and discard goods cards, secretly load goods into bags, declare a legal good type and quantity, then negotiate with the current sheriff. The sheriff may allow a bag through or inspect it; truthful players are compensated if inspected, while liars lose undeclared goods and pay penalties.',
     keyRules: [
@@ -52,10 +52,150 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 3-5 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: No scoring; the activity ends when the deck has been picked up. Expected outcome: 1.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Earn the most points from legal goods, contraband, bonuses, and remaining coins after everyone has served as sheriff equally.',
+      'Turn-flow example: Players draw and discard goods cards, secretly load goods into bags, declare a legal good type and quantity, then negotiate with the current sheriff. The sheriff may allow a bag through or inspect it; truthful players are compensated if inspected, while liars lose undeclared goods and pay penalties.',
+      'Scoring example: No scoring; the activity ends when the deck has been picked up. No formal winner is defined..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'sheriff-of-nottingham.rules.objective',
+        title: 'Objective',
+        text: 'Earn the most points from legal goods, contraband, bonuses, and remaining coins after everyone has served as sheriff equally.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'sheriff-of-nottingham.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players draw and discard goods cards, secretly load goods into bags, declare a legal good type and quantity, then negotiate with the current sheriff. The sheriff may allow a bag through or inspect it; truthful players are compensated if inspected, while liars lose undeclared goods and pay penalties.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'sheriff-of-nottingham.setup.players',
+        title: 'Players',
+        text: '3-5 players use the table arrangement described for Sheriff of Nottingham.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'sheriff-of-nottingham.setup.deck',
+        title: 'Deck',
+        text: 'Commercial goods cards with player boards, bags, and coins',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'sheriff-of-nottingham.setup.equipment',
+        title: 'Equipment',
+        text: 'Commercial goods cards with player boards, bags, and coins, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'sheriff-of-nottingham.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Commercial goods cards with player boards, bags, and coins and deal or lay out cards according to the documented Sheriff of Nottingham rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'sheriff-of-nottingham.score.win-condition',
+        title: 'Win condition',
+        text: 'No formal winner is defined.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'sheriff-of-nottingham.score.description',
+        title: 'Scoring',
+        text: 'No scoring; the activity ends when the deck has been picked up.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'sheriff-of-nottingham.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Players may lie about goods type but must state the correct number of cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'sheriff-of-nottingham.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The sheriff rotates each round.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'sheriff-of-nottingham.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Bribes and promises are part of the negotiation loop.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'sheriff-of-nottingham.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'sheriff-of-nottingham.rules.objective',
+          'sheriff-of-nottingham.rules.gameplay',
+        ],
+      },
+      {
+        id: 'sheriff-of-nottingham.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'sheriff-of-nottingham.setup.players',
+          'sheriff-of-nottingham.setup.deck',
+          'sheriff-of-nottingham.setup.equipment',
+          'sheriff-of-nottingham.setup.dealing',
+        ],
+      },
+      {
+        id: 'sheriff-of-nottingham.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'sheriff-of-nottingham.rules.key.1',
+          'sheriff-of-nottingham.rules.key.2',
+          'sheriff-of-nottingham.rules.key.3',
+        ],
+      },
+      {
+        id: 'sheriff-of-nottingham.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'sheriff-of-nottingham.score.description',
+          'sheriff-of-nottingham.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'sheriff-of-nottingham.setup.dealing',
+        'sheriff-of-nottingham.rules.objective',
+      ],
+      play_card: [
+        'sheriff-of-nottingham.rules.gameplay',
+      ],
+      flip_top_card: [
+        'sheriff-of-nottingham.rules.gameplay',
+      ],
+    },
   },
 }

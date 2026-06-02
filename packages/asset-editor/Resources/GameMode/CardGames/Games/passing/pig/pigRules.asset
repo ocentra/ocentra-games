@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-13 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; all_simultaneous may use play_card before round end.',
-      'Scoring check: No points; each round has one loser (the Pig). Often played with three lives (letters P-I-G) or elimination until two remain. Expected outcome: NA.',
+      'Setup example: 4 card(s) per player.',
+      "Rule example: Collect four cards of the same rank and be quick to react to others' completion.",
+      'Turn-flow example: All players sit in a circle with four cards each. Everyone simultaneously passes one card face down to the left and picks up the card from the right. There are no turns; passing continues as fast as players wish. You must pass one card before picking up the next; you may never hold more than four cards. When a player collects four of a kind they quietly touch their nose. As soon as one player touches their nose, all others may do the same. The last player to touch their nose loses the round (is the Pig).',
+      'Scoring example: No points; each round has one loser (the Pig). Often played with three lives (letters P-I-G) or elimination until two remain. First to collect four of a kind and touch nose wins the round; last to touch nose loses and is the Pig..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pig.rules.objective',
+        title: 'Objective',
+        text: "Collect four cards of the same rank and be quick to react to others' completion.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pig.rules.gameplay',
+        title: 'Turn flow',
+        text: 'All players sit in a circle with four cards each. Everyone simultaneously passes one card face down to the left and picks up the card from the right. There are no turns; passing continues as fast as players wish. You must pass one card before picking up the next; you may never hold more than four cards. When a player collects four of a kind they quietly touch their nose. As soon as one player touches their nose, all others may do the same. The last player to touch their nose loses the round (is the Pig).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pig.setup.players',
+        title: 'Players',
+        text: 'Large groups are better (5-8 is ideal).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pig.setup.deck',
+        title: 'Deck',
+        text: 'Use exactly 4 cards of the same rank for each player (e.g., if 4 players, use 4 Aces, 4 Kings, 4 Queens, 4 Jacks).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pig.setup.equipment',
+        title: 'Equipment',
+        text: 'Use exactly 4 cards of the same rank for each player (e.g., if 4 players, use 4 Aces, 4 Kings, 4 Queens, 4 Jacks).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pig.setup.dealing',
+        title: 'Deal',
+        text: 'Shuffle the 4-per-player set and deal 4 cards to each person.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pig.score.win-condition',
+        title: 'Win condition',
+        text: 'First to collect four of a kind and touch nose wins the round; last to touch nose loses and is the Pig.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pig.score.description',
+        title: 'Scoring',
+        text: 'No points; each round has one loser (the Pig). Often played with three lives (letters P-I-G) or elimination until two remain.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pig.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Pass one card at a time to your left; never hold more than four cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pig.rules.key.2',
+        title: 'Key rule 2',
+        text: 'First to collect four of a kind touches nose; others immediately do the same.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pig.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Last to touch nose loses (the Pig).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pig.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Play is simultaneous with no turns.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pig.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pig.rules.objective',
+          'pig.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pig.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pig.setup.players',
+          'pig.setup.deck',
+          'pig.setup.equipment',
+          'pig.setup.dealing',
+        ],
+      },
+      {
+        id: 'pig.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pig.rules.key.1',
+          'pig.rules.key.2',
+          'pig.rules.key.3',
+          'pig.rules.key.4',
+        ],
+      },
+      {
+        id: 'pig.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pig.score.description',
+          'pig.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pig.setup.dealing',
+        'pig.rules.objective',
+      ],
+      play_card: [
+        'pig.rules.gameplay',
+      ],
+    },
   },
 }

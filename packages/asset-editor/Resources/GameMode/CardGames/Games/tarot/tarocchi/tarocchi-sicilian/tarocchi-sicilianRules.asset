@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tarocchi Siciliano. Logic: See rules.objective and rules.gameplay.',
-    Player: "Tarocchi Siciliano (Sicilian Tarot) is a traditional card game played with a unique 63-card deck. It features ranks and suits distinct from other Tarot decks (Portuguese-style pips). The game is a point-trick game, often played by 4 players. Features the 'Fugitive' (Fool) and 'Miseria' (low trump).",
+    LLM: 'Must follow suit. Must trump if void. Fugitive (Fool) is excuse. Trumps 20-1 (highest to lowest), plus Miseria (lowest).',
+    Player: 'Must follow suit. Must trump if void. Fugitive (Fool) is excuse. Trumps 20-1 (highest to lowest), plus Miseria (lowest).',
     objective: 'Take more than half the card points (55 or more of 109) in tricks; win last trick (Vanto) and other bonuses (Pigliata, 4 Re, Arie) for jochi. Soloist plays alone against the others; in 4-player, caller may name a trump to get a secret partner.',
     gameplay: 'Must follow suit. Must trump if void. Fugitive (Fool) is excuse. Trumps 20-1 (highest to lowest), plus Miseria (lowest).',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 20 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: 109 card points total. Batches of three count minus 2; last trick +5. Trump 20, 1, Fool 10 each; trumps 16-19 and Kings 5; Queens 4, Horses 3, Maids 2; others 1. Expected outcome: Take more than half (55+) card points; win last trick and bonuses for jochi..',
+      'Setup example: 20 card(s) per player.',
+      'Rule example: Take more than half the card points (55 or more of 109) in tricks; win last trick (Vanto) and other bonuses (Pigliata, 4 Re, Arie) for jochi. Soloist plays alone against the others; in 4-player, caller may name a trump to get a secret partner.',
+      'Turn-flow example: Must follow suit. Must trump if void. Fugitive (Fool) is excuse. Trumps 20-1 (highest to lowest), plus Miseria (lowest).',
+      'Scoring example: 109 card points total. Batches of three count minus 2; last trick +5. Trump 20, 1, Fool 10 each; trumps 16-19 and Kings 5; Queens 4, Horses 3, Maids 2; others 1. Take more than half (55+) card points; win last trick and bonuses for jochi..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tarocchi-sicilian.rules.objective',
+        title: 'Objective',
+        text: 'Take more than half the card points (55 or more of 109) in tricks; win last trick (Vanto) and other bonuses (Pigliata, 4 Re, Arie) for jochi. Soloist plays alone against the others; in 4-player, caller may name a trump to get a secret partner.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tarocchi-sicilian.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Must follow suit. Must trump if void. Fugitive (Fool) is excuse. Trumps 20-1 (highest to lowest), plus Miseria (lowest).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tarocchi-sicilian.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tarocchi-sicilian.setup.deck',
+        title: 'Deck',
+        text: '63 cards: 4 suits (King, Queen, Knight, Page, 10-5, Coins has 4) + 21 Trumps + Fugitive.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tarocchi-sicilian.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tarocchi-sicilian.setup.dealing',
+        title: 'Deal',
+        text: 'Deal varies by variant.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tarocchi-sicilian.score.win-condition',
+        title: 'Win condition',
+        text: 'Take more than half (55+) card points; win last trick and bonuses for jochi.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tarocchi-sicilian.score.description',
+        title: 'Scoring',
+        text: '109 card points total. Batches of three count minus 2; last trick +5. Trump 20, 1, Fool 10 each; trumps 16-19 and Kings 5; Queens 4, Horses 3, Maids 2; others 1.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tarocchi-sicilian.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Unique deck (Portuguese pips)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tarocchi-sicilian.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Miseria trump',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tarocchi-sicilian.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Fugitive excuse',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tarocchi-sicilian.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tarocchi-sicilian.rules.objective',
+          'tarocchi-sicilian.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tarocchi-sicilian.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tarocchi-sicilian.setup.players',
+          'tarocchi-sicilian.setup.deck',
+          'tarocchi-sicilian.setup.equipment',
+          'tarocchi-sicilian.setup.dealing',
+        ],
+      },
+      {
+        id: 'tarocchi-sicilian.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tarocchi-sicilian.rules.key.1',
+          'tarocchi-sicilian.rules.key.2',
+          'tarocchi-sicilian.rules.key.3',
+        ],
+      },
+      {
+        id: 'tarocchi-sicilian.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tarocchi-sicilian.score.description',
+          'tarocchi-sicilian.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tarocchi-sicilian.setup.dealing',
+        'tarocchi-sicilian.rules.objective',
+      ],
+      play_card: [
+        'tarocchi-sicilian.rules.gameplay',
+      ],
+    },
   },
 }

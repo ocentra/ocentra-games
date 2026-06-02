@@ -52,10 +52,156 @@
       go_out: 'Hand must satisfy structure and scoring rules.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use draw, discard, meld, go_out before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Complete a legal winning hand that satisfies the active Xiangyang scoring profile.',
+      'Turn-flow example: Players draw one tile and discard one tile in turn. Discards may be claimed for legal melds when claim rules permit. A player wins when their tiles form a complete hand and the scoring profile accepts the win.',
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'xiangyang-mahjong.rules.objective',
+        title: 'Objective',
+        text: 'Complete a legal winning hand that satisfies the active Xiangyang scoring profile.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'xiangyang-mahjong.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players draw one tile and discard one tile in turn. Discards may be claimed for legal melds when claim rules permit. A player wins when their tiles form a complete hand and the scoring profile accepts the win.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'xiangyang-mahjong.setup.players',
+        title: 'Players',
+        text: '4 players seated by wind position.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'xiangyang-mahjong.setup.deck',
+        title: 'Deck',
+        text: 'Standard Mahjong set with suited tiles, honor tiles, and bonus tiles according to table profile.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'xiangyang-mahjong.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard Mahjong set with suited tiles, honor tiles, and bonus tiles according to table profile.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'xiangyang-mahjong.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 13 tiles; dealer receives 14 and discards first.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'xiangyang-mahjong.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'xiangyang-mahjong.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'xiangyang-mahjong.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Default loop is draw then discard.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'xiangyang-mahjong.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Claims must be legal and follow priority restrictions.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'xiangyang-mahjong.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning requires a complete 14-tile hand and profile-accepted validity.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'xiangyang-mahjong.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'xiangyang-mahjong.rules.objective',
+          'xiangyang-mahjong.rules.gameplay',
+        ],
+      },
+      {
+        id: 'xiangyang-mahjong.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'xiangyang-mahjong.setup.players',
+          'xiangyang-mahjong.setup.deck',
+          'xiangyang-mahjong.setup.equipment',
+          'xiangyang-mahjong.setup.dealing',
+        ],
+      },
+      {
+        id: 'xiangyang-mahjong.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'xiangyang-mahjong.rules.key.1',
+          'xiangyang-mahjong.rules.key.2',
+          'xiangyang-mahjong.rules.key.3',
+        ],
+      },
+      {
+        id: 'xiangyang-mahjong.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'xiangyang-mahjong.score.description',
+          'xiangyang-mahjong.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'xiangyang-mahjong.setup.dealing',
+        'xiangyang-mahjong.rules.objective',
+      ],
+      draw: [
+        'xiangyang-mahjong.rules.gameplay',
+      ],
+      discard: [
+        'xiangyang-mahjong.rules.gameplay',
+      ],
+      meld: [
+        'xiangyang-mahjong.rules.gameplay',
+      ],
+      go_out: [
+        'xiangyang-mahjong.rules.gameplay',
+      ],
+    },
   },
 }

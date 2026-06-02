@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Brede Mette. Logic: Win the cards or tricks needed under the local trump-ace structure.',
-    Player: 'Brede Mette is a Danish card game from Funen for two or more players, using a standard pack without jokers and a trump ace as the highest card.',
+    LLM: 'Players play to tricks with aces high and twos low; the trump ace is the highest card and controls decisive tricks.',
+    Player: 'Players play to tricks with aces high and twos low; the trump ace is the highest card and controls decisive tricks.',
     objective: 'Win the cards or tricks needed under the local trump-ace structure.',
     gameplay: 'Players play to tricks with aces high and twos low; the trump ace is the highest card and controls decisive tricks.',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Players score from the successful capture or trick result of the hand. Expected outcome: Win the cards or tricks needed under the local trump-ace structure..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win the cards or tricks needed under the local trump-ace structure.',
+      'Turn-flow example: Players play to tricks with aces high and twos low; the trump ace is the highest card and controls decisive tricks.',
+      'Scoring example: Players score from the successful capture or trick result of the hand. Win the cards or tricks needed under the local trump-ace structure..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'brede-mette.rules.objective',
+        title: 'Objective',
+        text: 'Win the cards or tricks needed under the local trump-ace structure.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'brede-mette.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play to tricks with aces high and twos low; the trump ace is the highest card and controls decisive tricks.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'brede-mette.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Brede Mette.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'brede-mette.setup.deck',
+        title: 'Deck',
+        text: '52-card Danish pattern pack without jokers',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'brede-mette.setup.equipment',
+        title: 'Equipment',
+        text: '52-card Danish pattern pack without jokers, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'brede-mette.setup.dealing',
+        title: 'Deal',
+        text: 'Remove jokers from a 52-card pack and deal according to the number of players.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'brede-mette.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the cards or tricks needed under the local trump-ace structure.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'brede-mette.score.description',
+        title: 'Scoring',
+        text: 'Players score from the successful capture or trick result of the hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'brede-mette.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two or more players.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'brede-mette.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Jokers are removed.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'brede-mette.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Aces are high and twos low.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'brede-mette.rules.key.4',
+        title: 'Key rule 4',
+        text: 'The trump ace is the highest card.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'brede-mette.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Related to Danish Rakker-style play.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'brede-mette.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'brede-mette.rules.objective',
+          'brede-mette.rules.gameplay',
+        ],
+      },
+      {
+        id: 'brede-mette.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'brede-mette.setup.players',
+          'brede-mette.setup.deck',
+          'brede-mette.setup.equipment',
+          'brede-mette.setup.dealing',
+        ],
+      },
+      {
+        id: 'brede-mette.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'brede-mette.rules.key.1',
+          'brede-mette.rules.key.2',
+          'brede-mette.rules.key.3',
+          'brede-mette.rules.key.4',
+          'brede-mette.rules.key.5',
+        ],
+      },
+      {
+        id: 'brede-mette.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'brede-mette.score.description',
+          'brede-mette.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'brede-mette.setup.dealing',
+        'brede-mette.rules.objective',
+      ],
+      play_card: [
+        'brede-mette.rules.gameplay',
+      ],
+      discard: [
+        'brede-mette.rules.gameplay',
+      ],
+      pass: [
+        'brede-mette.rules.gameplay',
+      ],
+      bid: [
+        'brede-mette.rules.gameplay',
+      ],
+    },
   },
 }

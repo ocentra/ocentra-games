@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Siwweschroom. Structure: Deal 4 each -> 4 tricks -> score penalties -> eliminate at 7. Rules: no trumps, must follow suit, highest of led suit wins. Only last trick decides hand winner; knocks raise stake; folds concede current stake; cannot fold your own knock.',
-    Player: 'Siwweschroom is last-trick survival. Four tricks decide each hand, and knocks can raise the pain at any time. Win the final trick or fold wisely, because seven penalty points knocks you out of the game.',
+    LLM: '1. **Deal**: Four cards each from a 32-card deck. 2. **Play**: Four tricks are played; players follow suit when able, otherwise discard any card. 3. **Trick winner**: Highest card of the led suit wins and leads next. 4. **Knocking**: After players pick up cards, and at any time during the hand, a player may knock to raise the stake by one life. 5. **Fold or stay**: Opponents may fold (take current loss) or continue. 6. **Hand result**: Winner of trick four avoids loss; others who stayed lose according to the raised stake. 7. **Elimination**: In Siwweschroom, players reaching seven penalty points drop out; last survivor wins.',
+    Player: '1. **Deal**: Four cards each from a 32-card deck. 2. **Play**: Four tricks are played; players follow suit when able, otherwise discard any card. 3. **Trick winner**: Highest card of the led suit wins and leads next. 4. **Knocking**: After players pick up cards, and at any time during the hand, a player may knock to raise the stake by one life. 5. **Fold or stay**: Opponents may fold (take current loss) or continue. 6. **Hand result**: Winner of trick four avoids loss; others who stayed lose according to the raised stake. 7. **Elimination**: In Siwweschroom, players reaching seven penalty points drop out; last survivor wins.',
     objective: 'Avoid penalty points by winning the fourth (last) trick, or by staying out of expensive losing positions after knocks.',
     gameplay: '1. **Deal**: Four cards each from a 32-card deck. 2. **Play**: Four tricks are played; players follow suit when able, otherwise discard any card. 3. **Trick winner**: Highest card of the led suit wins and leads next. 4. **Knocking**: After players pick up cards, and at any time during the hand, a player may knock to raise the stake by one life. 5. **Fold or stay**: Opponents may fold (take current loss) or continue. 6. **Hand result**: Winner of trick four avoids loss; others who stayed lose according to the raised stake. 7. **Elimination**: In Siwweschroom, players reaching seven penalty points drop out; last survivor wins.',
     keyRules: [
@@ -54,10 +54,180 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before trick_play.',
-      'Scoring check: Penalty-life system with variable stake based on knocks. Folding concedes the current stake; staying risks a larger loss if the last trick is lost. Expected outcome: 7.',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Avoid penalty points by winning the fourth (last) trick, or by staying out of expensive losing positions after knocks.',
+      'Turn-flow example: 1. **Deal**: Four cards each from a 32-card deck. 2. **Play**: Four tricks are played; players follow suit when able, otherwise discard any card. 3. **Trick winner**: Highest card of the led suit wins and leads next. 4. **Knocking**: After players pick up cards, and at any time during the hand, a player may knock to raise the stake by one life. 5. **Fold or stay**: Opponents may fold (take current loss) or continue. 6. **Hand result**: Winner of trick four avoids loss; others who stayed lose according to the raised stake. 7. **Elimination**: In Siwweschroom, players reaching seven penalty points drop out; last survivor wins.',
+      'Scoring example: Penalty-life system with variable stake based on knocks. Folding concedes the current stake; staying risks a larger loss if the last trick is lost. Remain in the game after all opponents have been eliminated at seven penalty points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'siwweschr-m.rules.objective',
+        title: 'Objective',
+        text: 'Avoid penalty points by winning the fourth (last) trick, or by staying out of expensive losing positions after knocks.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'siwweschr-m.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Deal**: Four cards each from a 32-card deck. 2. **Play**: Four tricks are played; players follow suit when able, otherwise discard any card. 3. **Trick winner**: Highest card of the led suit wins and leads next. 4. **Knocking**: After players pick up cards, and at any time during the hand, a player may knock to raise the stake by one life. 5. **Fold or stay**: Opponents may fold (take current loss) or continue. 6. **Hand result**: Winner of trick four avoids loss; others who stayed lose according to the raised stake. 7. **Elimination**: In Siwweschroom, players reaching seven penalty points drop out; last survivor wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'siwweschr-m.setup.players',
+        title: 'Players',
+        text: '3-8 players in clockwise order. Dealer rotates each hand.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'siwweschr-m.setup.deck',
+        title: 'Deck',
+        text: '32-card pack. Rank in every suit is 10 (high), 9, 8, 7, A, K, Q, J (low). There are no trumps.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'siwweschr-m.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards plus a score track for penalty points.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'siwweschr-m.setup.dealing',
+        title: 'Deal',
+        text: "Deal 4 cards to each player. Leader is player to dealer's left.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'siwweschr-m.score.win-condition',
+        title: 'Win condition',
+        text: 'Remain in the game after all opponents have been eliminated at seven penalty points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'siwweschr-m.score.description',
+        title: 'Scoring',
+        text: 'Penalty-life system with variable stake based on knocks. Folding concedes the current stake; staying risks a larger loss if the last trick is lost.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'siwweschr-m.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No trumps are used.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'siwweschr-m.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Only the last trick decides the hand winner.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'siwweschr-m.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Knocks raise risk for everyone still in.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'siwweschr-m.rules.key.4',
+        title: 'Key rule 4',
+        text: 'A player cannot knock and then fold to that same knock.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'siwweschr-m.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Siwweschroom end condition is elimination at 7 points, not a fixed 10-point loser rule.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'siwweschr-m.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'siwweschr-m.rules.objective',
+          'siwweschr-m.rules.gameplay',
+        ],
+      },
+      {
+        id: 'siwweschr-m.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'siwweschr-m.setup.players',
+          'siwweschr-m.setup.deck',
+          'siwweschr-m.setup.equipment',
+          'siwweschr-m.setup.dealing',
+        ],
+      },
+      {
+        id: 'siwweschr-m.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'siwweschr-m.rules.key.1',
+          'siwweschr-m.rules.key.2',
+          'siwweschr-m.rules.key.3',
+          'siwweschr-m.rules.key.4',
+          'siwweschr-m.rules.key.5',
+        ],
+      },
+      {
+        id: 'siwweschr-m.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'siwweschr-m.score.description',
+          'siwweschr-m.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'siwweschr-m.setup.dealing',
+        'siwweschr-m.rules.objective',
+      ],
+      deal: [
+        'siwweschr-m.rules.gameplay',
+      ],
+      fold: [
+        'siwweschr-m.rules.gameplay',
+      ],
+      play_card: [
+        'siwweschr-m.rules.gameplay',
+      ],
+      knock: [
+        'siwweschr-m.rules.gameplay',
+      ],
+      apply_penalties: [
+        'siwweschr-m.rules.gameplay',
+      ],
+      eliminate_players: [
+        'siwweschr-m.rules.gameplay',
+      ],
+    },
   },
 }

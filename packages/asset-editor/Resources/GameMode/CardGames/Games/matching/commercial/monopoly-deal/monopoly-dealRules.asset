@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Monopoly Deal. Logic: Be the first player to complete the required number of full property sets.',
-    Player: 'Monopoly Deal is a commercial card game based on Monopoly where players collect property sets while using money and action cards.',
+    LLM: 'Players draw cards, lay properties and money, charge rent, play action cards, and steal or protect property sets.',
+    Player: 'Players draw cards, lay properties and money, charge rent, play action cards, and steal or protect property sets.',
     objective: 'Be the first player to complete the required number of full property sets.',
     gameplay: 'Players draw cards, lay properties and money, charge rent, play action cards, and steal or protect property sets.',
     keyRules: [
@@ -54,10 +54,186 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_cards before round end.',
-      'Scoring check: Published scoring or victory conditions determine the winner. Expected outcome: Be the first player to complete the required number of full property sets..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first player to complete the required number of full property sets.',
+      'Turn-flow example: Players draw cards, lay properties and money, charge rent, play action cards, and steal or protect property sets.',
+      'Scoring example: Published scoring or victory conditions determine the winner. Be the first player to complete the required number of full property sets..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'monopoly-deal.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to complete the required number of full property sets.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'monopoly-deal.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players draw cards, lay properties and money, charge rent, play action cards, and steal or protect property sets.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'monopoly-deal.setup.players',
+        title: 'Players',
+        text: '2-5 players use the table arrangement described for Monopoly Deal.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'monopoly-deal.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Monopoly Deal property, money, and action cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'monopoly-deal.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Monopoly Deal property, money, and action cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'monopoly-deal.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare the dedicated Monopoly Deal cards and any shared table, score, or resource areas from the published rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'monopoly-deal.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to complete the required number of full property sets.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'monopoly-deal.score.description',
+        title: 'Scoring',
+        text: 'Published scoring or victory conditions determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'monopoly-deal.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dedicated commercial deck.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'monopoly-deal.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Property set collection.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'monopoly-deal.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Money cards pay debts.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'monopoly-deal.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Action cards steal or disrupt.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'monopoly-deal.rules.key.5',
+        title: 'Key rule 5',
+        text: 'First to complete property sets wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'monopoly-deal.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'monopoly-deal.rules.objective',
+          'monopoly-deal.rules.gameplay',
+        ],
+      },
+      {
+        id: 'monopoly-deal.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'monopoly-deal.setup.players',
+          'monopoly-deal.setup.deck',
+          'monopoly-deal.setup.equipment',
+          'monopoly-deal.setup.dealing',
+        ],
+      },
+      {
+        id: 'monopoly-deal.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'monopoly-deal.rules.key.1',
+          'monopoly-deal.rules.key.2',
+          'monopoly-deal.rules.key.3',
+          'monopoly-deal.rules.key.4',
+          'monopoly-deal.rules.key.5',
+        ],
+      },
+      {
+        id: 'monopoly-deal.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'monopoly-deal.score.description',
+          'monopoly-deal.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'monopoly-deal.setup.dealing',
+        'monopoly-deal.rules.objective',
+      ],
+      deal_cards: [
+        'monopoly-deal.rules.gameplay',
+      ],
+      ask_for_rank: [
+        'monopoly-deal.rules.gameplay',
+      ],
+      draw_stock: [
+        'monopoly-deal.rules.gameplay',
+      ],
+      check_books: [
+        'monopoly-deal.rules.gameplay',
+      ],
+      give_cards: [
+        'monopoly-deal.rules.gameplay',
+      ],
+      say_go_fish: [
+        'monopoly-deal.rules.gameplay',
+      ],
+      lay_down_book: [
+        'monopoly-deal.rules.gameplay',
+      ],
+      check_game_end: [
+        'monopoly-deal.rules.gameplay',
+      ],
+    },
   },
 }

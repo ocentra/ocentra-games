@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Grass. Logic: Earn the most money or product-defined score while disrupting opponents with action cards.',
-    Player: 'Grass is a commercial card game with a counterculture trading theme and direct take-that card effects.',
+    LLM: 'Players draw and play deal, protection, and action cards from the dedicated deck, building score while attacking or blocking opponents.',
+    Player: 'Players draw and play deal, protection, and action cards from the dedicated deck, building score while attacking or blocking opponents.',
     objective: 'Earn the most money or product-defined score while disrupting opponents with action cards.',
     gameplay: 'Players draw and play deal, protection, and action cards from the dedicated deck, building score while attacking or blocking opponents.',
     keyRules: [
@@ -54,10 +54,168 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: Published endgame scoring or victory conditions determine the winner. Expected outcome: Earn the most money or product-defined score while disrupting opponents with action cards..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Earn the most money or product-defined score while disrupting opponents with action cards.',
+      'Turn-flow example: Players draw and play deal, protection, and action cards from the dedicated deck, building score while attacking or blocking opponents.',
+      'Scoring example: Published endgame scoring or victory conditions determine the winner. Earn the most money or product-defined score while disrupting opponents with action cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'grass.rules.objective',
+        title: 'Objective',
+        text: 'Earn the most money or product-defined score while disrupting opponents with action cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'grass.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players draw and play deal, protection, and action cards from the dedicated deck, building score while attacking or blocking opponents.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'grass.setup.players',
+        title: 'Players',
+        text: '2-4 players use the table arrangement described for Grass.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'grass.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Grass card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'grass.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Grass card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'grass.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare the dedicated Grass deck and any shared scoring, resource, or tableau area described by the rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'grass.score.win-condition',
+        title: 'Win condition',
+        text: 'Earn the most money or product-defined score while disrupting opponents with action cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'grass.score.description',
+        title: 'Scoring',
+        text: 'Published endgame scoring or victory conditions determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'grass.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dedicated commercial deck.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'grass.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Take-that card effects.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'grass.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Money or score is accumulated.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'grass.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Protection cards counter attacks.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'grass.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Highest score wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'grass.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'grass.rules.objective',
+          'grass.rules.gameplay',
+        ],
+      },
+      {
+        id: 'grass.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'grass.setup.players',
+          'grass.setup.deck',
+          'grass.setup.equipment',
+          'grass.setup.dealing',
+        ],
+      },
+      {
+        id: 'grass.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'grass.rules.key.1',
+          'grass.rules.key.2',
+          'grass.rules.key.3',
+          'grass.rules.key.4',
+          'grass.rules.key.5',
+        ],
+      },
+      {
+        id: 'grass.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'grass.score.description',
+          'grass.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'grass.setup.dealing',
+        'grass.rules.objective',
+      ],
+      play_card: [
+        'grass.rules.gameplay',
+      ],
+      flip_top_card: [
+        'grass.rules.gameplay',
+      ],
+    },
   },
 }

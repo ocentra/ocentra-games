@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Experiment. Logic: Complete the most valuable tasks by discarding lab cards that match the required flask colours and numbers.',
-    Player: 'Experiment is a dedicated-deck commercial card game where players collect coloured laboratory cards to complete task cards.',
+    LLM: 'Each round determines influence, lets players choose a laboratory or task card, then allows task completion by discarding matching colour cards, including mixed secondary colours.',
+    Player: 'Each round determines influence, lets players choose a laboratory or task card, then allows task completion by discarding matching colour cards, including mixed secondary colours.',
     objective: 'Complete the most valuable tasks by discarding lab cards that match the required flask colours and numbers.',
     gameplay: 'Each round determines influence, lets players choose a laboratory or task card, then allows task completion by discarding matching colour cards, including mixed secondary colours.',
     keyRules: [
@@ -54,10 +54,186 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_cards before round end.',
-      'Scoring check: After twelve rounds, completed task points are counted; highest total wins. Expected outcome: Complete the most valuable tasks by discarding lab cards that match the required flask colours and numbers..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Complete the most valuable tasks by discarding lab cards that match the required flask colours and numbers.',
+      'Turn-flow example: Each round determines influence, lets players choose a laboratory or task card, then allows task completion by discarding matching colour cards, including mixed secondary colours.',
+      'Scoring example: After twelve rounds, completed task points are counted; highest total wins. Complete the most valuable tasks by discarding lab cards that match the required flask colours and numbers..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'experiment.rules.objective',
+        title: 'Objective',
+        text: 'Complete the most valuable tasks by discarding lab cards that match the required flask colours and numbers.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'experiment.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Each round determines influence, lets players choose a laboratory or task card, then allows task completion by discarding matching colour cards, including mixed secondary colours.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'experiment.setup.players',
+        title: 'Players',
+        text: '3-6 players use the table arrangement described for Experiment.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'experiment.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Experiment laboratory and task cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'experiment.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Experiment laboratory and task cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'experiment.setup.dealing',
+        title: 'Deal',
+        text: 'Deal laboratory cards and task options from the dedicated deck; each round begins by determining player influence.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'experiment.score.win-condition',
+        title: 'Win condition',
+        text: 'Complete the most valuable tasks by discarding lab cards that match the required flask colours and numbers.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'experiment.score.description',
+        title: 'Scoring',
+        text: 'After twelve rounds, completed task points are counted; highest total wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'experiment.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Three to six players.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'experiment.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Dedicated deck.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'experiment.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Twelve rounds.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'experiment.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Primary colours can combine into secondary colours.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'experiment.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Completed tasks score points.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'experiment.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'experiment.rules.objective',
+          'experiment.rules.gameplay',
+        ],
+      },
+      {
+        id: 'experiment.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'experiment.setup.players',
+          'experiment.setup.deck',
+          'experiment.setup.equipment',
+          'experiment.setup.dealing',
+        ],
+      },
+      {
+        id: 'experiment.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'experiment.rules.key.1',
+          'experiment.rules.key.2',
+          'experiment.rules.key.3',
+          'experiment.rules.key.4',
+          'experiment.rules.key.5',
+        ],
+      },
+      {
+        id: 'experiment.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'experiment.score.description',
+          'experiment.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'experiment.setup.dealing',
+        'experiment.rules.objective',
+      ],
+      deal_cards: [
+        'experiment.rules.gameplay',
+      ],
+      ask_for_rank: [
+        'experiment.rules.gameplay',
+      ],
+      draw_stock: [
+        'experiment.rules.gameplay',
+      ],
+      check_books: [
+        'experiment.rules.gameplay',
+      ],
+      give_cards: [
+        'experiment.rules.gameplay',
+      ],
+      say_go_fish: [
+        'experiment.rules.gameplay',
+      ],
+      lay_down_book: [
+        'experiment.rules.gameplay',
+      ],
+      check_game_end: [
+        'experiment.rules.gameplay',
+      ],
+    },
   },
 }

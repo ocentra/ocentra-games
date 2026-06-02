@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Last One (Last Card). Shedding game. Match rank or suit to discard. Special cards: 2=draw 2, 3=play again, 4=melee sequence, 8=wild, J=skip, A=reverse, Joker=draw 5. Must call 'Last One' at 1 card or draw penalty. First to empty hand wins.",
-    Player: "Welcome to Last One! Match cards by suit or rank, use special cards to mess with your opponents, and don't forget to yell 'Last One' when you have just one card leftâ€”or you'll draw a penalty! Watch out for 2s (draw 2), 8s (wild), and Jokers (draw 5). First to empty their hand wins!",
+    LLM: 'Players take turns playing a card to the discard pile that matches the previous card in rank OR suit. If unable to play, draw one card from the stock. If the drawn card is playable, it may be played immediately.',
+    Player: 'Players take turns playing a card to the discard pile that matches the previous card in rank OR suit. If unable to play, draw one card from the stock. If the drawn card is playable, it may be played immediately.',
     objective: 'The object is to be the first player to have no cards left in your hand; the first to empty their hand wins the round.',
     gameplay: 'Players take turns playing a card to the discard pile that matches the previous card in rank OR suit. If unable to play, draw one card from the stock. If the drawn card is playable, it may be played immediately.',
     keyRules: [
@@ -57,10 +57,210 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before starter_card.',
-      'Scoring check: Penalty point system for cards remaining when another player goes out. Expected outcome: 100.',
+      'Setup example: 7 card(s) per player.',
+      'Rule example: The object is to be the first player to have no cards left in your hand; the first to empty their hand wins the round.',
+      'Turn-flow example: Players take turns playing a card to the discard pile that matches the previous card in rank OR suit. If unable to play, draw one card from the stock. If the drawn card is playable, it may be played immediately.',
+      'Scoring example: Penalty point system for cards remaining when another player goes out. First player to empty their hand wins the round. In multi-round games, lowest cumulative score wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'last-one.rules.objective',
+        title: 'Objective',
+        text: 'The object is to be the first player to have no cards left in your hand; the first to empty their hand wins the round.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'last-one.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players take turns playing a card to the discard pile that matches the previous card in rank OR suit. If unable to play, draw one card from the stock. If the drawn card is playable, it may be played immediately.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'last-one.setup.players',
+        title: 'Players',
+        text: '2-6 players (4-5 is optimal).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'last-one.setup.deck',
+        title: 'Deck',
+        text: "Standard 52-card deck + 2 Jokers. Jokers are typically 'Draw 5' or 'Draw 6' penalty cards.",
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'last-one.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck and a flat surface.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'last-one.setup.dealing',
+        title: 'Deal',
+        text: "Each player receives 7 cards (or 4-9 cards at dealer's choice). One card is turned up to start the discard pile. Remaining cards form the stock.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'last-one.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to empty their hand wins the round. In multi-round games, lowest cumulative score wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'last-one.score.description',
+        title: 'Scoring',
+        text: 'Penalty point system for cards remaining when another player goes out.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'last-one.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two (2): Next player draws 2 cards and loses their turn. Multiple 2s can be stacked (e.g., two 2s = draw 4).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'last-one.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Three (3): May be played on any card and allows the player to play another card immediately (stacking).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'last-one.rules.key.3',
+        title: 'Key rule 3',
+        text: "Four (4): Causes a 'melee'â€”the next player must play a 5 of the same suit if possible, then 6, etc. If the sequence stops, the current target draws cards equal to the last played rank.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'last-one.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Eight (8): Wild card. Can be played on any card. Player announces a new suit that must be followed.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'last-one.rules.key.5',
+        title: 'Key rule 5',
+        text: "Jack (J): Skip the next player's turn.",
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'last-one.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Ace (A): Reverse direction of play. In 2-player games, acts as a Skip.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'last-one.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Joker: Next player draws 5 cards (or 6, by agreement) and loses their turn. Cannot be stacked in most rules.',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+      {
+        id: 'last-one.rules.key.8',
+        title: 'Key rule 8',
+        text: "Last Card Rule: When a player has exactly one card left, they MUST say 'Last One' (or 'Last Card'). If another player catches them not saying it before the next card is played, the offender must draw a penalty card (usually 1 or 2).",
+        sourceFields: [
+          'rules.keyRules.7',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'last-one.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'last-one.rules.objective',
+          'last-one.rules.gameplay',
+        ],
+      },
+      {
+        id: 'last-one.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'last-one.setup.players',
+          'last-one.setup.deck',
+          'last-one.setup.equipment',
+          'last-one.setup.dealing',
+        ],
+      },
+      {
+        id: 'last-one.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'last-one.rules.key.1',
+          'last-one.rules.key.2',
+          'last-one.rules.key.3',
+          'last-one.rules.key.4',
+          'last-one.rules.key.5',
+          'last-one.rules.key.6',
+          'last-one.rules.key.7',
+          'last-one.rules.key.8',
+        ],
+      },
+      {
+        id: 'last-one.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'last-one.score.description',
+          'last-one.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'last-one.setup.dealing',
+        'last-one.rules.objective',
+      ],
+      deal: [
+        'last-one.rules.gameplay',
+      ],
+      draw: [
+        'last-one.rules.gameplay',
+      ],
+      reveal: [
+        'last-one.rules.gameplay',
+      ],
+      play: [
+        'last-one.rules.gameplay',
+      ],
+      call_last_one: [
+        'last-one.rules.gameplay',
+      ],
+      win: [
+        'last-one.rules.gameplay',
+      ],
+      continue: [
+        'last-one.rules.gameplay',
+      ],
+    },
   },
 }

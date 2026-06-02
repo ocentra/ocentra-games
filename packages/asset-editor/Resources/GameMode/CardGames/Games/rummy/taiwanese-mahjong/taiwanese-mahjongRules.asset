@@ -52,10 +52,156 @@
       go_out: 'Hand must satisfy structure and scoring rules.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use draw, discard, meld, go_out before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Complete a legal winning hand and satisfy local scoring conditions.',
+      'Turn-flow example: Players draw and discard in turn. Claims for Chow, Pung, and Kong follow seat and priority constraints. Hand resolution occurs on legal complete structure and table-defined value acceptance.',
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'taiwanese-mahjong.rules.objective',
+        title: 'Objective',
+        text: 'Complete a legal winning hand and satisfy local scoring conditions.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'taiwanese-mahjong.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players draw and discard in turn. Claims for Chow, Pung, and Kong follow seat and priority constraints. Hand resolution occurs on legal complete structure and table-defined value acceptance.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'taiwanese-mahjong.setup.players',
+        title: 'Players',
+        text: '4 players seated by wind.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'taiwanese-mahjong.setup.deck',
+        title: 'Deck',
+        text: 'Standard Mahjong set including suited, honor, and bonus tiles.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'taiwanese-mahjong.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard Mahjong set including suited, honor, and bonus tiles.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'taiwanese-mahjong.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 13 tiles, with dealer receiving 14 to open play.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'taiwanese-mahjong.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'taiwanese-mahjong.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'taiwanese-mahjong.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Draw one and discard one in normal turn flow.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'taiwanese-mahjong.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Claim eligibility differs by meld type and seat relation.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'taiwanese-mahjong.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning requires valid structure and accepted table scoring.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'taiwanese-mahjong.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'taiwanese-mahjong.rules.objective',
+          'taiwanese-mahjong.rules.gameplay',
+        ],
+      },
+      {
+        id: 'taiwanese-mahjong.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'taiwanese-mahjong.setup.players',
+          'taiwanese-mahjong.setup.deck',
+          'taiwanese-mahjong.setup.equipment',
+          'taiwanese-mahjong.setup.dealing',
+        ],
+      },
+      {
+        id: 'taiwanese-mahjong.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'taiwanese-mahjong.rules.key.1',
+          'taiwanese-mahjong.rules.key.2',
+          'taiwanese-mahjong.rules.key.3',
+        ],
+      },
+      {
+        id: 'taiwanese-mahjong.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'taiwanese-mahjong.score.description',
+          'taiwanese-mahjong.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'taiwanese-mahjong.setup.dealing',
+        'taiwanese-mahjong.rules.objective',
+      ],
+      draw: [
+        'taiwanese-mahjong.rules.gameplay',
+      ],
+      discard: [
+        'taiwanese-mahjong.rules.gameplay',
+      ],
+      meld: [
+        'taiwanese-mahjong.rules.gameplay',
+      ],
+      go_out: [
+        'taiwanese-mahjong.rules.gameplay',
+      ],
+    },
   },
 }

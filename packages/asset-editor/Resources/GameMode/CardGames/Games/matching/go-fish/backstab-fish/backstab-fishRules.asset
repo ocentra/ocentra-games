@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Backstab Fish. Type: Collecting (Double Deck). Rules: 108 cards. Ask specific player for rank. Must hold at least one. If draw success, go again. 4 of a kind = 1 Book. Most Books wins.',
-    Player: "Welcome to Backstab Fish. You have a handful of cards and an Ocean of potential. Choose a victim and ask for a rank you hold. If they have it, it's yours. If they tell you to 'Go Fish', hope your luck holds in the deep.",
+    LLM: 'Play proceeds clockwise. On your turn you make an enquiry: name a specific opponent and ask for a specific number of cards of a rank of which you hold at least one (e.g. give me three sixes). If that player has the exact number requested, they hand over those cards and you get another turn. If they do not have enough cards of that rank (e.g. they only have two sixes), you draw one card from the stock (the Ocean) and your turn ends; the turn then passes to the player you asked. You are not required to lay down a complete set of four as soon as you have it; you may keep cards in hand to ask for more of that rank, but if you do not lay them down another player may ask you for them and take some or all away. Completed books may be laid face up. When the stock is empty and play finishes, the player with the most books wins.',
+    Player: 'Play proceeds clockwise. On your turn you make an enquiry: name a specific opponent and ask for a specific number of cards of a rank of which you hold at least one (e.g. give me three sixes). If that player has the exact number requested, they hand over those cards and you get another turn. If they do not have enough cards of that rank (e.g. they only have two sixes), you draw one card from the stock (the Ocean) and your turn ends; the turn then passes to the player you asked. You are not required to lay down a complete set of four as soon as you have it; you may keep cards in hand to ask for more of that rank, but if you do not lay them down another player may ask you for them and take some or all away. Completed books may be laid face up. When the stock is empty and play finishes, the player with the most books wins.',
     objective: "Collect the most 'Books' (sets of 4 cards of the same rank). Each Book is worth 1 point.",
     gameplay: 'Play proceeds clockwise. On your turn you make an enquiry: name a specific opponent and ask for a specific number of cards of a rank of which you hold at least one (e.g. give me three sixes). If that player has the exact number requested, they hand over those cards and you get another turn. If they do not have enough cards of that rank (e.g. they only have two sixes), you draw one card from the stock (the Ocean) and your turn ends; the turn then passes to the player you asked. You are not required to lay down a complete set of four as soon as you have it; you may keep cards in hand to ask for more of that rank, but if you do not lay them down another player may ask you for them and take some or all away. Completed books may be laid face up. When the stock is empty and play finishes, the player with the most books wins.',
     keyRules: [
@@ -52,10 +52,168 @@
       go_out: 'Game ends when stock is empty and play finishes; no go-out declaration.',
     },
     exampleHands: [
-      'Opening deal: 4-10 player(s), 7 card(s) per player, 2 deck(s), initial visibility face_up.',
-      'Opening flow: start in dealing; dealer may use deal_hand, create_stock before play_loop.',
-      'Scoring check: Simple tally of completed sets. Expected outcome: Highest number of books at the end of the stock..',
+      'Setup example: 7 card(s) per player.',
+      "Rule example: Collect the most 'Books' (sets of 4 cards of the same rank). Each Book is worth 1 point.",
+      'Turn-flow example: Play proceeds clockwise. On your turn you make an enquiry: name a specific opponent and ask for a specific number of cards of a rank of which you hold at least one (e.g. give me three sixes). If that player has the exact number requested, they hand over those cards and you get another turn. If they do not have enough cards of that rank (e.g. they only have two sixes), you draw one card from the stock (the Ocean) and your turn ends; the turn then passes to the player you asked. You are not required to lay down a complete set of four as soon as you have it; you may keep cards in hand to ask for more of that rank, but if you do not lay them down another player may ask you for them and take some or all away. Completed books may be laid face up. When the stock is empty and play finishes, the player with the most books wins.',
+      'Scoring example: Simple tally of completed sets. Highest number of books at the end of the stock..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'backstab-fish.rules.objective',
+        title: 'Objective',
+        text: "Collect the most 'Books' (sets of 4 cards of the same rank). Each Book is worth 1 point.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'backstab-fish.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Play proceeds clockwise. On your turn you make an enquiry: name a specific opponent and ask for a specific number of cards of a rank of which you hold at least one (e.g. give me three sixes). If that player has the exact number requested, they hand over those cards and you get another turn. If they do not have enough cards of that rank (e.g. they only have two sixes), you draw one card from the stock (the Ocean) and your turn ends; the turn then passes to the player you asked. You are not required to lay down a complete set of four as soon as you have it; you may keep cards in hand to ask for more of that rank, but if you do not lay them down another player may ask you for them and take some or all away. Completed books may be laid face up. When the stock is empty and play finishes, the player with the most books wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'backstab-fish.setup.players',
+        title: 'Players',
+        text: '4-10 players. Best with 5-7.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'backstab-fish.setup.deck',
+        title: 'Deck',
+        text: 'Two identical 52-card decks + 4 Jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'backstab-fish.setup.equipment',
+        title: 'Equipment',
+        text: 'Comfortable seating where all players can be heard clearly.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'backstab-fish.setup.dealing',
+        title: 'Deal',
+        text: "For 4-6 players, deal 7 cards each. For 7-10 players, deal 5 cards each. The remainder forms the 'Ocean' (Stock).",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'backstab-fish.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest number of books at the end of the stock.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'backstab-fish.score.description',
+        title: 'Scoring',
+        text: 'Simple tally of completed sets.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'backstab-fish.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Completed Books must be played immediately face up.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'backstab-fish.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If a player runs out of cards, they draw a full hand from the stock (if available).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'backstab-fish.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Two decks mean there are EIGHT of every rank (two potential books per rank).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'backstab-fish.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'backstab-fish.rules.objective',
+          'backstab-fish.rules.gameplay',
+        ],
+      },
+      {
+        id: 'backstab-fish.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'backstab-fish.setup.players',
+          'backstab-fish.setup.deck',
+          'backstab-fish.setup.equipment',
+          'backstab-fish.setup.dealing',
+        ],
+      },
+      {
+        id: 'backstab-fish.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'backstab-fish.rules.key.1',
+          'backstab-fish.rules.key.2',
+          'backstab-fish.rules.key.3',
+        ],
+      },
+      {
+        id: 'backstab-fish.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'backstab-fish.score.description',
+          'backstab-fish.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'backstab-fish.setup.dealing',
+        'backstab-fish.rules.objective',
+      ],
+      deal: [
+        'backstab-fish.rules.gameplay',
+      ],
+      draw: [
+        'backstab-fish.rules.gameplay',
+      ],
+      deal_hand: [
+        'backstab-fish.rules.gameplay',
+      ],
+      create_stock: [
+        'backstab-fish.rules.gameplay',
+      ],
+      ask_player_for_rank: [
+        'backstab-fish.rules.gameplay',
+      ],
+      declare_book: [
+        'backstab-fish.rules.gameplay',
+      ],
+      draw_from_stock: [
+        'backstab-fish.rules.gameplay',
+      ],
+      tally_points: [
+        'backstab-fish.rules.gameplay',
+      ],
+    },
   },
 }

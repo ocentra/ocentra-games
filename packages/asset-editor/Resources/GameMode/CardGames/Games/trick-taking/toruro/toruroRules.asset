@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Toruro. Logic: See rules.objective and rules.gameplay.',
-    Player: "Toruro is a Spanish trick-taking gambling game for 5+ players using a 40-card Spanish deck. There are three pots (Cabeza, Barriga, Cola), one for each trick. Players decide whether to 'go' (ir) or pass, and those who go must win at least one trick or pay a penalty (Lulo). The card ranking features the unusual A-3-K order common in L'Hombre games.",
+    LLM: '1. Deal 3 cards + 1 trump indicator. 2. Declare: Ir (go) or pass. Must win 1+ trick if going. 3. Exchange cards (0-3). If exchanging 3, get 4 and keep best 3. 4. Play 3 tricks. Follow suit. Must trump if void. 5. First trick: Must lead Ace of trumps if held. 6. Second trick: Must lead highest trump.',
+    Player: '1. Deal 3 cards + 1 trump indicator. 2. Declare: Ir (go) or pass. Must win 1+ trick if going. 3. Exchange cards (0-3). If exchanging 3, get 4 and keep best 3. 4. Play 3 tricks. Follow suit. Must trump if void. 5. First trick: Must lead Ace of trumps if held. 6. Second trick: Must lead highest trump.',
     objective: 'Win tricks to claim the three pots (Cabeza, Barriga, Cola); players who go must win at least one trick or pay a lulo penalty.',
     gameplay: '1. Deal 3 cards + 1 trump indicator. 2. Declare: Ir (go) or pass. Must win 1+ trick if going. 3. Exchange cards (0-3). If exchanging 3, get 4 and keep best 3. 4. Play 3 tricks. Follow suit. Must trump if void. 5. First trick: Must lead Ace of trumps if held. 6. Second trick: Must lead highest trump.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Each trick wins its corresponding pot. Lulo penalty if going but winning zero tricks. Expected outcome: Win tricks to claim pots (Cabeza, Barriga, Cola)..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win tricks to claim the three pots (Cabeza, Barriga, Cola); players who go must win at least one trick or pay a lulo penalty.',
+      'Turn-flow example: 1. Deal 3 cards + 1 trump indicator. 2. Declare: Ir (go) or pass. Must win 1+ trick if going. 3. Exchange cards (0-3). If exchanging 3, get 4 and keep best 3. 4. Play 3 tricks. Follow suit. Must trump if void. 5. First trick: Must lead Ace of trumps if held. 6. Second trick: Must lead highest trump.',
+      'Scoring example: Each trick wins its corresponding pot. Lulo penalty if going but winning zero tricks. Win tricks to claim pots (Cabeza, Barriga, Cola)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'toruro.rules.objective',
+        title: 'Objective',
+        text: 'Win tricks to claim the three pots (Cabeza, Barriga, Cola); players who go must win at least one trick or pay a lulo penalty.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'toruro.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Deal 3 cards + 1 trump indicator. 2. Declare: Ir (go) or pass. Must win 1+ trick if going. 3. Exchange cards (0-3). If exchanging 3, get 4 and keep best 3. 4. Play 3 tricks. Follow suit. Must trump if void. 5. First trick: Must lead Ace of trumps if held. 6. Second trick: Must lead highest trump.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'toruro.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'toruro.setup.deck',
+        title: 'Deck',
+        text: '40 cards. Rank: A-3-K-Kt-J-7-6-5-4-2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'toruro.setup.equipment',
+        title: 'Equipment',
+        text: 'Chips/counters for 3 pots',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'toruro.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 3 cards. Turn 1 card for trump.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'toruro.score.win-condition',
+        title: 'Win condition',
+        text: 'Win tricks to claim pots (Cabeza, Barriga, Cola).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'toruro.score.description',
+        title: 'Scoring',
+        text: 'Each trick wins its corresponding pot. Lulo penalty if going but winning zero tricks.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'toruro.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Three pots for three tricks',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'toruro.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Ir/Pass decision',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'toruro.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Must win 1+ trick if going (Lulo)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'toruro.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Lead restrictions on tricks 1 and 2',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'toruro.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'toruro.rules.objective',
+          'toruro.rules.gameplay',
+        ],
+      },
+      {
+        id: 'toruro.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'toruro.setup.players',
+          'toruro.setup.deck',
+          'toruro.setup.equipment',
+          'toruro.setup.dealing',
+        ],
+      },
+      {
+        id: 'toruro.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'toruro.rules.key.1',
+          'toruro.rules.key.2',
+          'toruro.rules.key.3',
+          'toruro.rules.key.4',
+        ],
+      },
+      {
+        id: 'toruro.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'toruro.score.description',
+          'toruro.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'toruro.setup.dealing',
+        'toruro.rules.objective',
+      ],
+      play_card: [
+        'toruro.rules.gameplay',
+      ],
+    },
   },
 }

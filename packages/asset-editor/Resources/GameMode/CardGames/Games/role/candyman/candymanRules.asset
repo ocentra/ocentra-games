@@ -55,10 +55,174 @@
       go_out: 'Round ends when Cop busts Candyman or all Buyers bought.',
     },
     exampleHands: [
-      'Opening deal: 4-10 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points per role: Candyman for sales, Buyers for buying, Cop for correct bust. Wrong bust loses Cop points. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Candyman: Sell candy to as many Buyers as possible without being caught. Buyers: Successfully buy candy by receiving a wink from the Candyman. Cop: Identify and expose the Candyman before all Buyers complete their purchases.',
+      "Turn-flow example: All players look around at each other. The Candyman secretly winks at Buyers to make deals. When a Buyer is winked at, they reveal their card, say 'Sold!' (or 'The deal has been made!'), and retire from the round. They must NOT reveal who the Candyman is. The Cop watches for who is winking. When the Cop thinks they know who the Candyman is, they say 'busted' and point at the accused. The accused reveals their card. If correct (Ace), round ends. If wrong (Buyer), round continues - but now everyone knows who the Cop is. Alternative signals: If winking is difficult, players can agree on another signal like tapping the face.",
+      'Scoring example: Points per role: Candyman for sales, Buyers for buying, Cop for correct bust. Wrong bust loses Cop points. After multiple rounds, highest total score wins. Role objectives: Candyman sell, Buyers buy, Cop bust Candyman..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'candyman.rules.objective',
+        title: 'Objective',
+        text: 'Candyman: Sell candy to as many Buyers as possible without being caught. Buyers: Successfully buy candy by receiving a wink from the Candyman. Cop: Identify and expose the Candyman before all Buyers complete their purchases.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'candyman.rules.gameplay',
+        title: 'Turn flow',
+        text: "All players look around at each other. The Candyman secretly winks at Buyers to make deals. When a Buyer is winked at, they reveal their card, say 'Sold!' (or 'The deal has been made!'), and retire from the round. They must NOT reveal who the Candyman is. The Cop watches for who is winking. When the Cop thinks they know who the Candyman is, they say 'busted' and point at the accused. The accused reveals their card. If correct (Ace), round ends. If wrong (Buyer), round continues - but now everyone knows who the Cop is. Alternative signals: If winking is difficult, players can agree on another signal like tapping the face.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'candyman.setup.players',
+        title: 'Players',
+        text: '4+ players (best with 6-10). No partnerships - each player has individual objectives based on their secret role.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'candyman.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack using only: 1 Ace (Candyman), 1 King (Cop), and numeral cards (2-10) equal to remaining player count. Total cards = number of players.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'candyman.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck of cards, score sheet for tracking points across rounds',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'candyman.setup.dealing',
+        title: 'Deal',
+        text: 'Shuffle the selected cards (1 Ace, 1 King, numeral cards for remaining players). Each player draws one card and looks at it secretly. Do not reveal cards to other players. Ace = Candyman, King = Cop, Numeral = Buyer.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'candyman.score.win-condition',
+        title: 'Win condition',
+        text: 'After multiple rounds, highest total score wins. Role objectives: Candyman sell, Buyers buy, Cop bust Candyman.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'candyman.score.description',
+        title: 'Scoring',
+        text: 'Points per role: Candyman for sales, Buyers for buying, Cop for correct bust. Wrong bust loses Cop points.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'candyman.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Only the Candyman can wink (or use agreed signal)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'candyman.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Buyers who complete a deal reveal their card and retire',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'candyman.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Buyers must NOT reveal who the Candyman is',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'candyman.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Cop can make multiple accusations but loses points for wrong ones',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'candyman.rules.key.5',
+        title: 'Key rule 5',
+        text: 'After first wrong accusation, everyone knows who the Cop is',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'candyman.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Round ends when Candyman is busted OR all Buyers have bought',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'candyman.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'candyman.rules.objective',
+          'candyman.rules.gameplay',
+        ],
+      },
+      {
+        id: 'candyman.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'candyman.setup.players',
+          'candyman.setup.deck',
+          'candyman.setup.equipment',
+          'candyman.setup.dealing',
+        ],
+      },
+      {
+        id: 'candyman.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'candyman.rules.key.1',
+          'candyman.rules.key.2',
+          'candyman.rules.key.3',
+          'candyman.rules.key.4',
+          'candyman.rules.key.5',
+          'candyman.rules.key.6',
+        ],
+      },
+      {
+        id: 'candyman.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'candyman.score.description',
+          'candyman.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'candyman.setup.dealing',
+        'candyman.rules.objective',
+      ],
+      play_card: [
+        'candyman.rules.gameplay',
+      ],
+    },
   },
 }

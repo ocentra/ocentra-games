@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 52 Pick-up. Logic: See rules.objective and rules.gameplay.',
-    Player: '52 Pick-up is a social prank using a standard pack: one player offers a game, scatters the cards, and the other player is left to pick them up. It is recorded as a social card-game joke rather than a strategic contest.',
+    LLM: 'Players receive hidden role cards. Night phases allow werewolves and special roles to act, while day phases use discussion, accusation, and voting to eliminate suspected opponents.',
+    Player: 'Players receive hidden role cards. Night phases allow werewolves and special roles to act, while day phases use discussion, accusation, and voting to eliminate suspected opponents.',
     objective: 'Villagers try to identify and eliminate werewolves; werewolves try to survive and overpower the village.',
     gameplay: 'Players receive hidden role cards. Night phases allow werewolves and special roles to act, while day phases use discussion, accusation, and voting to eliminate suspected opponents.',
     keyRules: [
@@ -52,10 +52,150 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 5-5 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: No scoring; the activity ends when the deck has been picked up. Expected outcome: 1.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Villagers try to identify and eliminate werewolves; werewolves try to survive and overpower the village.',
+      'Turn-flow example: Players receive hidden role cards. Night phases allow werewolves and special roles to act, while day phases use discussion, accusation, and voting to eliminate suspected opponents.',
+      'Scoring example: No scoring; the activity ends when the deck has been picked up. No formal winner is defined..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'ultimate-werewolf.rules.objective',
+        title: 'Objective',
+        text: 'Villagers try to identify and eliminate werewolves; werewolves try to survive and overpower the village.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'ultimate-werewolf.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players receive hidden role cards. Night phases allow werewolves and special roles to act, while day phases use discussion, accusation, and voting to eliminate suspected opponents.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'ultimate-werewolf.setup.players',
+        title: 'Players',
+        text: '5 or more players use the table arrangement described for Ultimate Werewolf.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'ultimate-werewolf.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Ultimate Werewolf role cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'ultimate-werewolf.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Ultimate Werewolf role cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'ultimate-werewolf.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Ultimate Werewolf role cards and deal or lay out cards according to the documented Ultimate Werewolf rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'ultimate-werewolf.score.win-condition',
+        title: 'Win condition',
+        text: 'No formal winner is defined.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'ultimate-werewolf.score.description',
+        title: 'Scoring',
+        text: 'No scoring; the activity ends when the deck has been picked up.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'ultimate-werewolf.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Players have hidden role cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'ultimate-werewolf.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Night and day phases alternate.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'ultimate-werewolf.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Team victory depends on eliminating or outnumbering the opposing faction.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'ultimate-werewolf.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'ultimate-werewolf.rules.objective',
+          'ultimate-werewolf.rules.gameplay',
+        ],
+      },
+      {
+        id: 'ultimate-werewolf.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'ultimate-werewolf.setup.players',
+          'ultimate-werewolf.setup.deck',
+          'ultimate-werewolf.setup.equipment',
+          'ultimate-werewolf.setup.dealing',
+        ],
+      },
+      {
+        id: 'ultimate-werewolf.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'ultimate-werewolf.rules.key.1',
+          'ultimate-werewolf.rules.key.2',
+          'ultimate-werewolf.rules.key.3',
+        ],
+      },
+      {
+        id: 'ultimate-werewolf.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'ultimate-werewolf.score.description',
+          'ultimate-werewolf.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'ultimate-werewolf.setup.dealing',
+        'ultimate-werewolf.rules.objective',
+      ],
+      play_card: [
+        'ultimate-werewolf.rules.gameplay',
+      ],
+      flip_top_card: [
+        'ultimate-werewolf.rules.gameplay',
+      ],
+    },
   },
 }

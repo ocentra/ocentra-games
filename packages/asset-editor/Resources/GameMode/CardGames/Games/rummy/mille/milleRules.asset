@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 500 Rummy. Logic: See rules.objective and rules.gameplay.',
-    Player: '500 Rummy: first to 500 points wins. Melds (sets and runs) score positive; unmelded cards in hand count negative. Key twist: you may draw any card from the discard pile but must take all cards above it and meld the drawn card immediately. 2-8 players; 52 cards plus 2 jokers.',
+    LLM: 'Deal fifteen cards to each player, turn one card to start the pack, and let players draw from stock or pick up the pack when they can immediately meld the required pair with the top discard. Melds are three or more cards of the same rank, and the discard pack can grow into a major tactical resource.',
+    Player: 'Deal fifteen cards to each player, turn one card to start the pack, and let players draw from stock or pick up the pack when they can immediately meld the required pair with the top discard. Melds are three or more cards of the same rank, and the discard pack can grow into a major tactical resource.',
     objective: "Score through melds while managing the discard pack and meeting the game's point target.",
     gameplay: 'Deal fifteen cards to each player, turn one card to start the pack, and let players draw from stock or pick up the pack when they can immediately meld the required pair with the top discard. Melds are three or more cards of the same rank, and the discard pack can grow into a major tactical resource.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Melds score positive (face value; jokers 0 or as specified); unmelded in hand negative. First to 500 wins. Expected outcome: 500.',
+      'Setup example: 5 card(s) per player.',
+      "Rule example: Score through melds while managing the discard pack and meeting the game's point target.",
+      'Turn-flow example: Deal fifteen cards to each player, turn one card to start the pack, and let players draw from stock or pick up the pack when they can immediately meld the required pair with the top discard. Melds are three or more cards of the same rank, and the discard pack can grow into a major tactical resource.',
+      'Scoring example: Melds score positive (face value; jokers 0 or as specified); unmelded in hand negative. First to 500 wins. First to 500 points wins. Melds (sets and runs) score positive; unmelded cards in hand count negative. You may take any card from the discard pile but must take all cards above it and meld the drawn card immediately..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'mille.rules.objective',
+        title: 'Objective',
+        text: "Score through melds while managing the discard pack and meeting the game's point target.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mille.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Deal fifteen cards to each player, turn one card to start the pack, and let players draw from stock or pick up the pack when they can immediately meld the required pair with the top discard. Melds are three or more cards of the same rank, and the discard pack can grow into a major tactical resource.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mille.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Mille.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mille.setup.deck',
+        title: 'Deck',
+        text: 'Two standard 52-card decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mille.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard 52-card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mille.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Two standard 52-card decks and deal or lay out cards according to the documented Mille rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mille.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 500 points wins. Melds (sets and runs) score positive; unmelded cards in hand count negative. You may take any card from the discard pile but must take all cards above it and meld the drawn card immediately.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mille.score.description',
+        title: 'Scoring',
+        text: 'Melds score positive (face value; jokers 0 or as specified); unmelded in hand negative. First to 500 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mille.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Only same-rank melds of three or more cards are legal.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'mille.rules.key.2',
+        title: 'Key rule 2',
+        text: 'A player who picks up the pack must immediately meld using the top discard.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'mille.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The game uses two full standard decks.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mille.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mille.rules.objective',
+          'mille.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mille.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mille.setup.players',
+          'mille.setup.deck',
+          'mille.setup.equipment',
+          'mille.setup.dealing',
+        ],
+      },
+      {
+        id: 'mille.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mille.rules.key.1',
+          'mille.rules.key.2',
+          'mille.rules.key.3',
+        ],
+      },
+      {
+        id: 'mille.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mille.score.description',
+          'mille.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mille.setup.dealing',
+        'mille.rules.objective',
+      ],
+      play_card: [
+        'mille.rules.gameplay',
+      ],
+    },
   },
 }

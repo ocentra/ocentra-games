@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: London Lowball. Seven Card Stud Lowball, Pot-Limit. 2-8 players. 2 down, 1 up initially; 4th-6th up, 7th down. Highest door card brings in. Lowest hand acts first. Ace-to-five lowball: A-2-3-4-5 best. Straights/flushes don't count. Pairs are bad. Best 5 of 7 cards play.",
-    Player: "Welcome to London Lowball! This is Seven Card Stud where the LOWEST hand wins. A-2-3-4-5 (the Wheel) is the absolute nutsâ€”straights and flushes don't count against you. Highest card on board pays the bring-in, then lowest hand acts first. It's Pot-Limit, so be carefulâ€”those bets can escalate quickly!",
+    LLM: "1. **Bring-In**: The player with the HIGHEST door card (1st up card) must pay a mandatory bring-in bet. 2. **Betting Rounds**: Five rounds of betting (starting after 3rd street). 3. **Showdown**: Players reveal 7 cards; best 5-card 'Low' hand wins.",
+    Player: "1. **Bring-In**: The player with the HIGHEST door card (1st up card) must pay a mandatory bring-in bet. 2. **Betting Rounds**: Five rounds of betting (starting after 3rd street). 3. **Showdown**: Players reveal 7 cards; best 5-card 'Low' hand wins.",
     objective: 'Form the lowest possible 5-card hand. Straights and Flushes ARE NOT counted (California/A-5 Lowball rules).',
     gameplay: "1. **Bring-In**: The player with the HIGHEST door card (1st up card) must pay a mandatory bring-in bet. 2. **Betting Rounds**: Five rounds of betting (starting after 3rd street). 3. **Showdown**: Players reveal 7 cards; best 5-card 'Low' hand wins.",
     keyRules: [
@@ -56,10 +56,210 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; current_player may use ante before deal.',
-      'Scoring check: Ace-to-five lowball hand ranking. The wheel (A-2-3-4-5) is the nuts. Expected outcome: Lowest qualifying 5-card hand wins the pot..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Form the lowest possible 5-card hand. Straights and Flushes ARE NOT counted (California/A-5 Lowball rules).',
+      "Turn-flow example: 1. **Bring-In**: The player with the HIGHEST door card (1st up card) must pay a mandatory bring-in bet. 2. **Betting Rounds**: Five rounds of betting (starting after 3rd street). 3. **Showdown**: Players reveal 7 cards; best 5-card 'Low' hand wins.",
+      'Scoring example: Ace-to-five lowball hand ranking. The wheel (A-2-3-4-5) is the nuts. Lowest qualifying 5-card hand wins the pot..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'london-lowball.rules.objective',
+        title: 'Objective',
+        text: 'Form the lowest possible 5-card hand. Straights and Flushes ARE NOT counted (California/A-5 Lowball rules).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'london-lowball.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Bring-In**: The player with the HIGHEST door card (1st up card) must pay a mandatory bring-in bet. 2. **Betting Rounds**: Five rounds of betting (starting after 3rd street). 3. **Showdown**: Players reveal 7 cards; best 5-card 'Low' hand wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'london-lowball.setup.players',
+        title: 'Players',
+        text: 'Best with 6-8 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'london-lowball.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. No Jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'london-lowball.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, poker chips, dealer button.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'london-lowball.setup.dealing',
+        title: 'Deal',
+        text: 'Two cards face-down, one card face-up to begin. Subsequent rounds follow the 7-card stud pattern (4th, 5th, 6th streets up, 7th street down).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'london-lowball.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest qualifying 5-card hand wins the pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'london-lowball.score.description',
+        title: 'Scoring',
+        text: 'Ace-to-five lowball hand ranking. The wheel (A-2-3-4-5) is the nuts.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'london-lowball.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Ace-to-Five lowball ranking: A-2-3-4-5 (Wheel) is best hand.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'london-lowball.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Aces always low.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'london-lowball.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Straights and flushes do not count against player.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'london-lowball.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Highest door card pays bring-in (Ace is low, so King is worst).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'london-lowball.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Pairs are badâ€”any no-pair hand beats any paired hand.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'london-lowball.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Compare highest cards first when ranking hands.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'london-lowball.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Traditionally played Pot-Limit.',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'london-lowball.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'london-lowball.rules.objective',
+          'london-lowball.rules.gameplay',
+        ],
+      },
+      {
+        id: 'london-lowball.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'london-lowball.setup.players',
+          'london-lowball.setup.deck',
+          'london-lowball.setup.equipment',
+          'london-lowball.setup.dealing',
+        ],
+      },
+      {
+        id: 'london-lowball.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'london-lowball.rules.key.1',
+          'london-lowball.rules.key.2',
+          'london-lowball.rules.key.3',
+          'london-lowball.rules.key.4',
+          'london-lowball.rules.key.5',
+          'london-lowball.rules.key.6',
+          'london-lowball.rules.key.7',
+        ],
+      },
+      {
+        id: 'london-lowball.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'london-lowball.score.description',
+          'london-lowball.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'london-lowball.setup.dealing',
+        'london-lowball.rules.objective',
+      ],
+      ante: [
+        'london-lowball.rules.gameplay',
+      ],
+      deal: [
+        'london-lowball.rules.gameplay',
+      ],
+      fold: [
+        'london-lowball.rules.gameplay',
+      ],
+      check: [
+        'london-lowball.rules.gameplay',
+      ],
+      call: [
+        'london-lowball.rules.gameplay',
+      ],
+      bet: [
+        'london-lowball.rules.gameplay',
+      ],
+      raise: [
+        'london-lowball.rules.gameplay',
+      ],
+      reveal_hand: [
+        'london-lowball.rules.gameplay',
+      ],
+      bring_in: [
+        'london-lowball.rules.gameplay',
+      ],
+      reveal: [
+        'london-lowball.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Flower Garden. Logic: Build all cards from the bouquet layout and reserve garden onto the foundations by suit.',
-    Player: 'Flower Garden, also known as The Bouquet or The Garden, is an old one-deck Fan-family patience with a reserve garden and foundations.',
+    LLM: 'Move exposed cards through the tableau, reserve, stock, waste, or foundations according to the layout rules until all cards are cleared or the position blocks.',
+    Player: 'Move exposed cards through the tableau, reserve, stock, waste, or foundations according to the layout rules until all cards are cleared or the position blocks.',
     objective: 'Build all cards from the bouquet layout and reserve garden onto the foundations by suit.',
     gameplay: 'Move exposed cards through the tableau, reserve, stock, waste, or foundations according to the layout rules until all cards are cleared or the position blocks.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: The game is won when the patience objective is completed. Expected outcome: Build all cards from the bouquet layout and reserve garden onto the foundations by suit..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Build all cards from the bouquet layout and reserve garden onto the foundations by suit.',
+      'Turn-flow example: Move exposed cards through the tableau, reserve, stock, waste, or foundations according to the layout rules until all cards are cleared or the position blocks.',
+      'Scoring example: The game is won when the patience objective is completed. Build all cards from the bouquet layout and reserve garden onto the foundations by suit..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'flower-garden.rules.objective',
+        title: 'Objective',
+        text: 'Build all cards from the bouquet layout and reserve garden onto the foundations by suit.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'flower-garden.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Move exposed cards through the tableau, reserve, stock, waste, or foundations according to the layout rules until all cards are cleared or the position blocks.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'flower-garden.setup.players',
+        title: 'Players',
+        text: '1 players use the table arrangement described for Flower Garden.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'flower-garden.setup.deck',
+        title: 'Deck',
+        text: '52-card standard pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'flower-garden.setup.equipment',
+        title: 'Equipment',
+        text: '52-card standard pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'flower-garden.setup.dealing',
+        title: 'Deal',
+        text: 'Lay out Flower Garden according to its patience tableau, reserve, stock, or foundation structure before beginning play.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'flower-garden.score.win-condition',
+        title: 'Win condition',
+        text: 'Build all cards from the bouquet layout and reserve garden onto the foundations by suit.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'flower-garden.score.description',
+        title: 'Scoring',
+        text: 'The game is won when the patience objective is completed.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'flower-garden.rules.key.1',
+        title: 'Key rule 1',
+        text: 'One-player patience game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'flower-garden.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Uses a fixed tableau or layout.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'flower-garden.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Foundations or discard goals define progress.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'flower-garden.rules.key.4',
+        title: 'Key rule 4',
+        text: 'The main puzzle is preserving access to blocked cards.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'flower-garden.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'flower-garden.rules.objective',
+          'flower-garden.rules.gameplay',
+        ],
+      },
+      {
+        id: 'flower-garden.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'flower-garden.setup.players',
+          'flower-garden.setup.deck',
+          'flower-garden.setup.equipment',
+          'flower-garden.setup.dealing',
+        ],
+      },
+      {
+        id: 'flower-garden.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'flower-garden.rules.key.1',
+          'flower-garden.rules.key.2',
+          'flower-garden.rules.key.3',
+          'flower-garden.rules.key.4',
+        ],
+      },
+      {
+        id: 'flower-garden.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'flower-garden.score.description',
+          'flower-garden.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'flower-garden.setup.dealing',
+        'flower-garden.rules.objective',
+      ],
+      deal: [
+        'flower-garden.rules.gameplay',
+      ],
+      play_card: [
+        'flower-garden.rules.gameplay',
+      ],
+      draw: [
+        'flower-garden.rules.gameplay',
+      ],
+    },
   },
 }

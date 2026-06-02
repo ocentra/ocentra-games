@@ -52,10 +52,147 @@
       go_out: 'Hand-end detection is round logic.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be first to empty your hand, or finish with the lowest remaining pip burden if play blocks.',
+      "Turn-flow example: A starting tile opens the layout. On turn, a player places one legal matching tile to an open end. If no legal play exists, the player follows the table's draw-or-pass rule. The deal ends when a player goes out or all players are blocked.",
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'dancing-dragons.rules.objective',
+        title: 'Objective',
+        text: 'Be first to empty your hand, or finish with the lowest remaining pip burden if play blocks.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'dancing-dragons.rules.gameplay',
+        title: 'Turn flow',
+        text: "A starting tile opens the layout. On turn, a player places one legal matching tile to an open end. If no legal play exists, the player follows the table's draw-or-pass rule. The deal ends when a player goes out or all players are blocked.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'dancing-dragons.setup.players',
+        title: 'Players',
+        text: '2 to 4 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'dancing-dragons.setup.deck',
+        title: 'Deck',
+        text: 'One Chinese domino set of 32 tiles.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'dancing-dragons.setup.equipment',
+        title: 'Equipment',
+        text: 'Chinese domino tiles and table space for a line layout.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'dancing-dragons.setup.dealing',
+        title: 'Deal',
+        text: 'Deal tiles evenly to players according to table convention; remaining tiles can be boneyard if used by local rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'dancing-dragons.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'dancing-dragons.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'dancing-dragons.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Play one legal matching tile to an open end each turn.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'dancing-dragons.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If blocked, follow draw-or-pass procedure defined by table rules.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'dancing-dragons.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Deal ends on first empty hand or complete block.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'dancing-dragons.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'dancing-dragons.rules.objective',
+          'dancing-dragons.rules.gameplay',
+        ],
+      },
+      {
+        id: 'dancing-dragons.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'dancing-dragons.setup.players',
+          'dancing-dragons.setup.deck',
+          'dancing-dragons.setup.equipment',
+          'dancing-dragons.setup.dealing',
+        ],
+      },
+      {
+        id: 'dancing-dragons.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'dancing-dragons.rules.key.1',
+          'dancing-dragons.rules.key.2',
+          'dancing-dragons.rules.key.3',
+        ],
+      },
+      {
+        id: 'dancing-dragons.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'dancing-dragons.score.description',
+          'dancing-dragons.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'dancing-dragons.setup.dealing',
+        'dancing-dragons.rules.objective',
+      ],
+      play_card: [
+        'dancing-dragons.rules.gameplay',
+      ],
+    },
   },
 }

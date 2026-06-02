@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Catch the Ten. Logic: Win valuable point cards in tricks, especially the ten that gives the game its name.',
-    Player: 'Catch the Ten is an eighteenth-century Scottish point-trick ace-ten game, also called Scots Whist or Scotch Whist.',
+    LLM: 'Players follow suit when able. The highest trump or highest card of the led suit wins the trick, and captured card points decide the hand.',
+    Player: 'Players follow suit when able. The highest trump or highest card of the led suit wins the trick, and captured card points decide the hand.',
     objective: 'Win valuable point cards in tricks, especially the ten that gives the game its name.',
     gameplay: 'Players follow suit when able. The highest trump or highest card of the led suit wins the trick, and captured card points decide the hand.',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Players score by card points captured in tricks. Expected outcome: Win valuable point cards in tricks, especially the ten that gives the game its name..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win valuable point cards in tricks, especially the ten that gives the game its name.',
+      'Turn-flow example: Players follow suit when able. The highest trump or highest card of the led suit wins the trick, and captured card points decide the hand.',
+      'Scoring example: Players score by card points captured in tricks. Win valuable point cards in tricks, especially the ten that gives the game its name..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'catch-the-ten.rules.objective',
+        title: 'Objective',
+        text: 'Win valuable point cards in tricks, especially the ten that gives the game its name.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'catch-the-ten.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players follow suit when able. The highest trump or highest card of the led suit wins the trick, and captured card points decide the hand.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'catch-the-ten.setup.players',
+        title: 'Players',
+        text: '2-8 players use the table arrangement described for Catch the Ten.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'catch-the-ten.setup.deck',
+        title: 'Deck',
+        text: '36-card French-suited pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'catch-the-ten.setup.equipment',
+        title: 'Equipment',
+        text: '36-card French-suited pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'catch-the-ten.setup.dealing',
+        title: 'Deal',
+        text: 'Deal from a 36-card French pack and determine trumps for the hand.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'catch-the-ten.score.win-condition',
+        title: 'Win condition',
+        text: 'Win valuable point cards in tricks, especially the ten that gives the game its name.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'catch-the-ten.score.description',
+        title: 'Scoring',
+        text: 'Players score by card points captured in tricks.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'catch-the-ten.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two to eight players.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'catch-the-ten.rules.key.2',
+        title: 'Key rule 2',
+        text: '36-card pack.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'catch-the-ten.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trump jack ranks highest in trumps.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'catch-the-ten.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Aces and tens are key point cards.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'catch-the-ten.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Captured point cards decide the score.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'catch-the-ten.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'catch-the-ten.rules.objective',
+          'catch-the-ten.rules.gameplay',
+        ],
+      },
+      {
+        id: 'catch-the-ten.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'catch-the-ten.setup.players',
+          'catch-the-ten.setup.deck',
+          'catch-the-ten.setup.equipment',
+          'catch-the-ten.setup.dealing',
+        ],
+      },
+      {
+        id: 'catch-the-ten.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'catch-the-ten.rules.key.1',
+          'catch-the-ten.rules.key.2',
+          'catch-the-ten.rules.key.3',
+          'catch-the-ten.rules.key.4',
+          'catch-the-ten.rules.key.5',
+        ],
+      },
+      {
+        id: 'catch-the-ten.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'catch-the-ten.score.description',
+          'catch-the-ten.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'catch-the-ten.setup.dealing',
+        'catch-the-ten.rules.objective',
+      ],
+      play_card: [
+        'catch-the-ten.rules.gameplay',
+      ],
+      discard: [
+        'catch-the-ten.rules.gameplay',
+      ],
+      pass: [
+        'catch-the-ten.rules.gameplay',
+      ],
+      bid: [
+        'catch-the-ten.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,7 +10,7 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Bingo (Dominoes). 28 tiles (double-6). 2 players. Trick-taking. Blanks are trump; double-blank (Bingo) is highest. Tile point values: doubles worth pip total, others 0 or pip of non-blank end. Win 70+ points in tricks, then claim. Game points: 1/2/3 based on loser's score. Match to 7 game points.",
+    LLM: "1. **Start**: The first tile played determines the trump suit (Blanks). 2. **Tricks**: Players play one tile each. Highest trump wins; if no trump, highest card of led suit wins. 3. **The Draw**: While the stock exists, players draw one tile after each trick. 4. **Trump**: The double-blank (Bingo) is the highest trump, followed by other tiles with blanks. 5. **Closing**: A player may 'close the stock' to stop drawing and force strict suit-following.",
     Player: "1. **Start**: The first tile played determines the trump suit (Blanks). 2. **Tricks**: Players play one tile each. Highest trump wins; if no trump, highest card of led suit wins. 3. **The Draw**: While the stock exists, players draw one tile after each trick. 4. **Trump**: The double-blank (Bingo) is the highest trump, followed by other tiles with blanks. 5. **Closing**: A player may 'close the stock' to stop drawing and force strict suit-following.",
     objective: 'Win tricks worth at least 70 points to win the deal and accumulate 7 game points to win the match.',
     gameplay: "1. **Start**: The first tile played determines the trump suit (Blanks). 2. **Tricks**: Players play one tile each. Highest trump wins; if no trump, highest card of led suit wins. 3. **The Draw**: While the stock exists, players draw one tile after each trick. 4. **Trump**: The double-blank (Bingo) is the highest trump, followed by other tiles with blanks. 5. **Closing**: A player may 'close the stock' to stop drawing and force strict suit-following.",
@@ -53,10 +53,174 @@
       go_out: 'Winning occurrs through the 70-point claim rather than a separate go-out engine action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in dealing; system may use draw_7 before play_loop.',
-      'Scoring check: Win tricks worth at least 70 points. Game points: 1 (loser has 30+), 2 (loser has <30), 3 (loser won 0 tricks). Match to 7 game points. Expected outcome: 7.',
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Win tricks worth at least 70 points to win the deal and accumulate 7 game points to win the match.',
+      "Turn-flow example: 1. **Start**: The first tile played determines the trump suit (Blanks). 2. **Tricks**: Players play one tile each. Highest trump wins; if no trump, highest card of led suit wins. 3. **The Draw**: While the stock exists, players draw one tile after each trick. 4. **Trump**: The double-blank (Bingo) is the highest trump, followed by other tiles with blanks. 5. **Closing**: A player may 'close the stock' to stop drawing and force strict suit-following.",
+      'Scoring example: Win tricks worth at least 70 points. Game points: 1 (loser has 30+), 2 (loser has <30), 3 (loser won 0 tricks). Match to 7 game points. First to 7 game points across multiple deals..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'bingo-dominoes.rules.objective',
+        title: 'Objective',
+        text: 'Win tricks worth at least 70 points to win the deal and accumulate 7 game points to win the match.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bingo-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Start**: The first tile played determines the trump suit (Blanks). 2. **Tricks**: Players play one tile each. Highest trump wins; if no trump, highest card of led suit wins. 3. **The Draw**: While the stock exists, players draw one tile after each trick. 4. **Trump**: The double-blank (Bingo) is the highest trump, followed by other tiles with blanks. 5. **Closing**: A player may 'close the stock' to stop drawing and force strict suit-following.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bingo-dominoes.setup.players',
+        title: 'Players',
+        text: 'Exactly 2 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bingo-dominoes.setup.deck',
+        title: 'Deck',
+        text: 'Standard double-six domino set (28 tiles).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bingo-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bingo-dominoes.setup.dealing',
+        title: 'Deal',
+        text: 'Tiles are shuffled face-down. Each player draws 7 tiles. The remaining 14 tiles form the face-down stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bingo-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 7 game points across multiple deals.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bingo-dominoes.score.description',
+        title: 'Scoring',
+        text: 'Win tricks worth at least 70 points. Game points: 1 (loser has 30+), 2 (loser has <30), 3 (loser won 0 tricks). Match to 7 game points.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bingo-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The double-blank (Bingo) tile beats all other tiles.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bingo-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Any tile with a blank end counts as a trump.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bingo-dominoes.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Suit-following is only mandatory after the stock is closed or empty.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'bingo-dominoes.rules.key.4',
+        title: 'Key rule 4',
+        text: 'You must actively claim victory once you reach 70 points.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bingo-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bingo-dominoes.rules.objective',
+          'bingo-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bingo-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bingo-dominoes.setup.players',
+          'bingo-dominoes.setup.deck',
+          'bingo-dominoes.setup.equipment',
+          'bingo-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: 'bingo-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bingo-dominoes.rules.key.1',
+          'bingo-dominoes.rules.key.2',
+          'bingo-dominoes.rules.key.3',
+          'bingo-dominoes.rules.key.4',
+        ],
+      },
+      {
+        id: 'bingo-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bingo-dominoes.score.description',
+          'bingo-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bingo-dominoes.setup.dealing',
+        'bingo-dominoes.rules.objective',
+      ],
+      declare: [
+        'bingo-dominoes.rules.gameplay',
+      ],
+      draw: [
+        'bingo-dominoes.rules.gameplay',
+      ],
+      draw_7: [
+        'bingo-dominoes.rules.gameplay',
+      ],
+      calculate_game_points: [
+        'bingo-dominoes.rules.gameplay',
+      ],
+      play_tile: [
+        'bingo-dominoes.rules.gameplay',
+      ],
+      close_stock: [
+        'bingo-dominoes.rules.gameplay',
+      ],
+      claim_victory: [
+        'bingo-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

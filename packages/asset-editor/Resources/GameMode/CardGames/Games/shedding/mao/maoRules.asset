@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Mao. Logic: See rules.objective and rules.gameplay.',
-    Player: "Mao is a unique card game known for its extreme secrecy and metagame elements. It is the most famous of the 'secret rule' games, where the only rule that may be explained to a new player is: 'The rules of Mao cannot be told.' New players must learn the rules through trial and error, as they are penalized (by drawing cards) for every infraction. Each winner of a round also gets to create a new secret rule for the next round, meaning the game evolves indefinitely.",
+    LLM: "Play proceeds clockwise from the dealer's left. On your turn, play one card that matches the rank or suit of the top card on the play pile, or draw one card from the stock if you cannot play. Breaking a rule incurs a penalty card. First to empty their hand and call 'Mao' (or 'game over') wins. Rules vary by group and are often learned by trial and error.",
+    Player: "Play proceeds clockwise from the dealer's left. On your turn, play one card that matches the rank or suit of the top card on the play pile, or draw one card from the stock if you cannot play. Breaking a rule incurs a penalty card. First to empty their hand and call 'Mao' (or 'game over') wins. Rules vary by group and are often learned by trial and error.",
     objective: "Be the first to shed all cards. When you play your last card, you must yell 'Mao!'.",
     gameplay: "Play proceeds clockwise from the dealer's left. On your turn, play one card that matches the rank or suit of the top card on the play pile, or draw one card from the stock if you cannot play. Breaking a rule incurs a penalty card. First to empty their hand and call 'Mao' (or 'game over') wins. Rules vary by group and are often learned by trial and error.",
     keyRules: [
@@ -53,10 +53,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 7 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card, draw before round end.',
-      "Scoring check: Be the first to shed all cards. When you play your last card, you must yell 'Mao!'. Expected outcome: 1.",
+      'Setup example: 7 card(s) per player.',
+      "Rule example: Be the first to shed all cards. When you play your last card, you must yell 'Mao!'.",
+      "Turn-flow example: Play proceeds clockwise from the dealer's left. On your turn, play one card that matches the rank or suit of the top card on the play pile, or draw one card from the stock if you cannot play. Breaking a rule incurs a penalty card. First to empty their hand and call 'Mao' (or 'game over') wins. Rules vary by group and are often learned by trial and error.",
+      "Scoring example: Be the first to shed all cards. When you play your last card, you must yell 'Mao!'. Be the first to shed all cards. When you play your last card, you must yell 'Mao!'..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'mao.rules.objective',
+        title: 'Objective',
+        text: "Be the first to shed all cards. When you play your last card, you must yell 'Mao!'.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mao.rules.gameplay',
+        title: 'Turn flow',
+        text: "Play proceeds clockwise from the dealer's left. On your turn, play one card that matches the rank or suit of the top card on the play pile, or draw one card from the stock if you cannot play. Breaking a rule incurs a penalty card. First to empty their hand and call 'Mao' (or 'game over') wins. Rules vary by group and are often learned by trial and error.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mao.setup.players',
+        title: 'Players',
+        text: "3-8 players. One player is the 'Chairman' (dealer/moderator).",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mao.setup.deck',
+        title: 'Deck',
+        text: 'Two shuffled standard decks. All cards face down.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mao.setup.equipment',
+        title: 'Equipment',
+        text: 'Two shuffled standard decks. All cards face down.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mao.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 7 cards. Players CANNOT look at their cards until the game officially starts.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mao.score.win-condition',
+        title: 'Win condition',
+        text: "Be the first to shed all cards. When you play your last card, you must yell 'Mao!'.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mao.score.description',
+        title: 'Scoring',
+        text: "Be the first to shed all cards. When you play your last card, you must yell 'Mao!'.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mao.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Match the top card on the play pile by rank or suit; or draw one from stock if unable.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'mao.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Call Mao or game over when playing your last card.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'mao.rules.key.3',
+        title: 'Key rule 3',
+        text: 'One penalty card per rule breach; the person giving it states what was wrong without explaining the rule.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'mao.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Rules vary by group and are learned by observation and trial and error.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mao.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mao.rules.objective',
+          'mao.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mao.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mao.setup.players',
+          'mao.setup.deck',
+          'mao.setup.equipment',
+          'mao.setup.dealing',
+        ],
+      },
+      {
+        id: 'mao.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mao.rules.key.1',
+          'mao.rules.key.2',
+          'mao.rules.key.3',
+          'mao.rules.key.4',
+        ],
+      },
+      {
+        id: 'mao.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mao.score.description',
+          'mao.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mao.setup.dealing',
+        'mao.rules.objective',
+      ],
+      play_card: [
+        'mao.rules.gameplay',
+      ],
+      draw: [
+        'mao.rules.gameplay',
+      ],
+    },
   },
 }

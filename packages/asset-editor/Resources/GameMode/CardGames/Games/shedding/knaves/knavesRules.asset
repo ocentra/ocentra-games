@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Knaves. Logic: Trick-taking avoidance game with penalty Jacks.',
-    Player: "Knaves is a trick-taking avoidance game for 3 players. Score points for winning tricks but avoid the 'Knaves' (Jacks) which carry heavy negative scores.",
+    LLM: '1. Standard trick-taking. Must follow suit. If unable, play any card.\n2. No trumps are used.\n3. Highest card of the led suit wins the trick.',
+    Player: '1. Standard trick-taking. Must follow suit. If unable, play any card.\n2. No trumps are used.\n3. Highest card of the led suit wins the trick.',
     objective: 'Score points for tricks won while avoiding winning tricks that contain Jacks.',
     gameplay: '1. Standard trick-taking. Must follow suit. If unable, play any card.\n2. No trumps are used.\n3. Highest card of the led suit wins the trick.',
     keyRules: [
@@ -55,10 +55,180 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-4 player(s), 17 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: Each trick: +1 point. Knave of Hearts: -20, Diamonds: -15, Clubs: -10, Spades: -5. Game to 20 or 50 points. Expected outcome: 20.',
+      'Setup example: 17 card(s) per player.',
+      'Rule example: Score points for tricks won while avoiding winning tricks that contain Jacks.',
+      'Turn-flow example: 1. Standard trick-taking. Must follow suit. If unable, play any card.\n2. No trumps are used.\n3. Highest card of the led suit wins the trick.',
+      'Scoring example: Each trick: +1 point. Knave of Hearts: -20, Diamonds: -15, Clubs: -10, Spades: -5. Game to 20 or 50 points. Reach target score (20 or 50 points).',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'knaves.rules.objective',
+        title: 'Objective',
+        text: 'Score points for tricks won while avoiding winning tricks that contain Jacks.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'knaves.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Standard trick-taking. Must follow suit. If unable, play any card.\n2. No trumps are used.\n3. Highest card of the led suit wins the trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'knaves.setup.players',
+        title: 'Players',
+        text: '3 players (standard).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'knaves.setup.deck',
+        title: 'Deck',
+        text: '52 cards. Remove the Two of Spades to leave 51 cards (17 cards per player).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'knaves.setup.equipment',
+        title: 'Equipment',
+        text: '52 cards. Remove the Two of Spades to leave 51 cards (17 cards per player).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'knaves.setup.dealing',
+        title: 'Deal',
+        text: "Deal all 51 cards face-down. The player to the dealer's left leads the first trick.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'knaves.score.win-condition',
+        title: 'Win condition',
+        text: 'Reach target score (20 or 50 points)',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'knaves.score.description',
+        title: 'Scoring',
+        text: 'Each trick: +1 point. Knave of Hearts: -20, Diamonds: -15, Clubs: -10, Spades: -5. Game to 20 or 50 points.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'knaves.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Each trick won: +1 point',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'knaves.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Knave of Hearts: -20 points',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'knaves.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Knave of Diamonds: -15 points',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'knaves.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Knave of Clubs: -10 points',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'knaves.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Knave of Spades: -5 points',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'knaves.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Must follow suit',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'knaves.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'knaves.rules.objective',
+          'knaves.rules.gameplay',
+        ],
+      },
+      {
+        id: 'knaves.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'knaves.setup.players',
+          'knaves.setup.deck',
+          'knaves.setup.equipment',
+          'knaves.setup.dealing',
+        ],
+      },
+      {
+        id: 'knaves.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'knaves.rules.key.1',
+          'knaves.rules.key.2',
+          'knaves.rules.key.3',
+          'knaves.rules.key.4',
+          'knaves.rules.key.5',
+          'knaves.rules.key.6',
+        ],
+      },
+      {
+        id: 'knaves.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'knaves.score.description',
+          'knaves.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'knaves.setup.dealing',
+        'knaves.rules.objective',
+      ],
+      deal: [
+        'knaves.rules.gameplay',
+      ],
+      play_card: [
+        'knaves.rules.gameplay',
+      ],
+      score_round: [
+        'knaves.rules.gameplay',
+      ],
+    },
   },
 }

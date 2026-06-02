@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players assemble decks from proprietary Rage cards representing werewolves, actions, and enemies. Combat and special effects are governed by the published card text.',
+    Player: 'Players assemble decks from proprietary Rage cards representing werewolves, actions, and enemies. Combat and special effects are governed by the published card text.',
     objective: 'Use constructed werewolf-pack decks to defeat opponents and threats under the printed rules.',
     gameplay: 'Players assemble decks from proprietary Rage cards representing werewolves, actions, and enemies. Combat and special effects are governed by the published card text.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Use constructed werewolf-pack decks to defeat opponents and threats under the printed rules.',
+      'Turn-flow example: Players assemble decks from proprietary Rage cards representing werewolves, actions, and enemies. Combat and special effects are governed by the published card text.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'rage-collectible-card-game.rules.objective',
+        title: 'Objective',
+        text: 'Use constructed werewolf-pack decks to defeat opponents and threats under the printed rules.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'rage-collectible-card-game.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players assemble decks from proprietary Rage cards representing werewolves, actions, and enemies. Combat and special effects are governed by the published card text.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'rage-collectible-card-game.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Rage Collectible Card Game.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'rage-collectible-card-game.setup.deck',
+        title: 'Deck',
+        text: 'Proprietary Rage CCG decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'rage-collectible-card-game.setup.equipment',
+        title: 'Equipment',
+        text: 'Proprietary Rage CCG decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'rage-collectible-card-game.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Proprietary Rage CCG decks and deal or lay out cards according to the documented Rage Collectible Card Game rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'rage-collectible-card-game.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'rage-collectible-card-game.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'rage-collectible-card-game.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Out-of-print collectible card game by White Wolf.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'rage-collectible-card-game.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Cards represent packs of werewolves and opposing threats.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'rage-collectible-card-game.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Do not reproduce protected card text or artwork without rights.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'rage-collectible-card-game.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'rage-collectible-card-game.rules.objective',
+          'rage-collectible-card-game.rules.gameplay',
+        ],
+      },
+      {
+        id: 'rage-collectible-card-game.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'rage-collectible-card-game.setup.players',
+          'rage-collectible-card-game.setup.deck',
+          'rage-collectible-card-game.setup.equipment',
+          'rage-collectible-card-game.setup.dealing',
+        ],
+      },
+      {
+        id: 'rage-collectible-card-game.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'rage-collectible-card-game.rules.key.1',
+          'rage-collectible-card-game.rules.key.2',
+          'rage-collectible-card-game.rules.key.3',
+        ],
+      },
+      {
+        id: 'rage-collectible-card-game.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'rage-collectible-card-game.score.description',
+          'rage-collectible-card-game.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'rage-collectible-card-game.setup.dealing',
+        'rage-collectible-card-game.rules.objective',
+      ],
+      play_card: [
+        'rage-collectible-card-game.rules.gameplay',
+      ],
+    },
   },
 }

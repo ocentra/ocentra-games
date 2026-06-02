@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Chinese Ten. Objective: Capture cards from the layout.',
-    Player: 'Chinese Ten: play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: 'Turn: play one card from hand. If it captures a layout card, take both to your pile; else add your card to layout. Then flip top of deck: if it captures, take both; else add to layout. Next player.',
+    Player: 'Turn: play one card from hand. If it captures a layout card, take both to your pile; else add your card to layout. Then flip top of deck: if it captures, take both; else add to layout. Next player.',
     objective: 'Capture cards from the layout. Numeral cards capture one card that sums to 10 with them (A–9, e.g. 3 captures 7). Tens and pictures capture one card of same rank only. Each play or flip captures at most one card.',
     gameplay: 'Turn: play one card from hand. If it captures a layout card, take both to your pile; else add your card to layout. Then flip top of deck: if it captures, take both; else add to layout. Next player.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: At the end of the game, each player should have a stack of cards next to him. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Capture cards from the layout. Numeral cards capture one card that sums to 10 with them (A–9, e.g. 3 captures 7). Tens and pictures capture one card of same rank only. Each play or flip captures at most one card.',
+      'Turn-flow example: Turn: play one card from hand. If it captures a layout card, take both to your pile; else add your card to layout. Then flip top of deck: if it captures, take both; else add to layout. Next player.',
+      'Scoring example: At the end of the game, each player should have a stack of cards next to him. At the end of the game, each player should have a stack of cards next to him..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'chinese-ten.rules.objective',
+        title: 'Objective',
+        text: 'Capture cards from the layout. Numeral cards capture one card that sums to 10 with them (A–9, e.g. 3 captures 7). Tens and pictures capture one card of same rank only. Each play or flip captures at most one card.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'chinese-ten.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Turn: play one card from hand. If it captures a layout card, take both to your pile; else add your card to layout. Then flip top of deck: if it captures, take both; else add to layout. Next player.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'chinese-ten.setup.players',
+        title: 'Players',
+        text: '2, 3, or 4. Each gets 24÷n cards (e.g. 2p=12 each, 4p=6 each).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'chinese-ten.setup.deck',
+        title: 'Deck',
+        text: '52 cards. Numeral 1–9 capture by sum to 10; Ten and pictures capture same rank only.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'chinese-ten.setup.equipment',
+        title: 'Equipment',
+        text: '52-card deck; layout space for 4+ cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'chinese-ten.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 24÷n cards each. Four cards turned face up as initial layout. Rest face down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'chinese-ten.score.win-condition',
+        title: 'Win condition',
+        text: 'At the end of the game, each player should have a stack of cards next to him.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'chinese-ten.score.description',
+        title: 'Scoring',
+        text: 'At the end of the game, each player should have a stack of cards next to him.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'chinese-ten.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Capture: numeral + numeral = 10, or same rank for 10/J/Q/K',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'chinese-ten.rules.key.2',
+        title: 'Key rule 2',
+        text: 'One card captures at most one layout card',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'chinese-ten.rules.key.3',
+        title: 'Key rule 3',
+        text: 'After play and flip, turn passes',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'chinese-ten.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'chinese-ten.rules.objective',
+          'chinese-ten.rules.gameplay',
+        ],
+      },
+      {
+        id: 'chinese-ten.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'chinese-ten.setup.players',
+          'chinese-ten.setup.deck',
+          'chinese-ten.setup.equipment',
+          'chinese-ten.setup.dealing',
+        ],
+      },
+      {
+        id: 'chinese-ten.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'chinese-ten.rules.key.1',
+          'chinese-ten.rules.key.2',
+          'chinese-ten.rules.key.3',
+        ],
+      },
+      {
+        id: 'chinese-ten.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'chinese-ten.score.description',
+          'chinese-ten.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'chinese-ten.setup.dealing',
+        'chinese-ten.rules.objective',
+      ],
+      play_card: [
+        'chinese-ten.rules.gameplay',
+      ],
+    },
   },
 }

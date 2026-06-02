@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Garrafina. Play on your own train from the opening double; after a player passes their train is open until its end changes. Passing is only legal when no playable tile exists. Score by opponents' remaining pips or blocked-hand pip differences.",
-    Player: 'Garrafina: extend your train when possible, exploit open opponent trains, and avoid passing into vulnerability.',
+    LLM: "In the first deal, the holder of highest double leads it as the center. In later deals, the designated starting player may lead any double; if none, they pass and turn continues until someone leads a double. Each player has a personal train extending from the center. On turn, a player must play if legal. A legal play is usually to own train, but a player may instead play to another player's train only if that owner previously passed and the end has not changed since that pass. When a player passes, their train is open. If another player adds a non-double to that open train, it becomes private again. Play ends when a player empties hand or everyone is blocked.",
+    Player: "In the first deal, the holder of highest double leads it as the center. In later deals, the designated starting player may lead any double; if none, they pass and turn continues until someone leads a double. Each player has a personal train extending from the center. On turn, a player must play if legal. A legal play is usually to own train, but a player may instead play to another player's train only if that owner previously passed and the end has not changed since that pass. When a player passes, their train is open. If another player adds a non-double to that open train, it becomes private again. Play ends when a player empties hand or everyone is blocked.",
     objective: 'Play all tiles first, or in a blocked hand have the lowest pip total on unplayed tiles.',
     gameplay: "In the first deal, the holder of highest double leads it as the center. In later deals, the designated starting player may lead any double; if none, they pass and turn continues until someone leads a double. Each player has a personal train extending from the center. On turn, a player must play if legal. A legal play is usually to own train, but a player may instead play to another player's train only if that owner previously passed and the end has not changed since that pass. When a player passes, their train is open. If another player adds a non-double to that open train, it becomes private again. Play ends when a player empties hand or everyone is blocked.",
     keyRules: [
@@ -53,10 +53,174 @@
       go_out: 'Occurs immediately after the player places last tile.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before lead.',
-      "Scoring check: When someone goes out, each loser loses points equal to pips left in hand and winner gains their sum. In blocked hands, each loser loses the difference between their pips and the winner's pips; winner gains sum of losses. Expected outcome: 100.",
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Play all tiles first, or in a blocked hand have the lowest pip total on unplayed tiles.',
+      "Turn-flow example: In the first deal, the holder of highest double leads it as the center. In later deals, the designated starting player may lead any double; if none, they pass and turn continues until someone leads a double. Each player has a personal train extending from the center. On turn, a player must play if legal. A legal play is usually to own train, but a player may instead play to another player's train only if that owner previously passed and the end has not changed since that pass. When a player passes, their train is open. If another player adds a non-double to that open train, it becomes private again. Play ends when a player empties hand or everyone is blocked.",
+      "Scoring example: When someone goes out, each loser loses points equal to pips left in hand and winner gains their sum. In blocked hands, each loser loses the difference between their pips and the winner's pips; winner gains sum of losses. Win each deal by going out first or having the lowest pip total when blocked; win session by agreed deal count or reaching agreed target..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'garrafina.rules.objective',
+        title: 'Objective',
+        text: 'Play all tiles first, or in a blocked hand have the lowest pip total on unplayed tiles.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'garrafina.rules.gameplay',
+        title: 'Turn flow',
+        text: "In the first deal, the holder of highest double leads it as the center. In later deals, the designated starting player may lead any double; if none, they pass and turn continues until someone leads a double. Each player has a personal train extending from the center. On turn, a player must play if legal. A legal play is usually to own train, but a player may instead play to another player's train only if that owner previously passed and the end has not changed since that pass. When a player passes, their train is open. If another player adds a non-double to that open train, it becomes private again. Play ends when a player empties hand or everyone is blocked.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'garrafina.setup.players',
+        title: 'Players',
+        text: '2 to 4 players; four-player is the base form.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'garrafina.setup.deck',
+        title: 'Deck',
+        text: 'One double-six domino set of 28 tiles.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'garrafina.setup.equipment',
+        title: 'Equipment',
+        text: 'Optional train markers to show which trains are open after a pass.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'garrafina.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 7 tiles to each player. In 4-player games all tiles are dealt. In 3-player games one 7-tile heap remains face down. In 2-player games two 7-tile heaps remain face down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'garrafina.score.win-condition',
+        title: 'Win condition',
+        text: 'Win each deal by going out first or having the lowest pip total when blocked; win session by agreed deal count or reaching agreed target.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'garrafina.score.description',
+        title: 'Scoring',
+        text: "When someone goes out, each loser loses points equal to pips left in hand and winner gains their sum. In blocked hands, each loser loses the difference between their pips and the winner's pips; winner gains sum of losses.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'garrafina.rules.key.1',
+        title: 'Key rule 1',
+        text: 'If a legal tile exists on any currently legal train, passing is not allowed.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'garrafina.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Open-train status is tied to pass state and can close again when its end changes.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'garrafina.rules.key.3',
+        title: 'Key rule 3',
+        text: 'In blocked hands, lowest pip total wins; if two or more tie for least spots, there is no winner and no one scores.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'garrafina.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Session end is by agreed deal count or agreed target score.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'garrafina.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'garrafina.rules.objective',
+          'garrafina.rules.gameplay',
+        ],
+      },
+      {
+        id: 'garrafina.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'garrafina.setup.players',
+          'garrafina.setup.deck',
+          'garrafina.setup.equipment',
+          'garrafina.setup.dealing',
+        ],
+      },
+      {
+        id: 'garrafina.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'garrafina.rules.key.1',
+          'garrafina.rules.key.2',
+          'garrafina.rules.key.3',
+          'garrafina.rules.key.4',
+        ],
+      },
+      {
+        id: 'garrafina.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'garrafina.score.description',
+          'garrafina.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'garrafina.setup.dealing',
+        'garrafina.rules.objective',
+      ],
+      deal: [
+        'garrafina.rules.gameplay',
+      ],
+      buy_stock: [
+        'garrafina.rules.gameplay',
+      ],
+      award_pot: [
+        'garrafina.rules.gameplay',
+      ],
+      play_card: [
+        'garrafina.rules.gameplay',
+      ],
+      discard: [
+        'garrafina.rules.gameplay',
+      ],
+      pass: [
+        'garrafina.rules.gameplay',
+      ],
+      go_out: [
+        'garrafina.rules.gameplay',
+      ],
+    },
   },
 }

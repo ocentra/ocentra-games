@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kaiserspiel. Logic: Win the tricks, card points, or contract result required by the local form of the game.',
-    Player: 'Kaiserspiel is a traditional trick-taking card game using 40 or 48-card Swiss Kaiserspiel deck for 2, 4, or 6 players. It uses one chosen suit and belongs to the Karnöffel environment.',
+    LLM: 'Players use a 36-card pack in a German Tarok-derived structure. The dealer or declarer uses a small skat and play proceeds as a trick-taking game with a trump suit or permanent-trump convention depending on variant.',
+    Player: 'Players use a 36-card pack in a German Tarok-derived structure. The dealer or declarer uses a small skat and play proceeds as a trick-taking game with a trump suit or permanent-trump convention depending on variant.',
     objective: 'Win the contracted trick or point objective after using the skat or trump structure of the Tapp family.',
     gameplay: 'Players use a 36-card pack in a German Tarok-derived structure. The dealer or declarer uses a small skat and play proceeds as a trick-taking game with a trump suit or permanent-trump convention depending on variant.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Tricks, card points, or contract success determine scoring. Expected outcome: 1.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win the contracted trick or point objective after using the skat or trump structure of the Tapp family.',
+      'Turn-flow example: Players use a 36-card pack in a German Tarok-derived structure. The dealer or declarer uses a small skat and play proceeds as a trick-taking game with a trump suit or permanent-trump convention depending on variant.',
+      'Scoring example: Tricks, card points, or contract success determine scoring. Win the tricks, card points, or contract result required by the local form of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tapp.rules.objective',
+        title: 'Objective',
+        text: 'Win the contracted trick or point objective after using the skat or trump structure of the Tapp family.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tapp.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players use a 36-card pack in a German Tarok-derived structure. The dealer or declarer uses a small skat and play proceeds as a trick-taking game with a trump suit or permanent-trump convention depending on variant.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tapp.setup.players',
+        title: 'Players',
+        text: '3-4 players use the table arrangement described for Tapp.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tapp.setup.deck',
+        title: 'Deck',
+        text: '36-card French-suited pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tapp.setup.equipment',
+        title: 'Equipment',
+        text: '36-card French-suited pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tapp.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare 36-card French-suited pack and deal or lay out cards according to the documented Tapp rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tapp.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tapp.score.description',
+        title: 'Scoring',
+        text: 'Tricks, card points, or contract success determine scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tapp.rules.key.1',
+        title: 'Key rule 1',
+        text: 'French-suited offshoot of German Tarok.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tapp.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Played mainly in Swabia.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tapp.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Related to Bavarian Tarock and Bauerntarock family games.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tapp.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tapp.rules.objective',
+          'tapp.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tapp.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tapp.setup.players',
+          'tapp.setup.deck',
+          'tapp.setup.equipment',
+          'tapp.setup.dealing',
+        ],
+      },
+      {
+        id: 'tapp.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tapp.rules.key.1',
+          'tapp.rules.key.2',
+          'tapp.rules.key.3',
+        ],
+      },
+      {
+        id: 'tapp.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tapp.score.description',
+          'tapp.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tapp.setup.dealing',
+        'tapp.rules.objective',
+      ],
+      play_card: [
+        'tapp.rules.gameplay',
+      ],
+      discard: [
+        'tapp.rules.gameplay',
+      ],
+      pass: [
+        'tapp.rules.gameplay',
+      ],
+      bid: [
+        'tapp.rules.gameplay',
+      ],
+    },
   },
 }

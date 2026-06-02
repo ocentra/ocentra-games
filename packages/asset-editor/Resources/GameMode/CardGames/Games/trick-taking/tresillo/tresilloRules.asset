@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tresillo. Logic: See rules.objective and rules.gameplay.',
-    Player: "Tresillo (also Rocambor) is a historic Spanish trick-taking game for three players. It is the Spanish descendant of L'Hombre (Ombre), which was once the most popular card game in Europe. The 'declarer' (El Hombre) plays alone against the other two. Uses a 40-card Spanish deck with the unusual A-3-K ranking.",
+    LLM: '1. Deal 9. 2. Bid (Normal, Vuelta, Solo). Highest bid becomes Declarer. 3. Declarer discards and draws from stock. Opponents may also draw. 4. Play 9 tricks. Follow suit. Trumps beat plain. 5. Declarer wins if taking 5+ tricks (against 2 opponents).',
+    Player: '1. Deal 9. 2. Bid (Normal, Vuelta, Solo). Highest bid becomes Declarer. 3. Declarer discards and draws from stock. Opponents may also draw. 4. Play 9 tricks. Follow suit. Trumps beat plain. 5. Declarer wins if taking 5+ tricks (against 2 opponents).',
     objective: 'Declarer must win more tricks than either opponent.',
     gameplay: '1. Deal 9. 2. Bid (Normal, Vuelta, Solo). Highest bid becomes Declarer. 3. Declarer discards and draws from stock. Opponents may also draw. 4. Play 9 tricks. Follow suit. Trumps beat plain. 5. Declarer wins if taking 5+ tricks (against 2 opponents).',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Pot system. Declarer pays/receives from pot. Higher bids win/lose more. Expected outcome: Declarer must win more tricks than either opponent..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Declarer must win more tricks than either opponent.',
+      'Turn-flow example: 1. Deal 9. 2. Bid (Normal, Vuelta, Solo). Highest bid becomes Declarer. 3. Declarer discards and draws from stock. Opponents may also draw. 4. Play 9 tricks. Follow suit. Trumps beat plain. 5. Declarer wins if taking 5+ tricks (against 2 opponents).',
+      'Scoring example: Pot system. Declarer pays/receives from pot. Higher bids win/lose more. Declarer must win more tricks than either opponent..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tresillo.rules.objective',
+        title: 'Objective',
+        text: 'Declarer must win more tricks than either opponent.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tresillo.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Deal 9. 2. Bid (Normal, Vuelta, Solo). Highest bid becomes Declarer. 3. Declarer discards and draws from stock. Opponents may also draw. 4. Play 9 tricks. Follow suit. Trumps beat plain. 5. Declarer wins if taking 5+ tricks (against 2 opponents).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tresillo.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tresillo.setup.deck',
+        title: 'Deck',
+        text: '40-card Spanish deck. Rank varies by suit (Long vs Round). Matadors: Spadille (Aâ™ ), Manille (7/2 of trumps), Basto (Aâ™£) are always top trumps.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tresillo.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, pot/counters',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tresillo.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 9 cards each. 13 remain in stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tresillo.score.win-condition',
+        title: 'Win condition',
+        text: 'Declarer must win more tricks than either opponent.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tresillo.score.description',
+        title: 'Scoring',
+        text: 'Pot system. Declarer pays/receives from pot. Higher bids win/lose more.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tresillo.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Matadors are always top 3 trumps',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tresillo.rules.key.2',
+        title: 'Key rule 2',
+        text: 'A-3-K ranking (not A-K-Q)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tresillo.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Declarer vs 2 opponents',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tresillo.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Stock exchange allowed',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tresillo.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tresillo.rules.objective',
+          'tresillo.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tresillo.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tresillo.setup.players',
+          'tresillo.setup.deck',
+          'tresillo.setup.equipment',
+          'tresillo.setup.dealing',
+        ],
+      },
+      {
+        id: 'tresillo.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tresillo.rules.key.1',
+          'tresillo.rules.key.2',
+          'tresillo.rules.key.3',
+          'tresillo.rules.key.4',
+        ],
+      },
+      {
+        id: 'tresillo.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tresillo.score.description',
+          'tresillo.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tresillo.setup.dealing',
+        'tresillo.rules.objective',
+      ],
+      play_card: [
+        'tresillo.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Pot-based betting. No point-scoring.',
+      winCondition: 'Lowest hand at showdown or all other players fold.',
+      targetScore: null,
+      scoringDirection: 'low_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: 'Badugi is pot-based; no target score or points.',
+        cardValues: 'Badugi is a lowball draw poker variant where pots are awarded by Badugi hand ranking, not per-card point values.',
+      },
+      splitRules: 'If hands are identical in ranks (suits ignored for ties), the pot is split.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'poker_ranking',
     patternMultipliers: null,
     priorityOrder: [],

@@ -10,7 +10,26 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Card points in tricks (157 total), 5 for last trick, 100 for Match (all nine tricks). Weis and Stöck add extra. Bid value (×2 if doubled) added to declarers if contract made, else to opponents. First team to 2000 wins; loser under 1000 = double game.',
+      winCondition: 'First team to reach 2000 or more points wins. If both reach 2000+ in the same deal, play one more deal to break the tie. If the losing team has less than 1000, the winners win a double game.',
+      targetScore: 2000,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        cardValues: 'Jass uses fixed point values per rank (Ace 11, Ten 10, King 4, Ober 3, Banner 2, 9-6 zero); full map derivable from engine.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

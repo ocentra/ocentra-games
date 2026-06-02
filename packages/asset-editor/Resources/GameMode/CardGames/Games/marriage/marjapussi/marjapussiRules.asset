@@ -52,10 +52,150 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 9 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card, declare_marriage before round end.',
-      'Scoring check: Game points are scored for declaring trumps (2), non-trump marriages (1 each), last trick (1), and majority of card points (1; tie awards none). Card points: Ace 10 or 11, Ten 10, King 4 or 5, Queen 3 or 5, Jack 2 or 5, 9-6 zero (simplified or original system). Expected outcome: 10.',
+      'Setup example: 9 card(s) per player.',
+      'Rule example: Be the first partnership to collect exactly 10 game points. Going over 10 reduces score to 7; losing all tricks reduces score to 0.',
+      "Turn-flow example: Player to dealer's left leads to first trick. Must follow suit if able. If no trumps yet, may play any card when void. Once trumps exist, must play trump if void in led suit. Must beat highest card played if able (even partner's card).",
+      'Scoring example: Game points are scored for declaring trumps (2), non-trump marriages (1 each), last trick (1), and majority of card points (1; tie awards none). Card points: Ace 10 or 11, Ten 10, King 4 or 5, Queen 3 or 5, Jack 2 or 5, 9-6 zero (simplified or original system). First partnership to reach exactly 10 game points wins. Going over 10 reduces score to 7; taking no tricks in a hand reduces partnership score to 0..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'marjapussi.rules.objective',
+        title: 'Objective',
+        text: 'Be the first partnership to collect exactly 10 game points. Going over 10 reduces score to 7; losing all tricks reduces score to 0.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'marjapussi.rules.gameplay',
+        title: 'Turn flow',
+        text: "Player to dealer's left leads to first trick. Must follow suit if able. If no trumps yet, may play any card when void. Once trumps exist, must play trump if void in led suit. Must beat highest card played if able (even partner's card).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'marjapussi.setup.players',
+        title: 'Players',
+        text: '4 players in two fixed partnerships, partners sitting opposite each other.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'marjapussi.setup.deck',
+        title: 'Deck',
+        text: '36-card pack: A, 10, K, Q, J, 9, 8, 7, 6 in each suit. Can use 32 cards (no 6s) or 28 cards (no 6s or 7s).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'marjapussi.setup.equipment',
+        title: 'Equipment',
+        text: '36-card pack: A, 10, K, Q, J, 9, 8, 7, 6 in each suit. Can use 32 cards (no 6s) or 28 cards (no 6s or 7s).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'marjapussi.setup.dealing',
+        title: 'Deal',
+        text: 'Deal and play clockwise. First dealer chosen at random. Dealer shuffles, player to right cuts. Deal all cards one at a time: 9 each with 36 cards, 8 each with 32 cards, or 7 each with 28 cards. Turn to deal passes left.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'marjapussi.score.win-condition',
+        title: 'Win condition',
+        text: 'First partnership to reach exactly 10 game points wins. Going over 10 reduces score to 7; taking no tricks in a hand reduces partnership score to 0.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'marjapussi.score.description',
+        title: 'Scoring',
+        text: 'Game points are scored for declaring trumps (2), non-trump marriages (1 each), last trick (1), and majority of card points (1; tie awards none). Card points: Ace 10 or 11, Ten 10, King 4 or 5, Queen 3 or 5, Jack 2 or 5, 9-6 zero (simplified or original system).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'marjapussi.rules.key.1',
+        title: 'Key rule 1',
+        text: "Follow suit if able; if void in led suit and trumps exist must play trump; must beat highest card in trick if able (even partner's).",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'marjapussi.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Only trick winner may attempt one marriage declaration before leading to next trick; first declaration sets trumps for the hand.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'marjapussi.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Win by reaching exactly 10 game points; over 10 reduces to 7; no tricks in a hand reduces score to 0.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'marjapussi.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'marjapussi.rules.objective',
+          'marjapussi.rules.gameplay',
+        ],
+      },
+      {
+        id: 'marjapussi.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'marjapussi.setup.players',
+          'marjapussi.setup.deck',
+          'marjapussi.setup.equipment',
+          'marjapussi.setup.dealing',
+        ],
+      },
+      {
+        id: 'marjapussi.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'marjapussi.rules.key.1',
+          'marjapussi.rules.key.2',
+          'marjapussi.rules.key.3',
+        ],
+      },
+      {
+        id: 'marjapussi.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'marjapussi.score.description',
+          'marjapussi.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'marjapussi.setup.dealing',
+        'marjapussi.rules.objective',
+      ],
+      play_card: [
+        'marjapussi.rules.gameplay',
+      ],
+      declare_marriage: [
+        'marjapussi.rules.gameplay',
+      ],
+    },
   },
 }

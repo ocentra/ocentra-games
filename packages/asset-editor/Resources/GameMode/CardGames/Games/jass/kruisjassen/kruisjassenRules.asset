@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kruisjassen. Logic: Trick-taking with turned trumps. Key: Trump J=20, 9=14. Must overtrump when possible. Last trick = 5 pts.',
-    Player: 'Kruisjassen is a Dutch trick-taking game for 4 players in partnerships. The last card dealt determines trump. Trump Jack (20 pts) and Nine (14 pts) are especially valuable. Need 100 of 146 points to score. First to 11 game points wins.',
+    LLM: "1. **Leading**: Player to dealer's left leads to first trick. Any card may be led.\n2. **Following Suit**: If a non-trump is led, players with that suit must either follow suit OR play a trump. A non-trump of a different suit can only be played if the player has no cards of the led suit.\n3. **Trumping Rules**: When playing a trump on a non-trump lead, it must be higher than any trumps already played to the trick. A lower trump can only be played if the player has no option (hand consists entirely of lower trumps).\n4. **Trump Led**: If a trump is led, other players must play trumps if they have them. Any trump may be played - no requirement to play higher.\n5. **Winning Tricks**: Highest trump wins, or if no trumps, highest card of led suit. Winner leads to next trick.",
+    Player: "1. **Leading**: Player to dealer's left leads to first trick. Any card may be led.\n2. **Following Suit**: If a non-trump is led, players with that suit must either follow suit OR play a trump. A non-trump of a different suit can only be played if the player has no cards of the led suit.\n3. **Trumping Rules**: When playing a trump on a non-trump lead, it must be higher than any trumps already played to the trick. A lower trump can only be played if the player has no option (hand consists entirely of lower trumps).\n4. **Trump Led**: If a trump is led, other players must play trumps if they have them. Any trump may be played - no requirement to play higher.\n5. **Winning Tricks**: Highest trump wins, or if no trumps, highest card of led suit. Winner leads to next trick.",
     objective: 'Win tricks containing high-value cards. Score game points by reaching point thresholds with your partner.',
     gameplay: "1. **Leading**: Player to dealer's left leads to first trick. Any card may be led.\n2. **Following Suit**: If a non-trump is led, players with that suit must either follow suit OR play a trump. A non-trump of a different suit can only be played if the player has no cards of the led suit.\n3. **Trumping Rules**: When playing a trump on a non-trump lead, it must be higher than any trumps already played to the trick. A lower trump can only be played if the player has no option (hand consists entirely of lower trumps).\n4. **Trump Led**: If a trump is led, other players must play trumps if they have them. Any trump may be played - no requirement to play higher.\n5. **Winning Tricks**: Highest trump wins, or if no trumps, highest card of led suit. Winner leads to next trick.",
     keyRules: [
@@ -54,10 +54,192 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 8 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal, reveal_trump before trick_play.',
-      'Scoring check: Points from cards in tricks are converted to game points. First to 11 game points wins. Expected outcome: 11.',
+      'Setup example: 8 card(s) per player.',
+      'Rule example: Win tricks containing high-value cards. Score game points by reaching point thresholds with your partner.',
+      "Turn-flow example: 1. **Leading**: Player to dealer's left leads to first trick. Any card may be led.\n2. **Following Suit**: If a non-trump is led, players with that suit must either follow suit OR play a trump. A non-trump of a different suit can only be played if the player has no cards of the led suit.\n3. **Trumping Rules**: When playing a trump on a non-trump lead, it must be higher than any trumps already played to the trick. A lower trump can only be played if the player has no option (hand consists entirely of lower trumps).\n4. **Trump Led**: If a trump is led, other players must play trumps if they have them. Any trump may be played - no requirement to play higher.\n5. **Winning Tricks**: Highest trump wins, or if no trumps, highest card of led suit. Winner leads to next trick.",
+      'Scoring example: Points from cards in tricks are converted to game points. First to 11 game points wins. First team to 11 game points.',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'kruisjassen.rules.objective',
+        title: 'Objective',
+        text: 'Win tricks containing high-value cards. Score game points by reaching point thresholds with your partner.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kruisjassen.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Leading**: Player to dealer's left leads to first trick. Any card may be led.\n2. **Following Suit**: If a non-trump is led, players with that suit must either follow suit OR play a trump. A non-trump of a different suit can only be played if the player has no cards of the led suit.\n3. **Trumping Rules**: When playing a trump on a non-trump lead, it must be higher than any trumps already played to the trick. A lower trump can only be played if the player has no option (hand consists entirely of lower trumps).\n4. **Trump Led**: If a trump is led, other players must play trumps if they have them. Any trump may be played - no requirement to play higher.\n5. **Winning Tricks**: Highest trump wins, or if no trumps, highest card of led suit. Winner leads to next trick.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kruisjassen.setup.players',
+        title: 'Players',
+        text: 'Four players in fixed partnerships, two against two. Partners sit opposite each other.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kruisjassen.setup.deck',
+        title: 'Deck',
+        text: '32-card French-suited pack (7 through Ace in each suit).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kruisjassen.setup.equipment',
+        title: 'Equipment',
+        text: '32-card French-suited pack (7 through Ace in each suit).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kruisjassen.setup.dealing',
+        title: 'Deal',
+        text: "Dealer shuffles, offers to player on left to cut, then deals: 3 cards each, then 2 cards each, then 3 cards each. The last card (dealer's last card) is placed face up to determine trump suit, then taken into dealer's hand. Each player has 8 cards.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kruisjassen.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to 11 game points',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kruisjassen.score.description',
+        title: 'Scoring',
+        text: 'Points from cards in tricks are converted to game points. First to 11 game points wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kruisjassen.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trump Jack is worth 20 points, Trump Nine is worth 14 points',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kruisjassen.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Last trick is worth 5 points',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kruisjassen.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Total points per deal: 146',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kruisjassen.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Need 100+ card points to score 2 game points',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'kruisjassen.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Win all tricks to score 5 game points',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kruisjassen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kruisjassen.rules.objective',
+          'kruisjassen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kruisjassen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kruisjassen.setup.players',
+          'kruisjassen.setup.deck',
+          'kruisjassen.setup.equipment',
+          'kruisjassen.setup.dealing',
+        ],
+      },
+      {
+        id: 'kruisjassen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kruisjassen.rules.key.1',
+          'kruisjassen.rules.key.2',
+          'kruisjassen.rules.key.3',
+          'kruisjassen.rules.key.4',
+          'kruisjassen.rules.key.5',
+        ],
+      },
+      {
+        id: 'kruisjassen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kruisjassen.score.description',
+          'kruisjassen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kruisjassen.setup.dealing',
+        'kruisjassen.rules.objective',
+      ],
+      deal: [
+        'kruisjassen.rules.gameplay',
+      ],
+      award_pot: [
+        'kruisjassen.rules.gameplay',
+      ],
+      play_card: [
+        'kruisjassen.rules.gameplay',
+      ],
+      reveal_trump: [
+        'kruisjassen.rules.gameplay',
+      ],
+      follow_suit: [
+        'kruisjassen.rules.gameplay',
+      ],
+      trump: [
+        'kruisjassen.rules.gameplay',
+      ],
+      count_points: [
+        'kruisjassen.rules.gameplay',
+      ],
+      award_game_points: [
+        'kruisjassen.rules.gameplay',
+      ],
+      check_threshold: [
+        'kruisjassen.rules.gameplay',
+      ],
+      end_game: [
+        'kruisjassen.rules.gameplay',
+      ],
+    },
   },
 }

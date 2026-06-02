@@ -11,7 +11,11 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'At round end score captured cards and sur markers: 7 points for clubs majority (Haft Khaj), 1 each Ace, 1 each Jack, 2 for 2 of Clubs, 3 for 10 of Diamonds, and 5 per sur.',
+      winCondition: 'First player or team with 62 or more cumulative points wins; if multiple reach 62+ simultaneously, highest score wins and ties continue.',
+      targetScore: 62,
+      scoringDirection: 'high_wins',
+      cardValues: {
         'Haft Khaj (7+ clubs)': '7 points',
         Ace: '1 point each',
         Jack: '1 point each',
@@ -19,6 +23,30 @@
         '10 of Diamonds': '3 points',
         Sur: '5 points each',
       },
+      sourceCardValues: {
+        raw: {
+          'Haft Khaj (7+ clubs)': '7 points',
+          Ace: '1 point each',
+          Jack: '1 point each',
+          '2 of Clubs': '2 points',
+          '10 of Diamonds': '3 points',
+          Sur: '5 points each',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: 'If tied for highest score after reaching 62+, continue additional rounds until tie breaks.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,

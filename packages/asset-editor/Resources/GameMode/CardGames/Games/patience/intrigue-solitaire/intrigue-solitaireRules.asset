@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Aces and Kings. Logic: Complete all eight foundations, four building up from ace to king and four building down from king to ace, without regard to suit.',
-    Player: 'Aces and Kings is a difficult two-deck solitaire in which eight foundations build both upward from aces and downward from kings without regard to suit.',
+    LLM: 'Remove one queen to start the tableau. As further queens appear during the deal, each starts a new column. Place all fives and sixes to the foundations when available; build fives downward to aces and kings, and sixes upward to jacks, regardless of suit. Move top cards from tableau and stock to legal foundation positions.',
+    Player: 'Remove one queen to start the tableau. As further queens appear during the deal, each starts a new column. Place all fives and sixes to the foundations when available; build fives downward to aces and kings, and sixes upward to jacks, regardless of suit. Move top cards from tableau and stock to legal foundation positions.',
     objective: 'Move all cards from the two decks onto the foundations, using the queen tableau columns and the paired five and six foundations without exhausting legal moves.',
     gameplay: 'Remove one queen to start the tableau. As further queens appear during the deal, each starts a new column. Place all fives and sixes to the foundations when available; build fives downward to aces and kings, and sixes upward to jacks, regardless of suit. Move top cards from tableau and stock to legal foundation positions.',
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: The game is won only by completing all foundations; otherwise the deal is lost when the stock is exhausted. Expected outcome: 1.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Move all cards from the two decks onto the foundations, using the queen tableau columns and the paired five and six foundations without exhausting legal moves.',
+      'Turn-flow example: Remove one queen to start the tableau. As further queens appear during the deal, each starts a new column. Place all fives and sixes to the foundations when available; build fives downward to aces and kings, and sixes upward to jacks, regardless of suit. Move top cards from tableau and stock to legal foundation positions.',
+      'Scoring example: The game is won only by completing all foundations; otherwise the deal is lost when the stock is exhausted. Complete all eight foundations, four building up from ace to king and four building down from king to ace, without regard to suit..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'intrigue-solitaire.rules.objective',
+        title: 'Objective',
+        text: 'Move all cards from the two decks onto the foundations, using the queen tableau columns and the paired five and six foundations without exhausting legal moves.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'intrigue-solitaire.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Remove one queen to start the tableau. As further queens appear during the deal, each starts a new column. Place all fives and sixes to the foundations when available; build fives downward to aces and kings, and sixes upward to jacks, regardless of suit. Move top cards from tableau and stock to legal foundation positions.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'intrigue-solitaire.setup.players',
+        title: 'Players',
+        text: '1 players use the table arrangement described for Intrigue.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'intrigue-solitaire.setup.deck',
+        title: 'Deck',
+        text: 'Two standard 52-card decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'intrigue-solitaire.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard 52-card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'intrigue-solitaire.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Two standard 52-card decks and deal or lay out cards according to the documented Intrigue rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'intrigue-solitaire.score.win-condition',
+        title: 'Win condition',
+        text: 'Complete all eight foundations, four building up from ace to king and four building down from king to ace, without regard to suit.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'intrigue-solitaire.score.description',
+        title: 'Scoring',
+        text: 'The game is won only by completing all foundations; otherwise the deal is lost when the stock is exhausted.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'intrigue-solitaire.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Eight queens become tableau column bases.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'intrigue-solitaire.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Fives build downward and sixes build upward regardless of suit.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'intrigue-solitaire.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The game uses two full decks.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'intrigue-solitaire.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'intrigue-solitaire.rules.objective',
+          'intrigue-solitaire.rules.gameplay',
+        ],
+      },
+      {
+        id: 'intrigue-solitaire.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'intrigue-solitaire.setup.players',
+          'intrigue-solitaire.setup.deck',
+          'intrigue-solitaire.setup.equipment',
+          'intrigue-solitaire.setup.dealing',
+        ],
+      },
+      {
+        id: 'intrigue-solitaire.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'intrigue-solitaire.rules.key.1',
+          'intrigue-solitaire.rules.key.2',
+          'intrigue-solitaire.rules.key.3',
+        ],
+      },
+      {
+        id: 'intrigue-solitaire.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'intrigue-solitaire.score.description',
+          'intrigue-solitaire.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'intrigue-solitaire.setup.dealing',
+        'intrigue-solitaire.rules.objective',
+      ],
+      deal: [
+        'intrigue-solitaire.rules.gameplay',
+      ],
+      play_card: [
+        'intrigue-solitaire.rules.gameplay',
+      ],
+      draw: [
+        'intrigue-solitaire.rules.gameplay',
+      ],
+    },
   },
 }

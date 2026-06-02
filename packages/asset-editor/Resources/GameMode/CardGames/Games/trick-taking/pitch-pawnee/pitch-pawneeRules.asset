@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Pawnee Pitch. Call-partner Pitch. 10 target.',
-    Player: 'Pawnee Pitch: 4p, bid, call partner. High, low, jack, game. 10 wins.',
+    LLM: "1. Bidding: players bid 1-4 (or pass). 2. High bidder names trump and calls for partner (e.g. 'Ace of spades'). Holder of that card is partner (doesn't reveal until card played). 3. Play as Pitch: follow suit, trump. 4. Score high, low, jack, game for the bidding team.",
+    Player: "1. Bidding: players bid 1-4 (or pass). 2. High bidder names trump and calls for partner (e.g. 'Ace of spades'). Holder of that card is partner (doesn't reveal until card played). 3. Play as Pitch: follow suit, trump. 4. Score high, low, jack, game for the bidding team.",
     objective: 'First team to 10 points. Points: high (1), low (1), jack (1), game (1).',
     gameplay: "1. Bidding: players bid 1-4 (or pass). 2. High bidder names trump and calls for partner (e.g. 'Ace of spades'). Holder of that card is partner (doesn't reveal until card played). 3. Play as Pitch: follow suit, trump. 4. Score high, low, jack, game for the bidding team.",
     keyRules: [
@@ -53,10 +53,168 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before bid.',
-      'Scoring check: High(1), low(1), jack(1), game(1). First to 10 wins. Expected outcome: 10.',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: First team to 10 points. Points: high (1), low (1), jack (1), game (1).',
+      "Turn-flow example: 1. Bidding: players bid 1-4 (or pass). 2. High bidder names trump and calls for partner (e.g. 'Ace of spades'). Holder of that card is partner (doesn't reveal until card played). 3. Play as Pitch: follow suit, trump. 4. Score high, low, jack, game for the bidding team.",
+      'Scoring example: High(1), low(1), jack(1), game(1). First to 10 wins. First team to 10 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pitch-pawnee.rules.objective',
+        title: 'Objective',
+        text: 'First team to 10 points. Points: high (1), low (1), jack (1), game (1).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pitch-pawnee.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Bidding: players bid 1-4 (or pass). 2. High bidder names trump and calls for partner (e.g. 'Ace of spades'). Holder of that card is partner (doesn't reveal until card played). 3. Play as Pitch: follow suit, trump. 4. Score high, low, jack, game for the bidding team.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pitch-pawnee.setup.players',
+        title: 'Players',
+        text: '4. Variable partnerships via call.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pitch-pawnee.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52 cards.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pitch-pawnee.setup.equipment',
+        title: 'Equipment',
+        text: '52-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pitch-pawnee.setup.dealing',
+        title: 'Deal',
+        text: 'As Pitch: typically 6 each.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pitch-pawnee.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to 10 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pitch-pawnee.score.description',
+        title: 'Scoring',
+        text: 'High(1), low(1), jack(1), game(1). First to 10 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pitch-pawnee.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Call-partner: high bidder calls a card; holder is partner.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pitch-pawnee.rules.key.2',
+        title: 'Key rule 2',
+        text: '10 points to win.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pitch-pawnee.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Standard Pitch scoring: high, low, jack, game.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pitch-pawnee.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Partner unknown until called card is played.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pitch-pawnee.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pitch-pawnee.rules.objective',
+          'pitch-pawnee.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pitch-pawnee.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pitch-pawnee.setup.players',
+          'pitch-pawnee.setup.deck',
+          'pitch-pawnee.setup.equipment',
+          'pitch-pawnee.setup.dealing',
+        ],
+      },
+      {
+        id: 'pitch-pawnee.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pitch-pawnee.rules.key.1',
+          'pitch-pawnee.rules.key.2',
+          'pitch-pawnee.rules.key.3',
+          'pitch-pawnee.rules.key.4',
+        ],
+      },
+      {
+        id: 'pitch-pawnee.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pitch-pawnee.score.description',
+          'pitch-pawnee.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pitch-pawnee.setup.dealing',
+        'pitch-pawnee.rules.objective',
+      ],
+      deal: [
+        'pitch-pawnee.rules.gameplay',
+      ],
+      play_card: [
+        'pitch-pawnee.rules.gameplay',
+      ],
+      pass: [
+        'pitch-pawnee.rules.gameplay',
+      ],
+      bid: [
+        'pitch-pawnee.rules.gameplay',
+      ],
+      lead: [
+        'pitch-pawnee.rules.gameplay',
+      ],
+    },
   },
 }

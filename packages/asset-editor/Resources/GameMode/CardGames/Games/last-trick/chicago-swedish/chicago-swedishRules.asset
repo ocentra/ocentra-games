@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Score points for best poker hand in phases 1â€“2 and for best hand at end of phase 3; 5 points for last trick. First to 52 wins. Chicago: declare to take all 5 tricks for +15 or -15.',
+      'Turn-flow example: Phase 1â€“2: discard/draw, then announce best poker combination (pair to royal straight flush); highest scores 1â€“8 pts. Phase 3: discard/draw, then play tricks; must follow suit; last trick = 5 pts; then best poker hand scores again.',
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'chicago-swedish.rules.objective',
+        title: 'Objective',
+        text: 'Score points for best poker hand in phases 1â€“2 and for best hand at end of phase 3; 5 points for last trick. First to 52 wins. Chicago: declare to take all 5 tricks for +15 or -15.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'chicago-swedish.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Phase 1â€“2: discard/draw, then announce best poker combination (pair to royal straight flush); highest scores 1â€“8 pts. Phase 3: discard/draw, then play tricks; must follow suit; last trick = 5 pts; then best poker hand scores again.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'chicago-swedish.setup.players',
+        title: 'Players',
+        text: '2â€“4; dealer chosen at random, rotates clockwise.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'chicago-swedish.setup.deck',
+        title: 'Deck',
+        text: '52 cards, no jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'chicago-swedish.setup.equipment',
+        title: 'Equipment',
+        text: 'Score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'chicago-swedish.setup.dealing',
+        title: 'Deal',
+        text: '5 cards each, one at a time.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'chicago-swedish.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'chicago-swedish.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'chicago-swedish.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Three phases: claim poker twice, then tricks',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'chicago-swedish.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Last trick worth 5',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'chicago-swedish.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Chicago: all 5 tricks = 15, else -15; need 15+ to declare',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'chicago-swedish.rules.key.4',
+        title: 'Key rule 4',
+        text: '52 points wins',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'chicago-swedish.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'chicago-swedish.rules.objective',
+          'chicago-swedish.rules.gameplay',
+        ],
+      },
+      {
+        id: 'chicago-swedish.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'chicago-swedish.setup.players',
+          'chicago-swedish.setup.deck',
+          'chicago-swedish.setup.equipment',
+          'chicago-swedish.setup.dealing',
+        ],
+      },
+      {
+        id: 'chicago-swedish.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'chicago-swedish.rules.key.1',
+          'chicago-swedish.rules.key.2',
+          'chicago-swedish.rules.key.3',
+          'chicago-swedish.rules.key.4',
+        ],
+      },
+      {
+        id: 'chicago-swedish.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'chicago-swedish.score.description',
+          'chicago-swedish.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'chicago-swedish.setup.dealing',
+        'chicago-swedish.rules.objective',
+      ],
+      play_card: [
+        'chicago-swedish.rules.gameplay',
+      ],
+    },
   },
 }

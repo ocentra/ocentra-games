@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points are awarded based on the bid and whether it was made. Target is 51 points. Expected outcome: 51.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win the number of tricks bid, or prevent the declarer from making their bid. First to 51 points wins the game.',
+      'Turn-flow example: The declarer leads to the first trick. Players must follow suit if possible. If unable to follow, may play any card. Highest trump wins, or highest card of led suit if no trumps.',
+      'Scoring example: Points are awarded based on the bid and whether it was made. Target is 51 points. First player to reach 51 points wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'meksiko.rules.objective',
+        title: 'Objective',
+        text: 'Win the number of tricks bid, or prevent the declarer from making their bid. First to 51 points wins the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'meksiko.rules.gameplay',
+        title: 'Turn flow',
+        text: 'The declarer leads to the first trick. Players must follow suit if possible. If unable to follow, may play any card. Highest trump wins, or highest card of led suit if no trumps.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'meksiko.setup.players',
+        title: 'Players',
+        text: '3 players (standard). Can be played with 4 if the dealer sits out each hand.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'meksiko.setup.deck',
+        title: 'Deck',
+        text: '32-card pack (7 through Ace in each suit). Ranking: A (high), K, Q, J, 10, 9, 8, 7 (low). Often played with Hungarian cards (William Tell pattern).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'meksiko.setup.equipment',
+        title: 'Equipment',
+        text: '32-card deck, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'meksiko.setup.dealing',
+        title: 'Deal',
+        text: '10 cards to each player, dealt in packets. The remaining 2 cards form the talon (kup).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'meksiko.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach 51 points wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'meksiko.score.description',
+        title: 'Scoring',
+        text: 'Points are awarded based on the bid and whether it was made. Target is 51 points.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'meksiko.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if able',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'meksiko.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Meksiko bid: win all 10 tricks, no talon, no trumps',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'meksiko.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Declarer takes talon (except in Meksiko) and chooses trumps',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'meksiko.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Discarded talon cards count as won tricks for declarer',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'meksiko.rules.key.5',
+        title: 'Key rule 5',
+        text: 'First to 51 points wins',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'meksiko.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'meksiko.rules.objective',
+          'meksiko.rules.gameplay',
+        ],
+      },
+      {
+        id: 'meksiko.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'meksiko.setup.players',
+          'meksiko.setup.deck',
+          'meksiko.setup.equipment',
+          'meksiko.setup.dealing',
+        ],
+      },
+      {
+        id: 'meksiko.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'meksiko.rules.key.1',
+          'meksiko.rules.key.2',
+          'meksiko.rules.key.3',
+          'meksiko.rules.key.4',
+          'meksiko.rules.key.5',
+        ],
+      },
+      {
+        id: 'meksiko.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'meksiko.score.description',
+          'meksiko.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'meksiko.setup.dealing',
+        'meksiko.rules.objective',
+      ],
+      play_card: [
+        'meksiko.rules.gameplay',
+      ],
+    },
   },
 }

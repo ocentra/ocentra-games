@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Guo Wu Guan (過五關). Objective: Pass all five levels and cut all six generals by removing valid triplets of tiles.',
-    Player: 'Guo Wu Guan (過五關): play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: '1. **Remove from Levels**: Find three adjacent tiles in any level that form a valid triplet. Remove them and add them to the left of the Common Row.\n2. **Cut Generals**: When a level has only 1 tile left, use it with the two rightmost tiles from the Common Row to form a valid triplet. If valid, remove all three and flip the next General face-up.\n3. **Critical Move**: Exactly ONCE in the game, you must use a single-tile level to cut TWO generals simultaneously (using the rightmost Common Row tile and the two rightmost Generals).\n4. **Winning**: Win by clearing all levels and cutting all six generals.\n5. **Losing**: Lose if the Common Row is empty and no valid triplet can be removed from any level.',
+    Player: '1. **Remove from Levels**: Find three adjacent tiles in any level that form a valid triplet. Remove them and add them to the left of the Common Row.\n2. **Cut Generals**: When a level has only 1 tile left, use it with the two rightmost tiles from the Common Row to form a valid triplet. If valid, remove all three and flip the next General face-up.\n3. **Critical Move**: Exactly ONCE in the game, you must use a single-tile level to cut TWO generals simultaneously (using the rightmost Common Row tile and the two rightmost Generals).\n4. **Winning**: Win by clearing all levels and cutting all six generals.\n5. **Losing**: Lose if the Common Row is empty and no valid triplet can be removed from any level.',
     objective: 'Pass all five levels and cut all six generals by removing valid triplets of tiles.',
     gameplay: '1. **Remove from Levels**: Find three adjacent tiles in any level that form a valid triplet. Remove them and add them to the left of the Common Row.\n2. **Cut Generals**: When a level has only 1 tile left, use it with the two rightmost tiles from the Common Row to form a valid triplet. If valid, remove all three and flip the next General face-up.\n3. **Critical Move**: Exactly ONCE in the game, you must use a single-tile level to cut TWO generals simultaneously (using the rightmost Common Row tile and the two rightmost Generals).\n4. **Winning**: Win by clearing all levels and cutting all six generals.\n5. **Losing**: Lose if the Common Row is empty and no valid triplet can be removed from any level.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: No point score. Win by passing all five levels and cutting all six generals; lose if the common row is empty and no valid triplet can be removed. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Pass all five levels and cut all six generals by removing valid triplets of tiles.',
+      'Turn-flow example: 1. **Remove from Levels**: Find three adjacent tiles in any level that form a valid triplet. Remove them and add them to the left of the Common Row.\n2. **Cut Generals**: When a level has only 1 tile left, use it with the two rightmost tiles from the Common Row to form a valid triplet. If valid, remove all three and flip the next General face-up.\n3. **Critical Move**: Exactly ONCE in the game, you must use a single-tile level to cut TWO generals simultaneously (using the rightmost Common Row tile and the two rightmost Generals).\n4. **Winning**: Win by clearing all levels and cutting all six generals.\n5. **Losing**: Lose if the Common Row is empty and no valid triplet can be removed from any level.',
+      'Scoring example: No point score. Win by passing all five levels and cutting all six generals; lose if the common row is empty and no valid triplet can be removed. Pass all five levels and cut all six generals. The game is lost if the common row is empty and there is no valid triplet of adjacent tiles in any remaining level..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'guo-wu-guan.rules.objective',
+        title: 'Objective',
+        text: 'Pass all five levels and cut all six generals by removing valid triplets of tiles.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'guo-wu-guan.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Remove from Levels**: Find three adjacent tiles in any level that form a valid triplet. Remove them and add them to the left of the Common Row.\n2. **Cut Generals**: When a level has only 1 tile left, use it with the two rightmost tiles from the Common Row to form a valid triplet. If valid, remove all three and flip the next General face-up.\n3. **Critical Move**: Exactly ONCE in the game, you must use a single-tile level to cut TWO generals simultaneously (using the rightmost Common Row tile and the two rightmost Generals).\n4. **Winning**: Win by clearing all levels and cutting all six generals.\n5. **Losing**: Lose if the Common Row is empty and no valid triplet can be removed from any level.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'guo-wu-guan.setup.players',
+        title: 'Players',
+        text: '1 player (Solitaire).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'guo-wu-guan.setup.deck',
+        title: 'Deck',
+        text: '32 Chinese domino set (double-six pattern).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'guo-wu-guan.setup.equipment',
+        title: 'Equipment',
+        text: '32 Chinese domino set (double-six pattern).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'guo-wu-guan.setup.dealing',
+        title: 'Deal',
+        text: 'dealt, leaving a common row of 12 pieces, which are stored face down at the top of the layout.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'guo-wu-guan.score.win-condition',
+        title: 'Win condition',
+        text: 'Pass all five levels and cut all six generals. The game is lost if the common row is empty and there is no valid triplet of adjacent tiles in any remaining level.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'guo-wu-guan.score.description',
+        title: 'Scoring',
+        text: 'No point score. Win by passing all five levels and cutting all six generals; lose if the common row is empty and no valid triplet can be removed.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'guo-wu-guan.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Guo Wu Guan (過五關).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'guo-wu-guan.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: Scoring summary: Scoring follows the game-specific point or pot rules.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'guo-wu-guan.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Pass all five levels and cut all six generals by removing valid triplets of tiles.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'guo-wu-guan.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'guo-wu-guan.rules.objective',
+          'guo-wu-guan.rules.gameplay',
+        ],
+      },
+      {
+        id: 'guo-wu-guan.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'guo-wu-guan.setup.players',
+          'guo-wu-guan.setup.deck',
+          'guo-wu-guan.setup.equipment',
+          'guo-wu-guan.setup.dealing',
+        ],
+      },
+      {
+        id: 'guo-wu-guan.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'guo-wu-guan.rules.key.1',
+          'guo-wu-guan.rules.key.2',
+          'guo-wu-guan.rules.key.3',
+        ],
+      },
+      {
+        id: 'guo-wu-guan.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'guo-wu-guan.score.description',
+          'guo-wu-guan.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'guo-wu-guan.setup.dealing',
+        'guo-wu-guan.rules.objective',
+      ],
+      play_card: [
+        'guo-wu-guan.rules.gameplay',
+      ],
+    },
   },
 }

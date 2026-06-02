@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Umtali. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Umtali is a 2-player Rummy game from Rhodesia (now Zimbabwe). 10 cards each. Features 5 meld types: sets (no Jacks), runs, marriages (K+Q same suit for double), single Jacks, and single-card extensions. Opponent gets one final turn after someone goes out. Two-card melds allowed in final turn.',
+    LLM: 'Draw-meld-discard. 5 meld types: Sets (3-4 same rank, no Jacks), Runs (3+ same suit consecutive), Marriages (K+Q same suit = double pts), Single Jacks, Extensions. Deep discard pile draw allowed if meld immediately. Final turn for opponent. Two-card melds OK in final turn.',
+    Player: 'Draw-meld-discard. 5 meld types: Sets (3-4 same rank, no Jacks), Runs (3+ same suit consecutive), Marriages (K+Q same suit = double pts), Single Jacks, Extensions. Deep discard pile draw allowed if meld immediately. Final turn for opponent. Two-card melds OK in final turn.',
     objective: 'Players aim to score the most points over four rounds by forming melds (sets, runs, marriages, single Jacks, extensions) and going out; face cards and tens count 5 points each, others 1; marriages score double.',
     gameplay: 'Draw-meld-discard. 5 meld types: Sets (3-4 same rank, no Jacks), Runs (3+ same suit consecutive), Marriages (K+Q same suit = double pts), Single Jacks, Extensions. Deep discard pile draw allowed if meld immediately. Final turn for opponent. Two-card melds OK in final turn.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Face cards/10s = 5pts. Others = 1pt. Marriages = double. 4 rounds total. Expected outcome: Score most points over 4 rounds..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Players aim to score the most points over four rounds by forming melds (sets, runs, marriages, single Jacks, extensions) and going out; face cards and tens count 5 points each, others 1; marriages score double.',
+      'Turn-flow example: Draw-meld-discard. 5 meld types: Sets (3-4 same rank, no Jacks), Runs (3+ same suit consecutive), Marriages (K+Q same suit = double pts), Single Jacks, Extensions. Deep discard pile draw allowed if meld immediately. Final turn for opponent. Two-card melds OK in final turn.',
+      'Scoring example: Face cards/10s = 5pts. Others = 1pt. Marriages = double. 4 rounds total. Score most points over 4 rounds..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'umtali.rules.objective',
+        title: 'Objective',
+        text: 'Players aim to score the most points over four rounds by forming melds (sets, runs, marriages, single Jacks, extensions) and going out; face cards and tens count 5 points each, others 1; marriages score double.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'umtali.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Draw-meld-discard. 5 meld types: Sets (3-4 same rank, no Jacks), Runs (3+ same suit consecutive), Marriages (K+Q same suit = double pts), Single Jacks, Extensions. Deep discard pile draw allowed if meld immediately. Final turn for opponent. Two-card melds OK in final turn.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'umtali.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'umtali.setup.deck',
+        title: 'Deck',
+        text: '52 cards. A is low.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'umtali.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, scoresheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'umtali.setup.dealing',
+        title: 'Deal',
+        text: '10 each (or 11 to non-dealer). Top of stock starts discard.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'umtali.score.win-condition',
+        title: 'Win condition',
+        text: 'Score most points over 4 rounds.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'umtali.score.description',
+        title: 'Scoring',
+        text: 'Face cards/10s = 5pts. Others = 1pt. Marriages = double. 4 rounds total.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'umtali.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No Jacks in sets',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'umtali.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Marriages double',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'umtali.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Single Jack melds',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'umtali.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Final turn for opponent',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'umtali.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Two-card melds in last turn',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'umtali.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'umtali.rules.objective',
+          'umtali.rules.gameplay',
+        ],
+      },
+      {
+        id: 'umtali.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'umtali.setup.players',
+          'umtali.setup.deck',
+          'umtali.setup.equipment',
+          'umtali.setup.dealing',
+        ],
+      },
+      {
+        id: 'umtali.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'umtali.rules.key.1',
+          'umtali.rules.key.2',
+          'umtali.rules.key.3',
+          'umtali.rules.key.4',
+          'umtali.rules.key.5',
+        ],
+      },
+      {
+        id: 'umtali.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'umtali.score.description',
+          'umtali.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'umtali.setup.dealing',
+        'umtali.rules.objective',
+      ],
+      play_card: [
+        'umtali.rules.gameplay',
+      ],
+    },
   },
 }

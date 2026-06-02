@@ -10,7 +10,31 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Betting outcomes determined by card draws. House profits from splits only.',
+      winCondition: "Player wins if their bet card is drawn as the 'Winner' (second card in a pair). Coppering inverts thisâ€”player wins if coppering bet card is drawn as 'Loser' (first card).",
+      targetScore: null,
+      scoringDirection: null,
+      cardValues: {
+        Ace: '1',
+        '2-King': '1',
+        Splits: '0',
+      },
+      nullReasons: {
+        targetScore: 'Game does not use target score.',
+        scoringDirection: 'Game does not use scoring direction.',
+      },
+      splitRules: 'When both cards of a turn match (e.g., Q-Q), the House takes exactly half of all bets placed on that rank, regardless of whether players bet to win or lose (copper). This is the sole house edge in honest Faro.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],
@@ -20,7 +44,7 @@
       '2-King': 1,
       Splits: 0,
     },
-    penalties: '{\n  "Exhausted Card": "No bets accepted on ranks that have all 4 cards drawn.",\n  "Split Loss": "Player loses 50% of bet value on a split."\n}',
+    penalties: '{"Exhausted Card":"No bets accepted on ranks that have all 4 cards drawn.","Split Loss":"Player loses 50% of bet value on a split."}',
     targetScore: null,
     scoringDirection: null,
     rankingAsset: {

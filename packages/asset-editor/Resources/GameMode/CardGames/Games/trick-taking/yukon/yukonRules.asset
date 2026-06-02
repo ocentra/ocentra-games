@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Yukon. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Yukon is a solitaire/patience card game similar to Klondike. 52 cards. 7 tableau columns. Key difference: can move ANY face-up card plus all cards covering it (no sequence required). No stock pile â€” all 52 cards dealt to tableau. Build foundations Aâ†’K by suit. Empty columns = Kings only.',
+    LLM: 'Move face-up cards + all covering cards (no sequence needed). Place on opposite color, 1 rank higher. Reveal face-down cards. Empty columns = Kings only. No stock. Build foundations Aâ†’K.',
+    Player: 'Move face-up cards + all covering cards (no sequence needed). Place on opposite color, 1 rank higher. Reveal face-down cards. Empty columns = Kings only. No stock. Build foundations Aâ†’K.',
     objective: 'Move all 52 cards onto four foundations, building each foundation in suit from Ace to King. Clear the tableau by building down in alternating colors and moving groups of face-up cards; only Kings may occupy empty columns.',
     gameplay: 'Move face-up cards + all covering cards (no sequence needed). Place on opposite color, 1 rank higher. Reveal face-down cards. Empty columns = Kings only. No stock. Build foundations Aâ†’K.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Win/loss. Many variants add point scoring. Expected outcome: Build 4 foundations Aâ†’K by suit..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Move all 52 cards onto four foundations, building each foundation in suit from Ace to King. Clear the tableau by building down in alternating colors and moving groups of face-up cards; only Kings may occupy empty columns.',
+      'Turn-flow example: Move face-up cards + all covering cards (no sequence needed). Place on opposite color, 1 rank higher. Reveal face-down cards. Empty columns = Kings only. No stock. Build foundations Aâ†’K.',
+      'Scoring example: Win/loss. Many variants add point scoring. Build 4 foundations Aâ†’K by suit..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'yukon.rules.objective',
+        title: 'Objective',
+        text: 'Move all 52 cards onto four foundations, building each foundation in suit from Ace to King. Clear the tableau by building down in alternating colors and moving groups of face-up cards; only Kings may occupy empty columns.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'yukon.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Move face-up cards + all covering cards (no sequence needed). Place on opposite color, 1 rank higher. Reveal face-down cards. Empty columns = Kings only. No stock. Build foundations Aâ†’K.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'yukon.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'yukon.setup.deck',
+        title: 'Deck',
+        text: '52 cards. All dealt to 7 columns. No stock.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'yukon.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'yukon.setup.dealing',
+        title: 'Deal',
+        text: '7 columns: col1=1 face-up. Cols 2-7: face-down cards + 5 face-up each.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'yukon.score.win-condition',
+        title: 'Win condition',
+        text: 'Build 4 foundations Aâ†’K by suit.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'yukon.score.description',
+        title: 'Scoring',
+        text: 'Win/loss. Many variants add point scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'yukon.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Move groups without sequence requirement',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'yukon.rules.key.2',
+        title: 'Key rule 2',
+        text: 'No stock pile',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'yukon.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Opposite color descending tableau',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'yukon.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Kings fill empty columns',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'yukon.rules.key.5',
+        title: 'Key rule 5',
+        text: 'All 52 dealt at start',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'yukon.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'yukon.rules.objective',
+          'yukon.rules.gameplay',
+        ],
+      },
+      {
+        id: 'yukon.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'yukon.setup.players',
+          'yukon.setup.deck',
+          'yukon.setup.equipment',
+          'yukon.setup.dealing',
+        ],
+      },
+      {
+        id: 'yukon.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'yukon.rules.key.1',
+          'yukon.rules.key.2',
+          'yukon.rules.key.3',
+          'yukon.rules.key.4',
+          'yukon.rules.key.5',
+        ],
+      },
+      {
+        id: 'yukon.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'yukon.score.description',
+          'yukon.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'yukon.setup.dealing',
+        'yukon.rules.objective',
+      ],
+      play_card: [
+        'yukon.rules.gameplay',
+      ],
+    },
   },
 }

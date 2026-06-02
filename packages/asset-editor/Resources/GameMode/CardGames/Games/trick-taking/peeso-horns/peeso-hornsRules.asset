@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Peeso (Estonian Horns). Logic: See rules.objective and rules.gameplay.',
-    Player: "Peeso is a popular Estonian social game, often described as a regional folk variant of the game '6 nimmt!'. Players simultaneous play cards into four rows on the table, following strict rules of ascending order and 'smallest difference'. If a player is forced to place the 6th card in a row, they must take the entire row as penalty points (called 'Sarved' or Horns). It is a game of risk management, psychological anticipation, and avoidant scoring.",
+    LLM: 'Each turn all players simultaneously choose one card and reveal them together. Cards are placed in ascending order onto one of four table rows: each card goes on the row whose end card is lower than the played card and closest in value (smallest difference). If a card is the 6th on a row, the player takes the five existing cards as penalty (Horns) and their card starts a new row. If the played card is lower than all row ends, the player chooses a row to take and their card starts that row. After 10 turns the round ends; players sum their Horn points. The game ends when someone reaches 66 or more points; the player with the fewest total points wins.',
+    Player: 'Each turn all players simultaneously choose one card and reveal them together. Cards are placed in ascending order onto one of four table rows: each card goes on the row whose end card is lower than the played card and closest in value (smallest difference). If a card is the 6th on a row, the player takes the five existing cards as penalty (Horns) and their card starts a new row. If the played card is lower than all row ends, the player chooses a row to take and their card starts that row. After 10 turns the round ends; players sum their Horn points. The game ends when someone reaches 66 or more points; the player with the fewest total points wins.',
     objective: 'Score the fewest points (Horns) by the end of the game.',
     gameplay: 'Each turn all players simultaneously choose one card and reveal them together. Cards are placed in ascending order onto one of four table rows: each card goes on the row whose end card is lower than the played card and closest in value (smallest difference). If a card is the 6th on a row, the player takes the five existing cards as penalty (Horns) and their card starts a new row. If the played card is lower than all row ends, the player chooses a row to take and their card starts that row. After 10 turns the round ends; players sum their Horn points. The game ends when someone reaches 66 or more points; the player with the fewest total points wins.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Score the fewest points (Horns) by the end of the game. Expected outcome: 66.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Score the fewest points (Horns) by the end of the game.',
+      'Turn-flow example: Each turn all players simultaneously choose one card and reveal them together. Cards are placed in ascending order onto one of four table rows: each card goes on the row whose end card is lower than the played card and closest in value (smallest difference). If a card is the 6th on a row, the player takes the five existing cards as penalty (Horns) and their card starts a new row. If the played card is lower than all row ends, the player chooses a row to take and their card starts that row. After 10 turns the round ends; players sum their Horn points. The game ends when someone reaches 66 or more points; the player with the fewest total points wins.',
+      'Scoring example: Score the fewest points (Horns) by the end of the game. Score the fewest points (Horns) by the end of the game. The game ends when any player reaches 66 or more total Horn points; the player with the fewest total points wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'peeso-horns.rules.objective',
+        title: 'Objective',
+        text: 'Score the fewest points (Horns) by the end of the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'peeso-horns.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Each turn all players simultaneously choose one card and reveal them together. Cards are placed in ascending order onto one of four table rows: each card goes on the row whose end card is lower than the played card and closest in value (smallest difference). If a card is the 6th on a row, the player takes the five existing cards as penalty (Horns) and their card starts a new row. If the played card is lower than all row ends, the player chooses a row to take and their card starts that row. After 10 turns the round ends; players sum their Horn points. The game ends when someone reaches 66 or more points; the player with the fewest total points wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'peeso-horns.setup.players',
+        title: 'Players',
+        text: '4-6 is the ideal range.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'peeso-horns.setup.deck',
+        title: 'Deck',
+        text: "104 cards numbered 1 to 104. Each card has a certain number of 'Horns' (points).",
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'peeso-horns.setup.equipment',
+        title: 'Equipment',
+        text: "104 cards numbered 1 to 104. Each card has a certain number of 'Horns' (points).",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'peeso-horns.setup.dealing',
+        title: 'Deal',
+        text: 'Each player gets 10 cards. Four cards are placed face-up in a vertical column to start the four rows.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'peeso-horns.score.win-condition',
+        title: 'Win condition',
+        text: 'Score the fewest points (Horns) by the end of the game. The game ends when any player reaches 66 or more total Horn points; the player with the fewest total points wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'peeso-horns.score.description',
+        title: 'Scoring',
+        text: 'Score the fewest points (Horns) by the end of the game.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'peeso-horns.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Play one card per turn simultaneously; cards resolved from lowest to highest.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'peeso-horns.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Place card on the row where the end card is lower than your card and closest in value.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'peeso-horns.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Placing the 6th card on a row: take the five cards as penalty (Horns), your card starts the row.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'peeso-horns.rules.key.4',
+        title: 'Key rule 4',
+        text: 'If your card is lower than all four row ends, choose a row to take; your card starts that row.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'peeso-horns.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Game ends when a player reaches 66 or more total Horn points; lowest total wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'peeso-horns.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'peeso-horns.rules.objective',
+          'peeso-horns.rules.gameplay',
+        ],
+      },
+      {
+        id: 'peeso-horns.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'peeso-horns.setup.players',
+          'peeso-horns.setup.deck',
+          'peeso-horns.setup.equipment',
+          'peeso-horns.setup.dealing',
+        ],
+      },
+      {
+        id: 'peeso-horns.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'peeso-horns.rules.key.1',
+          'peeso-horns.rules.key.2',
+          'peeso-horns.rules.key.3',
+          'peeso-horns.rules.key.4',
+          'peeso-horns.rules.key.5',
+        ],
+      },
+      {
+        id: 'peeso-horns.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'peeso-horns.score.description',
+          'peeso-horns.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'peeso-horns.setup.dealing',
+        'peeso-horns.rules.objective',
+      ],
+      play_card: [
+        'peeso-horns.rules.gameplay',
+      ],
+    },
   },
 }

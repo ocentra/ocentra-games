@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players summon monsters, set spells and traps, attack, and resolve chains according to official rules and card text. The card pool and names are proprietary.',
+    Player: 'Players summon monsters, set spells and traps, attack, and resolve chains according to official rules and card text. The card pool and names are proprietary.',
     objective: 'Reduce the opponent life points to zero or satisfy another official win condition.',
     gameplay: 'Players summon monsters, set spells and traps, attack, and resolve chains according to official rules and card text. The card pool and names are proprietary.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Reduce the opponent life points to zero or satisfy another official win condition.',
+      'Turn-flow example: Players summon monsters, set spells and traps, attack, and resolve chains according to official rules and card text. The card pool and names are proprietary.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'yu-gi-oh-trading-card-game.rules.objective',
+        title: 'Objective',
+        text: 'Reduce the opponent life points to zero or satisfy another official win condition.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'yu-gi-oh-trading-card-game.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players summon monsters, set spells and traps, attack, and resolve chains according to official rules and card text. The card pool and names are proprietary.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'yu-gi-oh-trading-card-game.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Yu-Gi-Oh Trading Card Game.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'yu-gi-oh-trading-card-game.setup.deck',
+        title: 'Deck',
+        text: 'Constructed Yu-Gi-Oh decks with monster, spell, and trap cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'yu-gi-oh-trading-card-game.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed Yu-Gi-Oh decks with monster, spell, and trap cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'yu-gi-oh-trading-card-game.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Constructed Yu-Gi-Oh decks with monster, spell, and trap cards and deal or lay out cards according to the documented Yu-Gi-Oh Trading Card Game rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'yu-gi-oh-trading-card-game.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'yu-gi-oh-trading-card-game.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'yu-gi-oh-trading-card-game.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two-player constructed deck duel.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'yu-gi-oh-trading-card-game.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Monster, spell, and trap cards define the main play types.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'yu-gi-oh-trading-card-game.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Official card text controls timing and effects.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'yu-gi-oh-trading-card-game.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'yu-gi-oh-trading-card-game.rules.objective',
+          'yu-gi-oh-trading-card-game.rules.gameplay',
+        ],
+      },
+      {
+        id: 'yu-gi-oh-trading-card-game.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'yu-gi-oh-trading-card-game.setup.players',
+          'yu-gi-oh-trading-card-game.setup.deck',
+          'yu-gi-oh-trading-card-game.setup.equipment',
+          'yu-gi-oh-trading-card-game.setup.dealing',
+        ],
+      },
+      {
+        id: 'yu-gi-oh-trading-card-game.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'yu-gi-oh-trading-card-game.rules.key.1',
+          'yu-gi-oh-trading-card-game.rules.key.2',
+          'yu-gi-oh-trading-card-game.rules.key.3',
+        ],
+      },
+      {
+        id: 'yu-gi-oh-trading-card-game.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'yu-gi-oh-trading-card-game.score.description',
+          'yu-gi-oh-trading-card-game.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'yu-gi-oh-trading-card-game.setup.dealing',
+        'yu-gi-oh-trading-card-game.rules.objective',
+      ],
+      play_card: [
+        'yu-gi-oh-trading-card-game.rules.gameplay',
+      ],
+    },
   },
 }

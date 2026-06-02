@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 27-28 dominoes. Logic: See rules.objective and rules.gameplay.',
-    Player: "27-28 dominoes refers to block or draw domino games using a standard double-6 set of 28 tiles (0-0 through 6-6). Players draw 7 tiles each (4 players); highest double leads. Players match a number on an open end; doubles are placed crosswise. Cannot play: draw from boneyard or pass. First to empty hand wins and scores sum of opponents' pips; or lowest hand wins if blocked.",
+    LLM: 'Highest double leads. In turn, match one number to an open end. Doubles placed crosswise. If cannot play, draw until you can or boneyard empty then pass.',
+    Player: 'Highest double leads. In turn, match one number to an open end. Doubles placed crosswise. If cannot play, draw until you can or boneyard empty then pass.',
     objective: 'Play all your tiles first, or have fewest pips if blocked.',
     gameplay: 'Highest double leads. In turn, match one number to an open end. Doubles placed crosswise. If cannot play, draw until you can or boneyard empty then pass.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      "Scoring check: Winner scores total pips in opponents' hands; or blocked game: lowest hand wins. Expected outcome: Play all your tiles first, or have fewest pips if blocked..",
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Play all your tiles first, or have fewest pips if blocked.',
+      'Turn-flow example: Highest double leads. In turn, match one number to an open end. Doubles placed crosswise. If cannot play, draw until you can or boneyard empty then pass.',
+      "Scoring example: Winner scores total pips in opponents' hands; or blocked game: lowest hand wins. Play all your tiles first, or have fewest pips if blocked..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '27-28-dominoes.rules.objective',
+        title: 'Objective',
+        text: 'Play all your tiles first, or have fewest pips if blocked.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '27-28-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Highest double leads. In turn, match one number to an open end. Doubles placed crosswise. If cannot play, draw until you can or boneyard empty then pass.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '27-28-dominoes.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '27-28-dominoes.setup.deck',
+        title: 'Deck',
+        text: '28 tiles (double-6)',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '27-28-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'Domino set, table',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '27-28-dominoes.setup.dealing',
+        title: 'Deal',
+        text: 'Draw 7 each (4 players); remainder is boneyard.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '27-28-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'Play all your tiles first, or have fewest pips if blocked.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '27-28-dominoes.score.description',
+        title: 'Scoring',
+        text: "Winner scores total pips in opponents' hands; or blocked game: lowest hand wins.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '27-28-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Match to open ends',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '27-28-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Doubles crosswise',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '27-28-dominoes.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Draw or pass if cannot play',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '27-28-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '27-28-dominoes.rules.objective',
+          '27-28-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: '27-28-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '27-28-dominoes.setup.players',
+          '27-28-dominoes.setup.deck',
+          '27-28-dominoes.setup.equipment',
+          '27-28-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: '27-28-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '27-28-dominoes.rules.key.1',
+          '27-28-dominoes.rules.key.2',
+          '27-28-dominoes.rules.key.3',
+        ],
+      },
+      {
+        id: '27-28-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '27-28-dominoes.score.description',
+          '27-28-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '27-28-dominoes.setup.dealing',
+        '27-28-dominoes.rules.objective',
+      ],
+      play_card: [
+        '27-28-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

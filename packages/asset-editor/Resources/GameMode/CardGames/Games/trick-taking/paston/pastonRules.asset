@@ -53,10 +53,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_paston before bidding.',
-      'Scoring check: Cumulative points per round; declarer scores +10 for six or more tricks, -10 for five or fewer; defenders score by tricks taken; multipliers apply for non-spade trumps. Expected outcome: 121.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Be the first player to reach 121 cumulative points.',
+      'Turn-flow example: Deal 10 cards to each player and 2 face-down to the prikup. Players bid by passing or naming a trump suit (Paston, Glitch, Dineri, Gupa, Paston grkha). Highest bidder becomes declarer, takes the prikup, discards two cards, and names trump. Declarer must take at least six tricks. Opponents may say whist (defend) or pass. Play: declarer leads; follow suit if possible, otherwise play a trump. Highest trump or highest card of led suit wins the trick; winner leads next. Scores are cumulative; game ends at 121 points.',
+      'Scoring example: Cumulative points per round; declarer scores +10 for six or more tricks, -10 for five or fewer; defenders score by tricks taken; multipliers apply for non-spade trumps. First player to reach 121 cumulative points wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'paston.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to reach 121 cumulative points.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'paston.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Deal 10 cards to each player and 2 face-down to the prikup. Players bid by passing or naming a trump suit (Paston, Glitch, Dineri, Gupa, Paston grkha). Highest bidder becomes declarer, takes the prikup, discards two cards, and names trump. Declarer must take at least six tricks. Opponents may say whist (defend) or pass. Play: declarer leads; follow suit if possible, otherwise play a trump. Highest trump or highest card of led suit wins the trick; winner leads next. Scores are cumulative; game ends at 121 points.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'paston.setup.players',
+        title: 'Players',
+        text: 'Three players; no partnerships. The game is played mainly in Armenia (e.g. Gyumri). Deal, bidding and play are clockwise; each player plays for themselves toward 121 points.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'paston.setup.deck',
+        title: 'Deck',
+        text: '32 cards (remove 2s through 6s).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'paston.setup.equipment',
+        title: 'Equipment',
+        text: '32 cards (remove 2s through 6s).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'paston.setup.dealing',
+        title: 'Deal',
+        text: "Each player receives 10 cards (often dealt 2 at a time). 2 cards are placed face-down in the 'Prikup'.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'paston.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach 121 cumulative points wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'paston.score.description',
+        title: 'Scoring',
+        text: 'Cumulative points per round; declarer scores +10 for six or more tricks, -10 for five or fewer; defenders score by tricks taken; multipliers apply for non-spade trumps.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'paston.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow suit if possible; if void, must play a trump.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'paston.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Declarer must take at least six tricks or scores penalty.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'paston.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trump ranking: Paston (spades) lowest, then Glitch, Dineri, Gupa, Paston grkha (best spades) highest.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'paston.rules.key.4',
+        title: 'Key rule 4',
+        text: 'When all pass in bidding, holder of Jack of spades (or 7 of spades if Jack in prikup) becomes declarer.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'paston.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'paston.rules.objective',
+          'paston.rules.gameplay',
+        ],
+      },
+      {
+        id: 'paston.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'paston.setup.players',
+          'paston.setup.deck',
+          'paston.setup.equipment',
+          'paston.setup.dealing',
+        ],
+      },
+      {
+        id: 'paston.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'paston.rules.key.1',
+          'paston.rules.key.2',
+          'paston.rules.key.3',
+          'paston.rules.key.4',
+        ],
+      },
+      {
+        id: 'paston.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'paston.score.description',
+          'paston.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'paston.setup.dealing',
+        'paston.rules.objective',
+      ],
+      play_card: [
+        'paston.rules.gameplay',
+      ],
+      pass: [
+        'paston.rules.gameplay',
+      ],
+      bid: [
+        'paston.rules.gameplay',
+      ],
+      deal_paston: [
+        'paston.rules.gameplay',
+      ],
+    },
   },
 }

@@ -52,10 +52,162 @@
       go_out: 'Allowed only when hand-empty condition is satisfied.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before main_play.',
-      'Scoring check: Scoring uses the documented rules for Durak Severnyi (Northern Durak) and determines round or match winners accordingly. Expected outcome: 1.',
+      'Setup example: 6 card(s) per player.',
+      "Rule example: Escape the 'Fool' (Durak) title by shedding all cards, especially during the chaotic trump-shift endgame.",
+      'Turn-flow example: 1. Standard Play: Follow Podkidnoy rules (Attacking, Defending, Throw-ins).\n2. Initial Trump: Use the face-up card suit for the first phase.\n3. The Shift: When the stock is empty, the player who draws the LAST (face-down) card reveals it.\n4. New Reality: The suit of that final card IMMEDIATELY becomes the new trump suit for the rest of the game.',
+      "Scoring example: Scoring uses the documented rules for Durak Severnyi (Northern Durak) and determines round or match winners accordingly. Escape the 'Fool' (Durak) title by shedding all cards, especially during the chaotic trump-shift endgame..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'durak-severnyi.rules.objective',
+        title: 'Objective',
+        text: "Escape the 'Fool' (Durak) title by shedding all cards, especially during the chaotic trump-shift endgame.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'durak-severnyi.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Standard Play: Follow Podkidnoy rules (Attacking, Defending, Throw-ins).\n2. Initial Trump: Use the face-up card suit for the first phase.\n3. The Shift: When the stock is empty, the player who draws the LAST (face-down) card reveals it.\n4. New Reality: The suit of that final card IMMEDIATELY becomes the new trump suit for the rest of the game.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'durak-severnyi.setup.players',
+        title: 'Players',
+        text: '2-6 players. Best with 3-4 to ensure the Secret Trump phase is reached.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'durak-severnyi.setup.deck',
+        title: 'Deck',
+        text: '36-card Russian pack (6, 7, 8, 9, 10, J, Q, K, A).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'durak-severnyi.setup.equipment',
+        title: 'Equipment',
+        text: '36-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'durak-severnyi.setup.dealing',
+        title: 'Deal',
+        text: '1. Each player is dealt 6 cards.\n2. One card is placed FACE-DOWN in the center.\n3. The next card is placed FACE-UP on top of it (The Initial Trump Suit).\n4. The stock is placed on top of these two cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'durak-severnyi.score.win-condition',
+        title: 'Win condition',
+        text: "Escape the 'Fool' (Durak) title by shedding all cards, especially during the chaotic trump-shift endgame.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'durak-severnyi.score.description',
+        title: 'Scoring',
+        text: 'Scoring uses the documented rules for Durak Severnyi (Northern Durak) and determines round or match winners accordingly.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'durak-severnyi.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The change of trump suit happens instantly; currently active attacks are resolved using the NEW suit.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'durak-severnyi.rules.key.2',
+        title: 'Key rule 2',
+        text: "If the face-down card matches the initial trump suit, nothing changes (a 'lucky North').",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'durak-severnyi.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Standard attack limits (6 cards) apply.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'durak-severnyi.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'durak-severnyi.rules.objective',
+          'durak-severnyi.rules.gameplay',
+        ],
+      },
+      {
+        id: 'durak-severnyi.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'durak-severnyi.setup.players',
+          'durak-severnyi.setup.deck',
+          'durak-severnyi.setup.equipment',
+          'durak-severnyi.setup.dealing',
+        ],
+      },
+      {
+        id: 'durak-severnyi.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'durak-severnyi.rules.key.1',
+          'durak-severnyi.rules.key.2',
+          'durak-severnyi.rules.key.3',
+        ],
+      },
+      {
+        id: 'durak-severnyi.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'durak-severnyi.score.description',
+          'durak-severnyi.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'durak-severnyi.setup.dealing',
+        'durak-severnyi.rules.objective',
+      ],
+      deal: [
+        'durak-severnyi.rules.gameplay',
+      ],
+      declare: [
+        'durak-severnyi.rules.gameplay',
+      ],
+      play_card: [
+        'durak-severnyi.rules.gameplay',
+      ],
+      draw: [
+        'durak-severnyi.rules.gameplay',
+      ],
+      pass: [
+        'durak-severnyi.rules.gameplay',
+      ],
+      go_out: [
+        'durak-severnyi.rules.gameplay',
+      ],
+    },
   },
 }

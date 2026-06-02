@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Vitou. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Vitou is a traditional NiÃ§ois (Nice, France) trick-taking/bluffing game related to Truc. 4 players in 2 teams. 32-card deck. 3 cards each. Ranking: 10-9-A-K-Q-J-8-7. NO suits, NO trumps. Best 2 of 3 tricks. Signals between partners ALLOWED. Raising stakes. First to 21 points wins.',
+    LLM: "3 tricks per round. No suits/trumps matter. Equal cards = 'en-pÃ¢te' (resolved by next trick). Partner signals ALLOWED (wink=10/9, pout=A, cheek rub=K). Raising stakes possible. Decline raise = lose 1pt.",
+    Player: "3 tricks per round. No suits/trumps matter. Equal cards = 'en-pÃ¢te' (resolved by next trick). Partner signals ALLOWED (wink=10/9, pout=A, cheek rub=K). Raising stakes possible. Decline raise = lose 1pt.",
     objective: 'Win rounds by taking best two of three tricks; first team to 21 points wins the game.',
     gameplay: "3 tricks per round. No suits/trumps matter. Equal cards = 'en-pÃ¢te' (resolved by next trick). Partner signals ALLOWED (wink=10/9, pout=A, cheek rub=K). Raising stakes possible. Decline raise = lose 1pt.",
     keyRules: [
@@ -54,10 +54,171 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: Win round = 1pt. Raise refused = 1pt for raiser. Raised and won = 1pt. Raised and lost = 3pts to opponent. First to 21. Expected outcome: 21.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Win rounds by taking best two of three tricks; first team to 21 points wins the game.',
+      "Turn-flow example: 3 tricks per round. No suits/trumps matter. Equal cards = 'en-pÃ¢te' (resolved by next trick). Partner signals ALLOWED (wink=10/9, pout=A, cheek rub=K). Raising stakes possible. Decline raise = lose 1pt.",
+      'Scoring example: Win round = 1pt. Raise refused = 1pt for raiser. Raised and won = 1pt. Raised and lost = 3pts to opponent. First to 21. First team to 21 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'vitou.rules.objective',
+        title: 'Objective',
+        text: 'Win rounds by taking best two of three tricks; first team to 21 points wins the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'vitou.rules.gameplay',
+        title: 'Turn flow',
+        text: "3 tricks per round. No suits/trumps matter. Equal cards = 'en-pÃ¢te' (resolved by next trick). Partner signals ALLOWED (wink=10/9, pout=A, cheek rub=K). Raising stakes possible. Decline raise = lose 1pt.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'vitou.setup.players',
+        title: 'Players',
+        text: '4 (2 teams) or 2',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'vitou.setup.deck',
+        title: 'Deck',
+        text: '32 cards. Rank: 10-9-A-K-Q-J-8-7. Suits irrelevant.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'vitou.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'vitou.setup.dealing',
+        title: 'Deal',
+        text: '3 cards each, clockwise. First dealer: lowest card from draw.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'vitou.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to 21 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'vitou.score.description',
+        title: 'Scoring',
+        text: 'Win round = 1pt. Raise refused = 1pt for raiser. Raised and won = 1pt. Raised and lost = 3pts to opponent. First to 21.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'vitou.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No suits/trumps',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'vitou.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Signals allowed',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'vitou.rules.key.3',
+        title: 'Key rule 3',
+        text: 'En-pÃ¢te ties',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'vitou.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Raising mechanic',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'vitou.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Napolitaine (10-9-A)',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'vitou.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'vitou.rules.objective',
+          'vitou.rules.gameplay',
+        ],
+      },
+      {
+        id: 'vitou.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'vitou.setup.players',
+          'vitou.setup.deck',
+          'vitou.setup.equipment',
+          'vitou.setup.dealing',
+        ],
+      },
+      {
+        id: 'vitou.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'vitou.rules.key.1',
+          'vitou.rules.key.2',
+          'vitou.rules.key.3',
+          'vitou.rules.key.4',
+          'vitou.rules.key.5',
+        ],
+      },
+      {
+        id: 'vitou.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'vitou.score.description',
+          'vitou.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'vitou.setup.dealing',
+        'vitou.rules.objective',
+      ],
+      deal: [
+        'vitou.rules.gameplay',
+      ],
+      play_card: [
+        'vitou.rules.gameplay',
+      ],
+      end_round: [
+        'vitou.rules.gameplay',
+      ],
+    },
   },
 }

@@ -52,10 +52,162 @@
       go_out: 'Double BriÅ¡kula is modeled as a Rummy flow; go out is not a core player action in its documented rules.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before main_play.',
-      'Scoring check: Scoring uses the documented rules for Double BriÅ¡kula and determines round or match winners accordingly. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Score more than 60 points (out of 120 total) by capturing high-value cards in tricks.',
+      "Turn-flow example: 1. Two Sub-Rounds: Each player plays one card face-up (Round 1), and then everyone plays a second card (Round 2) to complete the 'Double Trick'.\n2. Trump Priority: The highest trump card played in the double trick wins all cards. If no trumps are played, the highest card of the led suit wins.\n3. Following Suit: There is NO requirement to follow suit. You may play a trump or any other suit at any time.",
+      'Scoring example: Scoring uses the documented rules for Double BriÅ¡kula and determines round or match winners accordingly. Score more than 60 points (out of 120 total) by capturing high-value cards in tricks..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'double-bri-kula.rules.objective',
+        title: 'Objective',
+        text: 'Score more than 60 points (out of 120 total) by capturing high-value cards in tricks.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'double-bri-kula.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Two Sub-Rounds: Each player plays one card face-up (Round 1), and then everyone plays a second card (Round 2) to complete the 'Double Trick'.\n2. Trump Priority: The highest trump card played in the double trick wins all cards. If no trumps are played, the highest card of the led suit wins.\n3. Following Suit: There is NO requirement to follow suit. You may play a trump or any other suit at any time.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'double-bri-kula.setup.players',
+        title: 'Players',
+        text: '4 players in two partnerships (North-South vs East-West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'double-bri-kula.setup.deck',
+        title: 'Deck',
+        text: '40ndcard deck (Standard 52 minus 8s, 9s, 10s). Suits: Coins, Cups, Batons, Swords.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'double-bri-kula.setup.equipment',
+        title: 'Equipment',
+        text: '40ndcard deck, score pad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'double-bri-kula.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer deals 4 cards to each player. A single card is turned facendup to indicate the Trump (Briscola) suit.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'double-bri-kula.score.win-condition',
+        title: 'Win condition',
+        text: 'Score more than 60 points (out of 120 total) by capturing high-value cards in tricks.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'double-bri-kula.score.description',
+        title: 'Scoring',
+        text: 'Scoring uses the documented rules for Double BriÅ¡kula and determines round or match winners accordingly.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'double-bri-kula.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The winner of a trick draws first from the deck, followed by others clockwise.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'double-bri-kula.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Communication: In a partnership, the last person to play for each side often signals their cards to their partner (often using traditional gestures or coded phrases).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'double-bri-kula.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning the last trick gives you the facendup trump card.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'double-bri-kula.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'double-bri-kula.rules.objective',
+          'double-bri-kula.rules.gameplay',
+        ],
+      },
+      {
+        id: 'double-bri-kula.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'double-bri-kula.setup.players',
+          'double-bri-kula.setup.deck',
+          'double-bri-kula.setup.equipment',
+          'double-bri-kula.setup.dealing',
+        ],
+      },
+      {
+        id: 'double-bri-kula.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'double-bri-kula.rules.key.1',
+          'double-bri-kula.rules.key.2',
+          'double-bri-kula.rules.key.3',
+        ],
+      },
+      {
+        id: 'double-bri-kula.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'double-bri-kula.score.description',
+          'double-bri-kula.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'double-bri-kula.setup.dealing',
+        'double-bri-kula.rules.objective',
+      ],
+      deal: [
+        'double-bri-kula.rules.gameplay',
+      ],
+      declare: [
+        'double-bri-kula.rules.gameplay',
+      ],
+      play_card: [
+        'double-bri-kula.rules.gameplay',
+      ],
+      draw: [
+        'double-bri-kula.rules.gameplay',
+      ],
+      discard: [
+        'double-bri-kula.rules.gameplay',
+      ],
+      meld: [
+        'double-bri-kula.rules.gameplay',
+      ],
+    },
   },
 }

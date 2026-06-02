@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Duchess. Logic: Build all cards to foundations by suit.',
-    Player: 'Duchess, also known as Glenwood, is a one-deck reserved-packer patience in the Demon family.',
+    LLM: 'Move exposed tableau and reserve cards to foundations or legal tableau positions, using the stock and waste to release needed ranks.',
+    Player: 'Move exposed tableau and reserve cards to foundations or legal tableau positions, using the stock and waste to release needed ranks.',
     objective: 'Build every card from the one-deck layout onto the suit foundations while using the reserve, tableau, stock, and waste without blocking required ranks.',
     gameplay: 'Move exposed tableau and reserve cards to foundations or legal tableau positions, using the stock and waste to release needed ranks.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: The game is won when every card reaches the foundations. Expected outcome: Build all cards to foundations by suit..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Build every card from the one-deck layout onto the suit foundations while using the reserve, tableau, stock, and waste without blocking required ranks.',
+      'Turn-flow example: Move exposed tableau and reserve cards to foundations or legal tableau positions, using the stock and waste to release needed ranks.',
+      'Scoring example: The game is won when every card reaches the foundations. Build all cards to foundations by suit..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'duchess.rules.objective',
+        title: 'Objective',
+        text: 'Build every card from the one-deck layout onto the suit foundations while using the reserve, tableau, stock, and waste without blocking required ranks.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'duchess.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Move exposed tableau and reserve cards to foundations or legal tableau positions, using the stock and waste to release needed ranks.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'duchess.setup.players',
+        title: 'Players',
+        text: '1 players use the table arrangement described for Duchess.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'duchess.setup.deck',
+        title: 'Deck',
+        text: '52-card standard pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'duchess.setup.equipment',
+        title: 'Equipment',
+        text: '52-card standard pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'duchess.setup.dealing',
+        title: 'Deal',
+        text: 'Deal the reserve and tableau from one deck, then start foundations from the permitted base rank.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'duchess.score.win-condition',
+        title: 'Win condition',
+        text: 'Build all cards to foundations by suit.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'duchess.score.description',
+        title: 'Scoring',
+        text: 'The game is won when every card reaches the foundations.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'duchess.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Single deck.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'duchess.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Reserve and tableau are both used.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'duchess.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Foundations build by suit.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'duchess.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Stock and waste control access to hidden cards.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'duchess.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'duchess.rules.objective',
+          'duchess.rules.gameplay',
+        ],
+      },
+      {
+        id: 'duchess.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'duchess.setup.players',
+          'duchess.setup.deck',
+          'duchess.setup.equipment',
+          'duchess.setup.dealing',
+        ],
+      },
+      {
+        id: 'duchess.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'duchess.rules.key.1',
+          'duchess.rules.key.2',
+          'duchess.rules.key.3',
+          'duchess.rules.key.4',
+        ],
+      },
+      {
+        id: 'duchess.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'duchess.score.description',
+          'duchess.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'duchess.setup.dealing',
+        'duchess.rules.objective',
+      ],
+      deal: [
+        'duchess.rules.gameplay',
+      ],
+      play_card: [
+        'duchess.rules.gameplay',
+      ],
+      draw: [
+        'duchess.rules.gameplay',
+      ],
+    },
   },
 }

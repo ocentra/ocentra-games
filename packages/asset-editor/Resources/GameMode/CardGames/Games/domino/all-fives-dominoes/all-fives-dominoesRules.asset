@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: All Fives (Dominoes). Type: Point-oriented Tile Game. Rules: Sum of open ends must be multiple of 5. Spinner creates 4 ends. Hand winner gets rounded opponent pips. Boneyard draw allowed if blocked.',
-    Player: 'Welcome to All Fives. You have 7 tiles. Match the pips on layout ends. If the ends add up to a multiple of 5, you score that value. The first double is the spinner and can open four arms.',
+    LLM: "1. **Leading**: Any tile can be led. 2. **Matching**: Subsequent tiles must match the pips of an open end. 3. **Doubles**: Placed crosswise. They count as the sum of their pips until matched on both sides. 4. **The Spinner**: The first double played is the 'Spinner'. Once matched on its sides, tiles can be played off its ends, creating 4 open ends. 5. **Scoring**: After playing a tile, sum all open ends. If the total is a multiple of 5 (5, 10, 15, 20, etc.), the player immediately scores that many points. 6. **Boneyard**: If you cannot play, you must draw from the boneyard until you can. 7. **Dominoing**: The hand ends when a player uses their last tile. They score the remaining pips in their opponents' hands (rounded to the nearest 5).",
+    Player: "1. **Leading**: Any tile can be led. 2. **Matching**: Subsequent tiles must match the pips of an open end. 3. **Doubles**: Placed crosswise. They count as the sum of their pips until matched on both sides. 4. **The Spinner**: The first double played is the 'Spinner'. Once matched on its sides, tiles can be played off its ends, creating 4 open ends. 5. **Scoring**: After playing a tile, sum all open ends. If the total is a multiple of 5 (5, 10, 15, 20, etc.), the player immediately scores that many points. 6. **Boneyard**: If you cannot play, you must draw from the boneyard until you can. 7. **Dominoing**: The hand ends when a player uses their last tile. They score the remaining pips in their opponents' hands (rounded to the nearest 5).",
     objective: 'Be the first to reach the target score (usually 100, 200, or 250) by creating end-totals that are multiples of five.',
     gameplay: "1. **Leading**: Any tile can be led. 2. **Matching**: Subsequent tiles must match the pips of an open end. 3. **Doubles**: Placed crosswise. They count as the sum of their pips until matched on both sides. 4. **The Spinner**: The first double played is the 'Spinner'. Once matched on its sides, tiles can be played off its ends, creating 4 open ends. 5. **Scoring**: After playing a tile, sum all open ends. If the total is a multiple of 5 (5, 10, 15, 20, etc.), the player immediately scores that many points. 6. **Boneyard**: If you cannot play, you must draw from the boneyard until you can. 7. **Dominoing**: The hand ends when a player uses their last tile. They score the remaining pips in their opponents' hands (rounded to the nearest 5).",
     keyRules: [
@@ -53,10 +53,168 @@
       go_out: 'Hand ends when a player dominoes (plays last tile) or game is blocked.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play_tiles.',
-      'Scoring check: Points are scored both during play and at the end of the hand. Expected outcome: 250.',
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Be the first to reach the target score (usually 100, 200, or 250) by creating end-totals that are multiples of five.',
+      "Turn-flow example: 1. **Leading**: Any tile can be led. 2. **Matching**: Subsequent tiles must match the pips of an open end. 3. **Doubles**: Placed crosswise. They count as the sum of their pips until matched on both sides. 4. **The Spinner**: The first double played is the 'Spinner'. Once matched on its sides, tiles can be played off its ends, creating 4 open ends. 5. **Scoring**: After playing a tile, sum all open ends. If the total is a multiple of 5 (5, 10, 15, 20, etc.), the player immediately scores that many points. 6. **Boneyard**: If you cannot play, you must draw from the boneyard until you can. 7. **Dominoing**: The hand ends when a player uses their last tile. They score the remaining pips in their opponents' hands (rounded to the nearest 5).",
+      'Scoring example: Points are scored both during play and at the end of the hand. First player/team to reach 250 points (standard) Wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'all-fives-dominoes.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to reach the target score (usually 100, 200, or 250) by creating end-totals that are multiples of five.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'all-fives-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Leading**: Any tile can be led. 2. **Matching**: Subsequent tiles must match the pips of an open end. 3. **Doubles**: Placed crosswise. They count as the sum of their pips until matched on both sides. 4. **The Spinner**: The first double played is the 'Spinner'. Once matched on its sides, tiles can be played off its ends, creating 4 open ends. 5. **Scoring**: After playing a tile, sum all open ends. If the total is a multiple of 5 (5, 10, 15, 20, etc.), the player immediately scores that many points. 6. **Boneyard**: If you cannot play, you must draw from the boneyard until you can. 7. **Dominoing**: The hand ends when a player uses their last tile. They score the remaining pips in their opponents' hands (rounded to the nearest 5).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'all-fives-dominoes.setup.players',
+        title: 'Players',
+        text: '2 players (7 tiles each) or 4 players in partnerships (5 tiles each).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'all-fives-dominoes.setup.deck',
+        title: 'Deck',
+        text: 'Standard 28-tile double-six set, from 0-0 to 6-6.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'all-fives-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'Domino set, score sheet or scoreboard.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'all-fives-dominoes.setup.dealing',
+        title: 'Deal',
+        text: "Tiles are 'washed' (shuffled) face down. Players draw their hand; remaining tiles are the 'Boneyard'.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'all-fives-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'First player/team to reach 250 points (standard) Wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'all-fives-dominoes.score.description',
+        title: 'Scoring',
+        text: 'Points are scored both during play and at the end of the hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'all-fives-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must play if able. You cannot draw from the boneyard if you have a legal play.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'all-fives-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: "Only the first double is a spinner. All other doubles are 'dead' once matched.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'all-fives-dominoes.rules.key.3',
+        title: 'Key rule 3',
+        text: "Muggins: If a player fails to claim a scoring total, an opponent may shout 'Muggins!' and take the points for themselves.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'all-fives-dominoes.rules.key.4',
+        title: 'Key rule 4',
+        text: 'If the game is blocked (no one can play), the player with the lowest pip total wins the hand bonus.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'all-fives-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'all-fives-dominoes.rules.objective',
+          'all-fives-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: 'all-fives-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'all-fives-dominoes.setup.players',
+          'all-fives-dominoes.setup.deck',
+          'all-fives-dominoes.setup.equipment',
+          'all-fives-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: 'all-fives-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'all-fives-dominoes.rules.key.1',
+          'all-fives-dominoes.rules.key.2',
+          'all-fives-dominoes.rules.key.3',
+          'all-fives-dominoes.rules.key.4',
+        ],
+      },
+      {
+        id: 'all-fives-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'all-fives-dominoes.score.description',
+          'all-fives-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'all-fives-dominoes.setup.dealing',
+        'all-fives-dominoes.rules.objective',
+      ],
+      deal: [
+        'all-fives-dominoes.rules.gameplay',
+      ],
+      award_pot: [
+        'all-fives-dominoes.rules.gameplay',
+      ],
+      play_card: [
+        'all-fives-dominoes.rules.gameplay',
+      ],
+      draw: [
+        'all-fives-dominoes.rules.gameplay',
+      ],
+      pass: [
+        'all-fives-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

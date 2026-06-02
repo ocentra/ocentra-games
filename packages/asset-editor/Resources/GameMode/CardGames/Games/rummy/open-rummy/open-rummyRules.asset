@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Open Rummy. 4-6p partnerships. 3-4 decks. Sequences: 3+ consecutive, max 3 jokers. Groups: 3+ Aces or 3+ Threes only. Draw from discard = play one. Show: 5 complete sets, 1 pure. Target 1500.',
-    Player: 'Open Rummy: Partners sit alternately. Draw one from stock or take from discard (must play one). Sequences need 1 natural, max 3 jokers. Only Aces and Threes form groups. Show needs 5 complete sets, 1 pure. First to 1,500 wins.',
+    LLM: '1. Turn order: discard (compulsory) â†’ play combinations (optional) â†’ draw (compulsory). 2. Draw: one from closed pile OR any number from discard pile (if at least one drawn card is immediately played). 3. Combinations: sequences (3+ consecutive same suit; max 3 jokers, min 1 natural); groups of 3+ Threes or 3+ Aces (no jokers). 4. Printed jokers can be replaced by natural cards and reused; sliding jokers (Twos) stay in sequence when replaced, slid to one end. 5. To declare show: team must have 5+ complete sets, at least one pure (no jokers). Wrong show = 0 for declaring team. 6. Ground show: when draw pile empties, player may declare or draw from discard and play one turn.',
+    Player: '1. Turn order: discard (compulsory) â†’ play combinations (optional) â†’ draw (compulsory). 2. Draw: one from closed pile OR any number from discard pile (if at least one drawn card is immediately played). 3. Combinations: sequences (3+ consecutive same suit; max 3 jokers, min 1 natural); groups of 3+ Threes or 3+ Aces (no jokers). 4. Printed jokers can be replaced by natural cards and reused; sliding jokers (Twos) stay in sequence when replaced, slid to one end. 5. To declare show: team must have 5+ complete sets, at least one pure (no jokers). Wrong show = 0 for declaring team. 6. Ground show: when draw pile empties, player may declare or draw from discard and play one turn.',
     objective: 'First team to reach 1,500 points (4-deck standard). Score from cards on table, opponent unplayed cards, complete-set bonuses, suited-group bonuses, and show bonus.',
     gameplay: '1. Turn order: discard (compulsory) â†’ play combinations (optional) â†’ draw (compulsory). 2. Draw: one from closed pile OR any number from discard pile (if at least one drawn card is immediately played). 3. Combinations: sequences (3+ consecutive same suit; max 3 jokers, min 1 natural); groups of 3+ Threes or 3+ Aces (no jokers). 4. Printed jokers can be replaced by natural cards and reused; sliding jokers (Twos) stay in sequence when replaced, slid to one end. 5. To declare show: team must have 5+ complete sets, at least one pure (no jokers). Wrong show = 0 for declaring team. 6. Ground show: when draw pile empties, player may declare or draw from discard and play one turn.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-6 player(s), 45 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Cumulative team score. Card values: 3-6=0.5, 7-K=1, A=1.5, 2=2, joker=4. Bonuses for complete sets, suited groups. Show bonus 20. Expected outcome: 1500.',
+      'Setup example: 45 card(s) per player.',
+      'Rule example: First team to reach 1,500 points (4-deck standard). Score from cards on table, opponent unplayed cards, complete-set bonuses, suited-group bonuses, and show bonus.',
+      'Turn-flow example: 1. Turn order: discard (compulsory) â†’ play combinations (optional) â†’ draw (compulsory). 2. Draw: one from closed pile OR any number from discard pile (if at least one drawn card is immediately played). 3. Combinations: sequences (3+ consecutive same suit; max 3 jokers, min 1 natural); groups of 3+ Threes or 3+ Aces (no jokers). 4. Printed jokers can be replaced by natural cards and reused; sliding jokers (Twos) stay in sequence when replaced, slid to one end. 5. To declare show: team must have 5+ complete sets, at least one pure (no jokers). Wrong show = 0 for declaring team. 6. Ground show: when draw pile empties, player may declare or draw from discard and play one turn.',
+      'Scoring example: Cumulative team score. Card values: 3-6=0.5, 7-K=1, A=1.5, 2=2, joker=4. Bonuses for complete sets, suited groups. Show bonus 20. First team to 1,500 points. Tie if both exceed in same show..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'open-rummy.rules.objective',
+        title: 'Objective',
+        text: 'First team to reach 1,500 points (4-deck standard). Score from cards on table, opponent unplayed cards, complete-set bonuses, suited-group bonuses, and show bonus.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'open-rummy.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Turn order: discard (compulsory) â†’ play combinations (optional) â†’ draw (compulsory). 2. Draw: one from closed pile OR any number from discard pile (if at least one drawn card is immediately played). 3. Combinations: sequences (3+ consecutive same suit; max 3 jokers, min 1 natural); groups of 3+ Threes or 3+ Aces (no jokers). 4. Printed jokers can be replaced by natural cards and reused; sliding jokers (Twos) stay in sequence when replaced, slid to one end. 5. To declare show: team must have 5+ complete sets, at least one pure (no jokers). Wrong show = 0 for declaring team. 6. Ground show: when draw pile empties, player may declare or draw from discard and play one turn.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'open-rummy.setup.players',
+        title: 'Players',
+        text: "4 or 6 players in two teams; partners sit alternately (each player between two opponents). No peeking at partner's cards or communication.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'open-rummy.setup.deck',
+        title: 'Deck',
+        text: '3 or 4 standard decks plus printed jokers (peeniya/khabuchiya); all Twos are sliding jokers (duggi). Cards rank 3-A.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'open-rummy.setup.equipment',
+        title: 'Equipment',
+        text: 'Multiple decks, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'open-rummy.setup.dealing',
+        title: 'Deal',
+        text: "First dealer chosen randomly; deal rotates left. Dealer shuffles, opponent to dealer's right cuts. 45 cards each (4-player, 4-deck); 40 remain as closed pile. Top card turned face-up to start discard pile.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'open-rummy.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to 1,500 points. Tie if both exceed in same show.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'open-rummy.score.description',
+        title: 'Scoring',
+        text: 'Cumulative team score. Card values: 3-6=0.5, 7-K=1, A=1.5, 2=2, joker=4. Bonuses for complete sets, suited groups. Show bonus 20.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'open-rummy.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Only Aces and Threes form equal-card groups.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'open-rummy.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Sequences: max 3 jokers, min 1 natural per sequence.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'open-rummy.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Taking from discard: must play at least one drawn card immediately.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'open-rummy.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Show requires 5 complete sets (12 cards 3-A per suit), 1 pure.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'open-rummy.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Partners cannot share meld area; each player has own area.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'open-rummy.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'open-rummy.rules.objective',
+          'open-rummy.rules.gameplay',
+        ],
+      },
+      {
+        id: 'open-rummy.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'open-rummy.setup.players',
+          'open-rummy.setup.deck',
+          'open-rummy.setup.equipment',
+          'open-rummy.setup.dealing',
+        ],
+      },
+      {
+        id: 'open-rummy.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'open-rummy.rules.key.1',
+          'open-rummy.rules.key.2',
+          'open-rummy.rules.key.3',
+          'open-rummy.rules.key.4',
+          'open-rummy.rules.key.5',
+        ],
+      },
+      {
+        id: 'open-rummy.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'open-rummy.score.description',
+          'open-rummy.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'open-rummy.setup.dealing',
+        'open-rummy.rules.objective',
+      ],
+      play_card: [
+        'open-rummy.rules.gameplay',
+      ],
+    },
   },
 }

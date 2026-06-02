@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Einwerfen. Logic: Win more card points than the opposing partnership through trick play.',
-    Player: 'Einwerfen, also called Zahlspiel, is a German eight-card point-trick game for four players in two partnerships.',
+    LLM: 'Players follow suit when able, tricks are won by the highest card of the led suit or trump if applicable, and teams count captured card points.',
+    Player: 'Players follow suit when able, tricks are won by the highest card of the led suit or trump if applicable, and teams count captured card points.',
     objective: 'Win more card points than the opposing partnership through trick play.',
     gameplay: 'Players follow suit when able, tricks are won by the highest card of the led suit or trump if applicable, and teams count captured card points.',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Partnerships compare card points captured in tricks. Expected outcome: Win more card points than the opposing partnership through trick play..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win more card points than the opposing partnership through trick play.',
+      'Turn-flow example: Players follow suit when able, tricks are won by the highest card of the led suit or trump if applicable, and teams count captured card points.',
+      'Scoring example: Partnerships compare card points captured in tricks. Win more card points than the opposing partnership through trick play..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'einwerfen.rules.objective',
+        title: 'Objective',
+        text: 'Win more card points than the opposing partnership through trick play.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'einwerfen.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players follow suit when able, tricks are won by the highest card of the led suit or trump if applicable, and teams count captured card points.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'einwerfen.setup.players',
+        title: 'Players',
+        text: '4 in two teams players use the table arrangement described for Einwerfen.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'einwerfen.setup.deck',
+        title: 'Deck',
+        text: '32-card German-suited pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'einwerfen.setup.equipment',
+        title: 'Equipment',
+        text: '32-card German-suited pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'einwerfen.setup.dealing',
+        title: 'Deal',
+        text: 'Deal eight cards to each player from a 32-card German pack.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'einwerfen.score.win-condition',
+        title: 'Win condition',
+        text: 'Win more card points than the opposing partnership through trick play.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'einwerfen.score.description',
+        title: 'Scoring',
+        text: 'Partnerships compare card points captured in tricks.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'einwerfen.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Four players in two teams.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'einwerfen.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Each player receives eight cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'einwerfen.rules.key.3',
+        title: 'Key rule 3',
+        text: '32-card German pack.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'einwerfen.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Point cards captured in tricks decide the hand.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'einwerfen.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Closest relative noted is Sueca.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'einwerfen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'einwerfen.rules.objective',
+          'einwerfen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'einwerfen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'einwerfen.setup.players',
+          'einwerfen.setup.deck',
+          'einwerfen.setup.equipment',
+          'einwerfen.setup.dealing',
+        ],
+      },
+      {
+        id: 'einwerfen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'einwerfen.rules.key.1',
+          'einwerfen.rules.key.2',
+          'einwerfen.rules.key.3',
+          'einwerfen.rules.key.4',
+          'einwerfen.rules.key.5',
+        ],
+      },
+      {
+        id: 'einwerfen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'einwerfen.score.description',
+          'einwerfen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'einwerfen.setup.dealing',
+        'einwerfen.rules.objective',
+      ],
+      play_card: [
+        'einwerfen.rules.gameplay',
+      ],
+      discard: [
+        'einwerfen.rules.gameplay',
+      ],
+      pass: [
+        'einwerfen.rules.gameplay',
+      ],
+      bid: [
+        'einwerfen.rules.gameplay',
+      ],
+    },
   },
 }

@@ -55,10 +55,186 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 12 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_12_each before bid.',
-      'Scoring check: Meld points (runs, marriages, pinochles, arounds, dix) plus trick points (aces and tens 10 each, kings and queens 5 each, last trick 10). Bidding team must make at least their bid or be set (bid subtracted). Expected outcome: 1000.',
+      'Setup example: 12 card(s) per player.',
+      'Rule example: Reach the agreed target score (typically 1000 or 1500) by combining meld points and trick points. Bid to name trump; the bidding team must make at least their bid (meld plus trick points) or be set.',
+      'Turn-flow example: Deal 12 cards each. Auction: players bid in turn; high bidder declares trump. All players meld (runs, marriages, pinochles, arounds); points counted. High bidder leads; follow suit if possible, must trump if void; identical cards rank first-played. Trick points plus meld must meet or exceed the bid for the bidding team. First partnership to reach target wins.',
+      'Scoring example: Meld points (runs, marriages, pinochles, arounds, dix) plus trick points (aces and tens 10 each, kings and queens 5 each, last trick 10). Bidding team must make at least their bid or be set (bid subtracted). First partnership to reach the agreed target score (typically 1000 or 1500) wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pinochle-single-deck-partnership.rules.objective',
+        title: 'Objective',
+        text: 'Reach the agreed target score (typically 1000 or 1500) by combining meld points and trick points. Bid to name trump; the bidding team must make at least their bid (meld plus trick points) or be set.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pinochle-single-deck-partnership.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Deal 12 cards each. Auction: players bid in turn; high bidder declares trump. All players meld (runs, marriages, pinochles, arounds); points counted. High bidder leads; follow suit if possible, must trump if void; identical cards rank first-played. Trick points plus meld must meet or exceed the bid for the bidding team. First partnership to reach target wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pinochle-single-deck-partnership.setup.players',
+        title: 'Players',
+        text: '4 in partnerships',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pinochle-single-deck-partnership.setup.deck',
+        title: 'Deck',
+        text: '48-card Pinochle deck: twelve cards per suit (two each of 9, 10, Jack, Queen, King, Ace) in all four French suits.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pinochle-single-deck-partnership.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 48-card Pinochle deck (two copies of 9 through Ace in each suit).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pinochle-single-deck-partnership.setup.dealing',
+        title: 'Deal',
+        text: "All 48 cards dealt clockwise in packets of three or four, starting with the player to the dealer's left (eldest hand). Each player receives 12 cards. Deal rotates clockwise each hand.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pinochle-single-deck-partnership.score.win-condition',
+        title: 'Win condition',
+        text: 'First partnership to reach the agreed target score (typically 1000 or 1500) wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pinochle-single-deck-partnership.score.description',
+        title: 'Scoring',
+        text: 'Meld points (runs, marriages, pinochles, arounds, dix) plus trick points (aces and tens 10 each, kings and queens 5 each, last trick 10). Bidding team must make at least their bid or be set (bid subtracted).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pinochle-single-deck-partnership.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Partnership',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pinochle-single-deck-partnership.rules.key.2',
+        title: 'Key rule 2',
+        text: 'single deck',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pinochle-single-deck-partnership.rules.key.3',
+        title: 'Key rule 3',
+        text: 'bid to declare trump',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pinochle-single-deck-partnership.rules.key.4',
+        title: 'Key rule 4',
+        text: 'meld then tricks',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'pinochle-single-deck-partnership.rules.key.5',
+        title: 'Key rule 5',
+        text: 'follow suit',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'pinochle-single-deck-partnership.rules.key.6',
+        title: 'Key rule 6',
+        text: 'must overtake when required',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pinochle-single-deck-partnership.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pinochle-single-deck-partnership.rules.objective',
+          'pinochle-single-deck-partnership.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pinochle-single-deck-partnership.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pinochle-single-deck-partnership.setup.players',
+          'pinochle-single-deck-partnership.setup.deck',
+          'pinochle-single-deck-partnership.setup.equipment',
+          'pinochle-single-deck-partnership.setup.dealing',
+        ],
+      },
+      {
+        id: 'pinochle-single-deck-partnership.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pinochle-single-deck-partnership.rules.key.1',
+          'pinochle-single-deck-partnership.rules.key.2',
+          'pinochle-single-deck-partnership.rules.key.3',
+          'pinochle-single-deck-partnership.rules.key.4',
+          'pinochle-single-deck-partnership.rules.key.5',
+          'pinochle-single-deck-partnership.rules.key.6',
+        ],
+      },
+      {
+        id: 'pinochle-single-deck-partnership.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pinochle-single-deck-partnership.score.description',
+          'pinochle-single-deck-partnership.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pinochle-single-deck-partnership.setup.dealing',
+        'pinochle-single-deck-partnership.rules.objective',
+      ],
+      play_card: [
+        'pinochle-single-deck-partnership.rules.gameplay',
+      ],
+      pass: [
+        'pinochle-single-deck-partnership.rules.gameplay',
+      ],
+      bid: [
+        'pinochle-single-deck-partnership.rules.gameplay',
+      ],
+      meld: [
+        'pinochle-single-deck-partnership.rules.gameplay',
+      ],
+      deal_12_each: [
+        'pinochle-single-deck-partnership.rules.gameplay',
+      ],
+    },
   },
 }

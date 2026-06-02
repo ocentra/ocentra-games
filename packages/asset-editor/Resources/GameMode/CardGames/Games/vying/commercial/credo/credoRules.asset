@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Credo. Logic: Use card effects and table position to win the main doctrinal contest or accumulate the best influence position.',
-    Player: 'Credo is a commercial strategy card game about duelling dogmas, with players using cards to contest religious and doctrinal influence.',
+    LLM: 'Players play event, influence, or dogma cards that change control of the shared contest, with effects resolved from the printed proprietary deck.',
+    Player: 'Players play event, influence, or dogma cards that change control of the shared contest, with effects resolved from the printed proprietary deck.',
     objective: 'Use card effects and table position to win the main doctrinal contest or accumulate the best influence position.',
     gameplay: 'Players play event, influence, or dogma cards that change control of the shared contest, with effects resolved from the printed proprietary deck.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Victory is determined by the published influence or doctrinal win condition. Expected outcome: Use card effects and table position to win the main doctrinal contest or accumulate the best influence position..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Use card effects and table position to win the main doctrinal contest or accumulate the best influence position.',
+      'Turn-flow example: Players play event, influence, or dogma cards that change control of the shared contest, with effects resolved from the printed proprietary deck.',
+      'Scoring example: Victory is determined by the published influence or doctrinal win condition. Use card effects and table position to win the main doctrinal contest or accumulate the best influence position..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'credo.rules.objective',
+        title: 'Objective',
+        text: 'Use card effects and table position to win the main doctrinal contest or accumulate the best influence position.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'credo.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play event, influence, or dogma cards that change control of the shared contest, with effects resolved from the printed proprietary deck.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'credo.setup.players',
+        title: 'Players',
+        text: '2-5 players use the table arrangement described for Credo.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'credo.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Credo strategy card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'credo.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Credo strategy card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'credo.setup.dealing',
+        title: 'Deal',
+        text: 'Players receive hands from the dedicated deck and play cards into doctrinal or influence contests.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'credo.score.win-condition',
+        title: 'Win condition',
+        text: 'Use card effects and table position to win the main doctrinal contest or accumulate the best influence position.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'credo.score.description',
+        title: 'Scoring',
+        text: 'Victory is determined by the published influence or doctrinal win condition.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'credo.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Commercial strategy card deck.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'credo.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Two to five players.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'credo.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Theme-specific card effects drive conflict.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'credo.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Influence and table control determine victory.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'credo.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'credo.rules.objective',
+          'credo.rules.gameplay',
+        ],
+      },
+      {
+        id: 'credo.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'credo.setup.players',
+          'credo.setup.deck',
+          'credo.setup.equipment',
+          'credo.setup.dealing',
+        ],
+      },
+      {
+        id: 'credo.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'credo.rules.key.1',
+          'credo.rules.key.2',
+          'credo.rules.key.3',
+          'credo.rules.key.4',
+        ],
+      },
+      {
+        id: 'credo.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'credo.score.description',
+          'credo.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'credo.setup.dealing',
+        'credo.rules.objective',
+      ],
+      play_card: [
+        'credo.rules.gameplay',
+      ],
+    },
   },
 }

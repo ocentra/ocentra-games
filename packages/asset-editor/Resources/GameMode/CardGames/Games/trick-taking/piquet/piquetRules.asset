@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Piquet. 2p. 32 cards. Declarations + tricks. Rubicon 100.',
-    Player: 'Piquet: 2p, 32 cards. Exchange, Point/Sequence/Set, tricks. Repique, Pique. Rubicon.',
+    LLM: "1. Exchange: Elder 1-5, Younger 1 to remainder. 2. Declarations: Point (longest suit), Sequence (tierce to huitiÃ¨me), Set (trio, quatorze). Elder declares; Younger says good/not good/equal. 3. Play: No trump; follow suit. Point per lead; extra for winning opponent's lead; last trick +1. 10 for most tricks (40 capot). Repique: 30 in declarations before opponent = +60. Pique: 30 before opponent scores = +30 (elder only).",
+    Player: "1. Exchange: Elder 1-5, Younger 1 to remainder. 2. Declarations: Point (longest suit), Sequence (tierce to huitiÃ¨me), Set (trio, quatorze). Elder declares; Younger says good/not good/equal. 3. Play: No trump; follow suit. Point per lead; extra for winning opponent's lead; last trick +1. 10 for most tricks (40 capot). Repique: 30 in declarations before opponent = +60. Pique: 30 before opponent scores = +30 (elder only).",
     objective: 'Score more over 6 deals. Rubicon: loser <100 pays sum+100; loser â‰¥100 pays difference+100.',
     gameplay: "1. Exchange: Elder 1-5, Younger 1 to remainder. 2. Declarations: Point (longest suit), Sequence (tierce to huitiÃ¨me), Set (trio, quatorze). Elder declares; Younger says good/not good/equal. 3. Play: No trump; follow suit. Point per lead; extra for winning opponent's lead; last trick +1. 10 for most tricks (40 capot). Repique: 30 in declarations before opponent = +60. Pique: 30 before opponent scores = +30 (elder only).",
     keyRules: [
@@ -54,10 +54,183 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 12 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in exchange; each_player_clockwise may use discard, draw before declare.',
-      'Scoring check: Point, Sequence, Set; tricks; capot 40; repique 60; pique 30. Rubicon: loser <100 pays sum+100; â‰¥100 pays diff+100. Expected outcome: Higher score after 6 deals..',
+      'Setup example: 12 card(s) per player.',
+      'Rule example: Score more over 6 deals. Rubicon: loser <100 pays sum+100; loser â‰¥100 pays difference+100.',
+      "Turn-flow example: 1. Exchange: Elder 1-5, Younger 1 to remainder. 2. Declarations: Point (longest suit), Sequence (tierce to huitiÃ¨me), Set (trio, quatorze). Elder declares; Younger says good/not good/equal. 3. Play: No trump; follow suit. Point per lead; extra for winning opponent's lead; last trick +1. 10 for most tricks (40 capot). Repique: 30 in declarations before opponent = +60. Pique: 30 before opponent scores = +30 (elder only).",
+      'Scoring example: Point, Sequence, Set; tricks; capot 40; repique 60; pique 30. Rubicon: loser <100 pays sum+100; â‰¥100 pays diff+100. Higher score after 6 deals..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'piquet.rules.objective',
+        title: 'Objective',
+        text: 'Score more over 6 deals. Rubicon: loser <100 pays sum+100; loser â‰¥100 pays difference+100.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'piquet.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Exchange: Elder 1-5, Younger 1 to remainder. 2. Declarations: Point (longest suit), Sequence (tierce to huitiÃ¨me), Set (trio, quatorze). Elder declares; Younger says good/not good/equal. 3. Play: No trump; follow suit. Point per lead; extra for winning opponent's lead; last trick +1. 10 for most tricks (40 capot). Repique: 30 in declarations before opponent = +60. Pique: 30 before opponent scores = +30 (elder only).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'piquet.setup.players',
+        title: 'Players',
+        text: '2. Elder (non-dealer) and Younger (dealer).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'piquet.setup.deck',
+        title: 'Deck',
+        text: '32 cards. Rank 7-8-9-10-J-Q-K-A.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'piquet.setup.equipment',
+        title: 'Equipment',
+        text: '32-card pack.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'piquet.setup.dealing',
+        title: 'Deal',
+        text: '12 each, 8 talon. Elder exchanges first (1-5), Younger (1 to remainder).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'piquet.score.win-condition',
+        title: 'Win condition',
+        text: 'Higher score after 6 deals.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'piquet.score.description',
+        title: 'Scoring',
+        text: 'Point, Sequence, Set; tricks; capot 40; repique 60; pique 30. Rubicon: loser <100 pays sum+100; â‰¥100 pays diff+100.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'piquet.rules.key.1',
+        title: 'Key rule 1',
+        text: '32 cards. 12 each, 8 talon.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'piquet.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Point, Sequence, Set declarations. Best wins category.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'piquet.rules.key.3',
+        title: 'Key rule 3',
+        text: 'No trump. Follow suit.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'piquet.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Repique 60, Pique 30.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'piquet.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Partie 6 deals. Rubicon 100.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'piquet.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'piquet.rules.objective',
+          'piquet.rules.gameplay',
+        ],
+      },
+      {
+        id: 'piquet.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'piquet.setup.players',
+          'piquet.setup.deck',
+          'piquet.setup.equipment',
+          'piquet.setup.dealing',
+        ],
+      },
+      {
+        id: 'piquet.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'piquet.rules.key.1',
+          'piquet.rules.key.2',
+          'piquet.rules.key.3',
+          'piquet.rules.key.4',
+          'piquet.rules.key.5',
+        ],
+      },
+      {
+        id: 'piquet.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'piquet.score.description',
+          'piquet.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'piquet.setup.dealing',
+        'piquet.rules.objective',
+      ],
+      play_card: [
+        'piquet.rules.gameplay',
+      ],
+      draw: [
+        'piquet.rules.gameplay',
+      ],
+      discard: [
+        'piquet.rules.gameplay',
+      ],
+      declare_point: [
+        'piquet.rules.gameplay',
+      ],
+      declare_sequence: [
+        'piquet.rules.gameplay',
+      ],
+      declare_set: [
+        'piquet.rules.gameplay',
+      ],
+      lead: [
+        'piquet.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Boy Crazy. Logic: Use card effects and character interactions to outscore or defeat the opposing player under the product rules.',
-    Player: 'Boy Crazy is a commercial collectible card game built around character and social-theme card interactions.',
+    LLM: 'Players take turns playing cards from hand, resolving printed effects, and building toward the win condition defined by the proprietary card set.',
+    Player: 'Players take turns playing cards from hand, resolving printed effects, and building toward the win condition defined by the proprietary card set.',
     objective: 'Use card effects and character interactions to outscore or defeat the opposing player under the product rules.',
     gameplay: 'Players take turns playing cards from hand, resolving printed effects, and building toward the win condition defined by the proprietary card set.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published card effects define whether the player wins by points, goals, or opponent defeat. Expected outcome: Use card effects and character interactions to outscore or defeat the opposing player under the product rules..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Use card effects and character interactions to outscore or defeat the opposing player under the product rules.',
+      'Turn-flow example: Players take turns playing cards from hand, resolving printed effects, and building toward the win condition defined by the proprietary card set.',
+      'Scoring example: The published card effects define whether the player wins by points, goals, or opponent defeat. Use card effects and character interactions to outscore or defeat the opposing player under the product rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'boy-crazy.rules.objective',
+        title: 'Objective',
+        text: 'Use card effects and character interactions to outscore or defeat the opposing player under the product rules.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'boy-crazy.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players take turns playing cards from hand, resolving printed effects, and building toward the win condition defined by the proprietary card set.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'boy-crazy.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Boy Crazy.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'boy-crazy.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Boy Crazy collectible card decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'boy-crazy.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Boy Crazy collectible card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'boy-crazy.setup.dealing',
+        title: 'Deal',
+        text: 'Each player uses a constructed or collected deck and draws an opening hand from that deck.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'boy-crazy.score.win-condition',
+        title: 'Win condition',
+        text: 'Use card effects and character interactions to outscore or defeat the opposing player under the product rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'boy-crazy.score.description',
+        title: 'Scoring',
+        text: 'The published card effects define whether the player wins by points, goals, or opponent defeat.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'boy-crazy.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Collectible card game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'boy-crazy.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Uses proprietary decks.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'boy-crazy.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Card text and theme-specific effects drive play.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'boy-crazy.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Designed for two-player contests.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'boy-crazy.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'boy-crazy.rules.objective',
+          'boy-crazy.rules.gameplay',
+        ],
+      },
+      {
+        id: 'boy-crazy.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'boy-crazy.setup.players',
+          'boy-crazy.setup.deck',
+          'boy-crazy.setup.equipment',
+          'boy-crazy.setup.dealing',
+        ],
+      },
+      {
+        id: 'boy-crazy.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'boy-crazy.rules.key.1',
+          'boy-crazy.rules.key.2',
+          'boy-crazy.rules.key.3',
+          'boy-crazy.rules.key.4',
+        ],
+      },
+      {
+        id: 'boy-crazy.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'boy-crazy.score.description',
+          'boy-crazy.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'boy-crazy.setup.dealing',
+        'boy-crazy.rules.objective',
+      ],
+      play_card: [
+        'boy-crazy.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Whist Romanian. Logic: Exact-prediction trick-taking; follow suit, trump if void; bid sum must not equal cards per player; score 5 plus tricks for contract, minus 1 per trick off.',
-    Player: 'Romanian Whist variant.',
+    LLM: "Each hand: dealer deals the current hand size (1 to 8 cards per player). Next card is turned for trump (except in 8-card hands, which are no-trump). In order from dealer's left, each player bids how many tricks they will take; the sum of all bids must not equal the number of cards per player. Player to dealer's left leads; follow suit if possible, otherwise play trump if possible, else discard. Highest trump wins the trick, or highest card of the led suit if no trump. Trick winner leads. After all tricks are played, score: make contract = 5 + tricks made; miss = minus 1 per trick difference.",
+    Player: "Each hand: dealer deals the current hand size (1 to 8 cards per player). Next card is turned for trump (except in 8-card hands, which are no-trump). In order from dealer's left, each player bids how many tricks they will take; the sum of all bids must not equal the number of cards per player. Player to dealer's left leads; follow suit if possible, otherwise play trump if possible, else discard. Highest trump wins the trick, or highest card of the led suit if no trump. Trick winner leads. After all tricks are played, score: make contract = 5 + tricks made; miss = minus 1 per trick difference.",
     objective: 'Win exactly the number of tricks you bid each hand. Score 5 plus tricks made when you make your contract; lose 1 point per trick over or under your bid. Highest total score after the full deal sequence wins.',
     gameplay: "Each hand: dealer deals the current hand size (1 to 8 cards per player). Next card is turned for trump (except in 8-card hands, which are no-trump). In order from dealer's left, each player bids how many tricks they will take; the sum of all bids must not equal the number of cards per player. Player to dealer's left leads; follow suit if possible, otherwise play trump if possible, else discard. Highest trump wins the trick, or highest card of the led suit if no trump. Trick winner leads. After all tricks are played, score: make contract = 5 + tricks made; miss = minus 1 per trick difference.",
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-6 player(s), 8 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_variable_turn_trump before bid.',
-      'Scoring check: Make contract: 5 points plus number of tricks made. Miss: lose 1 point per trick over or under bid. Highest total after full deal sequence wins. Expected outcome: Highest total score after the full sequence of deals (1-up-to-8-down-to-1)..',
+      'Setup example: 8 card(s) per player.',
+      'Rule example: Win exactly the number of tricks you bid each hand. Score 5 plus tricks made when you make your contract; lose 1 point per trick over or under your bid. Highest total score after the full deal sequence wins.',
+      "Turn-flow example: Each hand: dealer deals the current hand size (1 to 8 cards per player). Next card is turned for trump (except in 8-card hands, which are no-trump). In order from dealer's left, each player bids how many tricks they will take; the sum of all bids must not equal the number of cards per player. Player to dealer's left leads; follow suit if possible, otherwise play trump if possible, else discard. Highest trump wins the trick, or highest card of the led suit if no trump. Trick winner leads. After all tricks are played, score: make contract = 5 + tricks made; miss = minus 1 per trick difference.",
+      'Scoring example: Make contract: 5 points plus number of tricks made. Miss: lose 1 point per trick over or under bid. Highest total after full deal sequence wins. Highest total score after the full sequence of deals (1-up-to-8-down-to-1)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'whist-romanian.rules.objective',
+        title: 'Objective',
+        text: 'Win exactly the number of tricks you bid each hand. Score 5 plus tricks made when you make your contract; lose 1 point per trick over or under your bid. Highest total score after the full deal sequence wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'whist-romanian.rules.gameplay',
+        title: 'Turn flow',
+        text: "Each hand: dealer deals the current hand size (1 to 8 cards per player). Next card is turned for trump (except in 8-card hands, which are no-trump). In order from dealer's left, each player bids how many tricks they will take; the sum of all bids must not equal the number of cards per player. Player to dealer's left leads; follow suit if possible, otherwise play trump if possible, else discard. Highest trump wins the trick, or highest card of the led suit if no trump. Trick winner leads. After all tricks are played, score: make contract = 5 + tricks made; miss = minus 1 per trick difference.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'whist-romanian.setup.players',
+        title: 'Players',
+        text: 'Three to six players, each playing alone (no partnerships). Best with 4 to 6.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'whist-romanian.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck; 8 cards per player in use (24 for 3 players, 32 for 4, up to 48 for 6).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'whist-romanian.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'whist-romanian.setup.dealing',
+        title: 'Deal',
+        text: 'First dealer chosen at random; deal rotates clockwise. Number of cards per player varies by deal: starts at 1 card each for as many deals as players, increases by one per deal up to 8 each, then 8 each for as many deals as players, then decreases back to 1. Example with 4 players: 1,1,1,1, 2,3,4,5,6,7, 8,8,8,8, 7,6,5,4,3,2, 1,1,1,1 (24 deals). After the deal, the next card is turned for trump; in 8-card hands no card remains, so those hands are played without trumps.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'whist-romanian.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest total score after the full sequence of deals (1-up-to-8-down-to-1).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'whist-romanian.score.description',
+        title: 'Scoring',
+        text: 'Make contract: 5 points plus number of tricks made. Miss: lose 1 point per trick over or under bid. Highest total after full deal sequence wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'whist-romanian.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Bid exact number of tricks; sum of all bids must not equal cards per player.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'whist-romanian.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Follow suit; if unable, must trump if possible; else discard any card.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'whist-romanian.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trump determined by turned card after deal; 8-card hands are no-trump.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'whist-romanian.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Making contract scores 5 plus tricks; each overtrick or undertrick costs 1 point.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'whist-romanian.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'whist-romanian.rules.objective',
+          'whist-romanian.rules.gameplay',
+        ],
+      },
+      {
+        id: 'whist-romanian.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'whist-romanian.setup.players',
+          'whist-romanian.setup.deck',
+          'whist-romanian.setup.equipment',
+          'whist-romanian.setup.dealing',
+        ],
+      },
+      {
+        id: 'whist-romanian.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'whist-romanian.rules.key.1',
+          'whist-romanian.rules.key.2',
+          'whist-romanian.rules.key.3',
+          'whist-romanian.rules.key.4',
+        ],
+      },
+      {
+        id: 'whist-romanian.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'whist-romanian.score.description',
+          'whist-romanian.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'whist-romanian.setup.dealing',
+        'whist-romanian.rules.objective',
+      ],
+      play_card: [
+        'whist-romanian.rules.gameplay',
+      ],
+      bid: [
+        'whist-romanian.rules.gameplay',
+      ],
+      deal_variable_turn_trump: [
+        'whist-romanian.rules.gameplay',
+      ],
+    },
   },
 }

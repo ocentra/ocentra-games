@@ -52,10 +52,156 @@
       go_out: 'Hand must be valid: four melds and one pair.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use draw, discard, meld, go_out before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Form a valid 14-card hand consisting of four sets of three and one pair.',
+      "Turn-flow example: 1. Draw a card from the deck or 'steal' the previous discard.\n2. Stealing: You can call 'Chow' (only from the player to your left), 'Pung' or 'Kong' (from anyone).\n3. If you complete your 14th card, you call 'Mah Jong'.",
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'mah-jong.rules.objective',
+        title: 'Objective',
+        text: 'Form a valid 14-card hand consisting of four sets of three and one pair.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mah-jong.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Draw a card from the deck or 'steal' the previous discard.\n2. Stealing: You can call 'Chow' (only from the player to your left), 'Pung' or 'Kong' (from anyone).\n3. If you complete your 14th card, you call 'Mah Jong'.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mah-jong.setup.players',
+        title: 'Players',
+        text: '4 players. Each represents a Wind (East, South, West, North).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mah-jong.setup.deck',
+        title: 'Deck',
+        text: '3 Suits (Circles, Bamboo, Characters) numbered 1-9 (4 of each). Winds (4 of each). Dragons (Red, Green, White - 4 of each). Plus 8 Flowers/Seasons.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mah-jong.setup.equipment',
+        title: 'Equipment',
+        text: '3 Suits (Circles, Bamboo, Characters) numbered 1-9 (4 of each). Winds (4 of each). Dragons (Red, Green, White - 4 of each). Plus 8 Flowers/Seasons.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mah-jong.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 13 cards. East (dealer) starts with 14.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mah-jong.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mah-jong.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mah-jong.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Each player has 13 tiles; East (dealer) has 14 to start. Win by completing 14 tiles in four melds and one pair.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'mah-jong.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Draw one tile from the wall or claim a discard to meld (Chow from left neighbor only; Pung or Kong from any). Then discard one tile.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'mah-jong.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Melds: Pung (three identical), Kong (four identical), Chow (three same suit in sequence). Declare Mah Jong when the 14th tile completes the hand.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mah-jong.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mah-jong.rules.objective',
+          'mah-jong.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mah-jong.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mah-jong.setup.players',
+          'mah-jong.setup.deck',
+          'mah-jong.setup.equipment',
+          'mah-jong.setup.dealing',
+        ],
+      },
+      {
+        id: 'mah-jong.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mah-jong.rules.key.1',
+          'mah-jong.rules.key.2',
+          'mah-jong.rules.key.3',
+        ],
+      },
+      {
+        id: 'mah-jong.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mah-jong.score.description',
+          'mah-jong.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mah-jong.setup.dealing',
+        'mah-jong.rules.objective',
+      ],
+      draw: [
+        'mah-jong.rules.gameplay',
+      ],
+      discard: [
+        'mah-jong.rules.gameplay',
+      ],
+      meld: [
+        'mah-jong.rules.gameplay',
+      ],
+      go_out: [
+        'mah-jong.rules.gameplay',
+      ],
+    },
   },
 }

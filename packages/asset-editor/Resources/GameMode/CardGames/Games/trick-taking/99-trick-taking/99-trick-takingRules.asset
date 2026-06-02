@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 99 (trick-taking). Logic: See rules.objective and rules.gameplay.',
-    Player: 'Ninety-Nine: trick-taking with exact-trick bidding. Bid by discarding 3 cards (Clubs=3, Hearts=2, Spades=1, Diamonds=0). 3-4 players; 36 or 52 cards. Follow suit; score for making exact bid and premiums for face-up or revealed hand. Designed by David Parlett 1967-68.',
+    LLM: 'Discard 3 cards to bid (sum of suit values = trick bid). Play with remaining cards; follow suit. Make exact bid to score; premiums for face-up or revealed hand.',
+    Player: 'Discard 3 cards to bid (sum of suit values = trick bid). Play with remaining cards; follow suit. Make exact bid to score; premiums for face-up or revealed hand.',
     objective: 'Score points by making exactly your bid (tricks bid via discard: Clubs=3, Hearts=2, Spades=1, Diamonds=0).',
     gameplay: 'Discard 3 cards to bid (sum of suit values = trick bid). Play with remaining cards; follow suit. Make exact bid to score; premiums for face-up or revealed hand.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Points for making exact bid; bonuses for declarations. First to target wins. Expected outcome: Score points by making exactly your bid (tricks bid via discard: Clubs=3, Hearts=2, Spades=1, Diamonds=0)..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score points by making exactly your bid (tricks bid via discard: Clubs=3, Hearts=2, Spades=1, Diamonds=0).',
+      'Turn-flow example: Discard 3 cards to bid (sum of suit values = trick bid). Play with remaining cards; follow suit. Make exact bid to score; premiums for face-up or revealed hand.',
+      'Scoring example: Points for making exact bid; bonuses for declarations. First to target wins. Score points by making exactly your bid (tricks bid via discard: Clubs=3, Hearts=2, Spades=1, Diamonds=0)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '99-trick-taking.rules.objective',
+        title: 'Objective',
+        text: 'Score points by making exactly your bid (tricks bid via discard: Clubs=3, Hearts=2, Spades=1, Diamonds=0).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '99-trick-taking.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Discard 3 cards to bid (sum of suit values = trick bid). Play with remaining cards; follow suit. Make exact bid to score; premiums for face-up or revealed hand.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '99-trick-taking.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '99-trick-taking.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '99-trick-taking.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '99-trick-taking.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '99-trick-taking.score.win-condition',
+        title: 'Win condition',
+        text: 'Score points by making exactly your bid (tricks bid via discard: Clubs=3, Hearts=2, Spades=1, Diamonds=0).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '99-trick-taking.score.description',
+        title: 'Scoring',
+        text: 'Points for making exact bid; bonuses for declarations. First to target wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '99-trick-taking.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Bid by discarding 3 (C=3, H=2, S=1, D=0)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '99-trick-taking.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Make exactly your bid to score',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '99-trick-taking.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Follow suit; 36 or 52 cards',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '99-trick-taking.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '99-trick-taking.rules.objective',
+          '99-trick-taking.rules.gameplay',
+        ],
+      },
+      {
+        id: '99-trick-taking.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '99-trick-taking.setup.players',
+          '99-trick-taking.setup.deck',
+          '99-trick-taking.setup.equipment',
+          '99-trick-taking.setup.dealing',
+        ],
+      },
+      {
+        id: '99-trick-taking.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '99-trick-taking.rules.key.1',
+          '99-trick-taking.rules.key.2',
+          '99-trick-taking.rules.key.3',
+        ],
+      },
+      {
+        id: '99-trick-taking.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '99-trick-taking.score.description',
+          '99-trick-taking.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '99-trick-taking.setup.dealing',
+        '99-trick-taking.rules.objective',
+      ],
+      play_card: [
+        '99-trick-taking.rules.gameplay',
+      ],
+    },
   },
 }

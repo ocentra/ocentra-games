@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Kung och Adel. Logic: Social hierarchy shedding game. Key: Play higher cards, 2s clear pile, finish order determines next round's rank and taxes.",
-    Player: 'Kung och Adel is a Swedish shedding game (like President/Asshole). Play higher cards to shed your hand. 2s clear the pile. Finish first to become King, last becomes Peasant. King gets best cards from Peasant as tax each round.',
+    LLM: '1. Standard shedding logic: Play a card (or set of equal cards) higher than the current top card.\n2. **The Tax (Skatt)**: Before play, the Peasant must give their two best cards (Aces/2s) to the King. The King gives back their two worst cards (low numerals). The Nobility and Burghers exchange one card similarly.',
+    Player: '1. Standard shedding logic: Play a card (or set of equal cards) higher than the current top card.\n2. **The Tax (Skatt)**: Before play, the Peasant must give their two best cards (Aces/2s) to the King. The King gives back their two worst cards (low numerals). The Nobility and Burghers exchange one card similarly.',
     objective: 'Be the first to shed all cards to become the King for the next round.',
     gameplay: '1. Standard shedding logic: Play a card (or set of equal cards) higher than the current top card.\n2. **The Tax (Skatt)**: Before play, the Peasant must give their two best cards (Aces/2s) to the King. The King gives back their two worst cards (low numerals). The Nobility and Burghers exchange one card similarly.',
     keyRules: [
@@ -54,10 +54,177 @@
       go_out: 'First to empty becomes King',
     },
     exampleHands: [
-      'Opening deal: 4-8 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in tax_exchange; all_simultaneous may use pass before play.',
-      'Scoring check: First to empty hand becomes King, last becomes Peasant. Social ranks determine card exchanges for next round. Expected outcome: 1.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the first to shed all cards to become the King for the next round.',
+      'Turn-flow example: 1. Standard shedding logic: Play a card (or set of equal cards) higher than the current top card.\n2. **The Tax (Skatt)**: Before play, the Peasant must give their two best cards (Aces/2s) to the King. The King gives back their two worst cards (low numerals). The Nobility and Burghers exchange one card similarly.',
+      'Scoring example: First to empty hand becomes King, last becomes Peasant. Social ranks determine card exchanges for next round. First to empty hand; social rank position.',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'kung-och-adel.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to shed all cards to become the King for the next round.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kung-och-adel.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Standard shedding logic: Play a card (or set of equal cards) higher than the current top card.\n2. **The Tax (Skatt)**: Before play, the Peasant must give their two best cards (Aces/2s) to the King. The King gives back their two worst cards (low numerals). The Nobility and Burghers exchange one card similarly.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kung-och-adel.setup.players',
+        title: 'Players',
+        text: 'Best with 4 to 6 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kung-och-adel.setup.deck',
+        title: 'Deck',
+        text: "Standard 52-card deck. 2s are usually 'clearing' cards or wildcards.",
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kung-och-adel.setup.equipment',
+        title: 'Equipment',
+        text: "Standard 52-card deck. 2s are usually 'clearing' cards or wildcards.",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kung-och-adel.setup.dealing',
+        title: 'Deal',
+        text: 'The whole deck is dealt out evenly among players.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kung-och-adel.score.win-condition',
+        title: 'Win condition',
+        text: 'First to empty hand; social rank position',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kung-och-adel.score.description',
+        title: 'Scoring',
+        text: 'First to empty hand becomes King, last becomes Peasant. Social ranks determine card exchanges for next round.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kung-och-adel.rules.key.1',
+        title: 'Key rule 1',
+        text: '2s are clearing cards (burn the pile)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kung-och-adel.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Aces are highest numeral power',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kung-och-adel.rules.key.3',
+        title: 'Key rule 3',
+        text: '10s may also clear the pile in some variants',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kung-och-adel.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Tax exchange: Peasant gives 2 best to King, gets 2 worst back',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'kung-och-adel.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Social ranks determine seating and card exchanges',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kung-och-adel.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kung-och-adel.rules.objective',
+          'kung-och-adel.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kung-och-adel.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kung-och-adel.setup.players',
+          'kung-och-adel.setup.deck',
+          'kung-och-adel.setup.equipment',
+          'kung-och-adel.setup.dealing',
+        ],
+      },
+      {
+        id: 'kung-och-adel.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kung-och-adel.rules.key.1',
+          'kung-och-adel.rules.key.2',
+          'kung-och-adel.rules.key.3',
+          'kung-och-adel.rules.key.4',
+          'kung-och-adel.rules.key.5',
+        ],
+      },
+      {
+        id: 'kung-och-adel.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kung-och-adel.score.description',
+          'kung-och-adel.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kung-och-adel.setup.dealing',
+        'kung-och-adel.rules.objective',
+      ],
+      deal: [
+        'kung-och-adel.rules.gameplay',
+      ],
+      play_card: [
+        'kung-och-adel.rules.gameplay',
+      ],
+      pass: [
+        'kung-och-adel.rules.gameplay',
+      ],
+      go_out: [
+        'kung-och-adel.rules.gameplay',
+      ],
+      check_winner: [
+        'kung-och-adel.rules.gameplay',
+      ],
+    },
   },
 }

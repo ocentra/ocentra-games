@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Briscola Chiamata. 5-player. 40-card Italian deck. Auction sets trump+partner card. Partner is SECRET. No follow-suit. Ranking: A(11)>3(10)>K(4)>Q(3)>J(2).',
-    Player: 'You bid 62 and called the Ace of Swords as your partner card. You hold the Ace of Cups, Ace of Coins, and 3 of Coins. Your partner (who has the Ace of Swords) should protect your Acesâ€”watch who leads or plays in a way that helps you rather than fights you.',
+    LLM: 'Standard Briscola: no follow-suit obligation. Highest trump wins; else highest of led suit. Play all 40 cards across 8 tricks.',
+    Player: 'Standard Briscola: no follow-suit obligation. Highest trump wins; else highest of led suit. Play all 40 cards across 8 tricks.',
     objective: 'Caller+Partner score more trick points than the 3-player team.',
     gameplay: 'Standard Briscola: no follow-suit obligation. Highest trump wins; else highest of led suit. Play all 40 cards across 8 tricks.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 5-5 player(s), 8 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal_8_each before auction.',
-      'Scoring check: 120 total card points. Caller+Partner need their bid total. Expected outcome: 61.',
+      'Setup example: 8 card(s) per player.',
+      'Rule example: Caller+Partner score more trick points than the 3-player team.',
+      'Turn-flow example: Standard Briscola: no follow-suit obligation. Highest trump wins; else highest of led suit. Play all 40 cards across 8 tricks.',
+      'Scoring example: 120 total card points. Caller+Partner need their bid total. 2-player team meets or exceeds their bid..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'briscola-chiamata.rules.objective',
+        title: 'Objective',
+        text: 'Caller+Partner score more trick points than the 3-player team.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'briscola-chiamata.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Standard Briscola: no follow-suit obligation. Highest trump wins; else highest of led suit. Play all 40 cards across 8 tricks.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'briscola-chiamata.setup.players',
+        title: 'Players',
+        text: "Exactly five players. With six present, one sits out each deal: that player deals to the other five and takes no part until the next hand. Deal and play are counter-clockwise; the player to dealer's right speaks first in bidding and leads to the first trick.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'briscola-chiamata.setup.deck',
+        title: 'Deck',
+        text: '40-card Italian deck (A, 3, K, Q, J, 7, 6, 5, 4, 2 in 4 suits). OR: stripped French 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'briscola-chiamata.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'briscola-chiamata.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 8 cards each. No trump indicatorâ€”trump is set during the auction.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'briscola-chiamata.score.win-condition',
+        title: 'Win condition',
+        text: '2-player team meets or exceeds their bid.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'briscola-chiamata.score.description',
+        title: 'Scoring',
+        text: '120 total card points. Caller+Partner need their bid total.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'briscola-chiamata.rules.key.1',
+        title: 'Key rule 1',
+        text: "The partner is SECRETâ€”even the other players don't know (until it becomes obvious from play).",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'briscola-chiamata.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Caller may call a card they hold, creating a spectacular 1v4 play.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'briscola-chiamata.rules.key.3',
+        title: 'Key rule 3',
+        text: 'No draw phaseâ€”all 40 cards are dealt in 5-player game.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'briscola-chiamata.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'briscola-chiamata.rules.objective',
+          'briscola-chiamata.rules.gameplay',
+        ],
+      },
+      {
+        id: 'briscola-chiamata.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'briscola-chiamata.setup.players',
+          'briscola-chiamata.setup.deck',
+          'briscola-chiamata.setup.equipment',
+          'briscola-chiamata.setup.dealing',
+        ],
+      },
+      {
+        id: 'briscola-chiamata.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'briscola-chiamata.rules.key.1',
+          'briscola-chiamata.rules.key.2',
+          'briscola-chiamata.rules.key.3',
+        ],
+      },
+      {
+        id: 'briscola-chiamata.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'briscola-chiamata.score.description',
+          'briscola-chiamata.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'briscola-chiamata.setup.dealing',
+        'briscola-chiamata.rules.objective',
+      ],
+      pass: [
+        'briscola-chiamata.rules.gameplay',
+      ],
+      bid: [
+        'briscola-chiamata.rules.gameplay',
+      ],
+      deal_8_each: [
+        'briscola-chiamata.rules.gameplay',
+      ],
+      play_any_card: [
+        'briscola-chiamata.rules.gameplay',
+      ],
+    },
   },
 }

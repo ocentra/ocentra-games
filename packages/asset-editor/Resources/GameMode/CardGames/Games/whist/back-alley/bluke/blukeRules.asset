@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kaiserspiel. Logic: Win the tricks, card points, or contract result required by the local form of the game.',
-    Player: 'Kaiserspiel is a traditional trick-taking card game using 40 or 48-card Swiss Kaiserspiel deck for 2, 4, or 6 players. It uses one chosen suit and belongs to the Karnöffel environment.',
+    LLM: 'Deal a changing number of cards each hand, turn or determine trump according to the table rule, and have players bid expected tricks. Players then play tricks clockwise, following suit when able; trumps and especially the two Jokers outrank ordinary suit cards. Score each hand from the relation between bid tricks and tricks actually won.',
+    Player: 'Deal a changing number of cards each hand, turn or determine trump according to the table rule, and have players bid expected tricks. Players then play tricks clockwise, following suit when able; trumps and especially the two Jokers outrank ordinary suit cards. Score each hand from the relation between bid tricks and tricks actually won.',
     objective: 'Accurately bid and then win the number of tricks promised over a sequence of changing hand sizes.',
     gameplay: 'Deal a changing number of cards each hand, turn or determine trump according to the table rule, and have players bid expected tricks. Players then play tricks clockwise, following suit when able; trumps and especially the two Jokers outrank ordinary suit cards. Score each hand from the relation between bid tricks and tricks actually won.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-15 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Tricks, card points, or contract success determine scoring. Expected outcome: 1.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Accurately bid and then win the number of tricks promised over a sequence of changing hand sizes.',
+      'Turn-flow example: Deal a changing number of cards each hand, turn or determine trump according to the table rule, and have players bid expected tricks. Players then play tricks clockwise, following suit when able; trumps and especially the two Jokers outrank ordinary suit cards. Score each hand from the relation between bid tricks and tricks actually won.',
+      'Scoring example: Tricks, card points, or contract success determine scoring. Win the tricks, card points, or contract result required by the local form of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'bluke.rules.objective',
+        title: 'Objective',
+        text: 'Accurately bid and then win the number of tricks promised over a sequence of changing hand sizes.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bluke.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Deal a changing number of cards each hand, turn or determine trump according to the table rule, and have players bid expected tricks. Players then play tricks clockwise, following suit when able; trumps and especially the two Jokers outrank ordinary suit cards. Score each hand from the relation between bid tricks and tricks actually won.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bluke.setup.players',
+        title: 'Players',
+        text: '2-15 players use the table arrangement described for Bluke.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bluke.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck plus two Jokers',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bluke.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck plus two Jokers, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bluke.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Standard 52-card deck plus two Jokers and deal or lay out cards according to the documented Bluke rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bluke.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bluke.score.description',
+        title: 'Scoring',
+        text: 'Tricks, card points, or contract success determine scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bluke.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The 52-card deck is supplemented by two Jokers called Blukes, which are the top trumps.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bluke.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Hand size changes from deal to deal, so bidding strength must be recalculated every round.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bluke.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Players follow suit when able; otherwise they may trump or discard according to normal trick-taking practice.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bluke.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bluke.rules.objective',
+          'bluke.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bluke.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bluke.setup.players',
+          'bluke.setup.deck',
+          'bluke.setup.equipment',
+          'bluke.setup.dealing',
+        ],
+      },
+      {
+        id: 'bluke.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bluke.rules.key.1',
+          'bluke.rules.key.2',
+          'bluke.rules.key.3',
+        ],
+      },
+      {
+        id: 'bluke.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bluke.score.description',
+          'bluke.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bluke.setup.dealing',
+        'bluke.rules.objective',
+      ],
+      play_card: [
+        'bluke.rules.gameplay',
+      ],
+      discard: [
+        'bluke.rules.gameplay',
+      ],
+      pass: [
+        'bluke.rules.gameplay',
+      ],
+      bid: [
+        'bluke.rules.gameplay',
+      ],
+    },
   },
 }

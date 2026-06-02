@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Labyrinth. Logic: Complete the layout by moving, discarding, or building every required card according to the patience rules.',
-    Player: 'Labyrinth is a patience or solitaire card game using 52-card standard pack, with layout management as the central puzzle. It is a blockade-family game and is different from Maze.',
+    LLM: 'Move exposed cards through the tableau, reserve, stock, waste, or foundations while preserving access to blocked cards.',
+    Player: 'Move exposed cards through the tableau, reserve, stock, waste, or foundations while preserving access to blocked cards.',
     objective: 'Complete the layout by moving, discarding, or building every required card according to the patience rules.',
     gameplay: 'Move exposed cards through the tableau, reserve, stock, waste, or foundations while preserving access to blocked cards.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: The patience is won by completing its layout objective. Expected outcome: Complete the layout by moving, discarding, or building every required card according to the patience rules..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Complete the layout by moving, discarding, or building every required card according to the patience rules.',
+      'Turn-flow example: Move exposed cards through the tableau, reserve, stock, waste, or foundations while preserving access to blocked cards.',
+      'Scoring example: The patience is won by completing its layout objective. Complete the layout by moving, discarding, or building every required card according to the patience rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'labyrinth.rules.objective',
+        title: 'Objective',
+        text: 'Complete the layout by moving, discarding, or building every required card according to the patience rules.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'labyrinth.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Move exposed cards through the tableau, reserve, stock, waste, or foundations while preserving access to blocked cards.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'labyrinth.setup.players',
+        title: 'Players',
+        text: '1 players use the table arrangement described for Labyrinth.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'labyrinth.setup.deck',
+        title: 'Deck',
+        text: '52-card standard pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'labyrinth.setup.equipment',
+        title: 'Equipment',
+        text: '52-card standard pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'labyrinth.setup.dealing',
+        title: 'Deal',
+        text: 'Lay out the Labyrinth tableau, reserve, stock, or foundation areas according to the source rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'labyrinth.score.win-condition',
+        title: 'Win condition',
+        text: 'Complete the layout by moving, discarding, or building every required card according to the patience rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'labyrinth.score.description',
+        title: 'Scoring',
+        text: 'The patience is won by completing its layout objective.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'labyrinth.rules.key.1',
+        title: 'Key rule 1',
+        text: 'One-player patience game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'labyrinth.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Uses a fixed named layout.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'labyrinth.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Card access and sequencing define the puzzle.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'labyrinth.rules.key.4',
+        title: 'Key rule 4',
+        text: 'The game ends when the layout is cleared or blocked.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'labyrinth.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'labyrinth.rules.objective',
+          'labyrinth.rules.gameplay',
+        ],
+      },
+      {
+        id: 'labyrinth.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'labyrinth.setup.players',
+          'labyrinth.setup.deck',
+          'labyrinth.setup.equipment',
+          'labyrinth.setup.dealing',
+        ],
+      },
+      {
+        id: 'labyrinth.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'labyrinth.rules.key.1',
+          'labyrinth.rules.key.2',
+          'labyrinth.rules.key.3',
+          'labyrinth.rules.key.4',
+        ],
+      },
+      {
+        id: 'labyrinth.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'labyrinth.score.description',
+          'labyrinth.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'labyrinth.setup.dealing',
+        'labyrinth.rules.objective',
+      ],
+      deal: [
+        'labyrinth.rules.gameplay',
+      ],
+      play_card: [
+        'labyrinth.rules.gameplay',
+      ],
+      draw: [
+        'labyrinth.rules.gameplay',
+      ],
+    },
   },
 }

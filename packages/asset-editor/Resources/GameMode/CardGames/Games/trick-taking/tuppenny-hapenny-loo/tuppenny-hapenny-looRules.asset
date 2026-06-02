@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Tuppenny Ha'penny Loo. Players hold 5 cards and 5 buttons. In turn each plays one card face down; matching the previous rank costs the previous player 1 to 3 buttons (escalating). Last player with buttons wins.",
-    Player: "Tuppenny Ha'penny Loo is a simple matching/penalty card game. Players hold 5 cards and 5 buttons. Cards are played face down in turn; if the next player matches the rank, the previous player pays buttons to the pot. Consecutive matches escalate the penalty (1, 2, 3 buttons). Player who runs out of buttons loses.",
+    LLM: 'Play cards face down in sequence. If next player matches rank of previous card: previous player pays 1 button. Second consecutive match: 2 buttons. Third: 3 buttons. Play all 5 cards per round. Player out of buttons loses.',
+    Player: 'Play cards face down in sequence. If next player matches rank of previous card: previous player pays 1 button. Second consecutive match: 2 buttons. Third: 3 buttons. Play all 5 cards per round. Player out of buttons loses.',
     objective: "Be the last player with buttons. Avoid matching the previous card's rank when playing, since matching forces the previous player to pay buttons into the pot; consecutive matches escalate (1, then 2, then 3 buttons).",
     gameplay: 'Play cards face down in sequence. If next player matches rank of previous card: previous player pays 1 button. Second consecutive match: 2 buttons. Third: 3 buttons. Play all 5 cards per round. Player out of buttons loses.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      "Scoring check: Buttons as currency. Match = penalty to previous player. Expected outcome: Don't run out of buttons..",
+      'Setup example: 5 card(s) per player.',
+      "Rule example: Be the last player with buttons. Avoid matching the previous card's rank when playing, since matching forces the previous player to pay buttons into the pot; consecutive matches escalate (1, then 2, then 3 buttons).",
+      'Turn-flow example: Play cards face down in sequence. If next player matches rank of previous card: previous player pays 1 button. Second consecutive match: 2 buttons. Third: 3 buttons. Play all 5 cards per round. Player out of buttons loses.',
+      "Scoring example: Buttons as currency. Match = penalty to previous player. Don't run out of buttons..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tuppenny-hapenny-loo.rules.objective',
+        title: 'Objective',
+        text: "Be the last player with buttons. Avoid matching the previous card's rank when playing, since matching forces the previous player to pay buttons into the pot; consecutive matches escalate (1, then 2, then 3 buttons).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tuppenny-hapenny-loo.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Play cards face down in sequence. If next player matches rank of previous card: previous player pays 1 button. Second consecutive match: 2 buttons. Third: 3 buttons. Play all 5 cards per round. Player out of buttons loses.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tuppenny-hapenny-loo.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tuppenny-hapenny-loo.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52 cards.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tuppenny-hapenny-loo.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, buttons/chips (5 per player)',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tuppenny-hapenny-loo.setup.dealing',
+        title: 'Deal',
+        text: '5 cards and 5 buttons each.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tuppenny-hapenny-loo.score.win-condition',
+        title: 'Win condition',
+        text: "Don't run out of buttons.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tuppenny-hapenny-loo.score.description',
+        title: 'Scoring',
+        text: 'Buttons as currency. Match = penalty to previous player.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tuppenny-hapenny-loo.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Match rank = penalty',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tuppenny-hapenny-loo.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Escalating penalties for consecutive matches',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tuppenny-hapenny-loo.rules.key.3',
+        title: 'Key rule 3',
+        text: '5 buttons starting stake',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tuppenny-hapenny-loo.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tuppenny-hapenny-loo.rules.objective',
+          'tuppenny-hapenny-loo.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tuppenny-hapenny-loo.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tuppenny-hapenny-loo.setup.players',
+          'tuppenny-hapenny-loo.setup.deck',
+          'tuppenny-hapenny-loo.setup.equipment',
+          'tuppenny-hapenny-loo.setup.dealing',
+        ],
+      },
+      {
+        id: 'tuppenny-hapenny-loo.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tuppenny-hapenny-loo.rules.key.1',
+          'tuppenny-hapenny-loo.rules.key.2',
+          'tuppenny-hapenny-loo.rules.key.3',
+        ],
+      },
+      {
+        id: 'tuppenny-hapenny-loo.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tuppenny-hapenny-loo.score.description',
+          'tuppenny-hapenny-loo.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tuppenny-hapenny-loo.setup.dealing',
+        'tuppenny-hapenny-loo.rules.objective',
+      ],
+      play_card: [
+        'tuppenny-hapenny-loo.rules.gameplay',
+      ],
+    },
   },
 }

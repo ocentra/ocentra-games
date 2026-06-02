@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Forty Thieves. Logic: See rules.objective and rules.gameplay.',
-    Player: "Forty Thieves, also known as 'Napoleon at St. Helena' or 'Roosevelt at San Juan', is a notoriously difficult and strategic two-deck Solitaire game. Requiring 104 cards, the game challenges players to organize a vast tableau of 40 cards into eight separate foundations. Unlike many solitaires, building in the tableau must be done strictly by suit and in descending order. Because the stock can only be cycled through once, and only a single card is drawn at a time, players must exercise extreme caution to avoid blocking their own win path.",
+    LLM: '1. Stock: Click the stock to deal one card at a time to the waste pile.\n2. Re-Deals: NO re-deals are allowed. Once the stock is empty, the game ends if no more moves remain.\n3. Foundations: Build from Ace, 2, 3... King by suit.',
+    Player: '1. Stock: Click the stock to deal one card at a time to the waste pile.\n2. Re-Deals: NO re-deals are allowed. Once the stock is empty, the game ends if no more moves remain.\n3. Foundations: Build from Ace, 2, 3... King by suit.',
     objective: 'Move all 104 cards into the 8 foundation piles, building each from Ace up to King by suit.',
     gameplay: '1. Stock: Click the stock to deal one card at a time to the waste pile.\n2. Re-Deals: NO re-deals are allowed. Once the stock is empty, the game ends if no more moves remain.\n3. Foundations: Build from Ace, 2, 3... King by suit.',
     keyRules: [
@@ -51,10 +51,144 @@
       go_out: 'This game does not support go out.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; system may use initial_deal before play.',
-      'Scoring check: Move all 104 cards into the 8 foundation piles, building each from Ace up to King by suit. Expected outcome: Move all 104 cards into the 8 foundation piles, building each from Ace up to King by suit..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Move all 104 cards into the 8 foundation piles, building each from Ace up to King by suit.',
+      'Turn-flow example: 1. Stock: Click the stock to deal one card at a time to the waste pile.\n2. Re-Deals: NO re-deals are allowed. Once the stock is empty, the game ends if no more moves remain.\n3. Foundations: Build from Ace, 2, 3... King by suit.',
+      'Scoring example: Move all 104 cards into the 8 foundation piles, building each from Ace up to King by suit. Move all 104 cards into the 8 foundation piles, building each from Ace up to King by suit..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'forty-thieves.rules.objective',
+        title: 'Objective',
+        text: 'Move all 104 cards into the 8 foundation piles, building each from Ace up to King by suit.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'forty-thieves.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Stock: Click the stock to deal one card at a time to the waste pile.\n2. Re-Deals: NO re-deals are allowed. Once the stock is empty, the game ends if no more moves remain.\n3. Foundations: Build from Ace, 2, 3... King by suit.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'forty-thieves.setup.players',
+        title: 'Players',
+        text: 'One player only. Forty Thieves is a patience (solitaire) game; the single player plays against the layout, moving cards from the tableau and stock to the eight foundations. There are no opponents or partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'forty-thieves.setup.deck',
+        title: 'Deck',
+        text: 'Two standard decks shuffled together (104 cards).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'forty-thieves.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard decks shuffled together (104 cards).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'forty-thieves.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 40 cards in 10 columns of 4, all face-up. Place remaining 64 in stock. Eight foundation piles above.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'forty-thieves.score.win-condition',
+        title: 'Win condition',
+        text: 'Move all 104 cards into the 8 foundation piles, building each from Ace up to King by suit.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'forty-thieves.score.description',
+        title: 'Scoring',
+        text: 'Move all 104 cards into the 8 foundation piles, building each from Ace up to King by suit.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'forty-thieves.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Single Move Only: The inability to move stacks/sequences makes the preservation of empty columns the most vital part of the game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'forty-thieves.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Face-Up: Since matches are by suit and rank, you are rarely searching for hidden information, but rather calculating complex sequences of moves.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'forty-thieves.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'forty-thieves.rules.objective',
+          'forty-thieves.rules.gameplay',
+        ],
+      },
+      {
+        id: 'forty-thieves.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'forty-thieves.setup.players',
+          'forty-thieves.setup.deck',
+          'forty-thieves.setup.equipment',
+          'forty-thieves.setup.dealing',
+        ],
+      },
+      {
+        id: 'forty-thieves.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'forty-thieves.rules.key.1',
+          'forty-thieves.rules.key.2',
+        ],
+      },
+      {
+        id: 'forty-thieves.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'forty-thieves.score.description',
+          'forty-thieves.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'forty-thieves.setup.dealing',
+        'forty-thieves.rules.objective',
+      ],
+      play_card: [
+        'forty-thieves.rules.gameplay',
+      ],
+      draw: [
+        'forty-thieves.rules.gameplay',
+      ],
+      initial_deal: [
+        'forty-thieves.rules.gameplay',
+      ],
+    },
   },
 }

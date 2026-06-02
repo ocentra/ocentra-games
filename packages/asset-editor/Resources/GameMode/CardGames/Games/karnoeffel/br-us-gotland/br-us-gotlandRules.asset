@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-6 player(s), 9 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Each deal awards one point to the team that first reaches six tricks, or two points for Jan when the first six tricks are won in a row; other deals with no decisive result score nothing. Expected outcome: Play deals until one partnership reaches the agreed number of points; the team with the higher total score wins the game..',
+      'Setup example: 9 card(s) per player.',
+      'Rule example: Be the first player to achieve the winning condition through strategic play of cards.',
+      'Turn-flow example: 1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
+      'Scoring example: Each deal awards one point to the team that first reaches six tricks, or two points for Jan when the first six tricks are won in a row; other deals with no decisive result score nothing. Play deals until one partnership reaches the agreed number of points; the team with the higher total score wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'br-us-gotland.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to achieve the winning condition through strategic play of cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'br-us-gotland.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'br-us-gotland.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 4\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Two teams of two or three players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'br-us-gotland.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 36-card deck (2–5 removed from each suit)\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'br-us-gotland.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 36-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'br-us-gotland.setup.dealing',
+        title: 'Deal',
+        text: "Four-player game: 9 cards per player. Six-player game: 6 cards per player. Dealing Pattern: Clockwise, with the player to dealer's right cutting.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'br-us-gotland.score.win-condition',
+        title: 'Win condition',
+        text: 'Play deals until one partnership reaches the agreed number of points; the team with the higher total score wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'br-us-gotland.score.description',
+        title: 'Scoring',
+        text: 'Each deal awards one point to the team that first reaches six tricks, or two points for Jan when the first six tricks are won in a row; other deals with no decisive result score nothing.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'br-us-gotland.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Play proceeds in turn order with only legal actions allowed.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'br-us-gotland.rules.key.2',
+        title: 'Key rule 2',
+        text: "Round resolution follows the variant's scoring and bonus conditions.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'br-us-gotland.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Match winner is determined by agreed target score or elimination condition.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'br-us-gotland.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'br-us-gotland.rules.objective',
+          'br-us-gotland.rules.gameplay',
+        ],
+      },
+      {
+        id: 'br-us-gotland.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'br-us-gotland.setup.players',
+          'br-us-gotland.setup.deck',
+          'br-us-gotland.setup.equipment',
+          'br-us-gotland.setup.dealing',
+        ],
+      },
+      {
+        id: 'br-us-gotland.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'br-us-gotland.rules.key.1',
+          'br-us-gotland.rules.key.2',
+          'br-us-gotland.rules.key.3',
+        ],
+      },
+      {
+        id: 'br-us-gotland.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'br-us-gotland.score.description',
+          'br-us-gotland.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'br-us-gotland.setup.dealing',
+        'br-us-gotland.rules.objective',
+      ],
+      play_card: [
+        'br-us-gotland.rules.gameplay',
+      ],
+    },
   },
 }

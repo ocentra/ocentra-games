@@ -11,7 +11,7 @@
   },
   data: {
     LLM: '1. **Stakes**: Each player antes to the pool (or dealer antes four). 2. **Auction**: Eldest opens; players bid or pass in ascending order: Solo, Casco (with both black Aces), Dimidiator (exchange with called King), Alliance (call a King for partner). If all pass, Forced Spadille: holder of Spadille becomes Hombre and calls a King. 3. **Trump**: Hombre names trump (or partner may in Forced Spadille). 4. **Play**: Eldest leads. Must follow suit; may play any card if void. Highest trump wins, else highest of led suit. Spadille, Manille, Basta may be held back when trumps are led (unless a higher trump is led). 5. **Settlement**: Hombre wins or loses; pool and premiums paid accordingly.',
-    Player: 'Four players bid for the right to be Hombre. Win the auction, name trump, and call a King to find a secret partnerâ€”or play Solo. Win six of ten tricks to take the pool. Watch out for Spadille, Manille, and Basta: the matadors that rule the trumps.',
+    Player: '1. **Stakes**: Each player antes to the pool (or dealer antes four). 2. **Auction**: Eldest opens; players bid or pass in ascending order: Solo, Casco (with both black Aces), Dimidiator (exchange with called King), Alliance (call a King for partner). If all pass, Forced Spadille: holder of Spadille becomes Hombre and calls a King. 3. **Trump**: Hombre names trump (or partner may in Forced Spadille). 4. **Play**: Eldest leads. Must follow suit; may play any card if void. Highest trump wins, else highest of led suit. Spadille, Manille, Basta may be held back when trumps are led (unless a higher trump is led). 5. **Settlement**: Hombre wins or loses; pool and premiums paid accordingly.',
     objective: 'As Hombre (declarer), win at least six of the ten tricks, either alone (Solo) or with a partner (Alliance). Opponents aim to prevent this.',
     gameplay: '1. **Stakes**: Each player antes to the pool (or dealer antes four). 2. **Auction**: Eldest opens; players bid or pass in ascending order: Solo, Casco (with both black Aces), Dimidiator (exchange with called King), Alliance (call a King for partner). If all pass, Forced Spadille: holder of Spadille becomes Hombre and calls a King. 3. **Trump**: Hombre names trump (or partner may in Forced Spadille). 4. **Play**: Eldest leads. Must follow suit; may play any card if void. Highest trump wins, else highest of led suit. Spadille, Manille, Basta may be held back when trumps are led (unless a higher trump is led). 5. **Settlement**: Hombre wins or loses; pool and premiums paid accordingly.',
     keyRules: [
@@ -55,10 +55,198 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; each_player_clockwise may use ante before deal.',
-      "Scoring check: Stake-based. Hombre wins: takes pool and premiums (Solo, Matadors, Premiers). Hombre loses: Remise (5 tricks) = double pool; Codille (4 or fewer) = stiffer penalty. Bonuses: Premiers (six tricks before opponents take one), Matadors (top trumps held). Expected outcome: Hombre (or Hombre's team) wins by taking six or more tricks. Loses with five (Remise) or four or fewer (Codille)..",
+      'Setup example: 10 card(s) per player.',
+      'Rule example: As Hombre (declarer), win at least six of the ten tricks, either alone (Solo) or with a partner (Alliance). Opponents aim to prevent this.',
+      'Turn-flow example: 1. **Stakes**: Each player antes to the pool (or dealer antes four). 2. **Auction**: Eldest opens; players bid or pass in ascending order: Solo, Casco (with both black Aces), Dimidiator (exchange with called King), Alliance (call a King for partner). If all pass, Forced Spadille: holder of Spadille becomes Hombre and calls a King. 3. **Trump**: Hombre names trump (or partner may in Forced Spadille). 4. **Play**: Eldest leads. Must follow suit; may play any card if void. Highest trump wins, else highest of led suit. Spadille, Manille, Basta may be held back when trumps are led (unless a higher trump is led). 5. **Settlement**: Hombre wins or loses; pool and premiums paid accordingly.',
+      "Scoring example: Stake-based. Hombre wins: takes pool and premiums (Solo, Matadors, Premiers). Hombre loses: Remise (5 tricks) = double pool; Codille (4 or fewer) = stiffer penalty. Bonuses: Premiers (six tricks before opponents take one), Matadors (top trumps held). Hombre (or Hombre's team) wins by taking six or more tricks. Loses with five (Remise) or four or fewer (Codille)..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'quadrille.rules.objective',
+        title: 'Objective',
+        text: 'As Hombre (declarer), win at least six of the ten tricks, either alone (Solo) or with a partner (Alliance). Opponents aim to prevent this.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'quadrille.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Stakes**: Each player antes to the pool (or dealer antes four). 2. **Auction**: Eldest opens; players bid or pass in ascending order: Solo, Casco (with both black Aces), Dimidiator (exchange with called King), Alliance (call a King for partner). If all pass, Forced Spadille: holder of Spadille becomes Hombre and calls a King. 3. **Trump**: Hombre names trump (or partner may in Forced Spadille). 4. **Play**: Eldest leads. Must follow suit; may play any card if void. Highest trump wins, else highest of led suit. Spadille, Manille, Basta may be held back when trumps are led (unless a higher trump is led). 5. **Settlement**: Hombre wins or loses; pool and premiums paid accordingly.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'quadrille.setup.players',
+        title: 'Players',
+        text: '4 players. Each plays for herself; temporary alliances form per deal via the called King.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'quadrille.setup.deck',
+        title: 'Deck',
+        text: '40 cards: A, K, Q, J, 7, 6, 5, 4, 3, 2 in each suit (8s, 9s, 10s removed).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'quadrille.setup.equipment',
+        title: 'Equipment',
+        text: '40-card pack, counters or chips for stakes, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'quadrille.setup.dealing',
+        title: 'Deal',
+        text: '1. Dealer shuffles; pone cuts. 2. Deal 10 cards each in batches of 4-3-3, 3-4-3, or 3-3-4. 3. Deal and play rotate right (counterclockwise).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'quadrille.score.win-condition',
+        title: 'Win condition',
+        text: "Hombre (or Hombre's team) wins by taking six or more tricks. Loses with five (Remise) or four or fewer (Codille).",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'quadrille.score.description',
+        title: 'Scoring',
+        text: 'Stake-based. Hombre wins: takes pool and premiums (Solo, Matadors, Premiers). Hombre loses: Remise (5 tricks) = double pool; Codille (4 or fewer) = stiffer penalty. Bonuses: Premiers (six tricks before opponents take one), Matadors (top trumps held).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'quadrille.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Spadille (Ace of Spades) is always the highest trump.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'quadrille.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Basta (Ace of Clubs) is always the third highest trump.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'quadrille.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Manille = lowest card of trump suit (2 in black suits, 7 in red suits); always second highest trump.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'quadrille.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Red suits (plain): K > Q > J > A > 2 > 3 > 4 > 5 > 6 > 7. Black suits (plain): K > Q > J > 7 > 6 > 5 > 4 > 3 > 2.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'quadrille.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Alliance: Hombre calls a non-trump King; holder is secret partner until the called card is played.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'quadrille.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Forced Spadille: No vole; Hombre and partner aim for six tricks.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'quadrille.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'quadrille.rules.objective',
+          'quadrille.rules.gameplay',
+        ],
+      },
+      {
+        id: 'quadrille.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'quadrille.setup.players',
+          'quadrille.setup.deck',
+          'quadrille.setup.equipment',
+          'quadrille.setup.dealing',
+        ],
+      },
+      {
+        id: 'quadrille.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'quadrille.rules.key.1',
+          'quadrille.rules.key.2',
+          'quadrille.rules.key.3',
+          'quadrille.rules.key.4',
+          'quadrille.rules.key.5',
+          'quadrille.rules.key.6',
+        ],
+      },
+      {
+        id: 'quadrille.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'quadrille.score.description',
+          'quadrille.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'quadrille.setup.dealing',
+        'quadrille.rules.objective',
+      ],
+      ante: [
+        'quadrille.rules.gameplay',
+      ],
+      deal: [
+        'quadrille.rules.gameplay',
+      ],
+      play_card: [
+        'quadrille.rules.gameplay',
+      ],
+      pass: [
+        'quadrille.rules.gameplay',
+      ],
+      bid: [
+        'quadrille.rules.gameplay',
+      ],
+      call_king: [
+        'quadrille.rules.gameplay',
+      ],
+      name_trump: [
+        'quadrille.rules.gameplay',
+      ],
+      pay_pool: [
+        'quadrille.rules.gameplay',
+      ],
+      award_premiums: [
+        'quadrille.rules.gameplay',
+      ],
+    },
   },
 }

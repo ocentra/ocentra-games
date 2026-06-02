@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Casino payouts based on hand rank. House edge ~5.2% on Ante.',
+      winCondition: "Beat the dealer's qualifying hand.",
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: 'No fixed target; each hand is independent; payouts by hand rank.',
+        cardValues: 'Poker uses hand rankings, not point values per card.',
+      },
+      splitRules: 'Tie = push (both bets returned).',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'poker_ranking',
     patternMultipliers: null,
     priorityOrder: [],

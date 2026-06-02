@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Slabberjan. Logic: See rules.objective and rules.gameplay.',
-    Player: "Slabberjan is a traditional Dutch elimination game, specific to Zeeland, where players swap 'pieces' (originally cards, now custom tiles/tokens called 'Doppen') to avoid holding the lowest rank at the end of a round. It is remarkably similar to the card game 'Gnav' or 'Cuckoo'. The game involves bluffing, special 'Matador' pieces that block swaps (Knight, Bird, Cat, Inn), and a pot that the loser must pay into. The last player with chips wins.",
+    LLM: 'Each player receives one piece from the bag (or deck), kept secret. Starting left of the dealer and going clockwise, each player may keep their piece (stand) or offer to swap with their left-hand neighbour. The neighbour must accept the swap unless they hold a matador (Knight, Bird, Cat, or Inn). Knight stops trading and the swap attemptor pays a token; Bird refuses with no penalty; Cat undoes all swaps so far; Inn forces the attemptor to swap with the next player instead. The dealer may swap with a piece drawn from the bag. When the swap round ends, everyone reveals; the player with the lowest piece pays one token to the pool. Fool (Jan Rit) is lowest; its holder must knock; both fool-holder and next-lowest pay. Last player with chips wins.',
+    Player: 'Each player receives one piece from the bag (or deck), kept secret. Starting left of the dealer and going clockwise, each player may keep their piece (stand) or offer to swap with their left-hand neighbour. The neighbour must accept the swap unless they hold a matador (Knight, Bird, Cat, or Inn). Knight stops trading and the swap attemptor pays a token; Bird refuses with no penalty; Cat undoes all swaps so far; Inn forces the attemptor to swap with the next player instead. The dealer may swap with a piece drawn from the bag. When the swap round ends, everyone reveals; the player with the lowest piece pays one token to the pool. Fool (Jan Rit) is lowest; its holder must knock; both fool-holder and next-lowest pay. Last player with chips wins.',
     objective: 'Avoid having the lowest piece. Survive with chips.',
     gameplay: 'Each player receives one piece from the bag (or deck), kept secret. Starting left of the dealer and going clockwise, each player may keep their piece (stand) or offer to swap with their left-hand neighbour. The neighbour must accept the swap unless they hold a matador (Knight, Bird, Cat, or Inn). Knight stops trading and the swap attemptor pays a token; Bird refuses with no penalty; Cat undoes all swaps so far; Inn forces the attemptor to swap with the next player instead. The dealer may swap with a piece drawn from the bag. When the swap round ends, everyone reveals; the player with the lowest piece pays one token to the pool. Fool (Jan Rit) is lowest; its holder must knock; both fool-holder and next-lowest pay. Last player with chips wins.',
     keyRules: [
@@ -53,10 +53,168 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-15 player(s), 1 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_one_each before swap_round.',
-      'Scoring check: Avoid having the lowest piece. Survive with chips. Expected outcome: Avoid having the lowest piece. Survive with chips..',
+      'Setup example: 1 card(s) per player.',
+      'Rule example: Avoid having the lowest piece. Survive with chips.',
+      'Turn-flow example: Each player receives one piece from the bag (or deck), kept secret. Starting left of the dealer and going clockwise, each player may keep their piece (stand) or offer to swap with their left-hand neighbour. The neighbour must accept the swap unless they hold a matador (Knight, Bird, Cat, or Inn). Knight stops trading and the swap attemptor pays a token; Bird refuses with no penalty; Cat undoes all swaps so far; Inn forces the attemptor to swap with the next player instead. The dealer may swap with a piece drawn from the bag. When the swap round ends, everyone reveals; the player with the lowest piece pays one token to the pool. Fool (Jan Rit) is lowest; its holder must knock; both fool-holder and next-lowest pay. Last player with chips wins.',
+      'Scoring example: Avoid having the lowest piece. Survive with chips. Avoid having the lowest piece. Survive with chips..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'slabberjan.rules.objective',
+        title: 'Objective',
+        text: 'Avoid having the lowest piece. Survive with chips.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'slabberjan.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Each player receives one piece from the bag (or deck), kept secret. Starting left of the dealer and going clockwise, each player may keep their piece (stand) or offer to swap with their left-hand neighbour. The neighbour must accept the swap unless they hold a matador (Knight, Bird, Cat, or Inn). Knight stops trading and the swap attemptor pays a token; Bird refuses with no penalty; Cat undoes all swaps so far; Inn forces the attemptor to swap with the next player instead. The dealer may swap with a piece drawn from the bag. When the swap round ends, everyone reveals; the player with the lowest piece pays one token to the pool. Fool (Jan Rit) is lowest; its holder must knock; both fool-holder and next-lowest pay. Last player with chips wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'slabberjan.setup.players',
+        title: 'Players',
+        text: 'From two up to twenty or more in the parent game Gnav; the Zeeland variant Slabberjan is typically played with five to fifteen players for the best experience. Since each player receives one piece from the set of 42, two to forty-two players are possible.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'slabberjan.setup.deck',
+        title: 'Deck',
+        text: '42 pieces. Ranking: Knight (Kap-af) > Bird > Cat > Inn > 12 > 11... > 0 > White Bread > Pot > Face > Fool (Jan Rit).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'slabberjan.setup.equipment',
+        title: 'Equipment',
+        text: '42 pieces. Ranking: Knight (Kap-af) > Bird > Cat > Inn > 12 > 11... > 0 > White Bread > Pot > Face > Fool (Jan Rit).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'slabberjan.setup.dealing',
+        title: 'Deal',
+        text: 'Each player draws 1 piece from a bag. Kept secret.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'slabberjan.score.win-condition',
+        title: 'Win condition',
+        text: 'Avoid having the lowest piece. Survive with chips.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'slabberjan.score.description',
+        title: 'Scoring',
+        text: 'Avoid having the lowest piece. Survive with chips.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'slabberjan.rules.key.1',
+        title: 'Key rule 1',
+        text: 'One piece per player per round, drawn from bag.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'slabberjan.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Swap round: stand or swap with left neighbour; matadors (Knight, Bird, Cat, Inn) may refuse or trigger special effects.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'slabberjan.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Lowest piece pays one token; fool has special rules.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'slabberjan.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Elimination: players who lose all tokens drop out.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'slabberjan.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'slabberjan.rules.objective',
+          'slabberjan.rules.gameplay',
+        ],
+      },
+      {
+        id: 'slabberjan.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'slabberjan.setup.players',
+          'slabberjan.setup.deck',
+          'slabberjan.setup.equipment',
+          'slabberjan.setup.dealing',
+        ],
+      },
+      {
+        id: 'slabberjan.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'slabberjan.rules.key.1',
+          'slabberjan.rules.key.2',
+          'slabberjan.rules.key.3',
+          'slabberjan.rules.key.4',
+        ],
+      },
+      {
+        id: 'slabberjan.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'slabberjan.score.description',
+          'slabberjan.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'slabberjan.setup.dealing',
+        'slabberjan.rules.objective',
+      ],
+      deal_one_each: [
+        'slabberjan.rules.gameplay',
+      ],
+      stand: [
+        'slabberjan.rules.gameplay',
+      ],
+      swap_with_left: [
+        'slabberjan.rules.gameplay',
+      ],
+      reveal_piece: [
+        'slabberjan.rules.gameplay',
+      ],
+      settle_round: [
+        'slabberjan.rules.gameplay',
+      ],
+    },
   },
 }

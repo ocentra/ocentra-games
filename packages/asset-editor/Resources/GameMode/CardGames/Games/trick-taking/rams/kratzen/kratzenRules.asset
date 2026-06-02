@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kaiserspiel. Logic: Win the tricks, card points, or contract result required by the local form of the game.',
-    Player: 'Kaiserspiel is a traditional trick-taking card game using 40 or 48-card Swiss Kaiserspiel deck for 2, 4, or 6 players. It uses one chosen suit and belongs to the Karnöffel environment.',
+    LLM: 'Use a William Tell pack with sixes removed except the Weli, which is a high permanent trump. Players decide whether to participate, then active players play tricks with trump and suit-following rules. Stakes and penalties are paid according to tricks won and local Kratzen rules.',
+    Player: 'Use a William Tell pack with sixes removed except the Weli, which is a high permanent trump. Players decide whether to participate, then active players play tricks with trump and suit-following rules. Stakes and penalties are paid according to tricks won and local Kratzen rules.',
     objective: 'Enter only with a hand strong enough to win tricks, then avoid the penalties for failing the minimum result.',
     gameplay: 'Use a William Tell pack with sixes removed except the Weli, which is a high permanent trump. Players decide whether to participate, then active players play tricks with trump and suit-following rules. Stakes and penalties are paid according to tricks won and local Kratzen rules.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-6 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Tricks, card points, or contract success determine scoring. Expected outcome: 1.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Enter only with a hand strong enough to win tricks, then avoid the penalties for failing the minimum result.',
+      'Turn-flow example: Use a William Tell pack with sixes removed except the Weli, which is a high permanent trump. Players decide whether to participate, then active players play tricks with trump and suit-following rules. Stakes and penalties are paid according to tricks won and local Kratzen rules.',
+      'Scoring example: Tricks, card points, or contract success determine scoring. Win the tricks, card points, or contract result required by the local form of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'kratzen.rules.objective',
+        title: 'Objective',
+        text: 'Enter only with a hand strong enough to win tricks, then avoid the penalties for failing the minimum result.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kratzen.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Use a William Tell pack with sixes removed except the Weli, which is a high permanent trump. Players decide whether to participate, then active players play tricks with trump and suit-following rules. Stakes and penalties are paid according to tricks won and local Kratzen rules.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kratzen.setup.players',
+        title: 'Players',
+        text: '3-6 players use the table arrangement described for Kratzen.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kratzen.setup.deck',
+        title: 'Deck',
+        text: '33-card William Tell pack with the Weli retained',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kratzen.setup.equipment',
+        title: 'Equipment',
+        text: '33-card William Tell pack with the Weli retained, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kratzen.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare 33-card William Tell pack with the Weli retained and deal or lay out cards according to the documented Kratzen rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kratzen.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kratzen.score.description',
+        title: 'Scoring',
+        text: 'Tricks, card points, or contract success determine scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kratzen.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The Weli is the second-highest trump below the trump sow or ace.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kratzen.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players may drop out rather than risk a weak hand.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kratzen.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The game belongs to the Rams group of optional-entry trick games.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kratzen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kratzen.rules.objective',
+          'kratzen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kratzen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kratzen.setup.players',
+          'kratzen.setup.deck',
+          'kratzen.setup.equipment',
+          'kratzen.setup.dealing',
+        ],
+      },
+      {
+        id: 'kratzen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kratzen.rules.key.1',
+          'kratzen.rules.key.2',
+          'kratzen.rules.key.3',
+        ],
+      },
+      {
+        id: 'kratzen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kratzen.score.description',
+          'kratzen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kratzen.setup.dealing',
+        'kratzen.rules.objective',
+      ],
+      play_card: [
+        'kratzen.rules.gameplay',
+      ],
+      discard: [
+        'kratzen.rules.gameplay',
+      ],
+      pass: [
+        'kratzen.rules.gameplay',
+      ],
+      bid: [
+        'kratzen.rules.gameplay',
+      ],
+    },
   },
 }

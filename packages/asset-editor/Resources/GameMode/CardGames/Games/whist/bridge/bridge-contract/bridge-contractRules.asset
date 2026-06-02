@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Contract Bridge. Type: Auction Trick-taking. Rules: 4 players, fixed partnerships. 13 cards each. Auction determines trump and target. One hand revealed as Dummy.',
-    Player: 'You hold a strong spade suit and 17 HCP. Your partner bids 2 Hearts. Do you support their Hearts, or raise the stakes with a 3 Spade overcall? Trust the convention!',
+    LLM: "1. **Auction**: Players bid for the contract. 2. **Opening Lead**: Player to the left of the declarer plays the first card. 3. **Dummy**: Declarer's partner (the Dummy) lays their hand face-up on the table. 4. **Tricks**: 13 tricks are played. Must follow suit. Highest trump or highest led card wins.",
+    Player: "1. **Auction**: Players bid for the contract. 2. **Opening Lead**: Player to the left of the declarer plays the first card. 3. **Dummy**: Declarer's partner (the Dummy) lays their hand face-up on the table. 4. **Tricks**: 13 tricks are played. Must follow suit. Highest trump or highest led card wins.",
     objective: 'Fulfill the trick count specified in the contract or prevent opponents from fulfilling theirs to score points.',
     gameplay: "1. **Auction**: Players bid for the contract. 2. **Opening Lead**: Player to the left of the declarer plays the first card. 3. **Dummy**: Declarer's partner (the Dummy) lays their hand face-up on the table. 4. **Tricks**: 13 tricks are played. Must follow suit. Highest trump or highest led card wins.",
     keyRules: [
@@ -52,10 +52,168 @@
       go_out: 'The hand terminates automatically once all thirteen tricks have been played by all participants.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in dealing; system may use deal_13_each before auction.',
-      'Scoring check: Complex scoring based on tricks bid and made (Below the Line) and overtricks/bonuses (Above the Line). Expected outcome: 100.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Fulfill the trick count specified in the contract or prevent opponents from fulfilling theirs to score points.',
+      "Turn-flow example: 1. **Auction**: Players bid for the contract. 2. **Opening Lead**: Player to the left of the declarer plays the first card. 3. **Dummy**: Declarer's partner (the Dummy) lays their hand face-up on the table. 4. **Tricks**: 13 tricks are played. Must follow suit. Highest trump or highest led card wins.",
+      'Scoring example: Complex scoring based on tricks bid and made (Below the Line) and overtricks/bonuses (Above the Line). Win two games (a Rubber) to win the match..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'bridge-contract.rules.objective',
+        title: 'Objective',
+        text: 'Fulfill the trick count specified in the contract or prevent opponents from fulfilling theirs to score points.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bridge-contract.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Auction**: Players bid for the contract. 2. **Opening Lead**: Player to the left of the declarer plays the first card. 3. **Dummy**: Declarer's partner (the Dummy) lays their hand face-up on the table. 4. **Tricks**: 13 tricks are played. Must follow suit. Highest trump or highest led card wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bridge-contract.setup.players',
+        title: 'Players',
+        text: '4 players. Partners sit opposite each other (North-South vs East-West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bridge-contract.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card French pack (No Jokers). Suit rankings for bidding: No Trump > Spades > Hearts > Diamonds > Clubs.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bridge-contract.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, bidding boxes, score pad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bridge-contract.setup.dealing',
+        title: 'Deal',
+        text: 'The entire deck is dealt out clockwise: 13 cards per player.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bridge-contract.score.win-condition',
+        title: 'Win condition',
+        text: 'Win two games (a Rubber) to win the match.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bridge-contract.score.description',
+        title: 'Scoring',
+        text: 'Complex scoring based on tricks bid and made (Below the Line) and overtricks/bonuses (Above the Line).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bridge-contract.rules.key.1',
+        title: 'Key rule 1',
+        text: "Only tricks bid and made score 'below the line' towards winning a game.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bridge-contract.rules.key.2',
+        title: 'Key rule 2',
+        text: "Vulnerability: Teams that have won one game become 'Vulnerable', increasing both bonuses and penalties.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bridge-contract.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Double/Redouble: Bids that increase the scoring stakes if the contract is made or broken.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bridge-contract.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bridge-contract.rules.objective',
+          'bridge-contract.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bridge-contract.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bridge-contract.setup.players',
+          'bridge-contract.setup.deck',
+          'bridge-contract.setup.equipment',
+          'bridge-contract.setup.dealing',
+        ],
+      },
+      {
+        id: 'bridge-contract.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bridge-contract.rules.key.1',
+          'bridge-contract.rules.key.2',
+          'bridge-contract.rules.key.3',
+        ],
+      },
+      {
+        id: 'bridge-contract.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bridge-contract.score.description',
+          'bridge-contract.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bridge-contract.setup.dealing',
+        'bridge-contract.rules.objective',
+      ],
+      play_card: [
+        'bridge-contract.rules.gameplay',
+      ],
+      pass: [
+        'bridge-contract.rules.gameplay',
+      ],
+      bid: [
+        'bridge-contract.rules.gameplay',
+      ],
+      deal_13_each: [
+        'bridge-contract.rules.gameplay',
+      ],
+      bid_contract: [
+        'bridge-contract.rules.gameplay',
+      ],
+      double: [
+        'bridge-contract.rules.gameplay',
+      ],
+      redouble: [
+        'bridge-contract.rules.gameplay',
+      ],
+      calculate_match_points: [
+        'bridge-contract.rules.gameplay',
+      ],
+    },
   },
 }

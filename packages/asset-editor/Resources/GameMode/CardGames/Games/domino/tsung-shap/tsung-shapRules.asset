@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tsung Shap. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Tsung Shap (Disputing Tens) is a Chinese domino game adapted for cards. 2 players capture pairs of identical cards and sets of 3 cards summing to multiples of 10 from the ends of a row. Pairs score 10x pip value. Sweeps score 40 bonus. Can be played with standard card deck using Fishing mechanics.',
+    LLM: 'Row of tiles on table. Draw and capture from ends. Identical pair = capture (score 10x pips). Triplet summing to 10 = capture. Sweep (take last 2) = 40 bonus. Missed captures can be claimed by opponent.',
+    Player: 'Row of tiles on table. Draw and capture from ends. Identical pair = capture (score 10x pips). Triplet summing to 10 = capture. Sweep (take last 2) = 40 bonus. Missed captures can be claimed by opponent.',
     objective: 'Score more points than the opponent by capturing pairs of identical tiles (ten times pip value), triplets that sum to a multiple of ten (pip total), and sweeps (last two table tiles for 40 bonus).',
     gameplay: 'Row of tiles on table. Draw and capture from ends. Identical pair = capture (score 10x pips). Triplet summing to 10 = capture. Sweep (take last 2) = 40 bonus. Missed captures can be claimed by opponent.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Pairs = 10 x pip value. Triplets by pip count. Sweeps = 40 bonus. Expected outcome: Score more points through captures..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score more points than the opponent by capturing pairs of identical tiles (ten times pip value), triplets that sum to a multiple of ten (pip total), and sweeps (last two table tiles for 40 bonus).',
+      'Turn-flow example: Row of tiles on table. Draw and capture from ends. Identical pair = capture (score 10x pips). Triplet summing to 10 = capture. Sweep (take last 2) = 40 bonus. Missed captures can be claimed by opponent.',
+      'Scoring example: Pairs = 10 x pip value. Triplets by pip count. Sweeps = 40 bonus. Score more points through captures..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tsung-shap.rules.objective',
+        title: 'Objective',
+        text: 'Score more points than the opponent by capturing pairs of identical tiles (ten times pip value), triplets that sum to a multiple of ten (pip total), and sweeps (last two table tiles for 40 bonus).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tsung-shap.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Row of tiles on table. Draw and capture from ends. Identical pair = capture (score 10x pips). Triplet summing to 10 = capture. Sweep (take last 2) = 40 bonus. Missed captures can be claimed by opponent.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tsung-shap.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tsung-shap.setup.deck',
+        title: 'Deck',
+        text: '32 tiles/cards. Arrange in 8 stacks of 4.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tsung-shap.setup.equipment',
+        title: 'Equipment',
+        text: 'Tiles or cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tsung-shap.setup.dealing',
+        title: 'Deal',
+        text: 'Players draw stacks alternately. 16 each.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tsung-shap.score.win-condition',
+        title: 'Win condition',
+        text: 'Score more points through captures.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tsung-shap.score.description',
+        title: 'Scoring',
+        text: 'Pairs = 10 x pip value. Triplets by pip count. Sweeps = 40 bonus.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tsung-shap.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Capture from row ends only',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tsung-shap.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Pairs and multiples-of-10 triplets',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tsung-shap.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Sweep bonus = 40',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tsung-shap.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Opponent claims missed captures',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tsung-shap.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tsung-shap.rules.objective',
+          'tsung-shap.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tsung-shap.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tsung-shap.setup.players',
+          'tsung-shap.setup.deck',
+          'tsung-shap.setup.equipment',
+          'tsung-shap.setup.dealing',
+        ],
+      },
+      {
+        id: 'tsung-shap.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tsung-shap.rules.key.1',
+          'tsung-shap.rules.key.2',
+          'tsung-shap.rules.key.3',
+          'tsung-shap.rules.key.4',
+        ],
+      },
+      {
+        id: 'tsung-shap.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tsung-shap.score.description',
+          'tsung-shap.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tsung-shap.setup.dealing',
+        'tsung-shap.rules.objective',
+      ],
+      play_card: [
+        'tsung-shap.rules.gameplay',
+      ],
+    },
   },
 }

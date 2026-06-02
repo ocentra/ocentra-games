@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Whisky Poker. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Whisky Poker is a poker-style game with widow hand exchange. Multiple players. 5 each + 5-card widow. Options: swap entire hand for widow (old hand becomes new widow face-up), swap 1 card with widow, or knock (triggers final round). Last best poker hand after knock wins. Worst hand pays chip.',
+    LLM: 'Each turn: swap entire hand for widow (discards become face-up widow), swap 1 card, or knock. After knock = 1 final round. Showdown: standard poker rankings. Worst hand pays 1 chip. Out of chips = eliminated.',
+    Player: 'Each turn: swap entire hand for widow (discards become face-up widow), swap 1 card, or knock. After knock = 1 final round. Showdown: standard poker rankings. Worst hand pays 1 chip. Out of chips = eliminated.',
     objective: 'Collect the best five-card poker hand by exchanging cards with the spare hand (widow) on the table. In standard play the best hand wins the pool; in the alternative form the worst hand pays one chip and the first to lose all chips pays for refreshments.',
     gameplay: 'Each turn: swap entire hand for widow (discards become face-up widow), swap 1 card, or knock. After knock = 1 final round. Showdown: standard poker rankings. Worst hand pays 1 chip. Out of chips = eliminated.',
     keyRules: [
@@ -53,10 +53,171 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-9 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in phase1_widow_down; each_player_clockwise may use pass, exchange_full_widow, knock before phase2_widow_up.',
-      "Scoring check: Standard poker rankings. Worst pays chip. Expected outcome: Best 5-card poker hand. Don't be worst..",
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Collect the best five-card poker hand by exchanging cards with the spare hand (widow) on the table. In standard play the best hand wins the pool; in the alternative form the worst hand pays one chip and the first to lose all chips pays for refreshments.',
+      'Turn-flow example: Each turn: swap entire hand for widow (discards become face-up widow), swap 1 card, or knock. After knock = 1 final round. Showdown: standard poker rankings. Worst hand pays 1 chip. Out of chips = eliminated.',
+      "Scoring example: Standard poker rankings. Worst pays chip. Best 5-card poker hand. Don't be worst..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'whisky-poker.rules.objective',
+        title: 'Objective',
+        text: 'Collect the best five-card poker hand by exchanging cards with the spare hand (widow) on the table. In standard play the best hand wins the pool; in the alternative form the worst hand pays one chip and the first to lose all chips pays for refreshments.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'whisky-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Each turn: swap entire hand for widow (discards become face-up widow), swap 1 card, or knock. After knock = 1 final round. Showdown: standard poker rankings. Worst hand pays 1 chip. Out of chips = eliminated.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'whisky-poker.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'whisky-poker.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack without jokers; one deck for all player counts (2 to 9).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'whisky-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, chips',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'whisky-poker.setup.dealing',
+        title: 'Deal',
+        text: '5 each + 5-card widow face-down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'whisky-poker.score.win-condition',
+        title: 'Win condition',
+        text: "Best 5-card poker hand. Don't be worst.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'whisky-poker.score.description',
+        title: 'Scoring',
+        text: 'Standard poker rankings. Worst pays chip.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'whisky-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: '5-card widow exchange',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'whisky-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Full swap or single swap',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'whisky-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Knock ends round',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'whisky-poker.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Chip elimination',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'whisky-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'whisky-poker.rules.objective',
+          'whisky-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'whisky-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'whisky-poker.setup.players',
+          'whisky-poker.setup.deck',
+          'whisky-poker.setup.equipment',
+          'whisky-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'whisky-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'whisky-poker.rules.key.1',
+          'whisky-poker.rules.key.2',
+          'whisky-poker.rules.key.3',
+          'whisky-poker.rules.key.4',
+        ],
+      },
+      {
+        id: 'whisky-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'whisky-poker.score.description',
+          'whisky-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'whisky-poker.setup.dealing',
+        'whisky-poker.rules.objective',
+      ],
+      reveal_hand: [
+        'whisky-poker.rules.gameplay',
+      ],
+      pass: [
+        'whisky-poker.rules.gameplay',
+      ],
+      exchange_full_widow: [
+        'whisky-poker.rules.gameplay',
+      ],
+      exchange_one_widow: [
+        'whisky-poker.rules.gameplay',
+      ],
+      exchange_five_widow: [
+        'whisky-poker.rules.gameplay',
+      ],
+      knock: [
+        'whisky-poker.rules.gameplay',
+      ],
+    },
   },
 }

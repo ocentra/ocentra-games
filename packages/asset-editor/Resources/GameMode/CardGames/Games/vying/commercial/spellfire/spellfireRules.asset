@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players build proprietary decks from Spellfire cards. Realm control, champion battles, and special powers are driven by official card text and rulebook timing.',
+    Player: 'Players build proprietary decks from Spellfire cards. Realm control, champion battles, and special powers are driven by official card text and rulebook timing.',
     objective: 'Use realms, champions, spells, and events from a constructed deck to defeat opponents under the official rules.',
     gameplay: 'Players build proprietary decks from Spellfire cards. Realm control, champion battles, and special powers are driven by official card text and rulebook timing.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Use realms, champions, spells, and events from a constructed deck to defeat opponents under the official rules.',
+      'Turn-flow example: Players build proprietary decks from Spellfire cards. Realm control, champion battles, and special powers are driven by official card text and rulebook timing.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'spellfire.rules.objective',
+        title: 'Objective',
+        text: 'Use realms, champions, spells, and events from a constructed deck to defeat opponents under the official rules.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'spellfire.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players build proprietary decks from Spellfire cards. Realm control, champion battles, and special powers are driven by official card text and rulebook timing.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'spellfire.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Spellfire.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'spellfire.setup.deck',
+        title: 'Deck',
+        text: 'Constructed Spellfire CCG decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'spellfire.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed Spellfire CCG decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'spellfire.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Constructed Spellfire CCG decks and deal or lay out cards according to the documented Spellfire rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'spellfire.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'spellfire.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'spellfire.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Collectible card game first published in 1994.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'spellfire.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Uses Dungeons and Dragons intellectual property.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'spellfire.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Do not reproduce card text or art without rights.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'spellfire.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'spellfire.rules.objective',
+          'spellfire.rules.gameplay',
+        ],
+      },
+      {
+        id: 'spellfire.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'spellfire.setup.players',
+          'spellfire.setup.deck',
+          'spellfire.setup.equipment',
+          'spellfire.setup.dealing',
+        ],
+      },
+      {
+        id: 'spellfire.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'spellfire.rules.key.1',
+          'spellfire.rules.key.2',
+          'spellfire.rules.key.3',
+        ],
+      },
+      {
+        id: 'spellfire.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'spellfire.score.description',
+          'spellfire.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'spellfire.setup.dealing',
+        'spellfire.rules.objective',
+      ],
+      play_card: [
+        'spellfire.rules.gameplay',
+      ],
+    },
   },
 }

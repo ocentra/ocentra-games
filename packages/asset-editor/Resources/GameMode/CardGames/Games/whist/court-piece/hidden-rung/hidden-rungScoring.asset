@@ -11,9 +11,32 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: "Based on number of tricks won (of 13). Winning 7 consecutive tricks or 7-0 is a 'Court'.",
+      winCondition: "The first partnership to win the required number of tricks or score a 'Court'.",
+      targetScore: 7,
+      scoringDirection: 'high_wins',
+      cardValues: {
         Trick: '1 point',
       },
+      sourceCardValues: {
+        raw: {
+          Trick: '1 point',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,

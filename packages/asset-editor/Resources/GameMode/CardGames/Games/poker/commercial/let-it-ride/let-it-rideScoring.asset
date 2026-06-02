@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Payouts based on final 5-card poker hand strength. Each remaining bet is paid separately.',
+      winCondition: 'Pair of 10s or better wins according to paytable. Lower hands lose all remaining bets.',
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: 'No fixed target score; play by game rules.',
+        cardValues: 'Poker uses hand rankings, not point values per card.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'poker_ranking',
     patternMultipliers: null,
     priorityOrder: [],

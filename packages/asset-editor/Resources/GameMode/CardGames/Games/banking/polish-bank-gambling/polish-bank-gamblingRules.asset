@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Polish Bank. Logic: See rules.objective and rules.gameplay.',
-    Player: "Polish Bank (also simply known as 'Bank' or the 'Russian' variation) is an intense, high-stakes comparing game purely designed for gambling. It belongs to the same family of games as 'Red Dog' and 'Slippery Sam'. Players bet against a central pool that they hold a higher card of a specific suit than a revealed target. It is known for its strict 'Blind Betting' rules, where touching your cards before wagering is a penalized offense.",
+    LLM: "Each player contributes a stake to the pool. The dealer gives three cards face-down to each player and turns up one card; if it is not lower than an eight (ace lowest), the dealer continues turning up cards until such a card is exposed. The player on the dealer's left, without touching or looking at their three cards, may bet the amount of the pool or any part of it that they hold a card of the same suit higher than the turn-up. If they win they take that amount from the pool; if they lose they pay it to the pool. Each player does the same in turn, the dealer last. When the pool is exhausted a fresh stake is put in. After a round the deal passes. No player may touch any cards until making a bet; the penalty is a fine to the pool of twice the stake and loss of the right to bet that round.",
+    Player: "Each player contributes a stake to the pool. The dealer gives three cards face-down to each player and turns up one card; if it is not lower than an eight (ace lowest), the dealer continues turning up cards until such a card is exposed. The player on the dealer's left, without touching or looking at their three cards, may bet the amount of the pool or any part of it that they hold a card of the same suit higher than the turn-up. If they win they take that amount from the pool; if they lose they pay it to the pool. Each player does the same in turn, the dealer last. When the pool is exhausted a fresh stake is put in. After a round the deal passes. No player may touch any cards until making a bet; the penalty is a fine to the pool of twice the stake and loss of the right to bet that round.",
     objective: 'Win chips from the pool by matching the suit of the target card with a higher-ranking card from your hand.',
     gameplay: "Each player contributes a stake to the pool. The dealer gives three cards face-down to each player and turns up one card; if it is not lower than an eight (ace lowest), the dealer continues turning up cards until such a card is exposed. The player on the dealer's left, without touching or looking at their three cards, may bet the amount of the pool or any part of it that they hold a card of the same suit higher than the turn-up. If they win they take that amount from the pool; if they lose they pay it to the pool. Each player does the same in turn, the dealer last. When the pool is exhausted a fresh stake is put in. After a round the deal passes. No player may touch any cards until making a bet; the penalty is a fine to the pool of twice the stake and loss of the right to bet that round.",
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-7 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use perform_deal before bet_round.',
-      'Scoring check: Win chips from the pool by matching the suit of the target card with a higher-ranking card from your hand. Expected outcome: Win chips from the pool by matching the suit of the target card with a higher-ranking card from your hand..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Win chips from the pool by matching the suit of the target card with a higher-ranking card from your hand.',
+      "Turn-flow example: Each player contributes a stake to the pool. The dealer gives three cards face-down to each player and turns up one card; if it is not lower than an eight (ace lowest), the dealer continues turning up cards until such a card is exposed. The player on the dealer's left, without touching or looking at their three cards, may bet the amount of the pool or any part of it that they hold a card of the same suit higher than the turn-up. If they win they take that amount from the pool; if they lose they pay it to the pool. Each player does the same in turn, the dealer last. When the pool is exhausted a fresh stake is put in. After a round the deal passes. No player may touch any cards until making a bet; the penalty is a fine to the pool of twice the stake and loss of the right to bet that round.",
+      'Scoring example: Win chips from the pool by matching the suit of the target card with a higher-ranking card from your hand. Win chips from the pool by matching the suit of the target card with a higher-ranking card from your hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'polish-bank-gambling.rules.objective',
+        title: 'Objective',
+        text: 'Win chips from the pool by matching the suit of the target card with a higher-ranking card from your hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'polish-bank-gambling.rules.gameplay',
+        title: 'Turn flow',
+        text: "Each player contributes a stake to the pool. The dealer gives three cards face-down to each player and turns up one card; if it is not lower than an eight (ace lowest), the dealer continues turning up cards until such a card is exposed. The player on the dealer's left, without touching or looking at their three cards, may bet the amount of the pool or any part of it that they hold a card of the same suit higher than the turn-up. If they win they take that amount from the pool; if they lose they pay it to the pool. Each player does the same in turn, the dealer last. When the pool is exhausted a fresh stake is put in. After a round the deal passes. No player may touch any cards until making a bet; the penalty is a fine to the pool of twice the stake and loss of the right to bet that round.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'polish-bank-gambling.setup.players',
+        title: 'Players',
+        text: 'Four to seven players; five or six is ideal for pace and pool size (Bank requires a banker plus punters).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'polish-bank-gambling.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck of French playing cards; ace is high and two is low. One pack per round.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'polish-bank-gambling.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck of French playing cards; ace is high and two is low. One pack per round.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'polish-bank-gambling.setup.dealing',
+        title: 'Deal',
+        text: 'The dealer (Banker) deals three cards face-down to each player and themselves.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'polish-bank-gambling.score.win-condition',
+        title: 'Win condition',
+        text: 'Win chips from the pool by matching the suit of the target card with a higher-ranking card from your hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'polish-bank-gambling.score.description',
+        title: 'Scoring',
+        text: 'Win chips from the pool by matching the suit of the target card with a higher-ranking card from your hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'polish-bank-gambling.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Blind bet: do not look at or touch your three cards before announcing your bet.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'polish-bank-gambling.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Bet up to the full pool or any part of it that you hold a same-suit higher card than the turn-up.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'polish-bank-gambling.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Turn-up must be lower than 8 (ace low); dealer keeps turning until it is.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'polish-bank-gambling.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Touching cards before betting: fine of twice the stake to the pool and loss of bet right for that round.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'polish-bank-gambling.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'polish-bank-gambling.rules.objective',
+          'polish-bank-gambling.rules.gameplay',
+        ],
+      },
+      {
+        id: 'polish-bank-gambling.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'polish-bank-gambling.setup.players',
+          'polish-bank-gambling.setup.deck',
+          'polish-bank-gambling.setup.equipment',
+          'polish-bank-gambling.setup.dealing',
+        ],
+      },
+      {
+        id: 'polish-bank-gambling.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'polish-bank-gambling.rules.key.1',
+          'polish-bank-gambling.rules.key.2',
+          'polish-bank-gambling.rules.key.3',
+          'polish-bank-gambling.rules.key.4',
+        ],
+      },
+      {
+        id: 'polish-bank-gambling.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'polish-bank-gambling.score.description',
+          'polish-bank-gambling.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'polish-bank-gambling.setup.dealing',
+        'polish-bank-gambling.rules.objective',
+      ],
+      bet: [
+        'polish-bank-gambling.rules.gameplay',
+      ],
+      perform_deal: [
+        'polish-bank-gambling.rules.gameplay',
+      ],
+      resolve_round: [
+        'polish-bank-gambling.rules.gameplay',
+      ],
+    },
   },
 }

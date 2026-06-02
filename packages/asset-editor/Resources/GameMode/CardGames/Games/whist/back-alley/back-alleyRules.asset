@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Back Alley. Type: Partnership trick-taking. Rules: 54 cards (2 Bloopers high). Schedule: 13-1-13. Turn-up trump. Scoring: +5 per bid/made, +1 per overtrick, -5 per bid if failed.',
-    Player: "Welcome to the Back Alley. We're starting with 13 cards each. The trump card is flipping now... it's a Heart. Partner, how many can we take? Careful—miss the bid and the points come right off our total.",
+    LLM: '1. **Lead**: Left of dealer leads any card. 2. **Following Suit**: Players must follow suit if possible. 3. **The Bloopers**: The Big Blooper is the highest trump, followed by the Little Blooper. If led to a trick, the leader names the suit it represents. 4. **Winning Tricks**: Highest trump or highest card of lead suit wins.',
+    Player: '1. **Lead**: Left of dealer leads any card. 2. **Following Suit**: Players must follow suit if possible. 3. **The Bloopers**: The Big Blooper is the highest trump, followed by the Little Blooper. If led to a trick, the leader names the suit it represents. 4. **Winning Tricks**: Highest trump or highest card of lead suit wins.',
     objective: 'Accumulate the highest score by accurately bidding and winning tricks over the full hand schedule.',
     gameplay: '1. **Lead**: Left of dealer leads any card. 2. **Following Suit**: Players must follow suit if possible. 3. **The Bloopers**: The Big Blooper is the highest trump, followed by the Little Blooper. If led to a trick, the leader names the suit it represents. 4. **Winning Tricks**: Highest trump or highest card of lead suit wins.',
     keyRules: [
@@ -52,10 +52,186 @@
       go_out: 'Hand ends when all tricks are played; no go-out.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal_and_trump; dealer may use deal_by_schedule, flip_trump_card before bidding.',
-      'Scoring check: Scoring is calculated per team after each deal. Expected outcome: High score after the 13-1-13 cycle..',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Accumulate the highest score by accurately bidding and winning tricks over the full hand schedule.',
+      'Turn-flow example: 1. **Lead**: Left of dealer leads any card. 2. **Following Suit**: Players must follow suit if possible. 3. **The Bloopers**: The Big Blooper is the highest trump, followed by the Little Blooper. If led to a trick, the leader names the suit it represents. 4. **Winning Tricks**: Highest trump or highest card of lead suit wins.',
+      'Scoring example: Scoring is calculated per team after each deal. High score after the 13-1-13 cycle..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'back-alley.rules.objective',
+        title: 'Objective',
+        text: 'Accumulate the highest score by accurately bidding and winning tricks over the full hand schedule.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'back-alley.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Lead**: Left of dealer leads any card. 2. **Following Suit**: Players must follow suit if possible. 3. **The Bloopers**: The Big Blooper is the highest trump, followed by the Little Blooper. If led to a trick, the leader names the suit it represents. 4. **Winning Tricks**: Highest trump or highest card of lead suit wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'back-alley.setup.players',
+        title: 'Players',
+        text: '4 players in North-South and East-West partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'back-alley.setup.deck',
+        title: 'Deck',
+        text: '54 cards including Big Joker and Little Joker.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'back-alley.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, 2 distinct Jokers, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'back-alley.setup.dealing',
+        title: 'Deal',
+        text: 'Deal starts at 13 cards each. Subsequent hands decrease by 1 until the 1-card hand, then increase back to 13, for a full 26-deal 13‑1‑13 schedule.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'back-alley.score.win-condition',
+        title: 'Win condition',
+        text: 'High score after the 13-1-13 cycle.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'back-alley.score.description',
+        title: 'Scoring',
+        text: 'Scoring is calculated per team after each deal.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'back-alley.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Board (Bid of 13): A team that bids all tricks accurately in a 13-card hand wins a massive bonus (or the whole game).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'back-alley.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Overtricks: Teams are credited for tricks won beyond their bid, but at a lower point value.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'back-alley.rules.key.3',
+        title: 'Key rule 3',
+        text: "Undertricks: A team that fails to reach their combined bid is 'set' and loses significant points.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'back-alley.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'back-alley.rules.objective',
+          'back-alley.rules.gameplay',
+        ],
+      },
+      {
+        id: 'back-alley.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'back-alley.setup.players',
+          'back-alley.setup.deck',
+          'back-alley.setup.equipment',
+          'back-alley.setup.dealing',
+        ],
+      },
+      {
+        id: 'back-alley.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'back-alley.rules.key.1',
+          'back-alley.rules.key.2',
+          'back-alley.rules.key.3',
+        ],
+      },
+      {
+        id: 'back-alley.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'back-alley.score.description',
+          'back-alley.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'back-alley.setup.dealing',
+        'back-alley.rules.objective',
+      ],
+      deal: [
+        'back-alley.rules.gameplay',
+      ],
+      play_card: [
+        'back-alley.rules.gameplay',
+      ],
+      pass: [
+        'back-alley.rules.gameplay',
+      ],
+      bid: [
+        'back-alley.rules.gameplay',
+      ],
+      deal_by_schedule: [
+        'back-alley.rules.gameplay',
+      ],
+      flip_trump_card: [
+        'back-alley.rules.gameplay',
+      ],
+      bid_tricks: [
+        'back-alley.rules.gameplay',
+      ],
+      bid_board: [
+        'back-alley.rules.gameplay',
+      ],
+      lead_card: [
+        'back-alley.rules.gameplay',
+      ],
+      follow_suit: [
+        'back-alley.rules.gameplay',
+      ],
+      play_blooper: [
+        'back-alley.rules.gameplay',
+      ],
+      tally_tricks: [
+        'back-alley.rules.gameplay',
+      ],
+      calculate_team_score: [
+        'back-alley.rules.gameplay',
+      ],
+      move_to_next_hand_size: [
+        'back-alley.rules.gameplay',
+      ],
+    },
   },
 }

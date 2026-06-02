@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: German Whist. Set trump by initial upcard, play 13 stock-replenished tricks then 13 closed tricks; standard winner is majority of second-stage tricks.',
-    Player: 'German Whist: treat stage one as card drafting, then convert that edge in the final 13 scoring tricks.',
+    LLM: 'Non-dealer leads first trick. For each trick, second player follows suit if possible in standard form. Higher card of led suit wins unless a trump is played to a non-trump lead. In stage one, trick winner takes the exposed stock card and trick loser takes next hidden stock card; winner then leads next trick. After 13 tricks, stock is empty and stage two begins with no replenishment. Play 13 final tricks; these determine winner in standard scoring.',
+    Player: 'Non-dealer leads first trick. For each trick, second player follows suit if possible in standard form. Higher card of led suit wins unless a trump is played to a non-trump lead. In stage one, trick winner takes the exposed stock card and trick loser takes next hidden stock card; winner then leads next trick. After 13 tricks, stock is empty and stage two begins with no replenishment. Play 13 final tricks; these determine winner in standard scoring.',
     objective: 'Win the majority of the 13 tricks in stage two after stock is exhausted.',
     gameplay: 'Non-dealer leads first trick. For each trick, second player follows suit if possible in standard form. Higher card of led suit wins unless a trump is played to a non-trump lead. In stage one, trick winner takes the exposed stock card and trick loser takes next hidden stock card; winner then leads next trick. After 13 tricks, stock is empty and stage two begins with no replenishment. Play 13 final tricks; these determine winner in standard scoring.',
     keyRules: [
@@ -53,10 +53,168 @@
       go_out: 'Hand ends after fixed trick counts, not by first empty hand event.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before stage_one.',
-      'Scoring check: Standard hand result is determined by majority of tricks in stage two (the final 13 tricks). Expected outcome: NA.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Win the majority of the 13 tricks in stage two after stock is exhausted.',
+      'Turn-flow example: Non-dealer leads first trick. For each trick, second player follows suit if possible in standard form. Higher card of led suit wins unless a trump is played to a non-trump lead. In stage one, trick winner takes the exposed stock card and trick loser takes next hidden stock card; winner then leads next trick. After 13 tricks, stock is empty and stage two begins with no replenishment. Play 13 final tricks; these determine winner in standard scoring.',
+      'Scoring example: Standard hand result is determined by majority of tricks in stage two (the final 13 tricks). Win more of the 13 stage-two tricks than opponent..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'german-whist.rules.objective',
+        title: 'Objective',
+        text: 'Win the majority of the 13 tricks in stage two after stock is exhausted.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'german-whist.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Non-dealer leads first trick. For each trick, second player follows suit if possible in standard form. Higher card of led suit wins unless a trump is played to a non-trump lead. In stage one, trick winner takes the exposed stock card and trick loser takes next hidden stock card; winner then leads next trick. After 13 tricks, stock is empty and stage two begins with no replenishment. Play 13 final tricks; these determine winner in standard scoring.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'german-whist.setup.players',
+        title: 'Players',
+        text: 'Exactly two players; standard 52-card pack, ace high. Deal alternates after each hand.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'german-whist.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack, ace high.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'german-whist.setup.equipment',
+        title: 'Equipment',
+        text: 'No additional equipment required.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'german-whist.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 13 cards each one by one. Place remaining 26-card stock face down and turn top stock card face up; its suit is trump for the hand.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'german-whist.score.win-condition',
+        title: 'Win condition',
+        text: 'Win more of the 13 stage-two tricks than opponent.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'german-whist.score.description',
+        title: 'Scoring',
+        text: 'Standard hand result is determined by majority of tricks in stage two (the final 13 tricks).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'german-whist.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trump suit is fixed by the initial face-up stock card and does not change.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'german-whist.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Stage one tricks are for hand improvement, not usually for scoring the hand outcome.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'german-whist.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Stage two is a normal closed-hand trick contest with 13 tricks.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'german-whist.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Variant tables may count all 26 tricks or relax follow-suit in stage one.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'german-whist.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'german-whist.rules.objective',
+          'german-whist.rules.gameplay',
+        ],
+      },
+      {
+        id: 'german-whist.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'german-whist.setup.players',
+          'german-whist.setup.deck',
+          'german-whist.setup.equipment',
+          'german-whist.setup.dealing',
+        ],
+      },
+      {
+        id: 'german-whist.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'german-whist.rules.key.1',
+          'german-whist.rules.key.2',
+          'german-whist.rules.key.3',
+          'german-whist.rules.key.4',
+        ],
+      },
+      {
+        id: 'german-whist.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'german-whist.score.description',
+          'german-whist.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'german-whist.setup.dealing',
+        'german-whist.rules.objective',
+      ],
+      deal: [
+        'german-whist.rules.gameplay',
+      ],
+      award_pot: [
+        'german-whist.rules.gameplay',
+      ],
+      play_card: [
+        'german-whist.rules.gameplay',
+      ],
+      draw: [
+        'german-whist.rules.gameplay',
+      ],
+      discard: [
+        'german-whist.rules.gameplay',
+      ],
+    },
   },
 }

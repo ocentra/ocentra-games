@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Fifty-Five (Irish trick-taking auction). Setup: 3-6 players, standard 52-card deck. Each player dealt 5 cards. Bidding phase: players bid in multiples of 5 (5-30). Highest bidder chooses trump and leads. Card rankings: Trumps (5 high, Jack, Ace of Hearts, Ace of trump, K). Red non-trump: K-A (A low). Black non-trump: K-J-A (A high). Ace of Hearts always trump. Gameplay: 5 tricks. Follow suit if able. Scoring: 5 points per trick. Jinking: bidder winning first 3 tricks can jink (go for all 5) for 25 points (lose all if fail).',
-    Player: "Welcome to Fifty-Five, where Irish tradition meets high-stakes card play. Master the unique rankings: in red suits, Aces are low; in black suits, Aces are high. The Five of Trumps is the strongest card in the game. The Ace of Hearts is always trump. Bid smartly, lead strategically, and watch for the 'jink' opportunity to double your points.",
+    LLM: "1. Lead: The highest bidder leads the first card.\n2. Trumping: You are NEVER forced to play a trump unless a HIGHER trump is led. You may play a trump even if you can follow suit.\n3. Robbing: If the turnndup card (the trump marker) is an Ace, the dealer can 'rob' it by swapping a low card for it.",
+    Player: "1. Lead: The highest bidder leads the first card.\n2. Trumping: You are NEVER forced to play a trump unless a HIGHER trump is led. You may play a trump even if you can follow suit.\n3. Robbing: If the turnndup card (the trump marker) is an Ace, the dealer can 'rob' it by swapping a low card for it.",
     objective: 'Be the first player or team to reach 55 points. Points are scored primarily by winning tricks (5 points per trick).',
     gameplay: "1. Lead: The highest bidder leads the first card.\n2. Trumping: You are NEVER forced to play a trump unless a HIGHER trump is led. You may play a trump even if you can follow suit.\n3. Robbing: If the turnndup card (the trump marker) is an Ace, the dealer can 'rob' it by swapping a low card for it.",
     keyRules: [
@@ -52,10 +52,150 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Points scored through winning tricks (5 points each) and jinking bonuses. First to 55 wins. Expected outcome: first player or team to twenty five points, scoring five points per trick..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the first player or team to reach 55 points. Points are scored primarily by winning tricks (5 points per trick).',
+      "Turn-flow example: 1. Lead: The highest bidder leads the first card.\n2. Trumping: You are NEVER forced to play a trump unless a HIGHER trump is led. You may play a trump even if you can follow suit.\n3. Robbing: If the turnndup card (the trump marker) is an Ace, the dealer can 'rob' it by swapping a low card for it.",
+      'Scoring example: Points scored through winning tricks (5 points each) and jinking bonuses. First to 55 wins. first player or team to twenty five points, scoring five points per trick..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'fifty-five.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player or team to reach 55 points. Points are scored primarily by winning tricks (5 points per trick).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'fifty-five.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Lead: The highest bidder leads the first card.\n2. Trumping: You are NEVER forced to play a trump unless a HIGHER trump is led. You may play a trump even if you can follow suit.\n3. Robbing: If the turnndup card (the trump marker) is an Ace, the dealer can 'rob' it by swapping a low card for it.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'fifty-five.setup.players',
+        title: 'Players',
+        text: '3 to 6 players. Usually played as individuals.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'fifty-five.setup.deck',
+        title: 'Deck',
+        text: "Standard 52ndcard deck. The Ace of Hearts is a special 'Perma-Trump'.",
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'fifty-five.setup.equipment',
+        title: 'Equipment',
+        text: "Standard 52ndcard deck. The Ace of Hearts is a special 'Perma-Trump'.",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'fifty-five.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 5 cards in batches of 3 and 2 (or 2 and 3).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'fifty-five.score.win-condition',
+        title: 'Win condition',
+        text: 'first player or team to twenty five points, scoring five points per trick.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'fifty-five.score.description',
+        title: 'Scoring',
+        text: 'Points scored through winning tricks (5 points each) and jinking bonuses. First to 55 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'fifty-five.rules.key.1',
+        title: 'Key rule 1',
+        text: "Jinking: If a player wins the first 3 tricks and feels they can win all 5, they may 'jink' to win bonus points. If they lose any remaining trick, they lose all points for that hand.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'fifty-five.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Ace of Hearts: Always the 3rd best card in the game, regardless of the suit called.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'fifty-five.rules.key.3',
+        title: 'Key rule 3',
+        text: "Reneging: A specialized rule where high trumps don't have to follow lower ones.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'fifty-five.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'fifty-five.rules.objective',
+          'fifty-five.rules.gameplay',
+        ],
+      },
+      {
+        id: 'fifty-five.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'fifty-five.setup.players',
+          'fifty-five.setup.deck',
+          'fifty-five.setup.equipment',
+          'fifty-five.setup.dealing',
+        ],
+      },
+      {
+        id: 'fifty-five.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'fifty-five.rules.key.1',
+          'fifty-five.rules.key.2',
+          'fifty-five.rules.key.3',
+        ],
+      },
+      {
+        id: 'fifty-five.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'fifty-five.score.description',
+          'fifty-five.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'fifty-five.setup.dealing',
+        'fifty-five.rules.objective',
+      ],
+      play_card: [
+        'fifty-five.rules.gameplay',
+      ],
+      pass: [
+        'fifty-five.rules.gameplay',
+      ],
+    },
   },
 }

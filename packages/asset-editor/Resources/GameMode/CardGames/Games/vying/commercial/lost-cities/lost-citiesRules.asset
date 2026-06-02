@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Lost Cities. Logic: Score more expedition points than the opponent after the hands are played.',
-    Player: 'Lost Cities is a commercial two-player card game by Reiner Knizia where players commit cards to expeditions and race for efficient scores.',
+    LLM: 'Players play cards in ascending order to expedition columns or discard them, optionally using wager cards before numbered cards to multiply gains or losses.',
+    Player: 'Players play cards in ascending order to expedition columns or discard them, optionally using wager cards before numbered cards to multiply gains or losses.',
     objective: 'Score more expedition points than the opponent after the hands are played.',
     gameplay: 'Players play cards in ascending order to expedition columns or discard them, optionally using wager cards before numbered cards to multiply gains or losses.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Published scoring or victory conditions determine the winner. Expected outcome: Score more expedition points than the opponent after the hands are played..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Score more expedition points than the opponent after the hands are played.',
+      'Turn-flow example: Players play cards in ascending order to expedition columns or discard them, optionally using wager cards before numbered cards to multiply gains or losses.',
+      'Scoring example: Published scoring or victory conditions determine the winner. Score more expedition points than the opponent after the hands are played..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'lost-cities.rules.objective',
+        title: 'Objective',
+        text: 'Score more expedition points than the opponent after the hands are played.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'lost-cities.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play cards in ascending order to expedition columns or discard them, optionally using wager cards before numbered cards to multiply gains or losses.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'lost-cities.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Lost Cities.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'lost-cities.setup.deck',
+        title: 'Deck',
+        text: '60-card Lost Cities expedition deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'lost-cities.setup.equipment',
+        title: 'Equipment',
+        text: '60-card Lost Cities expedition deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'lost-cities.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare the dedicated Lost Cities cards and any shared table, score, or resource areas from the published rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'lost-cities.score.win-condition',
+        title: 'Win condition',
+        text: 'Score more expedition points than the opponent after the hands are played.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'lost-cities.score.description',
+        title: 'Scoring',
+        text: 'Published scoring or victory conditions determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'lost-cities.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two-player game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'lost-cities.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Five coloured expeditions.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'lost-cities.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Cards must ascend within each expedition.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'lost-cities.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Wager cards multiply expedition results.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'lost-cities.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Negative expeditions are possible.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'lost-cities.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'lost-cities.rules.objective',
+          'lost-cities.rules.gameplay',
+        ],
+      },
+      {
+        id: 'lost-cities.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'lost-cities.setup.players',
+          'lost-cities.setup.deck',
+          'lost-cities.setup.equipment',
+          'lost-cities.setup.dealing',
+        ],
+      },
+      {
+        id: 'lost-cities.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'lost-cities.rules.key.1',
+          'lost-cities.rules.key.2',
+          'lost-cities.rules.key.3',
+          'lost-cities.rules.key.4',
+          'lost-cities.rules.key.5',
+        ],
+      },
+      {
+        id: 'lost-cities.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'lost-cities.score.description',
+          'lost-cities.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'lost-cities.setup.dealing',
+        'lost-cities.rules.objective',
+      ],
+      play_card: [
+        'lost-cities.rules.gameplay',
+      ],
+    },
   },
 }

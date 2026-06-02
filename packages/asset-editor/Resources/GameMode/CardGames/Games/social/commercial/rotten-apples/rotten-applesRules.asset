@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 52 Pick-up. Logic: See rules.objective and rules.gameplay.',
-    Player: '52 Pick-up is a social prank using a standard pack: one player offers a game, scatters the cards, and the other player is left to pick them up. It is recorded as a social card-game joke rather than a strategic contest.',
+    LLM: 'A rotating judge reveals a prompt, other players submit response cards, and the judge chooses the preferred or funniest answer. Scoring is round-based and social rather than deterministic.',
+    Player: 'A rotating judge reveals a prompt, other players submit response cards, and the judge chooses the preferred or funniest answer. Scoring is round-based and social rather than deterministic.',
     objective: 'Win rounds by submitting the response card the judge chooses.',
     gameplay: 'A rotating judge reveals a prompt, other players submit response cards, and the judge chooses the preferred or funniest answer. Scoring is round-based and social rather than deterministic.',
     keyRules: [
@@ -52,10 +52,150 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: No scoring; the activity ends when the deck has been picked up. Expected outcome: 1.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win rounds by submitting the response card the judge chooses.',
+      'Turn-flow example: A rotating judge reveals a prompt, other players submit response cards, and the judge chooses the preferred or funniest answer. Scoring is round-based and social rather than deterministic.',
+      'Scoring example: No scoring; the activity ends when the deck has been picked up. No formal winner is defined..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'rotten-apples.rules.objective',
+        title: 'Objective',
+        text: 'Win rounds by submitting the response card the judge chooses.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'rotten-apples.rules.gameplay',
+        title: 'Turn flow',
+        text: 'A rotating judge reveals a prompt, other players submit response cards, and the judge chooses the preferred or funniest answer. Scoring is round-based and social rather than deterministic.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'rotten-apples.setup.players',
+        title: 'Players',
+        text: '3 or more players use the table arrangement described for Rotten Apples.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'rotten-apples.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Rotten Apples prompt and response deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'rotten-apples.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Rotten Apples prompt and response deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'rotten-apples.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Rotten Apples prompt and response deck and deal or lay out cards according to the documented Rotten Apples rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'rotten-apples.score.win-condition',
+        title: 'Win condition',
+        text: 'No formal winner is defined.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'rotten-apples.score.description',
+        title: 'Scoring',
+        text: 'No scoring; the activity ends when the deck has been picked up.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'rotten-apples.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Rotating judge selects the winning response.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'rotten-apples.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players submit cards secretly before judging.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'rotten-apples.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Commercial card text and presentation are proprietary.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'rotten-apples.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'rotten-apples.rules.objective',
+          'rotten-apples.rules.gameplay',
+        ],
+      },
+      {
+        id: 'rotten-apples.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'rotten-apples.setup.players',
+          'rotten-apples.setup.deck',
+          'rotten-apples.setup.equipment',
+          'rotten-apples.setup.dealing',
+        ],
+      },
+      {
+        id: 'rotten-apples.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'rotten-apples.rules.key.1',
+          'rotten-apples.rules.key.2',
+          'rotten-apples.rules.key.3',
+        ],
+      },
+      {
+        id: 'rotten-apples.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'rotten-apples.score.description',
+          'rotten-apples.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'rotten-apples.setup.dealing',
+        'rotten-apples.rules.objective',
+      ],
+      play_card: [
+        'rotten-apples.rules.gameplay',
+      ],
+      flip_top_card: [
+        'rotten-apples.rules.gameplay',
+      ],
+    },
   },
 }

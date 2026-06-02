@@ -11,20 +11,48 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: '72 points in the pack. Winners score the difference over 36, multiplied by any doubles.',
+      winCondition: 'First team to reach 101 total match points.',
+      targetScore: 101,
+      scoringDirection: 'high_wins',
+      cardValues: {
         'Nine (Manille)': '5 points',
         Ace: '4 points',
         King: '3 points',
         'Knight (Cavall)': '2 points',
         'Jack (Sota)': '1 point',
       },
+      sourceCardValues: {
+        raw: {
+          'Nine (Manille)': '5 points',
+          Ace: '4 points',
+          King: '3 points',
+          'Knight (Cavall)': '2 points',
+          'Jack (Sota)': '1 point',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        nullReasons: 'Not applicable.',
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: 'None; only one team can win the match.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],
     winCondition: 'First team to reach 101 total match points.',
     cardValues: {},
-    penalties: '{\n  "Renuncio": "Illegal play results in forfeiting all points in the current deal."\n}',
+    penalties: '{"Renuncio":"Illegal play results in forfeiting all points in the current deal."}',
     targetScore: 101,
     scoringDirection: 'high_wins',
     rankingAsset: {

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 110. Logic: See rules.objective and rules.gameplay.',
-    Player: '110 (One Hundred and Ten) is an Irish trick-taking game with bidding, related to Twenty-Five. Played with a standard 52-card deck; the first player or team to reach 110 points wins. Players score 5 points per trick. Card ranking varies by trump suit.',
+    LLM: "Bidding (10, 15, 20, 25, or 60) starts left of dealer; dealer may 'take' by equalling the bid. Highest bidder picks up the five-card kitty, discards five, and names trump (no robbing). Player to dealer's left leads; same card ranking as Twenty-Five (5 of trump highest, then J, then A of hearts).",
+    Player: "Bidding (10, 15, 20, 25, or 60) starts left of dealer; dealer may 'take' by equalling the bid. Highest bidder picks up the five-card kitty, discards five, and names trump (no robbing). Player to dealer's left leads; same card ranking as Twenty-Five (5 of trump highest, then J, then A of hearts).",
     objective: 'Be the first player (or team) to reach 110 points. Each trick is worth 5 points; the holder of the highest trump in play gets an extra 5 points.',
     gameplay: "Bidding (10, 15, 20, 25, or 60) starts left of dealer; dealer may 'take' by equalling the bid. Highest bidder picks up the five-card kitty, discards five, and names trump (no robbing). Player to dealer's left leads; same card ranking as Twenty-Five (5 of trump highest, then J, then A of hearts).",
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-9 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in bidding; each_player_clockwise may use bid, pass before play.',
-      'Scoring check: Bidder scores trick points if total ≥ bid, else loses the bid amount. Bid of 60 = win all tricks: score 60 or lose 60. Others score for their tricks. First to 110 wins; if two reach it in the same deal, order of tricks determines winner. Expected outcome: 110.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first player (or team) to reach 110 points. Each trick is worth 5 points; the holder of the highest trump in play gets an extra 5 points.',
+      "Turn-flow example: Bidding (10, 15, 20, 25, or 60) starts left of dealer; dealer may 'take' by equalling the bid. Highest bidder picks up the five-card kitty, discards five, and names trump (no robbing). Player to dealer's left leads; same card ranking as Twenty-Five (5 of trump highest, then J, then A of hearts).",
+      'Scoring example: Bidder scores trick points if total ≥ bid, else loses the bid amount. Bid of 60 = win all tricks: score 60 or lose 60. Others score for their tricks. First to 110 wins; if two reach it in the same deal, order of tricks determines winner. Be the first player (or team) to reach 110 points. Each trick is worth 5 points; the holder of the highest trump in play gets an extra 5 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '110.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player (or team) to reach 110 points. Each trick is worth 5 points; the holder of the highest trump in play gets an extra 5 points.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '110.rules.gameplay',
+        title: 'Turn flow',
+        text: "Bidding (10, 15, 20, 25, or 60) starts left of dealer; dealer may 'take' by equalling the bid. Highest bidder picks up the five-card kitty, discards five, and names trump (no robbing). Player to dealer's left leads; same card ranking as Twenty-Five (5 of trump highest, then J, then A of hearts).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '110.setup.players',
+        title: 'Players',
+        text: '2–9 (five cards each plus five-card kitty from one 52-card pack)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '110.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '110.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck, score sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '110.setup.dealing',
+        title: 'Deal',
+        text: 'Five cards to each player and five to the kitty (two then three or three then two at a time); deal passes left.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '110.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player (or team) to reach 110 points. Each trick is worth 5 points; the holder of the highest trump in play gets an extra 5 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '110.score.description',
+        title: 'Scoring',
+        text: 'Bidder scores trick points if total ≥ bid, else loses the bid amount. Bid of 60 = win all tricks: score 60 or lose 60. Others score for their tricks. First to 110 wins; if two reach it in the same deal, order of tricks determines winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '110.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Bids: 10, 15, 20, 25, 60; dealer can take by equalling',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '110.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Bidder takes kitty, discards 5, names trump',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '110.rules.key.3',
+        title: 'Key rule 3',
+        text: '5 points per trick; +5 for highest trump in play',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: '110.rules.key.4',
+        title: 'Key rule 4',
+        text: 'First to 110 wins',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '110.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '110.rules.objective',
+          '110.rules.gameplay',
+        ],
+      },
+      {
+        id: '110.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '110.setup.players',
+          '110.setup.deck',
+          '110.setup.equipment',
+          '110.setup.dealing',
+        ],
+      },
+      {
+        id: '110.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '110.rules.key.1',
+          '110.rules.key.2',
+          '110.rules.key.3',
+          '110.rules.key.4',
+        ],
+      },
+      {
+        id: '110.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '110.score.description',
+          '110.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '110.setup.dealing',
+        '110.rules.objective',
+      ],
+      play_card: [
+        '110.rules.gameplay',
+      ],
+      pass: [
+        '110.rules.gameplay',
+      ],
+      bid: [
+        '110.rules.gameplay',
+      ],
+    },
   },
 }

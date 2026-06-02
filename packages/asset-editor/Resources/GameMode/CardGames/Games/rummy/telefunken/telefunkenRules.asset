@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Telefunken. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Telefunken is a contract rummy game popular in South America (Venezuela, Ecuador, Peru, Bolivia). 2â€“4 players, two 52-card decks plus four jokers (108 cards), 7 chips per player. First to empty hand by forming required melds across seven deals; lowest penalty wins. Melds: sets (3+ same rank), runs (3+ same suit). Each deal has a specific contract. Draw and discard; buy discards with chips before initial meld.',
+    LLM: '1. Setup: Deal cards to all players\n2. Gameplay: Players take turns playing cards\n3. Scoring: Points awarded based on game outcomes\n4. Winning: First to reach target score or complete objective wins',
+    Player: '1. Setup: Deal cards to all players\n2. Gameplay: Players take turns playing cards\n3. Scoring: Points awarded based on game outcomes\n4. Winning: First to reach target score or complete objective wins',
     objective: 'Be the first player to achieve the winning condition through strategic play of cards.',
     gameplay: '1. Setup: Deal cards to all players\n2. Gameplay: Players take turns playing cards\n3. Scoring: Points awarded based on game outcomes\n4. Winning: First to reach target score or complete objective wins',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Penalty points for cards left in hand at end of each deal. 2-9 face value, 10-K 10 points, Ace 11, Joker 15. Player who goes out scores zero. Lowest cumulative score after seven deals wins. Expected outcome: Lowest cumulative penalty score after seven deals wins..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first player to achieve the winning condition through strategic play of cards.',
+      'Turn-flow example: 1. Setup: Deal cards to all players\n2. Gameplay: Players take turns playing cards\n3. Scoring: Points awarded based on game outcomes\n4. Winning: First to reach target score or complete objective wins',
+      'Scoring example: Penalty points for cards left in hand at end of each deal. 2-9 face value, 10-K 10 points, Ace 11, Joker 15. Player who goes out scores zero. Lowest cumulative score after seven deals wins. Lowest cumulative penalty score after seven deals wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'telefunken.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to achieve the winning condition through strategic play of cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'telefunken.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Setup: Deal cards to all players\n2. Gameplay: Players take turns playing cards\n3. Scoring: Points awarded based on game outcomes\n4. Winning: First to reach target score or complete objective wins',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'telefunken.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'telefunken.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'telefunken.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'telefunken.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'telefunken.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest cumulative penalty score after seven deals wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'telefunken.score.description',
+        title: 'Scoring',
+        text: 'Penalty points for cards left in hand at end of each deal. 2-9 face value, 10-K 10 points, Ace 11, Joker 15. Player who goes out scores zero. Lowest cumulative score after seven deals wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'telefunken.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow game-specific card play rules',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'telefunken.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Score according to game objectives',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'telefunken.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Win by achieving game goal',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'telefunken.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'telefunken.rules.objective',
+          'telefunken.rules.gameplay',
+        ],
+      },
+      {
+        id: 'telefunken.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'telefunken.setup.players',
+          'telefunken.setup.deck',
+          'telefunken.setup.equipment',
+          'telefunken.setup.dealing',
+        ],
+      },
+      {
+        id: 'telefunken.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'telefunken.rules.key.1',
+          'telefunken.rules.key.2',
+          'telefunken.rules.key.3',
+        ],
+      },
+      {
+        id: 'telefunken.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'telefunken.score.description',
+          'telefunken.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'telefunken.setup.dealing',
+        'telefunken.rules.objective',
+      ],
+      play_card: [
+        'telefunken.rules.gameplay',
+      ],
+    },
   },
 }

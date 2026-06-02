@@ -10,7 +10,29 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Players bet against the central pot. Winning hand wins the bet amount plus an equal amount from the pot.',
+      winCondition: 'Have a card of the same suit and higher rank than the drawn card.',
+      targetScore: null,
+      scoringDirection: null,
+      cardValues: {
+        '10-2': '0',
+      },
+      nullReasons: {
+        targetScore: 'No fixed target score; play by game rules.',
+        scoringDirection: 'Scoring direction is not applicable; winner is determined by game rules.',
+      },
+      splitRules: '',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],
@@ -18,7 +40,7 @@
     cardValues: {
       '10-2': 0,
     },
-    penalties: '{\n  "Losing Bet": "Bet amount added to pot"\n}',
+    penalties: '{"Losing Bet":"Bet amount added to pot"}',
     targetScore: null,
     scoringDirection: null,
     rankingAsset: {

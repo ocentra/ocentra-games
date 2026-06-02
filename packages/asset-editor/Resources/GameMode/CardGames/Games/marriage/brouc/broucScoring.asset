@@ -11,7 +11,11 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Teams accumulate card points and marriage bonuses across deals; scores are rounded to the nearest 10, written on a slate, and compared to a target threshold.',
+      winCondition: 'The partnership whose cumulative score (rounded slate total plus current hand) first reaches at least 301 points (30 and 1) wins the game; matches can also be scored by coches in tournament play.',
+      targetScore: 301,
+      scoringDirection: 'high_wins',
+      cardValues: {
         Ace: '11 points in every suit.',
         Ten: '10 points in every suit.',
         King: '4 points in every suit.',
@@ -19,6 +23,30 @@
         Jack: '2 points in every suit.',
         'Nine, Eight, Seven': '0 points; low cards only provide trick-taking strength without adding to the point total.',
       },
+      sourceCardValues: {
+        raw: {
+          Ace: '11 points in every suit.',
+          Ten: '10 points in every suit.',
+          King: '4 points in every suit.',
+          Queen: '3 points in every suit.',
+          Jack: '2 points in every suit.',
+          'Nine, Eight, Seven': '0 points; low cards only provide trick-taking strength without adding to the point total.',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: '',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,

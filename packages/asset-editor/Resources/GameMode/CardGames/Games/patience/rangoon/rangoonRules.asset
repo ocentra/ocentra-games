@@ -52,10 +52,150 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in setup_layout; dealer may use lay_rows before play.',
-      'Scoring check: Solitaire: win/lose. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Each row contains one suit in order (K-Q-J-10-â€¦-2-A or A-2-â€¦-K).',
+      'Turn-flow example: 1. Move a card to a gap only if it matches suit and is one rank lower than the card immediately in front of the gap. 2. Example: 8â™¥ can move to gap behind 9â™¥. 3. Kings move only to front gap; once placed, cannot move. 4. Moving creates new gap.',
+      'Scoring example: Solitaire: win/lose. All rows completed..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'rangoon.rules.objective',
+        title: 'Objective',
+        text: 'Each row contains one suit in order (K-Q-J-10-â€¦-2-A or A-2-â€¦-K).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'rangoon.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Move a card to a gap only if it matches suit and is one rank lower than the card immediately in front of the gap. 2. Example: 8â™¥ can move to gap behind 9â™¥. 3. Kings move only to front gap; once placed, cannot move. 4. Moving creates new gap.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'rangoon.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'rangoon.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack; single deck. Four suits, thirteen ranks each; no jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'rangoon.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, flat surface.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'rangoon.setup.dealing',
+        title: 'Deal',
+        text: 'Four rows of 13 face-up, one gap in front of each row.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'rangoon.score.win-condition',
+        title: 'Win condition',
+        text: 'All rows completed.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'rangoon.score.description',
+        title: 'Scoring',
+        text: 'Solitaire: win/lose.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'rangoon.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Card to gap: same suit, one rank lower than card in front of gap.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'rangoon.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Kings to front only; fixed once placed.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'rangoon.rules.key.3',
+        title: 'Key rule 3',
+        text: 'One suit per row in order.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'rangoon.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'rangoon.rules.objective',
+          'rangoon.rules.gameplay',
+        ],
+      },
+      {
+        id: 'rangoon.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'rangoon.setup.players',
+          'rangoon.setup.deck',
+          'rangoon.setup.equipment',
+          'rangoon.setup.dealing',
+        ],
+      },
+      {
+        id: 'rangoon.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'rangoon.rules.key.1',
+          'rangoon.rules.key.2',
+          'rangoon.rules.key.3',
+        ],
+      },
+      {
+        id: 'rangoon.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'rangoon.score.description',
+          'rangoon.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'rangoon.setup.dealing',
+        'rangoon.rules.objective',
+      ],
+      lay_rows: [
+        'rangoon.rules.gameplay',
+      ],
+      move_to_gap: [
+        'rangoon.rules.gameplay',
+      ],
+    },
   },
 }

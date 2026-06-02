@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kings Corners. Logic: Shedding game with descending sequences and alternating colors.',
-    Player: 'Kings Corners is a social, Solitaire-like card game played by 2 to 4 players. Build sequences of alternating colors onto a central cross-shaped layout. First to empty hand wins.',
+    LLM: "1. Players take turns. Each turn begins with drawing 1 card from the stock.\n2. You can play any card from your hand onto a pile if it is one rank lower and a different color (e.g., a Red 7 onto a Black 8).\n3. You can move an entire pile onto another pile if the bottom card of the first fits on the top card of the second.\n4. **Kings**: If you have a King, it *must* be played into one of the empty 'Corner' slots (diagonals of the cross). Once there, it forms a new foundation pile.\n5. Empty Slots: If one of the original 4 foundation slots becomes empty, you can place any card (or sequence) there.",
+    Player: "1. Players take turns. Each turn begins with drawing 1 card from the stock.\n2. You can play any card from your hand onto a pile if it is one rank lower and a different color (e.g., a Red 7 onto a Black 8).\n3. You can move an entire pile onto another pile if the bottom card of the first fits on the top card of the second.\n4. **Kings**: If you have a King, it *must* be played into one of the empty 'Corner' slots (diagonals of the cross). Once there, it forms a new foundation pile.\n5. Empty Slots: If one of the original 4 foundation slots becomes empty, you can place any card (or sequence) there.",
     objective: 'Be the first player to play all cards from your hand onto the table piles.',
     gameplay: "1. Players take turns. Each turn begins with drawing 1 card from the stock.\n2. You can play any card from your hand onto a pile if it is one rank lower and a different color (e.g., a Red 7 onto a Black 8).\n3. You can move an entire pile onto another pile if the bottom card of the first fits on the top card of the second.\n4. **Kings**: If you have a King, it *must* be played into one of the empty 'Corner' slots (diagonals of the cross). Once there, it forms a new foundation pile.\n5. Empty Slots: If one of the original 4 foundation slots becomes empty, you can place any card (or sequence) there.",
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'Must have no cards remaining',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: First player to empty hand wins. Others score penalty points for cards remaining. Expected outcome: 50.',
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Be the first player to play all cards from your hand onto the table piles.',
+      "Turn-flow example: 1. Players take turns. Each turn begins with drawing 1 card from the stock.\n2. You can play any card from your hand onto a pile if it is one rank lower and a different color (e.g., a Red 7 onto a Black 8).\n3. You can move an entire pile onto another pile if the bottom card of the first fits on the top card of the second.\n4. **Kings**: If you have a King, it *must* be played into one of the empty 'Corner' slots (diagonals of the cross). Once there, it forms a new foundation pile.\n5. Empty Slots: If one of the original 4 foundation slots becomes empty, you can place any card (or sequence) there.",
+      'Scoring example: First player to empty hand wins. Others score penalty points for cards remaining. Be first to play all cards from hand.',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'kings-corners.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to play all cards from your hand onto the table piles.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kings-corners.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Players take turns. Each turn begins with drawing 1 card from the stock.\n2. You can play any card from your hand onto a pile if it is one rank lower and a different color (e.g., a Red 7 onto a Black 8).\n3. You can move an entire pile onto another pile if the bottom card of the first fits on the top card of the second.\n4. **Kings**: If you have a King, it *must* be played into one of the empty 'Corner' slots (diagonals of the cross). Once there, it forms a new foundation pile.\n5. Empty Slots: If one of the original 4 foundation slots becomes empty, you can place any card (or sequence) there.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kings-corners.setup.players',
+        title: 'Players',
+        text: 'Two to four players. The game is said to be good for four players. A standard 52-card pack is used; the first dealer is chosen at random and the turn to deal passes clockwise after each hand.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kings-corners.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Aces are low (sequencing on Kings is King-Queen-Jack...2). No, wait. Standard Kings Corners Ranking: K-Q-J-10-9-8-7-6-5-4-3-2-A.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kings-corners.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. Aces are low (sequencing on Kings is King-Queen-Jack...2). No, wait. Standard Kings Corners Ranking: K-Q-J-10-9-8-7-6-5-4-3-2-A.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kings-corners.setup.dealing',
+        title: 'Deal',
+        text: "Each player is dealt 7 cards. Four cards are placed face-up in a cross (the 'T' or '+' shape). The rest form the draw pile.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kings-corners.score.win-condition',
+        title: 'Win condition',
+        text: 'Be first to play all cards from hand',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kings-corners.score.description',
+        title: 'Scoring',
+        text: 'First player to empty hand wins. Others score penalty points for cards remaining.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kings-corners.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Build sequences in descending order',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kings-corners.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Alternate colors when building',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kings-corners.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Kings must go to corner slots',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kings-corners.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Can move entire piles onto other piles',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kings-corners.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kings-corners.rules.objective',
+          'kings-corners.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kings-corners.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kings-corners.setup.players',
+          'kings-corners.setup.deck',
+          'kings-corners.setup.equipment',
+          'kings-corners.setup.dealing',
+        ],
+      },
+      {
+        id: 'kings-corners.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kings-corners.rules.key.1',
+          'kings-corners.rules.key.2',
+          'kings-corners.rules.key.3',
+          'kings-corners.rules.key.4',
+        ],
+      },
+      {
+        id: 'kings-corners.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kings-corners.score.description',
+          'kings-corners.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kings-corners.setup.dealing',
+        'kings-corners.rules.objective',
+      ],
+      deal: [
+        'kings-corners.rules.gameplay',
+      ],
+      play_card: [
+        'kings-corners.rules.gameplay',
+      ],
+      draw: [
+        'kings-corners.rules.gameplay',
+      ],
+      go_out: [
+        'kings-corners.rules.gameplay',
+      ],
+    },
   },
 }

@@ -52,10 +52,147 @@
       go_out: 'Win when all sets valid; no explicit go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use exchange_tiles before round end.',
-      'Scoring check: No points; win when all 10 triplets and 1 pair are valid under Chinese domino rules. Expected outcome: All 11 sets valid: 10 valid triplets and 1 valid pair..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Rearrange the 32 tiles into 10 valid triplets and one valid pair; all sets must be valid under Chinese domino pairing and triplet rules.',
+      'Turn-flow example: Form valid groupings according to Chinese domino pairing rules. Each triplet must contain valid combinations. One pair remains.',
+      'Scoring example: No points; win when all 10 triplets and 1 pair are valid under Chinese domino rules. All 11 sets valid: 10 valid triplets and 1 valid pair..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'xiang-shi-fu.rules.objective',
+        title: 'Objective',
+        text: 'Rearrange the 32 tiles into 10 valid triplets and one valid pair; all sets must be valid under Chinese domino pairing and triplet rules.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'xiang-shi-fu.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Form valid groupings according to Chinese domino pairing rules. Each triplet must contain valid combinations. One pair remains.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'xiang-shi-fu.setup.players',
+        title: 'Players',
+        text: '1 player (solitaire)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'xiang-shi-fu.setup.deck',
+        title: 'Deck',
+        text: '32 Chinese domino tiles or card equivalents.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'xiang-shi-fu.setup.equipment',
+        title: 'Equipment',
+        text: 'Domino tiles or cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'xiang-shi-fu.setup.dealing',
+        title: 'Deal',
+        text: 'Lay out all 32 tiles.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'xiang-shi-fu.score.win-condition',
+        title: 'Win condition',
+        text: 'All 11 sets valid: 10 valid triplets and 1 valid pair.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'xiang-shi-fu.score.description',
+        title: 'Scoring',
+        text: 'No points; win when all 10 triplets and 1 pair are valid under Chinese domino rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'xiang-shi-fu.rules.key.1',
+        title: 'Key rule 1',
+        text: '10 triplets + 1 pair',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'xiang-shi-fu.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Chinese domino pairing rules',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'xiang-shi-fu.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Single player puzzle',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'xiang-shi-fu.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'xiang-shi-fu.rules.objective',
+          'xiang-shi-fu.rules.gameplay',
+        ],
+      },
+      {
+        id: 'xiang-shi-fu.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'xiang-shi-fu.setup.players',
+          'xiang-shi-fu.setup.deck',
+          'xiang-shi-fu.setup.equipment',
+          'xiang-shi-fu.setup.dealing',
+        ],
+      },
+      {
+        id: 'xiang-shi-fu.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'xiang-shi-fu.rules.key.1',
+          'xiang-shi-fu.rules.key.2',
+          'xiang-shi-fu.rules.key.3',
+        ],
+      },
+      {
+        id: 'xiang-shi-fu.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'xiang-shi-fu.score.description',
+          'xiang-shi-fu.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'xiang-shi-fu.setup.dealing',
+        'xiang-shi-fu.rules.objective',
+      ],
+      exchange_tiles: [
+        'xiang-shi-fu.rules.gameplay',
+      ],
+    },
   },
 }

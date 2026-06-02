@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Hwatu (Go-Stop). Objective: Capture cards to reach a target score (3 points for 3 players, 7 for 2 players) and then decide whether to continue ('Go') or end ('Stop').",
-    Player: 'Hwatu (Go-Stop): play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: "1. Play a card from hand to match a card of the same month on the table.\n2. Draw a card from the deck to match another card on the table.\n3. Captured cards are placed in categories: Brights (Kwang), Animals (Yul), Ribbons (Tti), or Junk (Pi).\n4. **Go or Stop**: Once you hit the target score, if you say 'Go', you continue. Each subsequent 'Go' increases your point multiplier but risks 'Go-bak' (losing everything if another player scores).",
+    Player: "1. Play a card from hand to match a card of the same month on the table.\n2. Draw a card from the deck to match another card on the table.\n3. Captured cards are placed in categories: Brights (Kwang), Animals (Yul), Ribbons (Tti), or Junk (Pi).\n4. **Go or Stop**: Once you hit the target score, if you say 'Go', you continue. Each subsequent 'Go' increases your point multiplier but risks 'Go-bak' (losing everything if another player scores).",
     objective: "Capture cards to reach a target score (3 points for 3 players, 7 for 2 players) and then decide whether to continue ('Go') or end ('Stop').",
     gameplay: "1. Play a card from hand to match a card of the same month on the table.\n2. Draw a card from the deck to match another card on the table.\n3. Captured cards are placed in categories: Brights (Kwang), Animals (Yul), Ribbons (Tti), or Junk (Pi).\n4. **Go or Stop**: Once you hit the target score, if you say 'Go', you continue. Each subsequent 'Go' increases your point multiplier but risks 'Go-bak' (losing everything if another player scores).",
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-3 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Before beginning the game, the players should agree a target score at which the play of a hand can be stopped. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      "Rule example: Capture cards to reach a target score (3 points for 3 players, 7 for 2 players) and then decide whether to continue ('Go') or end ('Stop').",
+      "Turn-flow example: 1. Play a card from hand to match a card of the same month on the table.\n2. Draw a card from the deck to match another card on the table.\n3. Captured cards are placed in categories: Brights (Kwang), Animals (Yul), Ribbons (Tti), or Junk (Pi).\n4. **Go or Stop**: Once you hit the target score, if you say 'Go', you continue. Each subsequent 'Go' increases your point multiplier but risks 'Go-bak' (losing everything if another player scores).",
+      'Scoring example: Before beginning the game, the players should agree a target score at which the play of a hand can be stopped. Before beginning the game, the players should agree a target score at which the play of a hand can be stopped..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hwatu.rules.objective',
+        title: 'Objective',
+        text: "Capture cards to reach a target score (3 points for 3 players, 7 for 2 players) and then decide whether to continue ('Go') or end ('Stop').",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hwatu.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Play a card from hand to match a card of the same month on the table.\n2. Draw a card from the deck to match another card on the table.\n3. Captured cards are placed in categories: Brights (Kwang), Animals (Yul), Ribbons (Tti), or Junk (Pi).\n4. **Go or Stop**: Once you hit the target score, if you say 'Go', you continue. Each subsequent 'Go' increases your point multiplier but risks 'Go-bak' (losing everything if another player scores).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hwatu.setup.players',
+        title: 'Players',
+        text: 'Usually 3 players (Go-Stop) or 2 players (Mat-go).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hwatu.setup.deck',
+        title: 'Deck',
+        text: '48 cards (12 months x 4 cards each) + optional 2-5 bonus/joker cards.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hwatu.setup.equipment',
+        title: 'Equipment',
+        text: '48 cards (12 months x 4 cards each) + optional 2-5 bonus/joker cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hwatu.setup.dealing',
+        title: 'Deal',
+        text: 'For 3 players: 7 cards each, 6 on the table. For 2 players: 10 cards each, 8 on the table.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hwatu.score.win-condition',
+        title: 'Win condition',
+        text: 'Before beginning the game, the players should agree a target score at which the play of a hand can be stopped.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hwatu.score.description',
+        title: 'Scoring',
+        text: 'Before beginning the game, the players should agree a target score at which the play of a hand can be stopped.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hwatu.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Hwatu (Go-Stop).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hwatu.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: Scoring summary: Scoring follows the game-specific point or pot rules.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hwatu.rules.key.3',
+        title: 'Key rule 3',
+        text: "Winning condition: Capture cards to reach a target score (3 points for 3 players, 7 for 2 players) and then decide whether to continue ('Go') or end ('Stop').",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hwatu.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hwatu.rules.objective',
+          'hwatu.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hwatu.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hwatu.setup.players',
+          'hwatu.setup.deck',
+          'hwatu.setup.equipment',
+          'hwatu.setup.dealing',
+        ],
+      },
+      {
+        id: 'hwatu.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hwatu.rules.key.1',
+          'hwatu.rules.key.2',
+          'hwatu.rules.key.3',
+        ],
+      },
+      {
+        id: 'hwatu.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hwatu.score.description',
+          'hwatu.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hwatu.setup.dealing',
+        'hwatu.rules.objective',
+      ],
+      play_card: [
+        'hwatu.rules.gameplay',
+      ],
+    },
   },
 }

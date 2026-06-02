@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Basset. Logic: Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
-    Player: 'Basset is a historical Italian gambling card game in which players bet against a banker on ranks that may appear from the pack.',
+    LLM: 'Players wager on hands in a gambling structure related to Grobhaus and Farbeln. The Unters, and sometimes Nines, act as privileged wild or special cards.',
+    Player: 'Players wager on hands in a gambling structure related to Grobhaus and Farbeln. The Unters, and sometimes Nines, act as privileged wild or special cards.',
     objective: 'Win stakes through the gambling combinations and privileged Unter cards described in historical sources.',
     gameplay: 'Players wager on hands in a gambling structure related to Grobhaus and Farbeln. The Unters, and sometimes Nines, act as privileged wild or special cards.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Bets are paid or lost against the bank according to the exposed-card result. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win stakes through the gambling combinations and privileged Unter cards described in historical sources.',
+      'Turn-flow example: Players wager on hands in a gambling structure related to Grobhaus and Farbeln. The Unters, and sometimes Nines, act as privileged wild or special cards.',
+      'Scoring example: Bets are paid or lost against the bank according to the exposed-card result. Win stakes by backing ranks that appear in the favourable positions of the banked deal..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'scherwenzel.rules.objective',
+        title: 'Objective',
+        text: 'Win stakes through the gambling combinations and privileged Unter cards described in historical sources.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'scherwenzel.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players wager on hands in a gambling structure related to Grobhaus and Farbeln. The Unters, and sometimes Nines, act as privileged wild or special cards.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'scherwenzel.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Scherwenzel.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'scherwenzel.setup.deck',
+        title: 'Deck',
+        text: 'Historical German-suited playing cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'scherwenzel.setup.equipment',
+        title: 'Equipment',
+        text: 'Historical German-suited playing cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'scherwenzel.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Historical German-suited playing cards and deal or lay out cards according to the documented Scherwenzel rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'scherwenzel.score.win-condition',
+        title: 'Win condition',
+        text: 'Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'scherwenzel.score.description',
+        title: 'Scoring',
+        text: 'Bets are paid or lost against the bank according to the exposed-card result.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'scherwenzel.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Unters or Jacks have special privileges.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'scherwenzel.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The game is historically distinct from north German Scharwenzel.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'scherwenzel.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Treat as a gambling game with incomplete historical reconstruction.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'scherwenzel.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'scherwenzel.rules.objective',
+          'scherwenzel.rules.gameplay',
+        ],
+      },
+      {
+        id: 'scherwenzel.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'scherwenzel.setup.players',
+          'scherwenzel.setup.deck',
+          'scherwenzel.setup.equipment',
+          'scherwenzel.setup.dealing',
+        ],
+      },
+      {
+        id: 'scherwenzel.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'scherwenzel.rules.key.1',
+          'scherwenzel.rules.key.2',
+          'scherwenzel.rules.key.3',
+        ],
+      },
+      {
+        id: 'scherwenzel.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'scherwenzel.score.description',
+          'scherwenzel.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'scherwenzel.setup.dealing',
+        'scherwenzel.rules.objective',
+      ],
+      play_card: [
+        'scherwenzel.rules.gameplay',
+      ],
+    },
   },
 }

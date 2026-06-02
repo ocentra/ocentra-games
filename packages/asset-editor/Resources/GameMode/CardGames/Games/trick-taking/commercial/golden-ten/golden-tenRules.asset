@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Execute follow-color trick rules, no trump, special red penalties, yellow-ten offset, and six-deal cumulative low-score victory.',
-    Player: 'Play low-risk tricks, track dangerous reds, and plan whether yellow ten capture is worth contesting.',
+    LLM: 'Player left of dealer leads first trick. Players must follow led color when possible; otherwise any card may be played. Highest card of led color wins the trick and leads next. There is no trump. After all cards are played, penalty points are counted from captured tricks and added to cumulative total.',
+    Player: 'Player left of dealer leads first trick. Players must follow led color when possible; otherwise any card may be played. Highest card of led color wins the trick and leads next. There is no trump. After all cards are played, penalty points are counted from captured tricks and added to cumulative total.',
     objective: 'Finish six deals with the lowest cumulative penalty score.',
     gameplay: 'Player left of dealer leads first trick. Players must follow led color when possible; otherwise any card may be played. Highest card of led color wins the trick and leads next. There is no trump. After all cards are played, penalty points are counted from captured tricks and added to cumulative total.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-7 player(s), 8 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before trick_loop.',
-      'Scoring check: Each red card is 1 penalty, except red 5 is 5 and red 10 is 10. Capturing yellow 10 reduces your red penalties by 10, minimum zero. Expected outcome: After six deals, player with the lowest cumulative penalty total wins..',
+      'Setup example: 8 card(s) per player.',
+      'Rule example: Finish six deals with the lowest cumulative penalty score.',
+      'Turn-flow example: Player left of dealer leads first trick. Players must follow led color when possible; otherwise any card may be played. Highest card of led color wins the trick and leads next. There is no trump. After all cards are played, penalty points are counted from captured tricks and added to cumulative total.',
+      'Scoring example: Each red card is 1 penalty, except red 5 is 5 and red 10 is 10. Capturing yellow 10 reduces your red penalties by 10, minimum zero. After six deals, player with the lowest cumulative penalty total wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'golden-ten.rules.objective',
+        title: 'Objective',
+        text: 'Finish six deals with the lowest cumulative penalty score.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'golden-ten.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Player left of dealer leads first trick. Players must follow led color when possible; otherwise any card may be played. Highest card of led color wins the trick and leads next. There is no trump. After all cards are played, penalty points are counted from captured tricks and added to cumulative total.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'golden-ten.setup.players',
+        title: 'Players',
+        text: '3-7 players, clockwise deal and play.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'golden-ten.setup.deck',
+        title: 'Deck',
+        text: '56 cards: four colors (red, yellow, green, black), ranks 1 through 14.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'golden-ten.setup.equipment',
+        title: 'Equipment',
+        text: 'Scorepad for cumulative penalty totals across six deals.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'golden-ten.setup.dealing',
+        title: 'Deal',
+        text: 'Deal all cards as equally as possible; with 3, 5, or 6 players, leftovers are won by winner of first trick.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'golden-ten.score.win-condition',
+        title: 'Win condition',
+        text: 'After six deals, player with the lowest cumulative penalty total wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'golden-ten.score.description',
+        title: 'Scoring',
+        text: 'Each red card is 1 penalty, except red 5 is 5 and red 10 is 10. Capturing yellow 10 reduces your red penalties by 10, minimum zero.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'golden-ten.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Each red card captured is 1 penalty, except red 5 is 5 and red 10 is 10.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'golden-ten.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Yellow 10 (Golden Ten) subtracts 10 from your red penalties in that deal, minimum zero.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'golden-ten.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Game length is six deals with dealer moving left each deal.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'golden-ten.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Lowest cumulative penalty after final deal wins.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'golden-ten.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'golden-ten.rules.objective',
+          'golden-ten.rules.gameplay',
+        ],
+      },
+      {
+        id: 'golden-ten.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'golden-ten.setup.players',
+          'golden-ten.setup.deck',
+          'golden-ten.setup.equipment',
+          'golden-ten.setup.dealing',
+        ],
+      },
+      {
+        id: 'golden-ten.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'golden-ten.rules.key.1',
+          'golden-ten.rules.key.2',
+          'golden-ten.rules.key.3',
+          'golden-ten.rules.key.4',
+        ],
+      },
+      {
+        id: 'golden-ten.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'golden-ten.score.description',
+          'golden-ten.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'golden-ten.setup.dealing',
+        'golden-ten.rules.objective',
+      ],
+      deal: [
+        'golden-ten.rules.gameplay',
+      ],
+      award_pot: [
+        'golden-ten.rules.gameplay',
+      ],
+      play_card: [
+        'golden-ten.rules.gameplay',
+      ],
+    },
   },
 }

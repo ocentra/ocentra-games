@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Z Poker. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Z Poker is a little-known community card poker variant with 4 community cards instead of 5. Players get 2 hole cards and use a modified community card structure. Home game variant — unlikely found in casinos.',
+    LLM: '2 hole cards. 4 community cards dealt in stages. Betting rounds. Showdown: best 5-card hand using hole + community cards.',
+    Player: '2 hole cards. 4 community cards dealt in stages. Betting rounds. Showdown: best 5-card hand using hole + community cards.',
     objective: 'Win the pot by making the best 5-card poker hand using your 2 hole cards and the 4 community cards.',
     gameplay: '2 hole cards. 4 community cards dealt in stages. Betting rounds. Showdown: best 5-card hand using hole + community cards.',
     keyRules: [
@@ -52,10 +52,177 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 2 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_hole_cards before preflop_bet.',
-      'Scoring check: Standard poker rankings. Expected outcome: Best 5-card poker hand..',
+      'Setup example: 2 card(s) per player.',
+      'Rule example: Win the pot by making the best 5-card poker hand using your 2 hole cards and the 4 community cards.',
+      'Turn-flow example: 2 hole cards. 4 community cards dealt in stages. Betting rounds. Showdown: best 5-card hand using hole + community cards.',
+      'Scoring example: Standard poker rankings. Best 5-card poker hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'z-poker.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by making the best 5-card poker hand using your 2 hole cards and the 4 community cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'z-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: '2 hole cards. 4 community cards dealt in stages. Betting rounds. Showdown: best 5-card hand using hole + community cards.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'z-poker.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'z-poker.setup.deck',
+        title: 'Deck',
+        text: "One standard 52-card French deck; no jokers. Same deck as Texas hold'em and other community card games.",
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'z-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, chips',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'z-poker.setup.dealing',
+        title: 'Deal',
+        text: '2 hole cards each + 4 community.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'z-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Best 5-card poker hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'z-poker.score.description',
+        title: 'Scoring',
+        text: 'Standard poker rankings.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'z-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: '4 community cards (not 5)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'z-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: '2 hole cards',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'z-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Standard betting structure',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'z-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'z-poker.rules.objective',
+          'z-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'z-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'z-poker.setup.players',
+          'z-poker.setup.deck',
+          'z-poker.setup.equipment',
+          'z-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'z-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'z-poker.rules.key.1',
+          'z-poker.rules.key.2',
+          'z-poker.rules.key.3',
+        ],
+      },
+      {
+        id: 'z-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'z-poker.score.description',
+          'z-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'z-poker.setup.dealing',
+        'z-poker.rules.objective',
+      ],
+      fold: [
+        'z-poker.rules.gameplay',
+      ],
+      check: [
+        'z-poker.rules.gameplay',
+      ],
+      call: [
+        'z-poker.rules.gameplay',
+      ],
+      bet: [
+        'z-poker.rules.gameplay',
+      ],
+      raise: [
+        'z-poker.rules.gameplay',
+      ],
+      reveal_hand: [
+        'z-poker.rules.gameplay',
+      ],
+      award_pot: [
+        'z-poker.rules.gameplay',
+      ],
+      deal_hole_cards: [
+        'z-poker.rules.gameplay',
+      ],
+      deal_flop: [
+        'z-poker.rules.gameplay',
+      ],
+      deal_turn: [
+        'z-poker.rules.gameplay',
+      ],
+      deal_river: [
+        'z-poker.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: King Pedro. See rules.objective and rules.gameplay for details.',
-    Player: 'King Pedro is a variant of the popular American card game Pedro (also known as Cinch or 63), played primarily in the northeastern United States and Canada. It adds the King of trumps as an additional scoring card worth 5 points, making the total points available 19 per hand instead of the standard 14. It is a trick-taking game where the 5 of trumps (the Pedro) and the 5 of the same color (the Left Pedro) are the most valuable cards.',
+    LLM: 'The high bidder leads to the first trick. If a trump is led, players must play a trump if possible. If a non-trump is led, players must follow suit or trump if possible. Highest trump wins the trick; if no trumps, highest card of led suit wins. Winner leads to next trick.',
+    Player: 'The high bidder leads to the first trick. If a trump is led, players must play a trump if possible. If a non-trump is led, players must follow suit or trump if possible. Highest trump wins the trick; if no trumps, highest card of led suit wins. Winner leads to next trick.',
     objective: 'Be the first team to reach 62 or more points by winning tricks containing valuable cards.',
     gameplay: 'The high bidder leads to the first trick. If a trump is led, players must play a trump if possible. If a non-trump is led, players must follow suit or trump if possible. Highest trump wins the trick; if no trumps, highest card of led suit wins. Winner leads to next trick.',
     keyRules: [
@@ -50,10 +50,141 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 9 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before bid.',
-      'Scoring check: Be the first team to reach 62 or more points by winning tricks containing valuable cards. Expected outcome: 62.',
+      'Setup example: 9 card(s) per player.',
+      'Rule example: Be the first team to reach 62 or more points by winning tricks containing valuable cards.',
+      'Turn-flow example: The high bidder leads to the first trick. If a trump is led, players must play a trump if possible. If a non-trump is led, players must follow suit or trump if possible. Highest trump wins the trick; if no trumps, highest card of led suit wins. Winner leads to next trick.',
+      'Scoring example: Be the first team to reach 62 or more points by winning tricks containing valuable cards. Be the first team to reach 62 or more points by winning tricks containing valuable cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'king-pedro.rules.objective',
+        title: 'Objective',
+        text: 'Be the first team to reach 62 or more points by winning tricks containing valuable cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'king-pedro.rules.gameplay',
+        title: 'Turn flow',
+        text: 'The high bidder leads to the first trick. If a trump is led, players must play a trump if possible. If a non-trump is led, players must follow suit or trump if possible. Highest trump wins the trick; if no trumps, highest card of led suit wins. Winner leads to next trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'king-pedro.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships, partners sitting opposite each other.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'king-pedro.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'king-pedro.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'king-pedro.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 9 cards to each player, 3 at a time. The turn to deal passes to the left after each hand.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'king-pedro.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first team to reach 62 or more points by winning tricks containing valuable cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'king-pedro.score.description',
+        title: 'Scoring',
+        text: 'Be the first team to reach 62 or more points by winning tricks containing valuable cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'king-pedro.rules.key.1',
+        title: 'Key rule 1',
+        text: "Deal 9 cards each (3 at a time); dealer rotates left. One round of bidding from dealer's left; minimum bid 7, maximum 14; must bid higher or pass; dealer forced to bid 7 if all pass. High bidder names trumps; everyone discards all non-trumps face down; dealer replenishes others to 6 cards and takes remainder (all trumps) for own hand. High bidder leads; follow suit or trump when possible; highest trump wins trick, else highest of led suit; winner leads next. First team to 62 or more points wins; bidder goes out rule when both teams 55+.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'king-pedro.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'king-pedro.rules.objective',
+          'king-pedro.rules.gameplay',
+        ],
+      },
+      {
+        id: 'king-pedro.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'king-pedro.setup.players',
+          'king-pedro.setup.deck',
+          'king-pedro.setup.equipment',
+          'king-pedro.setup.dealing',
+        ],
+      },
+      {
+        id: 'king-pedro.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'king-pedro.rules.key.1',
+        ],
+      },
+      {
+        id: 'king-pedro.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'king-pedro.score.description',
+          'king-pedro.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'king-pedro.setup.dealing',
+        'king-pedro.rules.objective',
+      ],
+      deal: [
+        'king-pedro.rules.gameplay',
+      ],
+      play_card: [
+        'king-pedro.rules.gameplay',
+      ],
+      discard: [
+        'king-pedro.rules.gameplay',
+      ],
+      pass: [
+        'king-pedro.rules.gameplay',
+      ],
+      bid: [
+        'king-pedro.rules.gameplay',
+      ],
+    },
   },
 }

@@ -52,10 +52,147 @@
       go_out: 'Game ends per rules.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Capture the most cards from the table. Every card captured is worth 1 point at the end of the game. Expected outcome: Player with most captured cards after all rounds wins the game..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Capture the most cards from the table. Every card captured is worth 1 point at the end of the game.',
+      "Turn-flow example: 1. Players take turns playing one card from their hand.\n2. Capturing (Scooping): A card can capture a table card of the same rank (Matching) or multiple table cards that sum to the played card's value (Summing).\n3. Face Cards: K, Q, J have no numerical value and can ONLY capture their own rank.",
+      'Scoring example: Capture the most cards from the table. Every card captured is worth 1 point at the end of the game. Player with most captured cards after all rounds wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'elewenjewe.rules.objective',
+        title: 'Objective',
+        text: 'Capture the most cards from the table. Every card captured is worth 1 point at the end of the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'elewenjewe.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Players take turns playing one card from their hand.\n2. Capturing (Scooping): A card can capture a table card of the same rank (Matching) or multiple table cards that sum to the played card's value (Summing).\n3. Face Cards: K, Q, J have no numerical value and can ONLY capture their own rank.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'elewenjewe.setup.players',
+        title: 'Players',
+        text: '2 to 5 players. Professional games use 2 players; amateur games use 3-4.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'elewenjewe.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Four special cards are removed: King, Queen, Jack, and 9 of Diamonds, placed face-up on the table as the initial palette.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'elewenjewe.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. Four special cards are removed: King, Queen, Jack, and 9 of Diamonds, placed face-up on the table as the initial palette.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'elewenjewe.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 4 cards to start. Rounds continue until the deck is exhausted.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'elewenjewe.score.win-condition',
+        title: 'Win condition',
+        text: 'Player with most captured cards after all rounds wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'elewenjewe.score.description',
+        title: 'Scoring',
+        text: 'Capture the most cards from the table. Every card captured is worth 1 point at the end of the game.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'elewenjewe.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Aces count as 1.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'elewenjewe.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Jokers (if used in amateur games) can scoop the entire table.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'elewenjewe.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Cards not scooped by anyone after the final round go to the player who made the last scoop.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'elewenjewe.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'elewenjewe.rules.objective',
+          'elewenjewe.rules.gameplay',
+        ],
+      },
+      {
+        id: 'elewenjewe.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'elewenjewe.setup.players',
+          'elewenjewe.setup.deck',
+          'elewenjewe.setup.equipment',
+          'elewenjewe.setup.dealing',
+        ],
+      },
+      {
+        id: 'elewenjewe.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'elewenjewe.rules.key.1',
+          'elewenjewe.rules.key.2',
+          'elewenjewe.rules.key.3',
+        ],
+      },
+      {
+        id: 'elewenjewe.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'elewenjewe.score.description',
+          'elewenjewe.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'elewenjewe.setup.dealing',
+        'elewenjewe.rules.objective',
+      ],
+      play_card: [
+        'elewenjewe.rules.gameplay',
+      ],
+    },
   },
 }

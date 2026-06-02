@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Yonin-Kan. Logic: See rules.objective and rules.gameplay.',
-    Player: "Yonin-Kan ('4-player Kan') is a Japanese trick-taking game from Aomori prefecture. 4 players. 40-card deck (remove 2-4s and 5â™ ). 10 each. Secret partnerships: Joker holder + J of trumps holder = 'kankei' team (revealed when played). Rotating trump sequence: â™£â†’â™¦â†’â™¥. Also called Damari-Kan ('Silent Kan').",
+    LLM: "Joker + J of trumps = kankei (secret partnership, revealed when played). Others = mukankei. Rotating trumps (â™£â†’â™¦â†’â™¥â†’â™ ). Joker is strongest but can't be played first or last trick. Win tricks to collect scoring cards.",
+    Player: "Joker + J of trumps = kankei (secret partnership, revealed when played). Others = mukankei. Rotating trumps (â™£â†’â™¦â†’â™¥â†’â™ ). Joker is strongest but can't be played first or last trick. Win tricks to collect scoring cards.",
     objective: 'Kankei team: collect scoring cards (A,K,Q,J = 1pt each, 16 total).',
     gameplay: "Joker + J of trumps = kankei (secret partnership, revealed when played). Others = mukankei. Rotating trumps (â™£â†’â™¦â†’â™¥â†’â™ ). Joker is strongest but can't be played first or last trick. Win tricks to collect scoring cards.",
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: A,K,Q,J = 1pt each (16 total). Multiple deal rounds per round. Expected outcome: Kankei team: collect scoring cards (A,K,Q,J = 1pt each, 16 total)..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Kankei team: collect scoring cards (A,K,Q,J = 1pt each, 16 total).',
+      "Turn-flow example: Joker + J of trumps = kankei (secret partnership, revealed when played). Others = mukankei. Rotating trumps (â™£â†’â™¦â†’â™¥â†’â™ ). Joker is strongest but can't be played first or last trick. Win tricks to collect scoring cards.",
+      'Scoring example: A,K,Q,J = 1pt each (16 total). Multiple deal rounds per round. Kankei team: collect scoring cards (A,K,Q,J = 1pt each, 16 total)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'yonin-kan.rules.objective',
+        title: 'Objective',
+        text: 'Kankei team: collect scoring cards (A,K,Q,J = 1pt each, 16 total).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'yonin-kan.rules.gameplay',
+        title: 'Turn flow',
+        text: "Joker + J of trumps = kankei (secret partnership, revealed when played). Others = mukankei. Rotating trumps (â™£â†’â™¦â†’â™¥â†’â™ ). Joker is strongest but can't be played first or last trick. Win tricks to collect scoring cards.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'yonin-kan.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'yonin-kan.setup.deck',
+        title: 'Deck',
+        text: '40 cards: remove 2-4 of all suits + 5â™ . Include Joker.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'yonin-kan.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'yonin-kan.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer shuffles and deals ten cards to each player, one at a time (40-card pack, four players).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'yonin-kan.score.win-condition',
+        title: 'Win condition',
+        text: 'Kankei team: collect scoring cards (A,K,Q,J = 1pt each, 16 total).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'yonin-kan.score.description',
+        title: 'Scoring',
+        text: 'A,K,Q,J = 1pt each (16 total). Multiple deal rounds per round.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'yonin-kan.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Secret partnership (Joker + J trumps)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'yonin-kan.rules.key.2',
+        title: 'Key rule 2',
+        text: '40-card deck',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'yonin-kan.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Rotating trump sequence',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'yonin-kan.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Joker restrictions (not first/last)',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'yonin-kan.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Tome-Suppe (â™  final round)',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'yonin-kan.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'yonin-kan.rules.objective',
+          'yonin-kan.rules.gameplay',
+        ],
+      },
+      {
+        id: 'yonin-kan.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'yonin-kan.setup.players',
+          'yonin-kan.setup.deck',
+          'yonin-kan.setup.equipment',
+          'yonin-kan.setup.dealing',
+        ],
+      },
+      {
+        id: 'yonin-kan.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'yonin-kan.rules.key.1',
+          'yonin-kan.rules.key.2',
+          'yonin-kan.rules.key.3',
+          'yonin-kan.rules.key.4',
+          'yonin-kan.rules.key.5',
+        ],
+      },
+      {
+        id: 'yonin-kan.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'yonin-kan.score.description',
+          'yonin-kan.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'yonin-kan.setup.dealing',
+        'yonin-kan.rules.objective',
+      ],
+      play_card: [
+        'yonin-kan.rules.gameplay',
+      ],
+    },
   },
 }

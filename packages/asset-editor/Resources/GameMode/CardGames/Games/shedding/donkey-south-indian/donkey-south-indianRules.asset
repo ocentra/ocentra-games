@@ -52,10 +52,153 @@
       go_out: 'Allowed only when hand-empty condition is satisfied.',
     },
     exampleHands: [
-      'Opening deal: 3-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before main_play.',
-      'Scoring check: Scoring uses the documented rules for Donkey (South Indian) and determines round or match winners accordingly. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      "Rule example: Get rid of all your cards. The last player remaining with cards is the 'Donkey'.",
+      'Turn-flow example: 1. Starting: The player holding the Ace of Spades leads the first trick.\n2. Following Suit: Every player must follow the suit led.\n3. Winning a Trick: The highest card of the suit led wins the trick. The winner leads the next trick.\n4. The Penalty: If a player cannot follow suit, the trick ends immediately. That player must pick up all cards currently on the table and add them to their hand. That player then leads the next trick.',
+      "Scoring example: Scoring uses the documented rules for Donkey (South Indian) and determines round or match winners accordingly. Get rid of all your cards. The last player remaining with cards is the 'Donkey'..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'donkey-south-indian.rules.objective',
+        title: 'Objective',
+        text: "Get rid of all your cards. The last player remaining with cards is the 'Donkey'.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'donkey-south-indian.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Starting: The player holding the Ace of Spades leads the first trick.\n2. Following Suit: Every player must follow the suit led.\n3. Winning a Trick: The highest card of the suit led wins the trick. The winner leads the next trick.\n4. The Penalty: If a player cannot follow suit, the trick ends immediately. That player must pick up all cards currently on the table and add them to their hand. That player then leads the next trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'donkey-south-indian.setup.players',
+        title: 'Players',
+        text: '3 to 6 players. Best with 4.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'donkey-south-indian.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck (Jokers removed).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'donkey-south-indian.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck of cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'donkey-south-indian.setup.dealing',
+        title: 'Deal',
+        text: 'All cards are dealt out as equally as possible. Some players may have one card more than others.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'donkey-south-indian.score.win-condition',
+        title: 'Win condition',
+        text: "Get rid of all your cards. The last player remaining with cards is the 'Donkey'.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'donkey-south-indian.score.description',
+        title: 'Scoring',
+        text: 'Scoring uses the documented rules for Donkey (South Indian) and determines round or match winners accordingly.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'donkey-south-indian.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Cards rank: A (high), K, Q, J, 10... 2 (low).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'donkey-south-indian.rules.key.2',
+        title: 'Key rule 2',
+        text: "A player is 'Safe' once they have no cards left.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'donkey-south-indian.rules.key.3',
+        title: 'Key rule 3',
+        text: 'If you lead a card and everyone follows suit, the cards in the trick are discarded and removed from the game.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'donkey-south-indian.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'donkey-south-indian.rules.objective',
+          'donkey-south-indian.rules.gameplay',
+        ],
+      },
+      {
+        id: 'donkey-south-indian.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'donkey-south-indian.setup.players',
+          'donkey-south-indian.setup.deck',
+          'donkey-south-indian.setup.equipment',
+          'donkey-south-indian.setup.dealing',
+        ],
+      },
+      {
+        id: 'donkey-south-indian.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'donkey-south-indian.rules.key.1',
+          'donkey-south-indian.rules.key.2',
+          'donkey-south-indian.rules.key.3',
+        ],
+      },
+      {
+        id: 'donkey-south-indian.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'donkey-south-indian.score.description',
+          'donkey-south-indian.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'donkey-south-indian.setup.dealing',
+        'donkey-south-indian.rules.objective',
+      ],
+      deal: [
+        'donkey-south-indian.rules.gameplay',
+      ],
+      play_card: [
+        'donkey-south-indian.rules.gameplay',
+      ],
+      go_out: [
+        'donkey-south-indian.rules.gameplay',
+      ],
+    },
   },
 }

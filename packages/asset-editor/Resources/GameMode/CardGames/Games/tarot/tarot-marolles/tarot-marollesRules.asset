@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tarot of the Abbé de Marolles 1637. Three players, 66 cards. Declarations then tricks; follow suit, must play trump if cannot follow; Fool excuses; Tarots and Ultimo pay marques; card points above/below 25 settle winner/losers.',
-    Player: 'Three-player Tarot from 1637: declare combinations for marques, follow suit, play trumps when unable to follow, excuse the Fool before the last trick; Ultimo and card points determine payments.',
+    LLM: "After the deal and discards, players in turn declare combinations (Tarots, Kings and Fool, Triomphes, Imperials, Brizigole, Tous les trois) and receive marques from opponents. Player to dealer's right leads; suit must be followed; if unable to follow, must play a trump (no need to overtake). Highest trump wins, or highest card of led suit. Fool may be played as excuse (s'excuser) in any trick except the last; it is shown and discarded to holder's tricks and cannot be captured. At end of play, card points in tricks (plus discards) are counted; players below average pay the winner(s).",
+    Player: "After the deal and discards, players in turn declare combinations (Tarots, Kings and Fool, Triomphes, Imperials, Brizigole, Tous les trois) and receive marques from opponents. Player to dealer's right leads; suit must be followed; if unable to follow, must play a trump (no need to overtake). Highest trump wins, or highest card of led suit. Fool may be played as excuse (s'excuser) in any trick except the last; it is shown and discarded to holder's tricks and cannot be captured. At end of play, card points in tricks (plus discards) are counted; players below average pay the winner(s).",
     objective: 'Score marques by declaring combinations, winning Tarots in tricks, avoiding capture of Tarots, making Ultimo (last trick with King or Trump I), and having above-average card points in tricks; losers pay the winner(s).',
     gameplay: "After the deal and discards, players in turn declare combinations (Tarots, Kings and Fool, Triomphes, Imperials, Brizigole, Tous les trois) and receive marques from opponents. Player to dealer's right leads; suit must be followed; if unable to follow, must play a trump (no need to overtake). Highest trump wins, or highest card of led suit. Fool may be played as excuse (s'excuser) in any trick except the last; it is shown and discarded to holder's tricks and cannot be captured. At end of play, card points in tricks (plus discards) are counted; players below average pay the winner(s).",
     keyRules: [
@@ -54,10 +54,171 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 21 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before declarations.',
-      'Scoring check: Marques are won or paid for: declarations (Tarots, Kings+Fool, Triomphes, Imperials, Brizigole, Tous les trois), playing or capturing Tarots in tricks, Ultimo (last trick with King or Trump I), and card points (Tarots 5, Queens 4, Cavaliers 3, Jacks 2; pack total 74). Below 25 points = loser pays winner(s); above 25 = winner collects. Expected outcome: After the hand, the player(s) with above-average card points (25 or more) win; the player(s) with below average (24 or less) pay. Two losers each pay the single winner per 5-point band below 25; two winners each collect from the single loser per 5-point band above 25. Ultimo (last trick with King or Trump I) pays 6 marques from each opponent..',
+      'Setup example: 21 card(s) per player.',
+      'Rule example: Score marques by declaring combinations, winning Tarots in tricks, avoiding capture of Tarots, making Ultimo (last trick with King or Trump I), and having above-average card points in tricks; losers pay the winner(s).',
+      "Turn-flow example: After the deal and discards, players in turn declare combinations (Tarots, Kings and Fool, Triomphes, Imperials, Brizigole, Tous les trois) and receive marques from opponents. Player to dealer's right leads; suit must be followed; if unable to follow, must play a trump (no need to overtake). Highest trump wins, or highest card of led suit. Fool may be played as excuse (s'excuser) in any trick except the last; it is shown and discarded to holder's tricks and cannot be captured. At end of play, card points in tricks (plus discards) are counted; players below average pay the winner(s).",
+      'Scoring example: Marques are won or paid for: declarations (Tarots, Kings+Fool, Triomphes, Imperials, Brizigole, Tous les trois), playing or capturing Tarots in tricks, Ultimo (last trick with King or Trump I), and card points (Tarots 5, Queens 4, Cavaliers 3, Jacks 2; pack total 74). Below 25 points = loser pays winner(s); above 25 = winner collects. After the hand, the player(s) with above-average card points (25 or more) win; the player(s) with below average (24 or less) pay. Two losers each pay the single winner per 5-point band below 25; two winners each collect from the single loser per 5-point band above 25. Ultimo (last trick with King or Trump I) pays 6 marques from each opponent..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tarot-marolles.rules.objective',
+        title: 'Objective',
+        text: 'Score marques by declaring combinations, winning Tarots in tricks, avoiding capture of Tarots, making Ultimo (last trick with King or Trump I), and having above-average card points in tricks; losers pay the winner(s).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tarot-marolles.rules.gameplay',
+        title: 'Turn flow',
+        text: "After the deal and discards, players in turn declare combinations (Tarots, Kings and Fool, Triomphes, Imperials, Brizigole, Tous les trois) and receive marques from opponents. Player to dealer's right leads; suit must be followed; if unable to follow, must play a trump (no need to overtake). Highest trump wins, or highest card of led suit. Fool may be played as excuse (s'excuser) in any trick except the last; it is shown and discarded to holder's tricks and cannot be captured. At end of play, card points in tricks (plus discards) are counted; players below average pay the winner(s).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tarot-marolles.setup.players',
+        title: 'Players',
+        text: 'Three players, each playing for themselves; no partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tarot-marolles.setup.deck',
+        title: 'Deck',
+        text: '66-card pack: Italian-suited Tarot (78 cards) with the lowest three cards of each suit removed. 22 triomphes (21 trumps I–XXI plus the Fool); 4 suits with 4 court cards (King, Queen, Cavalier, Jack) and 7 numerals each.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tarot-marolles.setup.equipment',
+        title: 'Equipment',
+        text: 'Tarot pack, counters (marques).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tarot-marolles.setup.dealing',
+        title: 'Deal',
+        text: "Dealer shuffles; player to dealer's left cuts (cut card shown; if it is a Tarot, dealer receives one marque from each opponent). Dealer deals 4 rounds of 5 cards to each player, then one more card to each other player and 4 to himself: non-dealers receive 21 cards each, dealer 24. The two non-dealers each discard one card and the dealer discards four; no trumps or Tarots may be discarded (penalty: two marques to each opponent). Discards count in the discarder's favour at end of play.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tarot-marolles.score.win-condition',
+        title: 'Win condition',
+        text: 'After the hand, the player(s) with above-average card points (25 or more) win; the player(s) with below average (24 or less) pay. Two losers each pay the single winner per 5-point band below 25; two winners each collect from the single loser per 5-point band above 25. Ultimo (last trick with King or Trump I) pays 6 marques from each opponent.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tarot-marolles.score.description',
+        title: 'Scoring',
+        text: 'Marques are won or paid for: declarations (Tarots, Kings+Fool, Triomphes, Imperials, Brizigole, Tous les trois), playing or capturing Tarots in tricks, Ultimo (last trick with King or Trump I), and card points (Tarots 5, Queens 4, Cavaliers 3, Jacks 2; pack total 74). Below 25 points = loser pays winner(s); above 25 = winner collects.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tarot-marolles.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow suit; if unable, play a trump. No obligation to overtake when playing trump.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tarot-marolles.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Fool (Math) may be played as excuse except in the last trick; holder must excuse before last trick or pay two marques to each opponent.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tarot-marolles.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Tarots (Kings, Fool, Trump I, XXI): winning one in a trick pays one marque from each opponent; losing one to an opponent pays one marque to each.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tarot-marolles.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Ultimo: win last trick with King or Trump I (Bagat) for 6 marques from each opponent; if King or Trump I played to last trick but does not win, pay 6 marques to each opponent.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'tarot-marolles.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Card points: Tarots 5 each, Queens 4, Cavaliers 3, Jacks 2; total pack 74. Below 25 points = loser, 25+ = winner.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tarot-marolles.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tarot-marolles.rules.objective',
+          'tarot-marolles.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tarot-marolles.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tarot-marolles.setup.players',
+          'tarot-marolles.setup.deck',
+          'tarot-marolles.setup.equipment',
+          'tarot-marolles.setup.dealing',
+        ],
+      },
+      {
+        id: 'tarot-marolles.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tarot-marolles.rules.key.1',
+          'tarot-marolles.rules.key.2',
+          'tarot-marolles.rules.key.3',
+          'tarot-marolles.rules.key.4',
+          'tarot-marolles.rules.key.5',
+        ],
+      },
+      {
+        id: 'tarot-marolles.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tarot-marolles.score.description',
+          'tarot-marolles.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tarot-marolles.setup.dealing',
+        'tarot-marolles.rules.objective',
+      ],
+      deal: [
+        'tarot-marolles.rules.gameplay',
+      ],
+      declare: [
+        'tarot-marolles.rules.gameplay',
+      ],
+      play_card: [
+        'tarot-marolles.rules.gameplay',
+      ],
+    },
   },
 }

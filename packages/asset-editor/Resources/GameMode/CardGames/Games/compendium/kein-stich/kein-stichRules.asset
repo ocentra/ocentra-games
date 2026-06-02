@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kein Stich. Logic: Win the tricks, card points, or contract result required by the local form of the game.',
-    Player: 'Kein Stich is a traditional trick-taking card game using 32-card German or French pack for 4, with 3-6 variants players. It is a compendium game whose name means No Tricks.',
+    LLM: 'Players lead to tricks, follow suit when able, and compare the led suit, trumps, or special ranking to decide the winner of each trick.',
+    Player: 'Players lead to tricks, follow suit when able, and compare the led suit, trumps, or special ranking to decide the winner of each trick.',
     objective: 'Win the tricks, card points, or contract result required by the local form of the game.',
     gameplay: 'Players lead to tricks, follow suit when able, and compare the led suit, trumps, or special ranking to decide the winner of each trick.',
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-6 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Tricks, card points, or contract success determine scoring. Expected outcome: Win the tricks, card points, or contract result required by the local form of the game..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win the tricks, card points, or contract result required by the local form of the game.',
+      'Turn-flow example: Players lead to tricks, follow suit when able, and compare the led suit, trumps, or special ranking to decide the winner of each trick.',
+      'Scoring example: Tricks, card points, or contract success determine scoring. Win the tricks, card points, or contract result required by the local form of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'kein-stich.rules.objective',
+        title: 'Objective',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kein-stich.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players lead to tricks, follow suit when able, and compare the led suit, trumps, or special ranking to decide the winner of each trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kein-stich.setup.players',
+        title: 'Players',
+        text: '4, with 3-6 variants players use the table arrangement described for Kein Stich.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kein-stich.setup.deck',
+        title: 'Deck',
+        text: '32-card German or French pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kein-stich.setup.equipment',
+        title: 'Equipment',
+        text: '32-card German or French pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kein-stich.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 32-card German or French pack to 4, with 3-6 variants players according to the local rules before trick play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kein-stich.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kein-stich.score.description',
+        title: 'Scoring',
+        text: 'Tricks, card points, or contract success determine scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kein-stich.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trick-taking structure.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kein-stich.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Follow suit when able.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kein-stich.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trump or rank hierarchy controls trick winners.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kein-stich.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Captured tricks or card points decide the hand.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kein-stich.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kein-stich.rules.objective',
+          'kein-stich.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kein-stich.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kein-stich.setup.players',
+          'kein-stich.setup.deck',
+          'kein-stich.setup.equipment',
+          'kein-stich.setup.dealing',
+        ],
+      },
+      {
+        id: 'kein-stich.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kein-stich.rules.key.1',
+          'kein-stich.rules.key.2',
+          'kein-stich.rules.key.3',
+          'kein-stich.rules.key.4',
+        ],
+      },
+      {
+        id: 'kein-stich.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kein-stich.score.description',
+          'kein-stich.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kein-stich.setup.dealing',
+        'kein-stich.rules.objective',
+      ],
+      play_card: [
+        'kein-stich.rules.gameplay',
+      ],
+      discard: [
+        'kein-stich.rules.gameplay',
+      ],
+      pass: [
+        'kein-stich.rules.gameplay',
+      ],
+      bid: [
+        'kein-stich.rules.gameplay',
+      ],
+    },
   },
 }

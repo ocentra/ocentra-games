@@ -54,10 +54,201 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-5 player(s), 12 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal, form_talon before bidding.',
-      'Scoring check: Card points counted individually (not in groups). Total 71 points, need 36+ to win. Game points and bonuses calculated separately. Expected outcome: NA.',
+      'Setup example: 12 card(s) per player.',
+      'Rule example: Win tricks containing valuable cards. In positive contracts, need 36+ of 71 card points. Various contracts have different objectives.',
+      "Turn-flow example: Dealer deals 12 cards each and 6 to the talon. Players bid (Sechserdreier, Rufer mit Spatz/Uhu, Dreier) or say Erster; if all pass, Fahren is played. Bidder calls a King (in Rufer) or takes 3 or 6 talon cards and discards. Announcements and Kontras follow. Player to dealer's right leads; 12 tricks, follow suit, must trump if unable to follow. Highest trump wins trick, else highest of led suit. Team with 36+ of 71 card points wins the game; bonuses and game points are settled in cash.",
+      'Scoring example: Card points counted individually (not in groups). Total 71 points, need 36+ to win. Game points and bonuses calculated separately. Win majority of 71 card points (36 or more) in tricks; contract and bonuses determine game points paid between teams..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'k-nigrufen-lungau-tarock.rules.objective',
+        title: 'Objective',
+        text: 'Win tricks containing valuable cards. In positive contracts, need 36+ of 71 card points. Various contracts have different objectives.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'k-nigrufen-lungau-tarock.rules.gameplay',
+        title: 'Turn flow',
+        text: "Dealer deals 12 cards each and 6 to the talon. Players bid (Sechserdreier, Rufer mit Spatz/Uhu, Dreier) or say Erster; if all pass, Fahren is played. Bidder calls a King (in Rufer) or takes 3 or 6 talon cards and discards. Announcements and Kontras follow. Player to dealer's right leads; 12 tricks, follow suit, must trump if unable to follow. Highest trump wins trick, else highest of led suit. Team with 36+ of 71 card points wins the game; bonuses and game points are settled in cash.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'k-nigrufen-lungau-tarock.setup.players',
+        title: 'Players',
+        text: 'Four active players. Five can participate with dealer sitting out each hand.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'k-nigrufen-lungau-tarock.setup.deck',
+        title: 'Deck',
+        text: 'Standard Austrian 54-card Tarock pack: 22 trumps (Tarocks), 8 cards each in four suits.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'k-nigrufen-lungau-tarock.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard Austrian 54-card Tarock pack: 22 trumps (Tarocks), 8 cards each in four suits.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'k-nigrufen-lungau-tarock.setup.dealing',
+        title: 'Deal',
+        text: "Dealer shuffles, player to left cuts. Deal 12 cards to each player in batches of 6, anticlockwise, starting with player to dealer's right. Place two packets of 3 cards face down in middle as talon.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'k-nigrufen-lungau-tarock.score.win-condition',
+        title: 'Win condition',
+        text: 'Win majority of 71 card points (36 or more) in tricks; contract and bonuses determine game points paid between teams.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'k-nigrufen-lungau-tarock.score.description',
+        title: 'Scoring',
+        text: 'Card points counted individually (not in groups). Total 71 points, need 36+ to win. Game points and bonuses calculated separately.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'k-nigrufen-lungau-tarock.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Deal 12 cards each and 6 to the talon in two packets of 3; deal and play anticlockwise.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'k-nigrufen-lungau-tarock.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Bid Sechserdreier, Rufer mit Spatz/Uhu, or Dreier, or say Erster; if all pass, Fahren is played.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'k-nigrufen-lungau-tarock.rules.key.3',
+        title: 'Key rule 3',
+        text: 'In Rufer, call a King for partner; bidder takes 3 talon cards (or 6 in Sechserdreier) and discards; 5-point cards and most trumps cannot be discarded.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'k-nigrufen-lungau-tarock.rules.key.4',
+        title: 'Key rule 4',
+        text: "Follow suit; must trump if unable to follow. Highest Tarock wins trick, else highest of led suit. Player to dealer's right leads.",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'k-nigrufen-lungau-tarock.rules.key.5',
+        title: 'Key rule 5',
+        text: '36+ of 71 card points wins the game; game points and bonuses (Trull, Four Kings, Pagat Ultimo, Uhu, King Ultimo, Valat) settled in cash.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'k-nigrufen-lungau-tarock.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'k-nigrufen-lungau-tarock.rules.objective',
+          'k-nigrufen-lungau-tarock.rules.gameplay',
+        ],
+      },
+      {
+        id: 'k-nigrufen-lungau-tarock.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'k-nigrufen-lungau-tarock.setup.players',
+          'k-nigrufen-lungau-tarock.setup.deck',
+          'k-nigrufen-lungau-tarock.setup.equipment',
+          'k-nigrufen-lungau-tarock.setup.dealing',
+        ],
+      },
+      {
+        id: 'k-nigrufen-lungau-tarock.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'k-nigrufen-lungau-tarock.rules.key.1',
+          'k-nigrufen-lungau-tarock.rules.key.2',
+          'k-nigrufen-lungau-tarock.rules.key.3',
+          'k-nigrufen-lungau-tarock.rules.key.4',
+          'k-nigrufen-lungau-tarock.rules.key.5',
+        ],
+      },
+      {
+        id: 'k-nigrufen-lungau-tarock.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'k-nigrufen-lungau-tarock.score.description',
+          'k-nigrufen-lungau-tarock.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'k-nigrufen-lungau-tarock.setup.dealing',
+        'k-nigrufen-lungau-tarock.rules.objective',
+      ],
+      deal: [
+        'k-nigrufen-lungau-tarock.rules.gameplay',
+      ],
+      play_card: [
+        'k-nigrufen-lungau-tarock.rules.gameplay',
+      ],
+      pass: [
+        'k-nigrufen-lungau-tarock.rules.gameplay',
+      ],
+      bid: [
+        'k-nigrufen-lungau-tarock.rules.gameplay',
+      ],
+      form_talon: [
+        'k-nigrufen-lungau-tarock.rules.gameplay',
+      ],
+      erster: [
+        'k-nigrufen-lungau-tarock.rules.gameplay',
+      ],
+      call_king: [
+        'k-nigrufen-lungau-tarock.rules.gameplay',
+      ],
+      talon_exchange: [
+        'k-nigrufen-lungau-tarock.rules.gameplay',
+      ],
+      announce: [
+        'k-nigrufen-lungau-tarock.rules.gameplay',
+      ],
+      follow_suit: [
+        'k-nigrufen-lungau-tarock.rules.gameplay',
+      ],
+      trump: [
+        'k-nigrufen-lungau-tarock.rules.gameplay',
+      ],
+      count_points: [
+        'k-nigrufen-lungau-tarock.rules.gameplay',
+      ],
+      calculate_scores: [
+        'k-nigrufen-lungau-tarock.rules.gameplay',
+      ],
+    },
   },
 }

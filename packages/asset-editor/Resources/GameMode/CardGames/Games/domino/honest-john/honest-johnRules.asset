@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Honest John. Logic: See rules.objective and rules.gameplay.',
-    Player: "Honest John (or Stormy Castle) is a traditional pub domino game played primarily in Lancashire, England. Unlike the standard 'line' layout of dominoes, each player builds their own line radiating from a central starting double to form a 'star' shape. The game includes a unique economic mechanic where players buy needed tiles from their opponents.",
+    LLM: "1. Play begins with the highest double in the center.\n2. Each player builds THEIR OWN line radiating outwards from that center double.\n3. The first tile played by each player must match the center double.\n4. **Buying Tiles**: If you cannot play on your line, you must ask the player to your LEFT. If that player has a matching tile, they MUST sell it to you for 1 chip. If they don't, you ask the next player until someone sells or no one has it.",
+    Player: "1. Play begins with the highest double in the center.\n2. Each player builds THEIR OWN line radiating outwards from that center double.\n3. The first tile played by each player must match the center double.\n4. **Buying Tiles**: If you cannot play on your line, you must ask the player to your LEFT. If that player has a matching tile, they MUST sell it to you for 1 chip. If they don't, you ask the next player until someone sells or no one has it.",
     objective: 'Be the first player to play all tiles in your hand OR have the fewest pips remaining.',
     gameplay: "1. Play begins with the highest double in the center.\n2. Each player builds THEIR OWN line radiating outwards from that center double.\n3. The first tile played by each player must match the center double.\n4. **Buying Tiles**: If you cannot play on your line, you must ask the player to your LEFT. If that player has a matching tile, they MUST sell it to you for 1 chip. If they don't, you ask the next player until someone sells or no one has it.",
     keyRules: [
@@ -54,10 +54,171 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-8 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card, buy_tile_from_neighbor, pass before round end.',
-      'Scoring check: Be the first player to play all tiles in your hand OR have the fewest pips remaining. Expected outcome: Be the first player to play all tiles in your hand OR have the fewest pips remaining..',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Be the first player to play all tiles in your hand OR have the fewest pips remaining.',
+      "Turn-flow example: 1. Play begins with the highest double in the center.\n2. Each player builds THEIR OWN line radiating outwards from that center double.\n3. The first tile played by each player must match the center double.\n4. **Buying Tiles**: If you cannot play on your line, you must ask the player to your LEFT. If that player has a matching tile, they MUST sell it to you for 1 chip. If they don't, you ask the next player until someone sells or no one has it.",
+      'Scoring example: Be the first player to play all tiles in your hand OR have the fewest pips remaining. Be the first player to play all tiles in your hand OR have the fewest pips remaining..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'honest-john.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to play all tiles in your hand OR have the fewest pips remaining.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'honest-john.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Play begins with the highest double in the center.\n2. Each player builds THEIR OWN line radiating outwards from that center double.\n3. The first tile played by each player must match the center double.\n4. **Buying Tiles**: If you cannot play on your line, you must ask the player to your LEFT. If that player has a matching tile, they MUST sell it to you for 1 chip. If they don't, you ask the next player until someone sells or no one has it.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'honest-john.setup.players',
+        title: 'Players',
+        text: '4 to 8 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'honest-john.setup.deck',
+        title: 'Deck',
+        text: 'Double-9 domino set (55 tiles).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'honest-john.setup.equipment',
+        title: 'Equipment',
+        text: 'Dominoes and a supply of chips or counters for scoring/buying (usually 20 per player).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'honest-john.setup.dealing',
+        title: 'Deal',
+        text: "Varies by player count (e.g., 6 tiles each for 7-8 players). Remaining tiles are the 'boneyard' and are unseen.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'honest-john.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to play all tiles in your hand OR have the fewest pips remaining.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'honest-john.score.description',
+        title: 'Scoring',
+        text: 'Be the first player to play all tiles in your hand OR have the fewest pips remaining.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'honest-john.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Highest double starts in center; play proceeds clockwise.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'honest-john.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Each player builds their own line from the center; first tile of each line must match the starting double.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'honest-john.rules.key.3',
+        title: 'Key rule 3',
+        text: 'If you cannot play, ask the player to your left for a matching tile; they must sell for 1 chip if they have one, else ask next clockwise.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'honest-john.rules.key.4',
+        title: 'Key rule 4',
+        text: 'If no one has a matching tile, turn your line face down and pass; you can still sell to others on their turns.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'honest-john.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Round ends when a player empties their hand; winner receives 1 chip from each other player; most chips wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'honest-john.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'honest-john.rules.objective',
+          'honest-john.rules.gameplay',
+        ],
+      },
+      {
+        id: 'honest-john.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'honest-john.setup.players',
+          'honest-john.setup.deck',
+          'honest-john.setup.equipment',
+          'honest-john.setup.dealing',
+        ],
+      },
+      {
+        id: 'honest-john.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'honest-john.rules.key.1',
+          'honest-john.rules.key.2',
+          'honest-john.rules.key.3',
+          'honest-john.rules.key.4',
+          'honest-john.rules.key.5',
+        ],
+      },
+      {
+        id: 'honest-john.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'honest-john.score.description',
+          'honest-john.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'honest-john.setup.dealing',
+        'honest-john.rules.objective',
+      ],
+      play_card: [
+        'honest-john.rules.gameplay',
+      ],
+      pass: [
+        'honest-john.rules.gameplay',
+      ],
+      buy_tile_from_neighbor: [
+        'honest-john.rules.gameplay',
+      ],
+    },
   },
 }

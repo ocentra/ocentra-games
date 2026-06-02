@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: "Score when exposed ends total a multiple of five. Hand winner (domino or blocked-hand low pip total) also scores opponents' remaining pips, commonly converted by dividing by five after rounding.",
+      winCondition: 'Reach the table-agreed target score before opponents.',
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: 'Target score is a table agreement and varies by group.',
+        cardValues: 'Scoring uses open-end totals and multiples of five; no per-tile point values.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

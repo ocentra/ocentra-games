@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 52 Pick-up. Logic: See rules.objective and rules.gameplay.',
-    Player: '52 Pick-up is a social prank using a standard pack: one player offers a game, scatters the cards, and the other player is left to pick them up. It is recorded as a social card-game joke rather than a strategic contest.',
+    LLM: 'A prompt is presented and players submit response cards for a judge or group to select. The game is social satire and should be treated as a commercial or licensed content record.',
+    Player: 'A prompt is presented and players submit response cards for a judge or group to select. The game is social satire and should be treated as a commercial or licensed content record.',
     objective: 'Win judged rounds by submitting the funniest or most fitting response card.',
     gameplay: 'A prompt is presented and players submit response cards for a judge or group to select. The game is social satire and should be treated as a commercial or licensed content record.',
     keyRules: [
@@ -52,10 +52,150 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: No scoring; the activity ends when the deck has been picked up. Expected outcome: 1.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win judged rounds by submitting the funniest or most fitting response card.',
+      'Turn-flow example: A prompt is presented and players submit response cards for a judge or group to select. The game is social satire and should be treated as a commercial or licensed content record.',
+      'Scoring example: No scoring; the activity ends when the deck has been picked up. No formal winner is defined..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'trumped-up-cards.rules.objective',
+        title: 'Objective',
+        text: 'Win judged rounds by submitting the funniest or most fitting response card.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'trumped-up-cards.rules.gameplay',
+        title: 'Turn flow',
+        text: 'A prompt is presented and players submit response cards for a judge or group to select. The game is social satire and should be treated as a commercial or licensed content record.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'trumped-up-cards.setup.players',
+        title: 'Players',
+        text: '3 or more players use the table arrangement described for Trumped Up Cards.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'trumped-up-cards.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Trumped Up Cards prompt and response deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'trumped-up-cards.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Trumped Up Cards prompt and response deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'trumped-up-cards.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Trumped Up Cards prompt and response deck and deal or lay out cards according to the documented Trumped Up Cards rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'trumped-up-cards.score.win-condition',
+        title: 'Win condition',
+        text: 'No formal winner is defined.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'trumped-up-cards.score.description',
+        title: 'Scoring',
+        text: 'No scoring; the activity ends when the deck has been picked up.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'trumped-up-cards.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Party-game judge-and-response structure.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'trumped-up-cards.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Satirical political theme.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'trumped-up-cards.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Do not copy original card text without rights or license confirmation.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'trumped-up-cards.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'trumped-up-cards.rules.objective',
+          'trumped-up-cards.rules.gameplay',
+        ],
+      },
+      {
+        id: 'trumped-up-cards.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'trumped-up-cards.setup.players',
+          'trumped-up-cards.setup.deck',
+          'trumped-up-cards.setup.equipment',
+          'trumped-up-cards.setup.dealing',
+        ],
+      },
+      {
+        id: 'trumped-up-cards.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'trumped-up-cards.rules.key.1',
+          'trumped-up-cards.rules.key.2',
+          'trumped-up-cards.rules.key.3',
+        ],
+      },
+      {
+        id: 'trumped-up-cards.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'trumped-up-cards.score.description',
+          'trumped-up-cards.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'trumped-up-cards.setup.dealing',
+        'trumped-up-cards.rules.objective',
+      ],
+      play_card: [
+        'trumped-up-cards.rules.gameplay',
+      ],
+      flip_top_card: [
+        'trumped-up-cards.rules.gameplay',
+      ],
+    },
   },
 }

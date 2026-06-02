@@ -53,10 +53,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-4 player(s), 16 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_cards before contract.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 16 card(s) per player.',
+      'Rule example: Score the highest net positive points after 12 deals by making or breaking contract targets.',
+      'Turn-flow example: Standard trick-taking rules apply. Must follow suit if possible. If void, may play any card. Trump suit wins over plain suits. Highest card of led suit wins if no trumps.',
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'manni.rules.objective',
+        title: 'Objective',
+        text: 'Score the highest net positive points after 12 deals by making or breaking contract targets.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'manni.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Standard trick-taking rules apply. Must follow suit if possible. If void, may play any card. Trump suit wins over plain suits. Highest card of led suit wins if no trumps.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'manni.setup.players',
+        title: 'Players',
+        text: '3 players. Each plays individually in some contracts; in others, the declarer plays against the other two.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'manni.setup.deck',
+        title: 'Deck',
+        text: '52 cards (Trjámann). Ranking: Ace (high), King, Queen, Jack, 10, 9, 8, 7, 6, 5, 4, 3, 2 (low). In Nullo contract Ace may be low in some variants.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'manni.setup.equipment',
+        title: 'Equipment',
+        text: '52 cards (Trjámann). Ranking: Ace (high), King, Queen, Jack, 10, 9, 8, 7, 6, 5, 4, 3, 2 (low). In Nullo contract Ace may be low in some variants.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'manni.setup.dealing',
+        title: 'Deal',
+        text: 'Basic version: Deal 16 cards to each of three players in packets of four, with four cards left for the Manni (spare hand). HornafjÃ¶rÃ°ur version: Keep the 2s, different dealing pattern.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'manni.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'manni.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'manni.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if possible; if void may play any card.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'manni.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Trick won by highest trump if any, else highest card of led suit. Winner leads next trick.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'manni.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Declarer (left of dealer) chooses contract: Grand, Spades, Other, or Nullo. Each player must play each contract once over 12 deals.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'manni.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Declarer may discard up to 4 cards and draw from the Manni before play.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'manni.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'manni.rules.objective',
+          'manni.rules.gameplay',
+        ],
+      },
+      {
+        id: 'manni.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'manni.setup.players',
+          'manni.setup.deck',
+          'manni.setup.equipment',
+          'manni.setup.dealing',
+        ],
+      },
+      {
+        id: 'manni.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'manni.rules.key.1',
+          'manni.rules.key.2',
+          'manni.rules.key.3',
+          'manni.rules.key.4',
+        ],
+      },
+      {
+        id: 'manni.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'manni.score.description',
+          'manni.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'manni.setup.dealing',
+        'manni.rules.objective',
+      ],
+      declare: [
+        'manni.rules.gameplay',
+      ],
+      play_card: [
+        'manni.rules.gameplay',
+      ],
+      deal_cards: [
+        'manni.rules.gameplay',
+      ],
+      exchange_manni: [
+        'manni.rules.gameplay',
+      ],
+    },
   },
 }

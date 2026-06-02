@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: High Card Flush. Logic: See rules.objective and rules.gameplay.',
-    Player: 'High Card Flush is a popular casino table game that focuses exclusively on flushes. Unlike standard poker, straights, pairs, and other hands do not matter. The goal is simply to have more cards of the same suit in a seven-card hand than the dealer. It combines simplicity with high-payout bonus bets.',
+    LLM: '1. Players place an **Ante** bet.\n2. Both player and dealer are dealt 7 cards.\n3. Players either **Fold** (lose Ante) or **Raise** based on their hand.\n4. **Raise Amounts**:\n   - 4-card flush or lower: Raise = 1x Ante.\n   - 5-card flush: Raise = Up to 2x Ante.\n   - 6 or 7-card flush: Raise = Up to 3x Ante.\n5. Dealer reveals their hand. The dealer must **Qualify** with at least a 3-card 9-high flush.',
+    Player: '1. Players place an **Ante** bet.\n2. Both player and dealer are dealt 7 cards.\n3. Players either **Fold** (lose Ante) or **Raise** based on their hand.\n4. **Raise Amounts**:\n   - 4-card flush or lower: Raise = 1x Ante.\n   - 5-card flush: Raise = Up to 2x Ante.\n   - 6 or 7-card flush: Raise = Up to 3x Ante.\n5. Dealer reveals their hand. The dealer must **Qualify** with at least a 3-card 9-high flush.',
     objective: "Have a flush consisting of more cards than the dealer's flush. If the card counts are equal, the higher-ranking cards within the flush win.",
     gameplay: '1. Players place an **Ante** bet.\n2. Both player and dealer are dealt 7 cards.\n3. Players either **Fold** (lose Ante) or **Raise** based on their hand.\n4. **Raise Amounts**:\n   - 4-card flush or lower: Raise = 1x Ante.\n   - 5-card flush: Raise = Up to 2x Ante.\n   - 6 or 7-card flush: Raise = Up to 3x Ante.\n5. Dealer reveals their hand. The dealer must **Qualify** with at least a 3-card 9-high flush.',
     keyRules: [
@@ -52,10 +52,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-6 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; each_player_clockwise may use ante before deal.',
-      "Scoring check: Have a flush consisting of more cards than the dealer's flush. If the card counts are equal, the higher-ranking cards within the flush win. Expected outcome: Have a flush consisting of more cards than the dealer's flush. If the card counts are equal, the higher-ranking cards within the flush win..",
+      'Setup example: 7 card(s) per player.',
+      "Rule example: Have a flush consisting of more cards than the dealer's flush. If the card counts are equal, the higher-ranking cards within the flush win.",
+      'Turn-flow example: 1. Players place an **Ante** bet.\n2. Both player and dealer are dealt 7 cards.\n3. Players either **Fold** (lose Ante) or **Raise** based on their hand.\n4. **Raise Amounts**:\n   - 4-card flush or lower: Raise = 1x Ante.\n   - 5-card flush: Raise = Up to 2x Ante.\n   - 6 or 7-card flush: Raise = Up to 3x Ante.\n5. Dealer reveals their hand. The dealer must **Qualify** with at least a 3-card 9-high flush.',
+      "Scoring example: Have a flush consisting of more cards than the dealer's flush. If the card counts are equal, the higher-ranking cards within the flush win. Have a flush consisting of more cards than the dealer's flush. If the card counts are equal, the higher-ranking cards within the flush win..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'high-card-flush.rules.objective',
+        title: 'Objective',
+        text: "Have a flush consisting of more cards than the dealer's flush. If the card counts are equal, the higher-ranking cards within the flush win.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'high-card-flush.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Players place an **Ante** bet.\n2. Both player and dealer are dealt 7 cards.\n3. Players either **Fold** (lose Ante) or **Raise** based on their hand.\n4. **Raise Amounts**:\n   - 4-card flush or lower: Raise = 1x Ante.\n   - 5-card flush: Raise = Up to 2x Ante.\n   - 6 or 7-card flush: Raise = Up to 3x Ante.\n5. Dealer reveals their hand. The dealer must **Qualify** with at least a 3-card 9-high flush.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'high-card-flush.setup.players',
+        title: 'Players',
+        text: '1 dealer and 1-6 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'high-card-flush.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'high-card-flush.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'high-card-flush.setup.dealing',
+        title: 'Deal',
+        text: 'Each player and the dealer receive 7 cards face down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'high-card-flush.score.win-condition',
+        title: 'Win condition',
+        text: "Have a flush consisting of more cards than the dealer's flush. If the card counts are equal, the higher-ranking cards within the flush win.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'high-card-flush.score.description',
+        title: 'Scoring',
+        text: "Have a flush consisting of more cards than the dealer's flush. If the card counts are equal, the higher-ranking cards within the flush win.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'high-card-flush.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dealer qualifies with at least 3-card flush 9-high.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'high-card-flush.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Raise cap: 1x ante (two- to four-card max flush), 2x (five-card), 3x (six- or seven-card).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'high-card-flush.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Win by having more cards in your longest flush than dealer, or higher rank within same length.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'high-card-flush.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'high-card-flush.rules.objective',
+          'high-card-flush.rules.gameplay',
+        ],
+      },
+      {
+        id: 'high-card-flush.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'high-card-flush.setup.players',
+          'high-card-flush.setup.deck',
+          'high-card-flush.setup.equipment',
+          'high-card-flush.setup.dealing',
+        ],
+      },
+      {
+        id: 'high-card-flush.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'high-card-flush.rules.key.1',
+          'high-card-flush.rules.key.2',
+          'high-card-flush.rules.key.3',
+        ],
+      },
+      {
+        id: 'high-card-flush.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'high-card-flush.score.description',
+          'high-card-flush.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'high-card-flush.setup.dealing',
+        'high-card-flush.rules.objective',
+      ],
+      ante: [
+        'high-card-flush.rules.gameplay',
+      ],
+      fold: [
+        'high-card-flush.rules.gameplay',
+      ],
+      raise: [
+        'high-card-flush.rules.gameplay',
+      ],
+      deal_7_cards: [
+        'high-card-flush.rules.gameplay',
+      ],
+      settle_showdown: [
+        'high-card-flush.rules.gameplay',
+      ],
+    },
   },
 }

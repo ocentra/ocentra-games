@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Crazy Eights. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Crazy Eights is a popular shedding card game, especially beloved by children. The objective is simple: be the first player to discard all your cards. Players take turns playing cards to a central discard pile, matching either the rank or suit of the top card. The eponymous "crazy" 8s are wild cards that can be played on anything and allow the player to change the suit.',
+    LLM: 'Play follows the Crazy Eights family: match the current card or use a permitted action card to change the state of play. The custom deck introduces seven levels, with later levels adding extra card functions and tactical restrictions.',
+    Player: 'Play follows the Crazy Eights family: match the current card or use a permitted action card to change the state of play. The custom deck introduces seven levels, with later levels adding extra card functions and tactical restrictions.',
     objective: 'Discard all cards from your hand before the other players.',
     gameplay: 'Play follows the Crazy Eights family: match the current card or use a permitted action card to change the state of play. The custom deck introduces seven levels, with later levels adding extra card functions and tactical restrictions.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Be the first player to discard all cards from your hand. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Discard all cards from your hand before the other players.',
+      'Turn-flow example: Play follows the Crazy Eights family: match the current card or use a permitted action card to change the state of play. The custom deck introduces seven levels, with later levels adding extra card functions and tactical restrictions.',
+      'Scoring example: Be the first player to discard all cards from your hand. Be the first player to discard all cards from your hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'flaps.rules.objective',
+        title: 'Objective',
+        text: 'Discard all cards from your hand before the other players.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'flaps.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Play follows the Crazy Eights family: match the current card or use a permitted action card to change the state of play. The custom deck introduces seven levels, with later levels adding extra card functions and tactical restrictions.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'flaps.setup.players',
+        title: 'Players',
+        text: '2-8 players use the table arrangement described for Flaps.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'flaps.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Flaps deck with staged rule text',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'flaps.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Flaps deck with staged rule text, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'flaps.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Flaps deck with staged rule text and deal or lay out cards according to the documented Flaps rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'flaps.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'flaps.score.description',
+        title: 'Scoring',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'flaps.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Players try to empty their hand.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'flaps.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Cards must be legally matched or played for their printed special rule.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'flaps.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The seven-level structure gradually increases rule complexity.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'flaps.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'flaps.rules.objective',
+          'flaps.rules.gameplay',
+        ],
+      },
+      {
+        id: 'flaps.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'flaps.setup.players',
+          'flaps.setup.deck',
+          'flaps.setup.equipment',
+          'flaps.setup.dealing',
+        ],
+      },
+      {
+        id: 'flaps.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'flaps.rules.key.1',
+          'flaps.rules.key.2',
+          'flaps.rules.key.3',
+        ],
+      },
+      {
+        id: 'flaps.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'flaps.score.description',
+          'flaps.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'flaps.setup.dealing',
+        'flaps.rules.objective',
+      ],
+      play_card: [
+        'flaps.rules.gameplay',
+      ],
+    },
   },
 }

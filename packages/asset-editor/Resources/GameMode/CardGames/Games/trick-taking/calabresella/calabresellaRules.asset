@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Calabresella. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Calabresella (also known as Terziglio) is an Italian three-player point-trick game with bidding. It is closely related to Tressette. The main aim is to capture aces and take the last trick, which is difficult because there are no trumps. The game features an unusual card order with threes as the highest cards.',
+    LLM: 'The game is a point-trick game with bidding. Players bid to determine who plays alone against the other two. The bidder must capture at least 3 of the 5 available points (the four aces and the last trick). Cards are played in tricks with no trumps. Players must follow suit if possible. Highest card of led suit wins the trick. Winner leads to next trick.',
+    Player: 'The game is a point-trick game with bidding. Players bid to determine who plays alone against the other two. The bidder must capture at least 3 of the 5 available points (the four aces and the last trick). Cards are played in tricks with no trumps. Players must follow suit if possible. Highest card of led suit wins the trick. Winner leads to next trick.',
     objective: 'Capture aces (worth 1 point each) and win the last trick (worth 1 point). Total 5 points per hand. First to 11 or 21 points wins the game.',
     gameplay: 'The game is a point-trick game with bidding. Players bid to determine who plays alone against the other two. The bidder must capture at least 3 of the 5 available points (the four aces and the last trick). Cards are played in tricks with no trumps. Players must follow suit if possible. Highest card of led suit wins the trick. Winner leads to next trick.',
     keyRules: [
@@ -57,10 +57,192 @@
       go_out: 'Point-trick game; no go-out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Points available: Each ace captured = 1 point (4 points total). Winning last trick = 1 point. Total 5 points per hand. If bidder makes at least 3 points: scores points captured by all players. If bidder fails (makes 2 or fewer): opponents score their captured points plus 1 bonus point each. Game typically to 11 or 21 points. Expected outcome: 11.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Capture aces (worth 1 point each) and win the last trick (worth 1 point). Total 5 points per hand. First to 11 or 21 points wins the game.',
+      'Turn-flow example: The game is a point-trick game with bidding. Players bid to determine who plays alone against the other two. The bidder must capture at least 3 of the 5 available points (the four aces and the last trick). Cards are played in tricks with no trumps. Players must follow suit if possible. Highest card of led suit wins the trick. Winner leads to next trick.',
+      'Scoring example: Points available: Each ace captured = 1 point (4 points total). Winning last trick = 1 point. Total 5 points per hand. If bidder makes at least 3 points: scores points captured by all players. If bidder fails (makes 2 or fewer): opponents score their captured points plus 1 bonus point each. Game typically to 11 or 21 points. Capture aces (worth 1 point each) and win the last trick (worth 1 point). Total 5 points per hand. First to 11 or 21 points wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'calabresella.rules.objective',
+        title: 'Objective',
+        text: 'Capture aces (worth 1 point each) and win the last trick (worth 1 point). Total 5 points per hand. First to 11 or 21 points wins the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'calabresella.rules.gameplay',
+        title: 'Turn flow',
+        text: 'The game is a point-trick game with bidding. Players bid to determine who plays alone against the other two. The bidder must capture at least 3 of the 5 available points (the four aces and the last trick). Cards are played in tricks with no trumps. Players must follow suit if possible. Highest card of led suit wins the trick. Winner leads to next trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'calabresella.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 3\nMaximum Players: 4 (dealer sits out)\nOptimal Players: 3\nPartnerships: No',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'calabresella.setup.deck',
+        title: 'Deck',
+        text: 'Type: 40-card Italian or French suited pack\nCard Ranks: 3 (high), 2, Ace, King, Queen (or Horse), Jack, 7, 6, 5, 4 (low)\nSuits: Swords, Batons, Cups, Coins (Italian) or Spades, Clubs, Hearts, Diamonds (French)',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'calabresella.setup.equipment',
+        title: 'Equipment',
+        text: '40-card Italian or French pack\nScore sheet\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'calabresella.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: 13 cards each (3 players), dealer receives 14 and discards one\nDealing Pattern: Anticlockwise\nDiscard: Dealer discards one card to the winner of the last trick',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'calabresella.score.win-condition',
+        title: 'Win condition',
+        text: 'Capture aces (worth 1 point each) and win the last trick (worth 1 point). Total 5 points per hand. First to 11 or 21 points wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'calabresella.score.description',
+        title: 'Scoring',
+        text: 'Points available: Each ace captured = 1 point (4 points total). Winning last trick = 1 point. Total 5 points per hand. If bidder makes at least 3 points: scores points captured by all players. If bidder fails (makes 2 or fewer): opponents score their captured points plus 1 bonus point each. Game typically to 11 or 21 points.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'calabresella.rules.key.1',
+        title: 'Key rule 1',
+        text: '3 players, 40-card pack',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'calabresella.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Card ranks: 3-2-A-K-Q-J-7-6-5-4',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'calabresella.rules.key.3',
+        title: 'Key rule 3',
+        text: '13 cards each, dealer takes 14 and discards 1',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'calabresella.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Bidding to play alone against other two',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'calabresella.rules.key.5',
+        title: 'Key rule 5',
+        text: 'No trumps - follow suit, highest card wins',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'calabresella.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Capture aces (1 point each) and last trick (1 point)',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'calabresella.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Bidder needs 3+ points to succeed',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+      {
+        id: 'calabresella.rules.key.8',
+        title: 'Key rule 8',
+        text: 'First to 11 or 21 points wins',
+        sourceFields: [
+          'rules.keyRules.7',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'calabresella.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'calabresella.rules.objective',
+          'calabresella.rules.gameplay',
+        ],
+      },
+      {
+        id: 'calabresella.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'calabresella.setup.players',
+          'calabresella.setup.deck',
+          'calabresella.setup.equipment',
+          'calabresella.setup.dealing',
+        ],
+      },
+      {
+        id: 'calabresella.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'calabresella.rules.key.1',
+          'calabresella.rules.key.2',
+          'calabresella.rules.key.3',
+          'calabresella.rules.key.4',
+          'calabresella.rules.key.5',
+          'calabresella.rules.key.6',
+          'calabresella.rules.key.7',
+          'calabresella.rules.key.8',
+        ],
+      },
+      {
+        id: 'calabresella.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'calabresella.score.description',
+          'calabresella.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'calabresella.setup.dealing',
+        'calabresella.rules.objective',
+      ],
+      play_card: [
+        'calabresella.rules.gameplay',
+      ],
+    },
   },
 }

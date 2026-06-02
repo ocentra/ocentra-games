@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Bridge with Semi-Exposed Dummies. Type: 2-Player Bridge. Rules: 13 cards in hand + 13 in stacked table dummy per player. Auction sets contract. Play involves hand and dummy cards. Uncovering hidden cards adds variance.',
-    Player: "Your dummy has the Ace of Spades face-up, covering a hidden card. Should you play it now to win the lead, or keep it to trap the opponent's King later?",
+    LLM: "1. **Auction**: Players bid for trumps as in standard Bridge. 2. **Play**: Each turn involves playing two cards—one from the player's hand and one from their dummy. 3. **Uncovering**: When a face-up dummy card is played, the face-down card beneath it is flipped over and becomes available for the next trick.",
+    Player: "1. **Auction**: Players bid for trumps as in standard Bridge. 2. **Play**: Each turn involves playing two cards—one from the player's hand and one from their dummy. 3. **Uncovering**: When a face-up dummy card is played, the face-down card beneath it is flipped over and becomes available for the next trick.",
     objective: 'Win enough tricks to fulfill the contract, using both your hand and your designated dummy hand.',
     gameplay: "1. **Auction**: Players bid for trumps as in standard Bridge. 2. **Play**: Each turn involves playing two cards—one from the player's hand and one from their dummy. 3. **Uncovering**: When a face-up dummy card is played, the face-down card beneath it is flipped over and becomes available for the next trick.",
     keyRules: [
@@ -52,10 +52,168 @@
       go_out: 'The hand terminates automatically once all thirteen tricks have been played by both participants.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in dealing; system may use deal_13_hand_13_dummy before auction.',
-      'Scoring check: Standard Bridge scoring with two-player adjustments. Expected outcome: 100.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Win enough tricks to fulfill the contract, using both your hand and your designated dummy hand.',
+      "Turn-flow example: 1. **Auction**: Players bid for trumps as in standard Bridge. 2. **Play**: Each turn involves playing two cards—one from the player's hand and one from their dummy. 3. **Uncovering**: When a face-up dummy card is played, the face-down card beneath it is flipped over and becomes available for the next trick.",
+      'Scoring example: Standard Bridge scoring with two-player adjustments. Fulfill the contract or reach target match score..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'bridge-with-semi-exposed-dummies.rules.objective',
+        title: 'Objective',
+        text: 'Win enough tricks to fulfill the contract, using both your hand and your designated dummy hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bridge-with-semi-exposed-dummies.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Auction**: Players bid for trumps as in standard Bridge. 2. **Play**: Each turn involves playing two cards—one from the player's hand and one from their dummy. 3. **Uncovering**: When a face-up dummy card is played, the face-down card beneath it is flipped over and becomes available for the next trick.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bridge-with-semi-exposed-dummies.setup.players',
+        title: 'Players',
+        text: 'Exactly 2 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bridge-with-semi-exposed-dummies.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card French pack (No Jokers).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bridge-with-semi-exposed-dummies.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, score pad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bridge-with-semi-exposed-dummies.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 13 cards in hand. Two dummy hands of 13 cards each are dealt to the table in stacks: 6 face-down cards each covered by a face-up card, with one extra face-up card.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bridge-with-semi-exposed-dummies.score.win-condition',
+        title: 'Win condition',
+        text: 'Fulfill the contract or reach target match score.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bridge-with-semi-exposed-dummies.score.description',
+        title: 'Scoring',
+        text: 'Standard Bridge scoring with two-player adjustments.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bridge-with-semi-exposed-dummies.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit from the specific source hand (Player Hand or Dummy Hand).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bridge-with-semi-exposed-dummies.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The highest card among the four cards played wins the trick for the team.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bridge-with-semi-exposed-dummies.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Standard Bridge bidding and scoring applies.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bridge-with-semi-exposed-dummies.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bridge-with-semi-exposed-dummies.rules.objective',
+          'bridge-with-semi-exposed-dummies.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bridge-with-semi-exposed-dummies.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bridge-with-semi-exposed-dummies.setup.players',
+          'bridge-with-semi-exposed-dummies.setup.deck',
+          'bridge-with-semi-exposed-dummies.setup.equipment',
+          'bridge-with-semi-exposed-dummies.setup.dealing',
+        ],
+      },
+      {
+        id: 'bridge-with-semi-exposed-dummies.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bridge-with-semi-exposed-dummies.rules.key.1',
+          'bridge-with-semi-exposed-dummies.rules.key.2',
+          'bridge-with-semi-exposed-dummies.rules.key.3',
+        ],
+      },
+      {
+        id: 'bridge-with-semi-exposed-dummies.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bridge-with-semi-exposed-dummies.score.description',
+          'bridge-with-semi-exposed-dummies.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bridge-with-semi-exposed-dummies.setup.dealing',
+        'bridge-with-semi-exposed-dummies.rules.objective',
+      ],
+      play_card: [
+        'bridge-with-semi-exposed-dummies.rules.gameplay',
+      ],
+      pass: [
+        'bridge-with-semi-exposed-dummies.rules.gameplay',
+      ],
+      bid: [
+        'bridge-with-semi-exposed-dummies.rules.gameplay',
+      ],
+      deal_13_hand_13_dummy: [
+        'bridge-with-semi-exposed-dummies.rules.gameplay',
+      ],
+      play_from_hand: [
+        'bridge-with-semi-exposed-dummies.rules.gameplay',
+      ],
+      play_from_dummy: [
+        'bridge-with-semi-exposed-dummies.rules.gameplay',
+      ],
+      bid_contract: [
+        'bridge-with-semi-exposed-dummies.rules.gameplay',
+      ],
+      calculate_match_points: [
+        'bridge-with-semi-exposed-dummies.rules.gameplay',
+      ],
+    },
   },
 }

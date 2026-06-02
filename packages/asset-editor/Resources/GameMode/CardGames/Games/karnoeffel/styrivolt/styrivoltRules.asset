@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Stýrivolt. Logic: rules.objective and rules.gameplay; Karnöffel-style ranking and chalk-up scoring.',
-    Player: 'Stýrivolt: four players in partnerships, 48-card deck (tens removed), 9 cards each, 12-card stock. Two chosen suits per deal; no follow suit. Win 5 of 9 tricks; vol (first 5) scores bonus.',
+    LLM: "The player to the left of the dealer leads to the first trick. Play is clockwise. Any card may be played; there is no requirement to follow suit or to beat the lead. Trick winner is determined by the game's ranking: permanent stikkar and chosen-suit stikkar beat other cards; chosen sevens (lambs) win the trick when led but cannot lead to the first trick. Whoever wins a trick leads to the next. A team that has taken five tricks may stop or continue; taking the first five (vol) or all nine scores bonus strokes.",
+    Player: "The player to the left of the dealer leads to the first trick. Play is clockwise. Any card may be played; there is no requirement to follow suit or to beat the lead. Trick winner is determined by the game's ranking: permanent stikkar and chosen-suit stikkar beat other cards; chosen sevens (lambs) win the trick when led but cannot lead to the first trick. Whoever wins a trick leads to the next. A team that has taken five tricks may stop or continue; taking the first five (vol) or all nine scores bonus strokes.",
     objective: "Each partnership aims to win at least five of the nine tricks. The team that wins the majority scores on a chalk-up by erasing strokes; the first side to erase all three strokes (or eliminate the opponents' crosses) scores a cross. Making vol (winning the first five tricks) or taking all nine tricks scores extra.",
     gameplay: "The player to the left of the dealer leads to the first trick. Play is clockwise. Any card may be played; there is no requirement to follow suit or to beat the lead. Trick winner is determined by the game's ranking: permanent stikkar and chosen-suit stikkar beat other cards; chosen sevens (lambs) win the trick when led but cannot lead to the first trick. Whoever wins a trick leads to the next. A team that has taken five tricks may stop or continue; taking the first five (vol) or all nine scores bonus strokes.",
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 9 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Chalk Marks. Vertical line with 3 cross strokes. Erase strokes as you win games. First to erase 3 strokes wins. Expected outcome: Win 5 tricks out of 9..',
+      'Setup example: 9 card(s) per player.',
+      "Rule example: Each partnership aims to win at least five of the nine tricks. The team that wins the majority scores on a chalk-up by erasing strokes; the first side to erase all three strokes (or eliminate the opponents' crosses) scores a cross. Making vol (winning the first five tricks) or taking all nine tricks scores extra.",
+      "Turn-flow example: The player to the left of the dealer leads to the first trick. Play is clockwise. Any card may be played; there is no requirement to follow suit or to beat the lead. Trick winner is determined by the game's ranking: permanent stikkar and chosen-suit stikkar beat other cards; chosen sevens (lambs) win the trick when led but cannot lead to the first trick. Whoever wins a trick leads to the next. A team that has taken five tricks may stop or continue; taking the first five (vol) or all nine scores bonus strokes.",
+      'Scoring example: Chalk Marks. Vertical line with 3 cross strokes. Erase strokes as you win games. First to erase 3 strokes wins. Win 5 tricks out of 9..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'styrivolt.rules.objective',
+        title: 'Objective',
+        text: "Each partnership aims to win at least five of the nine tricks. The team that wins the majority scores on a chalk-up by erasing strokes; the first side to erase all three strokes (or eliminate the opponents' crosses) scores a cross. Making vol (winning the first five tricks) or taking all nine tricks scores extra.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'styrivolt.rules.gameplay',
+        title: 'Turn flow',
+        text: "The player to the left of the dealer leads to the first trick. Play is clockwise. Any card may be played; there is no requirement to follow suit or to beat the lead. Trick winner is determined by the game's ranking: permanent stikkar and chosen-suit stikkar beat other cards; chosen sevens (lambs) win the trick when led but cannot lead to the first trick. Whoever wins a trick leads to the next. A team that has taken five tricks may stop or continue; taking the first five (vol) or all nine scores bonus strokes.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'styrivolt.setup.players',
+        title: 'Players',
+        text: '4 (Partners opposite).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'styrivolt.setup.deck',
+        title: 'Deck',
+        text: '48 cards (tens removed). Deal 9 each; 12-card stock.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'styrivolt.setup.equipment',
+        title: 'Equipment',
+        text: '48 cards (tens removed). Deal 9 each; 12-card stock.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'styrivolt.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 9 cards to each player, 3 at a time. Twelve cards remain as stock; the dealer uses them to determine the two chosen suits.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'styrivolt.score.win-condition',
+        title: 'Win condition',
+        text: 'Win 5 tricks out of 9.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'styrivolt.score.description',
+        title: 'Scoring',
+        text: 'Chalk Marks. Vertical line with 3 cross strokes. Erase strokes as you win games. First to erase 3 strokes wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'styrivolt.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No requirement to follow suit.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'styrivolt.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Two chosen suits per deal, determined by dealer from stock.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'styrivolt.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Permanent and chosen-suit stikkar outrank normal cards; lambs (chosen 7s) win when led.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'styrivolt.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Trader (chosen 5) may be exchanged for the exposed card of that suit.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'styrivolt.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Hand with no stikkar may exchange hand for the stock before the first trick is complete.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'styrivolt.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'styrivolt.rules.objective',
+          'styrivolt.rules.gameplay',
+        ],
+      },
+      {
+        id: 'styrivolt.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'styrivolt.setup.players',
+          'styrivolt.setup.deck',
+          'styrivolt.setup.equipment',
+          'styrivolt.setup.dealing',
+        ],
+      },
+      {
+        id: 'styrivolt.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'styrivolt.rules.key.1',
+          'styrivolt.rules.key.2',
+          'styrivolt.rules.key.3',
+          'styrivolt.rules.key.4',
+          'styrivolt.rules.key.5',
+        ],
+      },
+      {
+        id: 'styrivolt.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'styrivolt.score.description',
+          'styrivolt.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'styrivolt.setup.dealing',
+        'styrivolt.rules.objective',
+      ],
+      play_card: [
+        'styrivolt.rules.gameplay',
+      ],
+    },
   },
 }

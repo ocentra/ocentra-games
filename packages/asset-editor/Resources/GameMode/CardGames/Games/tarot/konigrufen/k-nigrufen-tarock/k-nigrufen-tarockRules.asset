@@ -50,10 +50,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-5 player(s), 12 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal, form_talon before bidding.',
-      'Scoring check: Card points determine if contract is made. Game points and bonuses determine payments. Expected outcome: NA.',
+      'Setup example: 12 card(s) per player.',
+      "Rule example: In positive contracts, declarer's side wins by taking at least 36 of 70 card points. Various contracts have different objectives (avoid tricks, win exact number of tricks, etc.).",
+      "Turn-flow example: Point-trick game with bidding. Players bid contracts; highest bidder becomes declarer. In many contracts declarer calls a king to choose a secret partner. Declarer may exchange cards with the six-card talon. After announcements (bonuses, kontras), forehand leads to the first trick. Players must follow suit if possible, otherwise must play a trump. In positive contracts declarer's side needs at least 36 of 70 card points to win; negative contracts have different objectives (e.g. lose every trick in Bettel).",
+      "Scoring example: Card points determine if contract is made. Game points and bonuses determine payments. In positive contracts declarer's side wins by taking at least 36 of 70 card points. In negative contracts (e.g. Bettel, Piccolo) objective is to lose every trick or win exactly one or two tricks. Game points and bonuses determine payments..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'k-nigrufen-tarock.rules.objective',
+        title: 'Objective',
+        text: "In positive contracts, declarer's side wins by taking at least 36 of 70 card points. Various contracts have different objectives (avoid tricks, win exact number of tricks, etc.).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'k-nigrufen-tarock.rules.gameplay',
+        title: 'Turn flow',
+        text: "Point-trick game with bidding. Players bid contracts; highest bidder becomes declarer. In many contracts declarer calls a king to choose a secret partner. Declarer may exchange cards with the six-card talon. After announcements (bonuses, kontras), forehand leads to the first trick. Players must follow suit if possible, otherwise must play a trump. In positive contracts declarer's side needs at least 36 of 70 card points to win; negative contracts have different objectives (e.g. lose every trick in Bettel).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'k-nigrufen-tarock.setup.players',
+        title: 'Players',
+        text: 'Four active players (five can participate with dealer sitting out). Partners determined by calling a King or playing solo.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'k-nigrufen-tarock.setup.deck',
+        title: 'Deck',
+        text: '54-card Austrian Tarock pack: 22 trumps (Tarocks) numbered I-XXI plus SkÃ¼s, and 8 cards each in Clubs, Spades, Hearts, Diamonds.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'k-nigrufen-tarock.setup.equipment',
+        title: 'Equipment',
+        text: '54-card Austrian Tarock pack: 22 trumps (Tarocks) numbered I-XXI plus SkÃ¼s, and 8 cards each in Clubs, Spades, Hearts, Diamonds.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'k-nigrufen-tarock.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer shuffles, player to left cuts. Deal in packets of 6 cards: one to each player, one to talon (middle), repeat. Each player receives 12 cards, talon has 6. Play is anticlockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'k-nigrufen-tarock.score.win-condition',
+        title: 'Win condition',
+        text: "In positive contracts declarer's side wins by taking at least 36 of 70 card points. In negative contracts (e.g. Bettel, Piccolo) objective is to lose every trick or win exactly one or two tricks. Game points and bonuses determine payments.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'k-nigrufen-tarock.score.description',
+        title: 'Scoring',
+        text: 'Card points determine if contract is made. Game points and bonuses determine payments.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'k-nigrufen-tarock.rules.key.1',
+        title: 'Key rule 1',
+        text: "Follow suit if possible; if not, must play a trump. In positive contracts declarer's side wins with 36+ of 70 points. Talon: 6 cards; declarer may take 3 and discard 3 in Rufer-type contracts. Call a king to choose partner (holder is secret). Trull cards: Sküs, XXI (Mond), I (lowest trump) worth 5 points each. Play is anticlockwise; forehand leads first in positive contracts.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'k-nigrufen-tarock.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'k-nigrufen-tarock.rules.objective',
+          'k-nigrufen-tarock.rules.gameplay',
+        ],
+      },
+      {
+        id: 'k-nigrufen-tarock.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'k-nigrufen-tarock.setup.players',
+          'k-nigrufen-tarock.setup.deck',
+          'k-nigrufen-tarock.setup.equipment',
+          'k-nigrufen-tarock.setup.dealing',
+        ],
+      },
+      {
+        id: 'k-nigrufen-tarock.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'k-nigrufen-tarock.rules.key.1',
+        ],
+      },
+      {
+        id: 'k-nigrufen-tarock.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'k-nigrufen-tarock.score.description',
+          'k-nigrufen-tarock.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'k-nigrufen-tarock.setup.dealing',
+        'k-nigrufen-tarock.rules.objective',
+      ],
+      deal: [
+        'k-nigrufen-tarock.rules.gameplay',
+      ],
+      play_card: [
+        'k-nigrufen-tarock.rules.gameplay',
+      ],
+      pass: [
+        'k-nigrufen-tarock.rules.gameplay',
+      ],
+      form_talon: [
+        'k-nigrufen-tarock.rules.gameplay',
+      ],
+      bid_contract: [
+        'k-nigrufen-tarock.rules.gameplay',
+      ],
+      mein_spiel: [
+        'k-nigrufen-tarock.rules.gameplay',
+      ],
+      call_king: [
+        'k-nigrufen-tarock.rules.gameplay',
+      ],
+      talon_exchange: [
+        'k-nigrufen-tarock.rules.gameplay',
+      ],
+      announce_bonuses: [
+        'k-nigrufen-tarock.rules.gameplay',
+      ],
+      follow_suit: [
+        'k-nigrufen-tarock.rules.gameplay',
+      ],
+      play_tarock: [
+        'k-nigrufen-tarock.rules.gameplay',
+      ],
+      count_points: [
+        'k-nigrufen-tarock.rules.gameplay',
+      ],
+      calculate_payments: [
+        'k-nigrufen-tarock.rules.gameplay',
+      ],
+    },
   },
 }

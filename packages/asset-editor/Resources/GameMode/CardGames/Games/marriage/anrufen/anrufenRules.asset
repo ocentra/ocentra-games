@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Anrufen. Type: Secret Partnership (Marriage Group). Players: 4. Rules: 24 cards (A-10-K-Q-J-9). Must follow, trump, and beat. Points: Aces/Tens=10, Last Trick=10. Marriages: 40/20. Goal: 50+ points.',
-    Player: 'Welcome to Anrufen. You have 6 cards. Check for marriages (King + Queen)! Will you bid a simple game or go for 100 points? Remember, your first lead sets the trumps and names your partner. Make sure to capture the Aces, Tens, and the last trick!',
+    LLM: "1. **Bidding**: Players bid in levels: Simple (50+), 100 Points, All Tricks, or No Tricks. 2. **Calling**: The high bidder names a card (e.g., 'Ace of Hearts'). The holder is their partner. The suit of that card is TRUMP. 3. **The Play**: Bidder leads the first trick. Players MUST follow suit. If void, they MUST trump. If possible, they must head the trick (win it). 4. **Marriages**: A player holding the King and Queen (or Over) of a suit can declare a 'Marriage' when leading the first card of that hand. 40 points for trump marriage, 20 for others. 5. **Last Trick**: Worth 10 bonus points.",
+    Player: "1. **Bidding**: Players bid in levels: Simple (50+), 100 Points, All Tricks, or No Tricks. 2. **Calling**: The high bidder names a card (e.g., 'Ace of Hearts'). The holder is their partner. The suit of that card is TRUMP. 3. **The Play**: Bidder leads the first trick. Players MUST follow suit. If void, they MUST trump. If possible, they must head the trick (win it). 4. **Marriages**: A player holding the King and Queen (or Over) of a suit can declare a 'Marriage' when leading the first card of that hand. 40 points for trump marriage, 20 for others. 5. **Last Trick**: Worth 10 bonus points.",
     objective: "As a member of the bidding side, capture 'Gwisse' points and declare 'Marriages' to reach the target of 50 points (or more for higher bids).",
     gameplay: "1. **Bidding**: Players bid in levels: Simple (50+), 100 Points, All Tricks, or No Tricks. 2. **Calling**: The high bidder names a card (e.g., 'Ace of Hearts'). The holder is their partner. The suit of that card is TRUMP. 3. **The Play**: Bidder leads the first trick. Players MUST follow suit. If void, they MUST trump. If possible, they must head the trick (win it). 4. **Marriages**: A player holding the King and Queen (or Over) of a suit can declare a 'Marriage' when leading the first card of that hand. 40 points for trump marriage, 20 for others. 5. **Last Trick**: Worth 10 bonus points.",
     keyRules: [
@@ -53,10 +53,186 @@
       go_out: 'Hand ends when all six tricks played.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_six_batches before bidding.',
-      'Scoring check: Total points are 90 (8 Aces/Tens + Last Trick) plus any marriage bonuses. Expected outcome: 50.',
+      'Setup example: 6 card(s) per player.',
+      "Rule example: As a member of the bidding side, capture 'Gwisse' points and declare 'Marriages' to reach the target of 50 points (or more for higher bids).",
+      "Turn-flow example: 1. **Bidding**: Players bid in levels: Simple (50+), 100 Points, All Tricks, or No Tricks. 2. **Calling**: The high bidder names a card (e.g., 'Ace of Hearts'). The holder is their partner. The suit of that card is TRUMP. 3. **The Play**: Bidder leads the first trick. Players MUST follow suit. If void, they MUST trump. If possible, they must head the trick (win it). 4. **Marriages**: A player holding the King and Queen (or Over) of a suit can declare a 'Marriage' when leading the first card of that hand. 40 points for trump marriage, 20 for others. 5. **Last Trick**: Worth 10 bonus points.",
+      'Scoring example: Total points are 90 (8 Aces/Tens + Last Trick) plus any marriage bonuses. The bidding side wins if they reach 50 points in a Simple game, or their specific high-bid target..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'anrufen.rules.objective',
+        title: 'Objective',
+        text: "As a member of the bidding side, capture 'Gwisse' points and declare 'Marriages' to reach the target of 50 points (or more for higher bids).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'anrufen.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Bidding**: Players bid in levels: Simple (50+), 100 Points, All Tricks, or No Tricks. 2. **Calling**: The high bidder names a card (e.g., 'Ace of Hearts'). The holder is their partner. The suit of that card is TRUMP. 3. **The Play**: Bidder leads the first trick. Players MUST follow suit. If void, they MUST trump. If possible, they must head the trick (win it). 4. **Marriages**: A player holding the King and Queen (or Over) of a suit can declare a 'Marriage' when leading the first card of that hand. 40 points for trump marriage, 20 for others. 5. **Last Trick**: Worth 10 bonus points.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'anrufen.setup.players',
+        title: 'Players',
+        text: '4 players in two secret partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'anrufen.setup.deck',
+        title: 'Deck',
+        text: '24 cards. Using French suits (A-10-K-Q-J-9) or German suits (A-10-K-O-U-9).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'anrufen.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 32-card deck (remove 7s and 8s), score sheet or tokens.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'anrufen.setup.dealing',
+        title: 'Deal',
+        text: "Each player is dealt 6 cards in batches of 3-3. Bidding rotates clockwise starting from the dealer's left.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'anrufen.score.win-condition',
+        title: 'Win condition',
+        text: 'The bidding side wins if they reach 50 points in a Simple game, or their specific high-bid target.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'anrufen.score.description',
+        title: 'Scoring',
+        text: 'Total points are 90 (8 Aces/Tens + Last Trick) plus any marriage bonuses.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'anrufen.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow-Suit & Must-Trump: Strict trick-taking rules apply.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'anrufen.rules.key.2',
+        title: 'Key rule 2',
+        text: "Secret Partner: The partner's identity is revealed only when they play the called card.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'anrufen.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The Winner: First card led by the bidder initiates the trump suit based on the call.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'anrufen.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Gwisse: Aces and Tens are the only valued cards (10 pts each).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'anrufen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'anrufen.rules.objective',
+          'anrufen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'anrufen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'anrufen.setup.players',
+          'anrufen.setup.deck',
+          'anrufen.setup.equipment',
+          'anrufen.setup.dealing',
+        ],
+      },
+      {
+        id: 'anrufen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'anrufen.rules.key.1',
+          'anrufen.rules.key.2',
+          'anrufen.rules.key.3',
+          'anrufen.rules.key.4',
+        ],
+      },
+      {
+        id: 'anrufen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'anrufen.score.description',
+          'anrufen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'anrufen.setup.dealing',
+        'anrufen.rules.objective',
+      ],
+      play_card: [
+        'anrufen.rules.gameplay',
+      ],
+      pass: [
+        'anrufen.rules.gameplay',
+      ],
+      deal_six_batches: [
+        'anrufen.rules.gameplay',
+      ],
+      bid_simple: [
+        'anrufen.rules.gameplay',
+      ],
+      bid_hundred: [
+        'anrufen.rules.gameplay',
+      ],
+      bid_all_tricks: [
+        'anrufen.rules.gameplay',
+      ],
+      bid_no_tricks: [
+        'anrufen.rules.gameplay',
+      ],
+      call_ace_king: [
+        'anrufen.rules.gameplay',
+      ],
+      declare_marriage: [
+        'anrufen.rules.gameplay',
+      ],
+      apply_marriage_bonuses: [
+        'anrufen.rules.gameplay',
+      ],
+      calculate_gwisse: [
+        'anrufen.rules.gameplay',
+      ],
+    },
   },
 }

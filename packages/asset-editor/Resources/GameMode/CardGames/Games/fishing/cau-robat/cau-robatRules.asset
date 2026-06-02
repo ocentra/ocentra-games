@@ -56,10 +56,183 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-5 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: The aim is to take more cards than your opponents. Players capture cards by matching ranks or by taking unbroken ascending sequences (10 follows 7, 1 follows 12). The player with the most cards at the end of the hand wins that hand; the first to win an agreed number of hands wins the game.',
+      "Turn-flow example: Play follows fishing game mechanics with unique 'Cau' calls. Players capture by matching ranks or forming sequences. Sequences wrap: 10 follows 7, and 1 follows 12 (e.g., 5-6-7-10-11 and 11-12-1-2-3 are valid). Special rules for 'Cau' calls and table cleaning. Game involves payments in cards for certain calls and cleaning the table.",
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'cau-robat.rules.objective',
+        title: 'Objective',
+        text: 'The aim is to take more cards than your opponents. Players capture cards by matching ranks or by taking unbroken ascending sequences (10 follows 7, 1 follows 12). The player with the most cards at the end of the hand wins that hand; the first to win an agreed number of hands wins the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'cau-robat.rules.gameplay',
+        title: 'Turn flow',
+        text: "Play follows fishing game mechanics with unique 'Cau' calls. Players capture by matching ranks or forming sequences. Sequences wrap: 10 follows 7, and 1 follows 12 (e.g., 5-6-7-10-11 and 11-12-1-2-3 are valid). Special rules for 'Cau' calls and table cleaning. Game involves payments in cards for certain calls and cleaning the table.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'cau-robat.setup.players',
+        title: 'Players',
+        text: '3-5 players (usual number), any number can play.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'cau-robat.setup.deck',
+        title: 'Deck',
+        text: 'Standard Spanish 40-card deck: four suits (swords, cups, coins, clubs), ranks 1-7 and 10-12 (Sota/Valet=10, Cavall/Horse=11, Rei/King=12). Only ranks matter.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'cau-robat.setup.equipment',
+        title: 'Equipment',
+        text: 'Spanish deck',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'cau-robat.setup.dealing',
+        title: 'Deal',
+        text: 'Standard dealing for fishing games.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'cau-robat.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'cau-robat.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'cau-robat.rules.key.1',
+        title: 'Key rule 1',
+        text: '3-5 players',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'cau-robat.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Spanish 40-card deck',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'cau-robat.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Only ranks matter',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'cau-robat.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Sequences valid: 10 follows 7, 1 follows 12',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'cau-robat.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Cau calls for specific captures',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'cau-robat.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Payments in cards for certain situations',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'cau-robat.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Table cleaning mechanics',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'cau-robat.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'cau-robat.rules.objective',
+          'cau-robat.rules.gameplay',
+        ],
+      },
+      {
+        id: 'cau-robat.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'cau-robat.setup.players',
+          'cau-robat.setup.deck',
+          'cau-robat.setup.equipment',
+          'cau-robat.setup.dealing',
+        ],
+      },
+      {
+        id: 'cau-robat.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'cau-robat.rules.key.1',
+          'cau-robat.rules.key.2',
+          'cau-robat.rules.key.3',
+          'cau-robat.rules.key.4',
+          'cau-robat.rules.key.5',
+          'cau-robat.rules.key.6',
+          'cau-robat.rules.key.7',
+        ],
+      },
+      {
+        id: 'cau-robat.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'cau-robat.score.description',
+          'cau-robat.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'cau-robat.setup.dealing',
+        'cau-robat.rules.objective',
+      ],
+      play_card: [
+        'cau-robat.rules.gameplay',
+      ],
+    },
   },
 }

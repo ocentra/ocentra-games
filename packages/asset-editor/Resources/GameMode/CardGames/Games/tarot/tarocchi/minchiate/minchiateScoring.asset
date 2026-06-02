@@ -11,13 +11,42 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Complex scoring system involving card values, versicole declarations, and bonuses.',
+      winCondition: 'Higher total score after all scoring categories.',
+      targetScore: null,
+      scoringDirection: null,
+      cardValues: {
         'Trumpets (40), World (39), Sun (38)': '5 points each',
         'Other trumps': '1 point each',
         Kings: '5 points each',
         'Fool (Matto)': '5 points',
         'Last trick': '5 points',
       },
+      sourceCardValues: {
+        raw: {
+          'Trumpets (40), World (39), Sun (38)': '5 points each',
+          'Other trumps': '1 point each',
+          Kings: '5 points each',
+          'Fool (Matto)': '5 points',
+          'Last trick': '5 points',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        targetScore: 'No fixed target score; play by game rules.',
+        scoringDirection: 'Scoring direction is not applicable; winner is determined by game rules.',
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: '',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,

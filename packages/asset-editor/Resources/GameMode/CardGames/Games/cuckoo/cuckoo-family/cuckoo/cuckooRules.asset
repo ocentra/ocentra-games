@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Cuckoo. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Cuckoo is a card game card game that involves gameplay, scoring, strategy. The game originated in Various and has become popular worldwide.',
+    LLM: '1. Setup: Deal cards to all players\n2. Gameplay: Players take turns playing cards\n3. Scoring: Points awarded based on game outcomes\n4. Winning: First to reach target score or complete objective wins',
+    Player: '1. Setup: Deal cards to all players\n2. Gameplay: Players take turns playing cards\n3. Scoring: Points awarded based on game outcomes\n4. Winning: First to reach target score or complete objective wins',
     objective: 'Be the first player to achieve the winning condition through strategic play of cards.',
     gameplay: '1. Setup: Deal cards to all players\n2. Gameplay: Players take turns playing cards\n3. Scoring: Points awarded based on game outcomes\n4. Winning: First to reach target score or complete objective wins',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Players start with lives (e.g. 3); lowest card each round loses a life. Last player left wins the pot. Expected outcome: Last player remaining after all others have lost their lives..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first player to achieve the winning condition through strategic play of cards.',
+      'Turn-flow example: 1. Setup: Deal cards to all players\n2. Gameplay: Players take turns playing cards\n3. Scoring: Points awarded based on game outcomes\n4. Winning: First to reach target score or complete objective wins',
+      'Scoring example: Players start with lives (e.g. 3); lowest card each round loses a life. Last player left wins the pot. Last player remaining after all others have lost their lives..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'cuckoo.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to achieve the winning condition through strategic play of cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'cuckoo.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Setup: Deal cards to all players\n2. Gameplay: Players take turns playing cards\n3. Scoring: Points awarded based on game outcomes\n4. Winning: First to reach target score or complete objective wins',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'cuckoo.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'cuckoo.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'cuckoo.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'cuckoo.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'cuckoo.score.win-condition',
+        title: 'Win condition',
+        text: 'Last player remaining after all others have lost their lives.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'cuckoo.score.description',
+        title: 'Scoring',
+        text: 'Players start with lives (e.g. 3); lowest card each round loses a life. Last player left wins the pot.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'cuckoo.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow game-specific card play rules',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'cuckoo.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Score according to game objectives',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'cuckoo.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Win by achieving game goal',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'cuckoo.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'cuckoo.rules.objective',
+          'cuckoo.rules.gameplay',
+        ],
+      },
+      {
+        id: 'cuckoo.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'cuckoo.setup.players',
+          'cuckoo.setup.deck',
+          'cuckoo.setup.equipment',
+          'cuckoo.setup.dealing',
+        ],
+      },
+      {
+        id: 'cuckoo.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'cuckoo.rules.key.1',
+          'cuckoo.rules.key.2',
+          'cuckoo.rules.key.3',
+        ],
+      },
+      {
+        id: 'cuckoo.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'cuckoo.score.description',
+          'cuckoo.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'cuckoo.setup.dealing',
+        'cuckoo.rules.objective',
+      ],
+      play_card: [
+        'cuckoo.rules.gameplay',
+      ],
+    },
   },
 }

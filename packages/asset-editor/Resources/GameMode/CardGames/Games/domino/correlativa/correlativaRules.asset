@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 28 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Play all your tiles first, or in a blocked position finish with the lowest remaining pip total.',
+      'Turn-flow example: Correlativa follows a train-style domino layout from a central opening double. Players extend legal train ends by matching pips. If a player cannot play, they draw one tile from the boneyard and continue drawing until they can play or the boneyard is exhausted. The deal ends when a player empties their hand or all players are blocked with no draw available.',
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'correlativa.rules.objective',
+        title: 'Objective',
+        text: 'Play all your tiles first, or in a blocked position finish with the lowest remaining pip total.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'correlativa.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Correlativa follows a train-style domino layout from a central opening double. Players extend legal train ends by matching pips. If a player cannot play, they draw one tile from the boneyard and continue drawing until they can play or the boneyard is exhausted. The deal ends when a player empties their hand or all players are blocked with no draw available.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'correlativa.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 3-4\nPartnerships: No fixed partnership structure',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'correlativa.setup.deck',
+        title: 'Deck',
+        text: 'Type: Double-6 dominoes\nNumber of sets: 1\nTotal tiles: 28',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'correlativa.setup.equipment',
+        title: 'Equipment',
+        text: 'Double-6 domino set\nTable space\nOptional score sheet for multi-deal sessions',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'correlativa.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 7 tiles. In smaller-player games, remaining tiles stay face down as the boneyard for draw-when-blocked play.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'correlativa.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'correlativa.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'correlativa.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Tiles must match the exposed train end by pip value.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'correlativa.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Blocked players draw from boneyard until playable or boneyard is empty.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'correlativa.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Deal ends on a player going out or full block with no available draws.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'correlativa.rules.key.4',
+        title: 'Key rule 4',
+        text: "Scoring is based on pip totals remaining in players' hands at deal end.",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'correlativa.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'correlativa.rules.objective',
+          'correlativa.rules.gameplay',
+        ],
+      },
+      {
+        id: 'correlativa.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'correlativa.setup.players',
+          'correlativa.setup.deck',
+          'correlativa.setup.equipment',
+          'correlativa.setup.dealing',
+        ],
+      },
+      {
+        id: 'correlativa.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'correlativa.rules.key.1',
+          'correlativa.rules.key.2',
+          'correlativa.rules.key.3',
+          'correlativa.rules.key.4',
+        ],
+      },
+      {
+        id: 'correlativa.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'correlativa.score.description',
+          'correlativa.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'correlativa.setup.dealing',
+        'correlativa.rules.objective',
+      ],
+      play_card: [
+        'correlativa.rules.gameplay',
+      ],
+    },
   },
 }

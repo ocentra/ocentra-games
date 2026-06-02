@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Score is value of scoring pile minus value of penalty pile after disqualification checks.',
+      winCondition: 'Highest valid score at game end wins; ties are broken by highest live rabbit captured.',
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        cardValues: 'Low cards 1 pt, high cards 2 pts, Aces 3 pts; Ace rabbit 10 in scoring pile, -3 in penalty pile.',
+        targetScore: 'Game length is table-defined; no universal fixed target score.',
+      },
+      splitRules: '',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

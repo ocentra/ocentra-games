@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Shithead. Logic: See rules.objective and rules.gameplay.',
-    Player: 'In Shithead, play equal-or-higher ranks or take the whole pile. Use 2s and 10s carefully, transition through table cards, and avoid ending as the last player with cards.',
+    LLM: 'Players take turns playing cards (or sets) equal to or higher than the top of the pile. If unable or unwilling, they pick up the whole pile. While stock remains, players refill hand back to three cards. Special cards commonly include 2 (wild/reset), 10 (burn pile), and four-of-a-kind pile clear. After hand cards are gone, players use face-up table cards, then unknown face-down cards.',
+    Player: 'Players take turns playing cards (or sets) equal to or higher than the top of the pile. If unable or unwilling, they pick up the whole pile. While stock remains, players refill hand back to three cards. Special cards commonly include 2 (wild/reset), 10 (burn pile), and four-of-a-kind pile clear. After hand cards are gone, players use face-up table cards, then unknown face-down cards.',
     objective: 'Get rid of all your cards by playing them to the central pile; play cards equal to or higher than the top card or pick up the whole pile. The last player left holding cards is the loser (the shithead).',
     gameplay: 'Players take turns playing cards (or sets) equal to or higher than the top of the pile. If unable or unwilling, they pick up the whole pile. While stock remains, players refill hand back to three cards. Special cards commonly include 2 (wild/reset), 10 (burn pile), and four-of-a-kind pile clear. After hand cards are gone, players use face-up table cards, then unknown face-down cards.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play_loop.',
-      'Scoring check: Shithead is usually placement-based rather than point-based: players go out in order, and the last remaining player loses. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Get rid of all your cards by playing them to the central pile; play cards equal to or higher than the top card or pick up the whole pile. The last player left holding cards is the loser (the shithead).',
+      'Turn-flow example: Players take turns playing cards (or sets) equal to or higher than the top of the pile. If unable or unwilling, they pick up the whole pile. While stock remains, players refill hand back to three cards. Special cards commonly include 2 (wild/reset), 10 (burn pile), and four-of-a-kind pile clear. After hand cards are gone, players use face-up table cards, then unknown face-down cards.',
+      'Scoring example: Shithead is usually placement-based rather than point-based: players go out in order, and the last remaining player loses. Do not finish last; the final player left with cards is the loser..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'shithead.rules.objective',
+        title: 'Objective',
+        text: 'Get rid of all your cards by playing them to the central pile; play cards equal to or higher than the top card or pick up the whole pile. The last player left holding cards is the loser (the shithead).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'shithead.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players take turns playing cards (or sets) equal to or higher than the top of the pile. If unable or unwilling, they pick up the whole pile. While stock remains, players refill hand back to three cards. Special cards commonly include 2 (wild/reset), 10 (burn pile), and four-of-a-kind pile clear. After hand cards are gone, players use face-up table cards, then unknown face-down cards.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'shithead.setup.players',
+        title: 'Players',
+        text: '2-5 players in free-for-all play.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'shithead.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck; some tables add jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'shithead.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards and central play pile/discard area.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'shithead.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 3 face-down table cards, 3 face-up table cards on top, and 3 hand cards. Remaining cards form stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'shithead.score.win-condition',
+        title: 'Win condition',
+        text: 'Do not finish last; the final player left with cards is the loser.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'shithead.score.description',
+        title: 'Scoring',
+        text: 'Shithead is usually placement-based rather than point-based: players go out in order, and the last remaining player loses.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'shithead.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Failing to play requires taking the entire pile.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'shithead.rules.key.2',
+        title: 'Key rule 2',
+        text: '10 and certain quartet conditions clear the pile in common rulesets.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'shithead.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Last player with remaining cards is the loser.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'shithead.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'shithead.rules.objective',
+          'shithead.rules.gameplay',
+        ],
+      },
+      {
+        id: 'shithead.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'shithead.setup.players',
+          'shithead.setup.deck',
+          'shithead.setup.equipment',
+          'shithead.setup.dealing',
+        ],
+      },
+      {
+        id: 'shithead.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'shithead.rules.key.1',
+          'shithead.rules.key.2',
+          'shithead.rules.key.3',
+        ],
+      },
+      {
+        id: 'shithead.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'shithead.score.description',
+          'shithead.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'shithead.setup.dealing',
+        'shithead.rules.objective',
+      ],
+      deal: [
+        'shithead.rules.gameplay',
+      ],
+      play_card: [
+        'shithead.rules.gameplay',
+      ],
+      draw: [
+        'shithead.rules.gameplay',
+      ],
+      discard: [
+        'shithead.rules.gameplay',
+      ],
+    },
   },
 }

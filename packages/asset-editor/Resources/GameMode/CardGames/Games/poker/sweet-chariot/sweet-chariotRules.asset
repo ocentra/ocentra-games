@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Sweet Chariot Poker. Ace-to-five low. Hand from two hole, three board, river, one from any opponent's board. Lowest wins. No fold when already called.",
-    Player: 'Sweet Chariot: lowball Swingo. Choose two hole and three board cards; lowest hand from seven cards (hole, board, river, one opponent board) wins. Pot limit.',
+    LLM: "Deal five cards to each player. First betting round (left of big blind). Each player selects two hole cards (hidden) and three board cards (exposed). Second betting round, begun by the player with the highest-ranking board (pairs and trips count; ties broken by suit order clubs low to spades high). Dealer deals one river card face up. Third betting round. Showdown: each player makes the best low hand from seven cards (two hole, three board, river, one from any opponent's board). Lowest hand wins; ties split the pot. A player may not fold if they have already matched the current bet (others may need their board card).",
+    Player: "Deal five cards to each player. First betting round (left of big blind). Each player selects two hole cards (hidden) and three board cards (exposed). Second betting round, begun by the player with the highest-ranking board (pairs and trips count; ties broken by suit order clubs low to spades high). Dealer deals one river card face up. Third betting round. Showdown: each player makes the best low hand from seven cards (two hole, three board, river, one from any opponent's board). Lowest hand wins; ties split the pot. A player may not fold if they have already matched the current bet (others may need their board card).",
     objective: "Win the pot by having the lowest five-card hand at showdown, or by being the last player left after all others fold. Hands are made from two hole cards, three board cards, the river card, and any one card from another player's board.",
     gameplay: "Deal five cards to each player. First betting round (left of big blind). Each player selects two hole cards (hidden) and three board cards (exposed). Second betting round, begun by the player with the highest-ranking board (pairs and trips count; ties broken by suit order clubs low to spades high). Dealer deals one river card face up. Third betting round. Showdown: each player makes the best low hand from seven cards (two hole, three board, river, one from any opponent's board). Lowest hand wins; ties split the pot. A player may not fold if they have already matched the current bet (others may need their board card).",
     keyRules: [
@@ -56,10 +56,207 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before first_bet.',
-      'Scoring check: Pot is won by the player with the lowest five-card hand at showdown (ace-to-five ranking), or by the last player when all others fold. Ties split the pot. Expected outcome: Lowest hand at showdown wins the pot; ace-to-five low ranking..',
+      'Setup example: 5 card(s) per player.',
+      "Rule example: Win the pot by having the lowest five-card hand at showdown, or by being the last player left after all others fold. Hands are made from two hole cards, three board cards, the river card, and any one card from another player's board.",
+      "Turn-flow example: Deal five cards to each player. First betting round (left of big blind). Each player selects two hole cards (hidden) and three board cards (exposed). Second betting round, begun by the player with the highest-ranking board (pairs and trips count; ties broken by suit order clubs low to spades high). Dealer deals one river card face up. Third betting round. Showdown: each player makes the best low hand from seven cards (two hole, three board, river, one from any opponent's board). Lowest hand wins; ties split the pot. A player may not fold if they have already matched the current bet (others may need their board card).",
+      'Scoring example: Pot is won by the player with the lowest five-card hand at showdown (ace-to-five ranking), or by the last player when all others fold. Ties split the pot. Lowest hand at showdown wins the pot; ace-to-five low ranking..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'sweet-chariot.rules.objective',
+        title: 'Objective',
+        text: "Win the pot by having the lowest five-card hand at showdown, or by being the last player left after all others fold. Hands are made from two hole cards, three board cards, the river card, and any one card from another player's board.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'sweet-chariot.rules.gameplay',
+        title: 'Turn flow',
+        text: "Deal five cards to each player. First betting round (left of big blind). Each player selects two hole cards (hidden) and three board cards (exposed). Second betting round, begun by the player with the highest-ranking board (pairs and trips count; ties broken by suit order clubs low to spades high). Dealer deals one river card face up. Third betting round. Showdown: each player makes the best low hand from seven cards (two hole, three board, river, one from any opponent's board). Lowest hand wins; ties split the pot. A player may not fold if they have already matched the current bet (others may need their board card).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'sweet-chariot.setup.players',
+        title: 'Players',
+        text: 'Two to eight players; best with five to eight.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'sweet-chariot.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack without jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'sweet-chariot.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, poker chips. Stakes (blinds and pot limit) agreed before play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'sweet-chariot.setup.dealing',
+        title: 'Deal',
+        text: "Small blind by player to dealer's left, big blind by the next player (twice small). Dealer shuffles and deals five cards face down to each player. First betting round; then each player chooses two hole cards and three board cards; all expose board cards. Second betting round. Dealer deals one shared river card face up to the centre. Third betting round. Showdown: lowest hand wins.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'sweet-chariot.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest hand at showdown wins the pot; ace-to-five low ranking.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'sweet-chariot.score.description',
+        title: 'Scoring',
+        text: 'Pot is won by the player with the lowest five-card hand at showdown (ace-to-five ranking), or by the last player when all others fold. Ties split the pot.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'sweet-chariot.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Standard 52 cards; no jokers. Blinds and pot limit betting.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'sweet-chariot.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Five cards each; two chosen as hole cards, three as board cards (exposed).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'sweet-chariot.rules.key.3',
+        title: 'Key rule 3',
+        text: 'One shared river card after second betting round.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'sweet-chariot.rules.key.4',
+        title: 'Key rule 4',
+        text: "Best low hand from seven cards: two hole, three board, river, plus any one card from another player's board.",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'sweet-chariot.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Lowest hand wins (ace-to-five low ranking). Ace is low; straights and flushes do not count.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'sweet-chariot.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Player may not fold when they have already called the current bet.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'sweet-chariot.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Board cards must remain visible at showdown even if a player mucks hole cards.',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'sweet-chariot.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'sweet-chariot.rules.objective',
+          'sweet-chariot.rules.gameplay',
+        ],
+      },
+      {
+        id: 'sweet-chariot.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'sweet-chariot.setup.players',
+          'sweet-chariot.setup.deck',
+          'sweet-chariot.setup.equipment',
+          'sweet-chariot.setup.dealing',
+        ],
+      },
+      {
+        id: 'sweet-chariot.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'sweet-chariot.rules.key.1',
+          'sweet-chariot.rules.key.2',
+          'sweet-chariot.rules.key.3',
+          'sweet-chariot.rules.key.4',
+          'sweet-chariot.rules.key.5',
+          'sweet-chariot.rules.key.6',
+          'sweet-chariot.rules.key.7',
+        ],
+      },
+      {
+        id: 'sweet-chariot.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'sweet-chariot.score.description',
+          'sweet-chariot.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'sweet-chariot.setup.dealing',
+        'sweet-chariot.rules.objective',
+      ],
+      ante: [
+        'sweet-chariot.rules.gameplay',
+      ],
+      deal: [
+        'sweet-chariot.rules.gameplay',
+      ],
+      fold: [
+        'sweet-chariot.rules.gameplay',
+      ],
+      check: [
+        'sweet-chariot.rules.gameplay',
+      ],
+      call: [
+        'sweet-chariot.rules.gameplay',
+      ],
+      bet: [
+        'sweet-chariot.rules.gameplay',
+      ],
+      raise: [
+        'sweet-chariot.rules.gameplay',
+      ],
+      reveal_hand: [
+        'sweet-chariot.rules.gameplay',
+      ],
+      choose_hole_board: [
+        'sweet-chariot.rules.gameplay',
+      ],
+    },
   },
 }

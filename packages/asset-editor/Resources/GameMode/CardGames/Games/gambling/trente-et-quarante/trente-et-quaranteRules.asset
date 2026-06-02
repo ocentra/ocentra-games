@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Basset. Logic: Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
-    Player: 'Basset is a historical Italian gambling card game in which players bet against a banker on ranks that may appear from the pack.',
+    LLM: 'The dealer lays out black and red rows until totals pass thirty. Bets resolve by comparing the rows under the casino rules, with special results around exact totals.',
+    Player: 'The dealer lays out black and red rows until totals pass thirty. Bets resolve by comparing the rows under the casino rules, with special results around exact totals.',
     objective: 'Bet on the winning color or row outcome produced by the dealer card layout.',
     gameplay: 'The dealer lays out black and red rows until totals pass thirty. Bets resolve by comparing the rows under the casino rules, with special results around exact totals.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Bets are paid or lost against the bank according to the exposed-card result. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Bet on the winning color or row outcome produced by the dealer card layout.',
+      'Turn-flow example: The dealer lays out black and red rows until totals pass thirty. Bets resolve by comparing the rows under the casino rules, with special results around exact totals.',
+      'Scoring example: Bets are paid or lost against the bank according to the exposed-card result. Win stakes by backing ranks that appear in the favourable positions of the banked deal..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'trente-et-quarante.rules.objective',
+        title: 'Objective',
+        text: 'Bet on the winning color or row outcome produced by the dealer card layout.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'trente-et-quarante.rules.gameplay',
+        title: 'Turn flow',
+        text: 'The dealer lays out black and red rows until totals pass thirty. Bets resolve by comparing the rows under the casino rules, with special results around exact totals.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'trente-et-quarante.setup.players',
+        title: 'Players',
+        text: '1 or more players use the table arrangement described for Trente et Quarante.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'trente-et-quarante.setup.deck',
+        title: 'Deck',
+        text: 'Multiple standard 52-card packs in casino layout',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'trente-et-quarante.setup.equipment',
+        title: 'Equipment',
+        text: 'Multiple standard 52-card packs in casino layout, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'trente-et-quarante.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Multiple standard 52-card packs in casino layout and deal or lay out cards according to the documented Trente et Quarante rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'trente-et-quarante.score.win-condition',
+        title: 'Win condition',
+        text: 'Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'trente-et-quarante.score.description',
+        title: 'Scoring',
+        text: 'Bets are paid or lost against the bank according to the exposed-card result.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'trente-et-quarante.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Also known as Rouge et Noir in casino form.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'trente-et-quarante.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Rows are built to totals between thirty and forty.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'trente-et-quarante.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Distinct from Rouge et Noir patience.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'trente-et-quarante.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'trente-et-quarante.rules.objective',
+          'trente-et-quarante.rules.gameplay',
+        ],
+      },
+      {
+        id: 'trente-et-quarante.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'trente-et-quarante.setup.players',
+          'trente-et-quarante.setup.deck',
+          'trente-et-quarante.setup.equipment',
+          'trente-et-quarante.setup.dealing',
+        ],
+      },
+      {
+        id: 'trente-et-quarante.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'trente-et-quarante.rules.key.1',
+          'trente-et-quarante.rules.key.2',
+          'trente-et-quarante.rules.key.3',
+        ],
+      },
+      {
+        id: 'trente-et-quarante.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'trente-et-quarante.score.description',
+          'trente-et-quarante.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'trente-et-quarante.setup.dealing',
+        'trente-et-quarante.rules.objective',
+      ],
+      play_card: [
+        'trente-et-quarante.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Fan Tan (Sevens). Logic: See rules.objective and rules.gameplay.',
-    Player: "Fan Tan, also widely known as 'Sevens', 'Domino', or 'Parliament', is a classic layout-based card game where the objective is to be the first to get rid of all your cards. Players build upon a central layout of cards, starting with the Sevens and expanding outward to the Ace and Two in each suit. It is a game of both luck and light strategy, as players can choose to hold back key 'blocking' cards to prevent opponents from playing.",
+    LLM: 'Players hold a small row of mostly face-down cards, peek at limited information, draw or swap cards, and decide when to end the round. Memory and timing matter because hidden card values determine the score.',
+    Player: 'Players hold a small row of mostly face-down cards, peek at limited information, draw or swap cards, and decide when to end the round. Memory and timing matter because hidden card values determine the score.',
     objective: 'End the round with the lowest-value set of face-down cards.',
     gameplay: 'Players hold a small row of mostly face-down cards, peek at limited information, draw or swap cards, and decide when to end the round. Memory and timing matter because hidden card values determine the score.',
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'First to empty hand wins automatically.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play_round.',
-      'Scoring check: Be the first player to shed all cards from your hand. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: End the round with the lowest-value set of face-down cards.',
+      'Turn-flow example: Players hold a small row of mostly face-down cards, peek at limited information, draw or swap cards, and decide when to end the round. Memory and timing matter because hidden card values determine the score.',
+      'Scoring example: Be the first player to shed all cards from your hand. Be the first player to shed all cards from your hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'rat-a-tat-cat.rules.objective',
+        title: 'Objective',
+        text: 'End the round with the lowest-value set of face-down cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'rat-a-tat-cat.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players hold a small row of mostly face-down cards, peek at limited information, draw or swap cards, and decide when to end the round. Memory and timing matter because hidden card values determine the score.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'rat-a-tat-cat.setup.players',
+        title: 'Players',
+        text: '2-6 players use the table arrangement described for Rat-a-Tat Cat.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'rat-a-tat-cat.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Rat-a-Tat Cat deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'rat-a-tat-cat.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Rat-a-Tat Cat deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'rat-a-tat-cat.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Rat-a-Tat Cat deck and deal or lay out cards according to the documented Rat-a-Tat Cat rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'rat-a-tat-cat.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to shed all cards from your hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'rat-a-tat-cat.score.description',
+        title: 'Scoring',
+        text: 'Be the first player to shed all cards from your hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'rat-a-tat-cat.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Lower score wins the round.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'rat-a-tat-cat.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players have limited knowledge of their own face-down cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'rat-a-tat-cat.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Draw, peek, swap, and timing effects come from proprietary cards.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'rat-a-tat-cat.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'rat-a-tat-cat.rules.objective',
+          'rat-a-tat-cat.rules.gameplay',
+        ],
+      },
+      {
+        id: 'rat-a-tat-cat.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'rat-a-tat-cat.setup.players',
+          'rat-a-tat-cat.setup.deck',
+          'rat-a-tat-cat.setup.equipment',
+          'rat-a-tat-cat.setup.dealing',
+        ],
+      },
+      {
+        id: 'rat-a-tat-cat.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'rat-a-tat-cat.rules.key.1',
+          'rat-a-tat-cat.rules.key.2',
+          'rat-a-tat-cat.rules.key.3',
+        ],
+      },
+      {
+        id: 'rat-a-tat-cat.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'rat-a-tat-cat.score.description',
+          'rat-a-tat-cat.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'rat-a-tat-cat.setup.dealing',
+        'rat-a-tat-cat.rules.objective',
+      ],
+      deal: [
+        'rat-a-tat-cat.rules.gameplay',
+      ],
+      play_card: [
+        'rat-a-tat-cat.rules.gameplay',
+      ],
+      pass: [
+        'rat-a-tat-cat.rules.gameplay',
+      ],
+    },
   },
 }

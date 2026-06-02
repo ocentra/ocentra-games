@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tien Len. Logic: See rules.objective and rules.gameplay.',
-    Player: "Tien Len (Tiáº¿n LÃªn), often called 'Thirteen' or 'Killer 13', is the national card game of Vietnam. It is a climbing/shedding game similar to Big Two and President. Players race to empty their hands by playing combinations that beat the previous play. The Two (Heo) is the highest card, and special 'bombs' can beat Twos.",
+    LLM: "First round: Player with 3 Spades starts. Subsequent: Winner of last round starts. Play combination (Single, Pair, Triple, Run). Next player must beat it with same type and higher rank/suit. Pass = out for the trick. 2s are high. 'Bombs' (4-of-a-kind, double runs) can beat 2s out of turn (Chopping). Winner is first out. Others play for 2nd, etc., or game ends.",
+    Player: "First round: Player with 3 Spades starts. Subsequent: Winner of last round starts. Play combination (Single, Pair, Triple, Run). Next player must beat it with same type and higher rank/suit. Pass = out for the trick. 2s are high. 'Bombs' (4-of-a-kind, double runs) can beat 2s out of turn (Chopping). Winner is first out. Others play for 2nd, etc., or game ends.",
     objective: 'Be the first player to shed all cards from your hand; the last player left holding any cards loses the game.',
     gameplay: "First round: Player with 3 Spades starts. Subsequent: Winner of last round starts. Play combination (Single, Pair, Triple, Run). Next player must beat it with same type and higher rank/suit. Pass = out for the trick. 2s are high. 'Bombs' (4-of-a-kind, double runs) can beat 2s out of turn (Chopping). Winner is first out. Others play for 2nd, etc., or game ends.",
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      "Scoring check: Losers pay winner. Penalties for holding 2s or bombs when game ends (rotting). 'Insta-win' hands exist (e.g. 4 Twos, Dragon straight). Expected outcome: 1.",
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Be the first player to shed all cards from your hand; the last player left holding any cards loses the game.',
+      "Turn-flow example: First round: Player with 3 Spades starts. Subsequent: Winner of last round starts. Play combination (Single, Pair, Triple, Run). Next player must beat it with same type and higher rank/suit. Pass = out for the trick. 2s are high. 'Bombs' (4-of-a-kind, double runs) can beat 2s out of turn (Chopping). Winner is first out. Others play for 2nd, etc., or game ends.",
+      "Scoring example: Losers pay winner. Penalties for holding 2s or bombs when game ends (rotting). 'Insta-win' hands exist (e.g. 4 Twos, Dragon straight). Be the first to shed all cards..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tien-len.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to shed all cards from your hand; the last player left holding any cards loses the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tien-len.rules.gameplay',
+        title: 'Turn flow',
+        text: "First round: Player with 3 Spades starts. Subsequent: Winner of last round starts. Play combination (Single, Pair, Triple, Run). Next player must beat it with same type and higher rank/suit. Pass = out for the trick. 2s are high. 'Bombs' (4-of-a-kind, double runs) can beat 2s out of turn (Chopping). Winner is first out. Others play for 2nd, etc., or game ends.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tien-len.setup.players',
+        title: 'Players',
+        text: '2-4 (typically 4).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tien-len.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card. Rank: 3(low)-4-5...K-A-2(high). Suit Rank: Spades < Clubs < Diamonds < Hearts.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tien-len.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tien-len.setup.dealing',
+        title: 'Deal',
+        text: 'Deal all 13 cards to each player.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tien-len.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first to shed all cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tien-len.score.description',
+        title: 'Scoring',
+        text: "Losers pay winner. Penalties for holding 2s or bombs when game ends (rotting). 'Insta-win' hands exist (e.g. 4 Twos, Dragon straight).",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tien-len.rules.key.1',
+        title: 'Key rule 1',
+        text: '2 is highest',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tien-len.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Suit rank matters (Hearts highest)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tien-len.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Chopping (Bombs beat 2s)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tien-len.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Must beat with same number of cards (usually)',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tien-len.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tien-len.rules.objective',
+          'tien-len.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tien-len.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tien-len.setup.players',
+          'tien-len.setup.deck',
+          'tien-len.setup.equipment',
+          'tien-len.setup.dealing',
+        ],
+      },
+      {
+        id: 'tien-len.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tien-len.rules.key.1',
+          'tien-len.rules.key.2',
+          'tien-len.rules.key.3',
+          'tien-len.rules.key.4',
+        ],
+      },
+      {
+        id: 'tien-len.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tien-len.score.description',
+          'tien-len.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tien-len.setup.dealing',
+        'tien-len.rules.objective',
+      ],
+      play_card: [
+        'tien-len.rules.gameplay',
+      ],
+    },
   },
 }

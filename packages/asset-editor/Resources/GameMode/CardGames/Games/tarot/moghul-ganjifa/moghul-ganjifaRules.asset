@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Doppen. Objective: Win contract points through accurate tarock trick-taking and point-card control.',
-    Player: 'Doppen: bid responsibly, count points, and control trump timing to win the deal.',
+    LLM: 'Players follow suit when possible, otherwise play trump when required, and otherwise discard. Highest trump wins trumped tricks; otherwise highest card in the led suit wins. Contract and talon handling determine risk and reward each deal.',
+    Player: 'Players follow suit when possible, otherwise play trump when required, and otherwise discard. Highest trump wins trumped tricks; otherwise highest card in the led suit wins. Contract and talon handling determine risk and reward each deal.',
     objective: 'Win enough card points under the chosen contract by taking tricks and controlling key trumps.',
     gameplay: 'Players follow suit when possible, otherwise play trump when required, and otherwise discard. Highest trump wins trumped tricks; otherwise highest card in the led suit wins. Contract and talon handling determine risk and reward each deal.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Scoring follows Austrian tarock contract outcomes and card-point counting. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win enough card points under the chosen contract by taking tricks and controlling key trumps.',
+      'Turn-flow example: Players follow suit when possible, otherwise play trump when required, and otherwise discard. Highest trump wins trumped tricks; otherwise highest card in the led suit wins. Contract and talon handling determine risk and reward each deal.',
+      'Scoring example: Scoring follows Austrian tarock contract outcomes and card-point counting. Highest valid score under the agreed contract and counting rules wins the deal or session..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'moghul-ganjifa.rules.objective',
+        title: 'Objective',
+        text: 'Win enough card points under the chosen contract by taking tricks and controlling key trumps.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'moghul-ganjifa.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players follow suit when possible, otherwise play trump when required, and otherwise discard. Highest trump wins trumped tricks; otherwise highest card in the led suit wins. Contract and talon handling determine risk and reward each deal.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'moghul-ganjifa.setup.players',
+        title: 'Players',
+        text: 'Typically 2-6 players depending on local ganjifa variant.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'moghul-ganjifa.setup.deck',
+        title: 'Deck',
+        text: '54-card Industrie und Glück pack with 22 permanent trumps and 32 suited cards.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'moghul-ganjifa.setup.equipment',
+        title: 'Equipment',
+        text: 'Tarock deck and score tracking.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'moghul-ganjifa.setup.dealing',
+        title: 'Deal',
+        text: 'Cards are dealt with a talon packet according to local Doppen dealing conventions before contract decisions.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'moghul-ganjifa.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest valid score under the agreed contract and counting rules wins the deal or session.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'moghul-ganjifa.score.description',
+        title: 'Scoring',
+        text: 'Scoring follows Austrian tarock contract outcomes and card-point counting.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'moghul-ganjifa.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Three-player tarock with contracts and tarot trump hierarchy.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'moghul-ganjifa.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Suit-follow obligations apply before discretionary discard.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'moghul-ganjifa.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Talon decisions influence declarer strength and defender counterplay.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'moghul-ganjifa.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Card-point counting determines deal outcome.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'moghul-ganjifa.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'moghul-ganjifa.rules.objective',
+          'moghul-ganjifa.rules.gameplay',
+        ],
+      },
+      {
+        id: 'moghul-ganjifa.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'moghul-ganjifa.setup.players',
+          'moghul-ganjifa.setup.deck',
+          'moghul-ganjifa.setup.equipment',
+          'moghul-ganjifa.setup.dealing',
+        ],
+      },
+      {
+        id: 'moghul-ganjifa.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'moghul-ganjifa.rules.key.1',
+          'moghul-ganjifa.rules.key.2',
+          'moghul-ganjifa.rules.key.3',
+          'moghul-ganjifa.rules.key.4',
+        ],
+      },
+      {
+        id: 'moghul-ganjifa.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'moghul-ganjifa.score.description',
+          'moghul-ganjifa.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'moghul-ganjifa.setup.dealing',
+        'moghul-ganjifa.rules.objective',
+      ],
+      play_card: [
+        'moghul-ganjifa.rules.gameplay',
+      ],
+    },
   },
 }

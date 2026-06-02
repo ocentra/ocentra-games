@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Bid Euchre. Rules: 24-card. Bowers: Right>Left. No Trump possible. Target: 32. Bid evaluation: sure_tricks = Bowers + Aces + voids.',
-    Player: "You hold the Right Bower (J♠), Left Bower (J♣), and Ace of Spades. This is a power hand! Bid 4. If your partner has even one Ace, you can make it. Don't overbid—you need 4 sure tricks.",
+    LLM: "1. **Bidding**: Starting left of dealer, each player bids a number of tricks (typically 3-6). Dealer must take the bid if no one else does. 2. **Trump**: Winner of bidding names trump (or 'No Trump'). 3. **Play**: 6 tricks played. Must follow suit. Bowers are treated as trump. 4. **Scoring**: Maker's team gets 1pt/trick if they make their bid. If they fail (Euchre), opponents score the bid amount instead.",
+    Player: "1. **Bidding**: Starting left of dealer, each player bids a number of tricks (typically 3-6). Dealer must take the bid if no one else does. 2. **Trump**: Winner of bidding names trump (or 'No Trump'). 3. **Play**: 6 tricks played. Must follow suit. Bowers are treated as trump. 4. **Scoring**: Maker's team gets 1pt/trick if they make their bid. If they fail (Euchre), opponents score the bid amount instead.",
     objective: 'Score 32 points first by making your bid on each hand.',
     gameplay: "1. **Bidding**: Starting left of dealer, each player bids a number of tricks (typically 3-6). Dealer must take the bid if no one else does. 2. **Trump**: Winner of bidding names trump (or 'No Trump'). 3. **Play**: 6 tricks played. Must follow suit. Bowers are treated as trump. 4. **Scoring**: Maker's team gets 1pt/trick if they make their bid. If they fail (Euchre), opponents score the bid amount instead.",
     keyRules: [
@@ -52,10 +52,162 @@
       go_out: 'The hand terminates automatically once all six tricks have been played by all participants.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_6_each before bidding.',
-      'Scoring check: Points accumulate per hand based on contract success. Expected outcome: 32.',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Score 32 points first by making your bid on each hand.',
+      "Turn-flow example: 1. **Bidding**: Starting left of dealer, each player bids a number of tricks (typically 3-6). Dealer must take the bid if no one else does. 2. **Trump**: Winner of bidding names trump (or 'No Trump'). 3. **Play**: 6 tricks played. Must follow suit. Bowers are treated as trump. 4. **Scoring**: Maker's team gets 1pt/trick if they make their bid. If they fail (Euchre), opponents score the bid amount instead.",
+      'Scoring example: Points accumulate per hand based on contract success. First partnership to reach 32 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'bid-euchre.rules.objective',
+        title: 'Objective',
+        text: 'Score 32 points first by making your bid on each hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bid-euchre.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Bidding**: Starting left of dealer, each player bids a number of tricks (typically 3-6). Dealer must take the bid if no one else does. 2. **Trump**: Winner of bidding names trump (or 'No Trump'). 3. **Play**: 6 tricks played. Must follow suit. Bowers are treated as trump. 4. **Scoring**: Maker's team gets 1pt/trick if they make their bid. If they fail (Euchre), opponents score the bid amount instead.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bid-euchre.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships (North-South vs East-West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bid-euchre.setup.deck',
+        title: 'Deck',
+        text: '24 cards: 9, 10, J, Q, K, A in all four suits.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bid-euchre.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck (stripped), score pad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bid-euchre.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 6 cards to each player (3-3).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bid-euchre.score.win-condition',
+        title: 'Win condition',
+        text: 'First partnership to reach 32 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bid-euchre.score.description',
+        title: 'Scoring',
+        text: 'Points accumulate per hand based on contract success.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bid-euchre.rules.key.1',
+        title: 'Key rule 1',
+        text: "Dealer 'must bid' if all other players pass (forced to bid at least 3).",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bid-euchre.rules.key.2',
+        title: 'Key rule 2',
+        text: "A bid of 6 (all tricks) is sometimes called a 'Loner' or 'Shoot the Moon' with bonus points.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bid-euchre.rules.key.3',
+        title: 'Key rule 3',
+        text: 'In No Trump, Jacks rank normally (no Bowers mechanic).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bid-euchre.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bid-euchre.rules.objective',
+          'bid-euchre.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bid-euchre.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bid-euchre.setup.players',
+          'bid-euchre.setup.deck',
+          'bid-euchre.setup.equipment',
+          'bid-euchre.setup.dealing',
+        ],
+      },
+      {
+        id: 'bid-euchre.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bid-euchre.rules.key.1',
+          'bid-euchre.rules.key.2',
+          'bid-euchre.rules.key.3',
+        ],
+      },
+      {
+        id: 'bid-euchre.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bid-euchre.score.description',
+          'bid-euchre.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bid-euchre.setup.dealing',
+        'bid-euchre.rules.objective',
+      ],
+      play_card: [
+        'bid-euchre.rules.gameplay',
+      ],
+      pass: [
+        'bid-euchre.rules.gameplay',
+      ],
+      bid: [
+        'bid-euchre.rules.gameplay',
+      ],
+      deal_6_each: [
+        'bid-euchre.rules.gameplay',
+      ],
+      name_suit: [
+        'bid-euchre.rules.gameplay',
+      ],
+      name_no_trump: [
+        'bid-euchre.rules.gameplay',
+      ],
+    },
   },
 }

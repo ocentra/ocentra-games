@@ -52,10 +52,153 @@
       go_out: 'Use declare_stop custom action to end the hand.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use draw, discard, declare_stop before round end.',
-      'Scoring check: Each player scores the value of cards in one suit (counted positive) minus cards of other suits (counted negative). Aces=11, 10/J/Q/K=10, 2-9=face value. Maximum possible score is 41 (A-K-Q-J of one suit). Expected outcome: 150.',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Collect four cards of the same suit to maximize your score (maximum 41).',
+      "Turn-flow example: 1. Turn: On your turn, you draw one card (from the Stock or the Discard Pile) and then discard one card face-up.\n2. One-Card Limit: You must always have exactly 4 cards at the end of your turn.\n3. The Stop: Any player who has four cards of the SAME SUIT can declare 'Stop' (Selesai). The hand ends immediately.",
+      'Scoring example: Each player scores the value of cards in one suit (counted positive) minus cards of other suits (counted negative). Aces=11, 10/J/Q/K=10, 2-9=face value. Maximum possible score is 41 (A-K-Q-J of one suit). Player with the highest score wins the round. In case of a tie, the player whose worst card is highest wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'empat-satu-41.rules.objective',
+        title: 'Objective',
+        text: 'Collect four cards of the same suit to maximize your score (maximum 41).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'empat-satu-41.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Turn: On your turn, you draw one card (from the Stock or the Discard Pile) and then discard one card face-up.\n2. One-Card Limit: You must always have exactly 4 cards at the end of your turn.\n3. The Stop: Any player who has four cards of the SAME SUIT can declare 'Stop' (Selesai). The hand ends immediately.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'empat-satu-41.setup.players',
+        title: 'Players',
+        text: '2 to 4 players. Each plays for themselves.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'empat-satu-41.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52 cards.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'empat-satu-41.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52 cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'empat-satu-41.setup.dealing',
+        title: 'Deal',
+        text: 'The dealer gives 4 cards to each player, one at a time. The rest of the deck forms the face-down Stock. The top card of the Stock is turned over to start the Discard Pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'empat-satu-41.score.win-condition',
+        title: 'Win condition',
+        text: 'Player with the highest score wins the round. In case of a tie, the player whose worst card is highest wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'empat-satu-41.score.description',
+        title: 'Scoring',
+        text: 'Each player scores the value of cards in one suit (counted positive) minus cards of other suits (counted negative). Aces=11, 10/J/Q/K=10, 2-9=face value. Maximum possible score is 41 (A-K-Q-J of one suit).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'empat-satu-41.rules.key.1',
+        title: 'Key rule 1',
+        text: "You cannot pick up the previous player's discard and immediately discard it back.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'empat-satu-41.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If the Stock runs out, the discard pile is shuffled to form a new Stock.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'empat-satu-41.rules.key.3',
+        title: 'Key rule 3',
+        text: "If a player 'Stops' and their 4-card suit sum is lower than an opponent's mixed-hand sum, the stopper still wins the round in some house rules, but usually, the highest score wins regardless.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'empat-satu-41.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'empat-satu-41.rules.objective',
+          'empat-satu-41.rules.gameplay',
+        ],
+      },
+      {
+        id: 'empat-satu-41.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'empat-satu-41.setup.players',
+          'empat-satu-41.setup.deck',
+          'empat-satu-41.setup.equipment',
+          'empat-satu-41.setup.dealing',
+        ],
+      },
+      {
+        id: 'empat-satu-41.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'empat-satu-41.rules.key.1',
+          'empat-satu-41.rules.key.2',
+          'empat-satu-41.rules.key.3',
+        ],
+      },
+      {
+        id: 'empat-satu-41.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'empat-satu-41.score.description',
+          'empat-satu-41.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'empat-satu-41.setup.dealing',
+        'empat-satu-41.rules.objective',
+      ],
+      draw: [
+        'empat-satu-41.rules.gameplay',
+      ],
+      discard: [
+        'empat-satu-41.rules.gameplay',
+      ],
+      declare_stop: [
+        'empat-satu-41.rules.gameplay',
+      ],
+    },
   },
 }

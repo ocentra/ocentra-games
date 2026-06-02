@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Boonaken. Dutch Jass. 4-7 players. 32-card deck. Jass trump order: J-9-A-K-Q-10-8-7. 6 cards each + centre card exchange. Bid types: Number (multiples of 5), Misère, Zwabber, Boonaak. Roem = card combinations announced at trick 1, can be cancelled. Can trump when able to follow suit. 2 wins = safe, 2 losses = buy drinks.',
-    Player: "You've got one plus and one minus. Your hand after exchange: J♥ 9♥ A♥ K♠ Q♠ 10♣. Hearts trump gives you the top three trumps (BooNaAk!). You could bid Boonaak (all tricks) — but failure means you buy drinks. Bid 80 instead?",
+    LLM: '1. **Auction**: Players bid point totals or special contracts (Misère, Zwabber). 2. **Exchange**: High bidder swaps cards with the center widow. 3. **Trump**: High bidder names the trump suit. 4. **Tricks**: 6 tricks played. **Must Follow Suit** rule is modified: you may trump even if you could follow suit. 5. **Roem**: Combinations (sequences/sets) announced at the first trick.',
+    Player: '1. **Auction**: Players bid point totals or special contracts (Misère, Zwabber). 2. **Exchange**: High bidder swaps cards with the center widow. 3. **Trump**: High bidder names the trump suit. 4. **Tricks**: 6 tricks played. **Must Follow Suit** rule is modified: you may trump even if you could follow suit. 5. **Roem**: Combinations (sequences/sets) announced at the first trick.',
     objective: 'As declarer: Win your bid total in trick points + Roem. As defender: Stop the declarer. Overall: Win two rounds to be safe; avoid losing two rounds.',
     gameplay: '1. **Auction**: Players bid point totals or special contracts (Misère, Zwabber). 2. **Exchange**: High bidder swaps cards with the center widow. 3. **Trump**: High bidder names the trump suit. 4. **Tricks**: 6 tricks played. **Must Follow Suit** rule is modified: you may trump even if you could follow suit. 5. **Roem**: Combinations (sequences/sets) announced at the first trick.',
     keyRules: [
@@ -53,10 +53,204 @@
       go_out: 'The hand terminates automatically once all six tricks have been played by all participants.',
     },
     exampleHands: [
-      'Opening deal: 4-7 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in dealing; system may use deal_6_each, deal_widow before auction.',
-      'Scoring check: 141 points in the pack. Declarer wins if trick points + uncancelled Roem ≥ bid. Win/loss tracking (not cumulative points). Expected outcome: Avoid being the player with two losses..',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: As declarer: Win your bid total in trick points + Roem. As defender: Stop the declarer. Overall: Win two rounds to be safe; avoid losing two rounds.',
+      'Turn-flow example: 1. **Auction**: Players bid point totals or special contracts (Misère, Zwabber). 2. **Exchange**: High bidder swaps cards with the center widow. 3. **Trump**: High bidder names the trump suit. 4. **Tricks**: 6 tricks played. **Must Follow Suit** rule is modified: you may trump even if you could follow suit. 5. **Roem**: Combinations (sequences/sets) announced at the first trick.',
+      'Scoring example: 141 points in the pack. Declarer wins if trick points + uncancelled Roem ≥ bid. Win/loss tracking (not cumulative points). Avoid being the player with two losses..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'boonaken.rules.objective',
+        title: 'Objective',
+        text: 'As declarer: Win your bid total in trick points + Roem. As defender: Stop the declarer. Overall: Win two rounds to be safe; avoid losing two rounds.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'boonaken.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Auction**: Players bid point totals or special contracts (Misère, Zwabber). 2. **Exchange**: High bidder swaps cards with the center widow. 3. **Trump**: High bidder names the trump suit. 4. **Tricks**: 6 tricks played. **Must Follow Suit** rule is modified: you may trump even if you could follow suit. 5. **Roem**: Combinations (sequences/sets) announced at the first trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'boonaken.setup.players',
+        title: 'Players',
+        text: '4 to 7 players playing individually (but forming temporary alliances against the declarer).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'boonaken.setup.deck',
+        title: 'Deck',
+        text: '32 cards (7, 8, 9, 10, J, Q, K, A in each suit).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'boonaken.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 32-card French pack, score sheet with +/- columns.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'boonaken.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 6 cards each. Center cards (widow) are dealt face-up or face-down depending on player count (e.g., 2 face-up for 5 players).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'boonaken.score.win-condition',
+        title: 'Win condition',
+        text: 'Avoid being the player with two losses.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'boonaken.score.description',
+        title: 'Scoring',
+        text: '141 points in the pack. Declarer wins if trick points + uncancelled Roem ≥ bid. Win/loss tracking (not cumulative points).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'boonaken.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Jass Trump Ranking: Jack (20), 9 (14), Ace (11), 10 (10), King (4), Queen (3), 8 (0), 7 (0).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'boonaken.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Jack of Trumps can be withheld when trumps are led (Undertrumpping/Withholding).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'boonaken.rules.key.3',
+        title: 'Key rule 3',
+        text: "Opponents can 'Counter-Roem' to cancel the declarer's bonus points.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'boonaken.rules.key.4',
+        title: 'Key rule 4',
+        text: "Two '+' marks = Safe (exit game). Two '-' marks = Loser (buy drinks).",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'boonaken.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'boonaken.rules.objective',
+          'boonaken.rules.gameplay',
+        ],
+      },
+      {
+        id: 'boonaken.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'boonaken.setup.players',
+          'boonaken.setup.deck',
+          'boonaken.setup.equipment',
+          'boonaken.setup.dealing',
+        ],
+      },
+      {
+        id: 'boonaken.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'boonaken.rules.key.1',
+          'boonaken.rules.key.2',
+          'boonaken.rules.key.3',
+          'boonaken.rules.key.4',
+        ],
+      },
+      {
+        id: 'boonaken.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'boonaken.score.description',
+          'boonaken.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'boonaken.setup.dealing',
+        'boonaken.rules.objective',
+      ],
+      declare: [
+        'boonaken.rules.gameplay',
+      ],
+      play_card: [
+        'boonaken.rules.gameplay',
+      ],
+      discard: [
+        'boonaken.rules.gameplay',
+      ],
+      pass: [
+        'boonaken.rules.gameplay',
+      ],
+      bid: [
+        'boonaken.rules.gameplay',
+      ],
+      meld: [
+        'boonaken.rules.gameplay',
+      ],
+      deal_6_with_centre: [
+        'boonaken.rules.gameplay',
+      ],
+      bid_number: [
+        'boonaken.rules.gameplay',
+      ],
+      take_centre: [
+        'boonaken.rules.gameplay',
+      ],
+      announce_roem: [
+        'boonaken.rules.gameplay',
+      ],
+      deal_6_each: [
+        'boonaken.rules.gameplay',
+      ],
+      deal_widow: [
+        'boonaken.rules.gameplay',
+      ],
+      bid_points: [
+        'boonaken.rules.gameplay',
+      ],
+      take_widow: [
+        'boonaken.rules.gameplay',
+      ],
+      discard_equal: [
+        'boonaken.rules.gameplay',
+      ],
+      calculate_total_points: [
+        'boonaken.rules.gameplay',
+      ],
+      update_loser_marks: [
+        'boonaken.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players use cards from the original 150-card base set or later boxed configuration. Because the source notes rules access issues, implementation should use a verified rulebook before modeling effects.',
+    Player: 'Players use cards from the original 150-card base set or later boxed configuration. Because the source notes rules access issues, implementation should use a verified rulebook before modeling effects.',
     objective: 'Use the proprietary deck and icon system to defeat opponents under the published rules.',
     gameplay: 'Players use cards from the original 150-card base set or later boxed configuration. Because the source notes rules access issues, implementation should use a verified rulebook before modeling effects.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Use the proprietary deck and icon system to defeat opponents under the published rules.',
+      'Turn-flow example: Players use cards from the original 150-card base set or later boxed configuration. Because the source notes rules access issues, implementation should use a verified rulebook before modeling effects.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'towers-in-time.rules.objective',
+        title: 'Objective',
+        text: 'Use the proprietary deck and icon system to defeat opponents under the published rules.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'towers-in-time.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players use cards from the original 150-card base set or later boxed configuration. Because the source notes rules access issues, implementation should use a verified rulebook before modeling effects.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'towers-in-time.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Towers in Time.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'towers-in-time.setup.deck',
+        title: 'Deck',
+        text: 'Proprietary Towers in Time CCG or boxed deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'towers-in-time.setup.equipment',
+        title: 'Equipment',
+        text: 'Proprietary Towers in Time CCG or boxed deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'towers-in-time.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Proprietary Towers in Time CCG or boxed deck and deal or lay out cards according to the documented Towers in Time rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'towers-in-time.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'towers-in-time.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'towers-in-time.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Released as a collectible card game in 1995.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'towers-in-time.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Later repackaged as a dedicated-deck card game.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'towers-in-time.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Published card icons and rules are proprietary.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'towers-in-time.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'towers-in-time.rules.objective',
+          'towers-in-time.rules.gameplay',
+        ],
+      },
+      {
+        id: 'towers-in-time.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'towers-in-time.setup.players',
+          'towers-in-time.setup.deck',
+          'towers-in-time.setup.equipment',
+          'towers-in-time.setup.dealing',
+        ],
+      },
+      {
+        id: 'towers-in-time.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'towers-in-time.rules.key.1',
+          'towers-in-time.rules.key.2',
+          'towers-in-time.rules.key.3',
+        ],
+      },
+      {
+        id: 'towers-in-time.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'towers-in-time.score.description',
+          'towers-in-time.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'towers-in-time.setup.dealing',
+        'towers-in-time.rules.objective',
+      ],
+      play_card: [
+        'towers-in-time.rules.gameplay',
+      ],
+    },
   },
 }

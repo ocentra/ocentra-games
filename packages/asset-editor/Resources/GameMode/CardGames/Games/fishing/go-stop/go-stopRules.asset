@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Execute full Go Stop turn flow: hand play capture, stock reveal capture, bonus events, score recompute, then go-stop decision when threshold is reached.',
-    Player: 'Capture matching month cards, track scoring categories, and decide correctly when to stop versus declare go.',
+    LLM: 'On turn, play one hand card to match month cards in the center layout and capture according to matching rules, then reveal the top stock card and resolve captures again. Special capture events and bonus transfers apply when specific board states occur. When your captures reach the minimum score, you may stop to end the hand and collect, or choose go to continue and increase potential payout while risking a loss to an opponent.',
+    Player: 'On turn, play one hand card to match month cards in the center layout and capture according to matching rules, then reveal the top stock card and resolve captures again. Special capture events and bonus transfers apply when specific board states occur. When your captures reach the minimum score, you may stop to end the hand and collect, or choose go to continue and increase potential payout while risking a loss to an opponent.',
     objective: 'Reach a valid scoring state through captures, then decide to stop for payout or continue by declaring go.',
     gameplay: 'On turn, play one hand card to match month cards in the center layout and capture according to matching rules, then reveal the top stock card and resolve captures again. Special capture events and bonus transfers apply when specific board states occur. When your captures reach the minimum score, you may stop to end the hand and collect, or choose go to continue and increase potential payout while risking a loss to an opponent.',
     keyRules: [
@@ -53,10 +53,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-3 player(s), 7 card(s) per player, 1 deck(s), initial visibility mixed.',
-      'Opening flow: start in deal; dealer may use deal before play_round.',
-      'Scoring check: Scores are built from captured card categories and named combinations; payout multipliers increase after each successful go in many tables. Expected outcome: NA.',
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Reach a valid scoring state through captures, then decide to stop for payout or continue by declaring go.',
+      'Turn-flow example: On turn, play one hand card to match month cards in the center layout and capture according to matching rules, then reveal the top stock card and resolve captures again. Special capture events and bonus transfers apply when specific board states occur. When your captures reach the minimum score, you may stop to end the hand and collect, or choose go to continue and increase potential payout while risking a loss to an opponent.',
+      'Scoring example: Scores are built from captured card categories and named combinations; payout multipliers increase after each successful go in many tables. Hand winner is the first player to stop after reaching threshold, or an opponent who overtakes and ends the hand under agreed rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'go-stop.rules.objective',
+        title: 'Objective',
+        text: 'Reach a valid scoring state through captures, then decide to stop for payout or continue by declaring go.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'go-stop.rules.gameplay',
+        title: 'Turn flow',
+        text: 'On turn, play one hand card to match month cards in the center layout and capture according to matching rules, then reveal the top stock card and resolve captures again. Special capture events and bonus transfers apply when specific board states occur. When your captures reach the minimum score, you may stop to end the hand and collect, or choose go to continue and increase potential payout while risking a loss to an opponent.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'go-stop.setup.players',
+        title: 'Players',
+        text: '2 or 3 active players; larger groups may rotate players between hands.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'go-stop.setup.deck',
+        title: 'Deck',
+        text: '48 hwatu cards (12 months x 4 cards), with optional jokers depending on table rules.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'go-stop.setup.equipment',
+        title: 'Equipment',
+        text: 'Score sheet or chips for multi-hand accounting.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'go-stop.setup.dealing',
+        title: 'Deal',
+        text: 'Two-player game: 10 cards each and 8 to table. Three-player game: 7 cards each and 6 to table. Remaining cards form stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'go-stop.score.win-condition',
+        title: 'Win condition',
+        text: 'Hand winner is the first player to stop after reaching threshold, or an opponent who overtakes and ends the hand under agreed rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'go-stop.score.description',
+        title: 'Scoring',
+        text: 'Scores are built from captured card categories and named combinations; payout multipliers increase after each successful go in many tables.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'go-stop.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Cards match by month (flower), not by conventional suit and rank.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'go-stop.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Each turn resolves both a hand play and a stock reveal, with captures after each step.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'go-stop.rules.key.3',
+        title: 'Key rule 3',
+        text: "Go-stop choice is only available after reaching the table's minimum scoring threshold.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'go-stop.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Exact bonus and penalty multipliers (including jokers and bombs) must be agreed before play.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'go-stop.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'go-stop.rules.objective',
+          'go-stop.rules.gameplay',
+        ],
+      },
+      {
+        id: 'go-stop.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'go-stop.setup.players',
+          'go-stop.setup.deck',
+          'go-stop.setup.equipment',
+          'go-stop.setup.dealing',
+        ],
+      },
+      {
+        id: 'go-stop.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'go-stop.rules.key.1',
+          'go-stop.rules.key.2',
+          'go-stop.rules.key.3',
+          'go-stop.rules.key.4',
+        ],
+      },
+      {
+        id: 'go-stop.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'go-stop.score.description',
+          'go-stop.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'go-stop.setup.dealing',
+        'go-stop.rules.objective',
+      ],
+      deal: [
+        'go-stop.rules.gameplay',
+      ],
+      play_card: [
+        'go-stop.rules.gameplay',
+      ],
+      resolve_score: [
+        'go-stop.rules.gameplay',
+      ],
+      end_hand: [
+        'go-stop.rules.gameplay',
+      ],
+      draw_stock: [
+        'go-stop.rules.gameplay',
+      ],
+      go: [
+        'go-stop.rules.gameplay',
+      ],
+      stop: [
+        'go-stop.rules.gameplay',
+      ],
+    },
   },
 }

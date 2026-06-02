@@ -55,10 +55,186 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 15 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in bid_phase; current_player may use bid, pass before meld_phase.',
-      "Scoring check: Meld points (runs, marriages, pinochle, dix, arounds) plus trick points (aces 11, tens 10, kings 4, queens 3, jacks 2, nines 0; last trick 10). Bid winner's three discards count toward their trick total. Total trick points 25 per hand. If bidder fails contract, score minus the bid and meld cancelled. Expected outcome: 100.",
+      'Setup example: 15 card(s) per player.',
+      'Rule example: Be the first to reach 100 points by bidding, melding, and taking tricks. Each hand: auction to name trump, meld for points, then play 15 tricks. Bid winner must make their contract (meld plus trick points) or lose the bid amount.',
+      "Turn-flow example: Dealer deals 15 cards to each player and 3 to the kitty. Player to dealer's left opens bidding (minimum 20, or 19 if dealer); bids increase by 1. With meld, opening player must bid or pass passes obligation. Highest bidder takes the kitty, declares trump, and all three show melds. Bid winner discards 3 cards to reduce to 15; melds return to hands. High bidder leads; follow suit when possible, trump when void. Must take at least one trick to count meld. Trick points plus bid winner's three discards total 25; bidder must meet contract or score minus the bid.",
+      "Scoring example: Meld points (runs, marriages, pinochle, dix, arounds) plus trick points (aces 11, tens 10, kings 4, queens 3, jacks 2, nines 0; last trick 10). Bid winner's three discards count toward their trick total. Total trick points 25 per hand. If bidder fails contract, score minus the bid and meld cancelled. First player to reach 100 points wins. Ties: play another hand, or extend to 125 then 150, or high bidder on that hand wins..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pinochle-three-player.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to reach 100 points by bidding, melding, and taking tricks. Each hand: auction to name trump, meld for points, then play 15 tricks. Bid winner must make their contract (meld plus trick points) or lose the bid amount.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pinochle-three-player.rules.gameplay',
+        title: 'Turn flow',
+        text: "Dealer deals 15 cards to each player and 3 to the kitty. Player to dealer's left opens bidding (minimum 20, or 19 if dealer); bids increase by 1. With meld, opening player must bid or pass passes obligation. Highest bidder takes the kitty, declares trump, and all three show melds. Bid winner discards 3 cards to reduce to 15; melds return to hands. High bidder leads; follow suit when possible, trump when void. Must take at least one trick to count meld. Trick points plus bid winner's three discards total 25; bidder must meet contract or score minus the bid.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pinochle-three-player.setup.players',
+        title: 'Players',
+        text: 'Three players; each plays for themselves.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pinochle-three-player.setup.deck',
+        title: 'Deck',
+        text: '48-card Pinochle deck (two copies of 9 through Ace in each of four suits).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pinochle-three-player.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards only.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pinochle-three-player.setup.dealing',
+        title: 'Deal',
+        text: "Dealer deals 15 cards to each player and 3 cards to the kitty (middle). Deal rotates clockwise; packets of three or four at a time, starting with player to dealer's left.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pinochle-three-player.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach 100 points wins. Ties: play another hand, or extend to 125 then 150, or high bidder on that hand wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pinochle-three-player.score.description',
+        title: 'Scoring',
+        text: "Meld points (runs, marriages, pinochle, dix, arounds) plus trick points (aces 11, tens 10, kings 4, queens 3, jacks 2, nines 0; last trick 10). Bid winner's three discards count toward their trick total. Total trick points 25 per hand. If bidder fails contract, score minus the bid and meld cancelled.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pinochle-three-player.rules.key.1',
+        title: 'Key rule 1',
+        text: '3 players',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pinochle-three-player.rules.key.2',
+        title: 'Key rule 2',
+        text: '15 cards each, 3-card kitty',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pinochle-three-player.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Auction: bid or pass, minimum 20 (19 for dealer)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pinochle-three-player.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Bid winner takes kitty, declares trump, discards 3',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'pinochle-three-player.rules.key.5',
+        title: 'Key rule 5',
+        text: 'All meld; bid winner leads; follow suit, must overtake when able (or house rules)',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'pinochle-three-player.rules.key.6',
+        title: 'Key rule 6',
+        text: 'First to 100 points wins',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pinochle-three-player.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pinochle-three-player.rules.objective',
+          'pinochle-three-player.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pinochle-three-player.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pinochle-three-player.setup.players',
+          'pinochle-three-player.setup.deck',
+          'pinochle-three-player.setup.equipment',
+          'pinochle-three-player.setup.dealing',
+        ],
+      },
+      {
+        id: 'pinochle-three-player.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pinochle-three-player.rules.key.1',
+          'pinochle-three-player.rules.key.2',
+          'pinochle-three-player.rules.key.3',
+          'pinochle-three-player.rules.key.4',
+          'pinochle-three-player.rules.key.5',
+          'pinochle-three-player.rules.key.6',
+        ],
+      },
+      {
+        id: 'pinochle-three-player.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pinochle-three-player.score.description',
+          'pinochle-three-player.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pinochle-three-player.setup.dealing',
+        'pinochle-three-player.rules.objective',
+      ],
+      declare: [
+        'pinochle-three-player.rules.gameplay',
+      ],
+      play_card: [
+        'pinochle-three-player.rules.gameplay',
+      ],
+      pass: [
+        'pinochle-three-player.rules.gameplay',
+      ],
+      bid: [
+        'pinochle-three-player.rules.gameplay',
+      ],
+      meld: [
+        'pinochle-three-player.rules.gameplay',
+      ],
+    },
   },
 }

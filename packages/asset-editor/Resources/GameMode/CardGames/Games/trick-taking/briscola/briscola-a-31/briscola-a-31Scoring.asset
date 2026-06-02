@@ -11,7 +11,11 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Card points are counted using Briscola values (Ace 11, Three 10, King 4, Queen 3, Jack 2; others 0). In Briscola a 31, play stops as soon as a player claims to have at least 31 points in their tricks; if the claim is correct they win, and if it is incorrect the opponent wins the hand.',
+      winCondition: 'First player to correctly claim 31 or more card points in their tricks wins the hand; an incorrect claim immediately gives the win to the opponent.',
+      targetScore: 31,
+      scoringDirection: 'high_wins',
+      cardValues: {
         Ace: '11 points.',
         Three: '10 points.',
         King: '4 points.',
@@ -19,6 +23,32 @@
         Jack: '2 points.',
         Others: '0 points; non-picture cards have no point value.',
       },
+      sourceCardValues: {
+        raw: {
+          Ace: '11 points.',
+          Three: '10 points.',
+          King: '4 points.',
+          Queen: '3 points.',
+          Jack: '2 points.',
+          Others: '0 points; non-picture cards have no point value.',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        targetScore: 'Target score is explicitly 31 card points; this note is retained for compatibility.',
+        scoringDirection: 'Scoring direction is explicitly high_wins; this note is retained for compatibility.',
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: '',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,

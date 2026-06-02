@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: FilkÃ³ (Hungarian partnership trick-taker). 32-card German deck, 8 cards per player. Trump set by dealer's bottom card. 120 total points available. Point values: A=11, 10=10, K=4, Over-Knave=3, Under-Knave=2. 8 tricks per round. Lead player (right of dealer) starts anticlockwise. Must follow suit; must trump if void. Winning team captures 61+ points to become Masters; losers become Servants (must deal) until they win.",
-    Player: 'Welcome to FilkÃ³! You and your partner compete to capture 61+ points from the 120 available. Cards: Ace (11), Ten (10), King (4), Over-Knave (3), Under-Knave (2). Must follow suit and trump when void. The winning team becomes Masters; the losing team becomes Servants (dealers) until they win.',
+    LLM: "1. Lead: First player to dealer's right leads.\n2. Must Follow Suit: You must play a card of the suit led.\n3. Must Trump: If you have no cards of the led suit, you ARE forced to play a trump if you have one. You cannot discard if a trump is available.",
+    Player: "1. Lead: First player to dealer's right leads.\n2. Must Follow Suit: You must play a card of the suit led.\n3. Must Trump: If you have no cards of the led suit, you ARE forced to play a trump if you have one. You cannot discard if a trump is available.",
     objective: "Capture at least 61 points in a round to be safe; capture major tricks to become the 'Master' (Mester).",
     gameplay: "1. Lead: First player to dealer's right leads.\n2. Must Follow Suit: You must play a card of the suit led.\n3. Must Trump: If you have no cards of the led suit, you ARE forced to play a trump if you have one. You cannot discard if a trump is available.",
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 4-6 player(s), 8 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Point-based scoring with 120 total points available. Teams must capture 61+ points to avoid Slave status. Expected outcome: Team capturing 61+ points wins the round and becomes Masters. Team with 60 or fewer becomes Servants (dealers) until they win..',
+      'Setup example: 8 card(s) per player.',
+      "Rule example: Capture at least 61 points in a round to be safe; capture major tricks to become the 'Master' (Mester).",
+      "Turn-flow example: 1. Lead: First player to dealer's right leads.\n2. Must Follow Suit: You must play a card of the suit led.\n3. Must Trump: If you have no cards of the led suit, you ARE forced to play a trump if you have one. You cannot discard if a trump is available.",
+      'Scoring example: Point-based scoring with 120 total points available. Teams must capture 61+ points to avoid Slave status. Team capturing 61+ points wins the round and becomes Masters. Team with 60 or fewer becomes Servants (dealers) until they win..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'filk.rules.objective',
+        title: 'Objective',
+        text: "Capture at least 61 points in a round to be safe; capture major tricks to become the 'Master' (Mester).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'filk.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Lead: First player to dealer's right leads.\n2. Must Follow Suit: You must play a card of the suit led.\n3. Must Trump: If you have no cards of the led suit, you ARE forced to play a trump if you have one. You cannot discard if a trump is available.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'filk.setup.players',
+        title: 'Players',
+        text: '4 players in two partnerships (standard). 5 and 6ndplayer versions exist using modified decks.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'filk.setup.deck',
+        title: 'Deck',
+        text: '32-card German deck. Suits: Acorns, Leaves, Hearts, Bells.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'filk.setup.equipment',
+        title: 'Equipment',
+        text: '32-card German deck. Suits: Acorns, Leaves, Hearts, Bells.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'filk.setup.dealing',
+        title: 'Deal',
+        text: "Anticlockwise. 8 cards per player (in the 4ndplayer game). The dealer's bottom card determines the trump suit (excluding Over-Knaves).",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'filk.score.win-condition',
+        title: 'Win condition',
+        text: 'Team capturing 61+ points wins the round and becomes Masters. Team with 60 or fewer becomes Servants (dealers) until they win.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'filk.score.description',
+        title: 'Scoring',
+        text: 'Point-based scoring with 120 total points available. Teams must capture 61+ points to avoid Slave status.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'filk.rules.key.1',
+        title: 'Key rule 1',
+        text: "The Master/Servant Loop: When a team wins 6 or more total points/trimmings, they nominate a loser as the 'Servant'. The Servant must stay in that role (dealing every hand) until they win.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'filk.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Over-Knaves (FilkÃ³): These are always treated as members of the trump suit.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'filk.rules.key.3',
+        title: 'Key rule 3',
+        text: "Social Forfeits: Historically, the 'Servant' might have to remove their hat or play while standing.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'filk.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'filk.rules.objective',
+          'filk.rules.gameplay',
+        ],
+      },
+      {
+        id: 'filk.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'filk.setup.players',
+          'filk.setup.deck',
+          'filk.setup.equipment',
+          'filk.setup.dealing',
+        ],
+      },
+      {
+        id: 'filk.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'filk.rules.key.1',
+          'filk.rules.key.2',
+          'filk.rules.key.3',
+        ],
+      },
+      {
+        id: 'filk.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'filk.score.description',
+          'filk.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'filk.setup.dealing',
+        'filk.rules.objective',
+      ],
+      play_card: [
+        'filk.rules.gameplay',
+      ],
+    },
   },
 }

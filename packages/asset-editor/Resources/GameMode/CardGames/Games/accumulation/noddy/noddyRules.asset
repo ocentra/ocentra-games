@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Noddy. Type: Point-trick (Cribbage ancestor). 2-4 players. 4 cards each, no crib. Scoring: fifteens=2, pairs=2, runs=1 per card, flush=varies. Ace=1 only. Target: 31 or 61.',
-    Player: 'Play Noddy, the ancestor of Cribbage. Four cards each, no crib. Score points for fifteens, pairs, runs, and flushes. First to 31 wins!',
+    LLM: '1. Four cards dealt to each player. 2. Non-dealer cuts for starter card (turn-up). 3. Players alternately play cards to the pile, pegging points for fifteens, pairs, runs during play. 4. After all cards played, hands are counted for combinations. 5. Starter card applies to both hands.',
+    Player: '1. Four cards dealt to each player. 2. Non-dealer cuts for starter card (turn-up). 3. Players alternately play cards to the pile, pegging points for fifteens, pairs, runs during play. 4. After all cards played, hands are counted for combinations. 5. Starter card applies to both hands.',
     objective: 'Score points through card combinations (fifteens, pairs, runs, flushes) and be first to reach the target score (typically 31 or 61).',
     gameplay: '1. Four cards dealt to each player. 2. Non-dealer cuts for starter card (turn-up). 3. Players alternately play cards to the pile, pegging points for fifteens, pairs, runs during play. 4. After all cards played, hands are counted for combinations. 5. Starter card applies to both hands.',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before cut.',
-      'Scoring check: Pegging points during play plus hand counting. Target typically 31 or 61. Expected outcome: 31.',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Score points through card combinations (fifteens, pairs, runs, flushes) and be first to reach the target score (typically 31 or 61).',
+      'Turn-flow example: 1. Four cards dealt to each player. 2. Non-dealer cuts for starter card (turn-up). 3. Players alternately play cards to the pile, pegging points for fifteens, pairs, runs during play. 4. After all cards played, hands are counted for combinations. 5. Starter card applies to both hands.',
+      'Scoring example: Pegging points during play plus hand counting. Target typically 31 or 61. First to reach target score (31 or 61)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'noddy.rules.objective',
+        title: 'Objective',
+        text: 'Score points through card combinations (fifteens, pairs, runs, flushes) and be first to reach the target score (typically 31 or 61).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'noddy.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Four cards dealt to each player. 2. Non-dealer cuts for starter card (turn-up). 3. Players alternately play cards to the pile, pegging points for fifteens, pairs, runs during play. 4. After all cards played, hands are counted for combinations. 5. Starter card applies to both hands.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'noddy.setup.players',
+        title: 'Players',
+        text: '2-4 players; primarily a two-player game.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'noddy.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack. Cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2. In Noddy, Ace is low only (counts 1).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'noddy.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, Noddy board (similar to Cribbage board but simpler), pegs for scoring.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'noddy.setup.dealing',
+        title: 'Deal',
+        text: "Four cards dealt to each player (unlike Cribbage's six). No crib in Noddy.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'noddy.score.win-condition',
+        title: 'Win condition',
+        text: 'First to reach target score (31 or 61).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'noddy.score.description',
+        title: 'Scoring',
+        text: 'Pegging points during play plus hand counting. Target typically 31 or 61.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'noddy.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Four cards dealt (no crib)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'noddy.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Ace always counts 1 (never 11)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'noddy.rules.key.3',
+        title: 'Key rule 3',
+        text: "Starter card (turn-up) counts for both players' hands",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'noddy.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Play to 31 without exceeding during pegging',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'noddy.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Similar pegging and counting to Cribbage but simpler',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'noddy.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'noddy.rules.objective',
+          'noddy.rules.gameplay',
+        ],
+      },
+      {
+        id: 'noddy.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'noddy.setup.players',
+          'noddy.setup.deck',
+          'noddy.setup.equipment',
+          'noddy.setup.dealing',
+        ],
+      },
+      {
+        id: 'noddy.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'noddy.rules.key.1',
+          'noddy.rules.key.2',
+          'noddy.rules.key.3',
+          'noddy.rules.key.4',
+          'noddy.rules.key.5',
+        ],
+      },
+      {
+        id: 'noddy.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'noddy.score.description',
+          'noddy.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'noddy.setup.dealing',
+        'noddy.rules.objective',
+      ],
+      deal: [
+        'noddy.rules.gameplay',
+      ],
+      play_card: [
+        'noddy.rules.gameplay',
+      ],
+      cut: [
+        'noddy.rules.gameplay',
+      ],
+      count_hand: [
+        'noddy.rules.gameplay',
+      ],
+    },
   },
 }

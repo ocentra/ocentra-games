@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Gilet. Logic: Win stakes by holding the strongest qualifying combination or by outlasting opponents in the betting comparison.',
-    Player: 'Gilet is a sixteenth-century Italian gambling and matching-vying card game related to Brelan, Primero, and flux-style comparison games.',
+    LLM: 'Players stake, compare card combinations, and resolve the pot according to matching or sequence-style hand values.',
+    Player: 'Players stake, compare card combinations, and resolve the pot according to matching or sequence-style hand values.',
     objective: 'Win stakes by holding the strongest qualifying combination or by outlasting opponents in the betting comparison.',
     gameplay: 'Players stake, compare card combinations, and resolve the pot according to matching or sequence-style hand values.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The best qualifying combination wins the stake or pot. Expected outcome: Win stakes by holding the strongest qualifying combination or by outlasting opponents in the betting comparison..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Win stakes by holding the strongest qualifying combination or by outlasting opponents in the betting comparison.',
+      'Turn-flow example: Players stake, compare card combinations, and resolve the pot according to matching or sequence-style hand values.',
+      'Scoring example: The best qualifying combination wins the stake or pot. Win stakes by holding the strongest qualifying combination or by outlasting opponents in the betting comparison..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'gilet.rules.objective',
+        title: 'Objective',
+        text: 'Win stakes by holding the strongest qualifying combination or by outlasting opponents in the betting comparison.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'gilet.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players stake, compare card combinations, and resolve the pot according to matching or sequence-style hand values.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'gilet.setup.players',
+        title: 'Players',
+        text: '2-4 players use the table arrangement described for Gilet.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'gilet.setup.deck',
+        title: 'Deck',
+        text: '32-card Italian pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'gilet.setup.equipment',
+        title: 'Equipment',
+        text: '32-card Italian pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'gilet.setup.dealing',
+        title: 'Deal',
+        text: 'Deal hands from a 32-card Italian pack, then resolve stakes by comparing the relevant card combinations.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'gilet.score.win-condition',
+        title: 'Win condition',
+        text: 'Win stakes by holding the strongest qualifying combination or by outlasting opponents in the betting comparison.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'gilet.score.description',
+        title: 'Scoring',
+        text: 'The best qualifying combination wins the stake or pot.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'gilet.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two to four players.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'gilet.rules.key.2',
+        title: 'Key rule 2',
+        text: '32-card Italian pack.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'gilet.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Combination comparison drives winning.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'gilet.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Gambling stakes are central.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'gilet.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Related to early vying games.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'gilet.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'gilet.rules.objective',
+          'gilet.rules.gameplay',
+        ],
+      },
+      {
+        id: 'gilet.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'gilet.setup.players',
+          'gilet.setup.deck',
+          'gilet.setup.equipment',
+          'gilet.setup.dealing',
+        ],
+      },
+      {
+        id: 'gilet.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'gilet.rules.key.1',
+          'gilet.rules.key.2',
+          'gilet.rules.key.3',
+          'gilet.rules.key.4',
+          'gilet.rules.key.5',
+        ],
+      },
+      {
+        id: 'gilet.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'gilet.score.description',
+          'gilet.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'gilet.setup.dealing',
+        'gilet.rules.objective',
+      ],
+      play_card: [
+        'gilet.rules.gameplay',
+      ],
+    },
   },
 }

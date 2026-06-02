@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Guadalupe. Objective: Be the first player to get rid of all your cards by melding them in valid combinations.',
-    Player: 'Guadalupe: play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: '1. On your turn, draw 1-2 cards from stock, then meld; OR draw 3 cards without melding\n2. Must begin by drawing at least one card\n3. If draw second card, must either meld or draw third card\n4. If draw third card, cannot meld this turn\n5. Melds are sequences (3+ consecutive cards) or groups (3+ same rank, different suits)\n6. Ace can be high or low but not interior (Q-K-A and A-2-3 valid, K-A-2 not valid)\n7. Jokers are wild and must be declared when played\n8. Can rearrange existing table melds when adding new cards\n9. All table cards must end in valid melds after your turn',
+    Player: '1. On your turn, draw 1-2 cards from stock, then meld; OR draw 3 cards without melding\n2. Must begin by drawing at least one card\n3. If draw second card, must either meld or draw third card\n4. If draw third card, cannot meld this turn\n5. Melds are sequences (3+ consecutive cards) or groups (3+ same rank, different suits)\n6. Ace can be high or low but not interior (Q-K-A and A-2-3 valid, K-A-2 not valid)\n7. Jokers are wild and must be declared when played\n8. Can rearrange existing table melds when adding new cards\n9. All table cards must end in valid melds after your turn',
     objective: 'Be the first player to get rid of all your cards by melding them in valid combinations. Score the lowest penalty points over multiple hands.',
     gameplay: '1. On your turn, draw 1-2 cards from stock, then meld; OR draw 3 cards without melding\n2. Must begin by drawing at least one card\n3. If draw second card, must either meld or draw third card\n4. If draw third card, cannot meld this turn\n5. Melds are sequences (3+ consecutive cards) or groups (3+ same rank, different suits)\n6. Ace can be high or low but not interior (Q-K-A and A-2-3 valid, K-A-2 not valid)\n7. Jokers are wild and must be declared when played\n8. Can rearrange existing table melds when adding new cards\n9. All table cards must end in valid melds after your turn',
     keyRules: [
@@ -55,10 +55,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: first player to meld will have to play one or more complete sequences or groups from hand. Expected outcome: 150.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the first player to get rid of all your cards by melding them in valid combinations. Score the lowest penalty points over multiple hands.',
+      'Turn-flow example: 1. On your turn, draw 1-2 cards from stock, then meld; OR draw 3 cards without melding\n2. Must begin by drawing at least one card\n3. If draw second card, must either meld or draw third card\n4. If draw third card, cannot meld this turn\n5. Melds are sequences (3+ consecutive cards) or groups (3+ same rank, different suits)\n6. Ace can be high or low but not interior (Q-K-A and A-2-3 valid, K-A-2 not valid)\n7. Jokers are wild and must be declared when played\n8. Can rearrange existing table melds when adding new cards\n9. All table cards must end in valid melds after your turn',
+      'Scoring example: first player to meld will have to play one or more complete sequences or groups from hand. first player to meld will have to play one or more complete sequences or groups from hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'guadalupe.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to get rid of all your cards by melding them in valid combinations. Score the lowest penalty points over multiple hands.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'guadalupe.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. On your turn, draw 1-2 cards from stock, then meld; OR draw 3 cards without melding\n2. Must begin by drawing at least one card\n3. If draw second card, must either meld or draw third card\n4. If draw third card, cannot meld this turn\n5. Melds are sequences (3+ consecutive cards) or groups (3+ same rank, different suits)\n6. Ace can be high or low but not interior (Q-K-A and A-2-3 valid, K-A-2 not valid)\n7. Jokers are wild and must be declared when played\n8. Can rearrange existing table melds when adding new cards\n9. All table cards must end in valid melds after your turn',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'guadalupe.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 5\nOptimal Players: 3-4\nPartnerships: No',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'guadalupe.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card\nNumber of Decks: 1 for 2 players (53 with joker), 2 for 3-5 players (106 with 2 jokers)',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'guadalupe.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck(s)\nScore sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'guadalupe.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: 10\nDealing Pattern: Standard clockwise deal\nRemaining cards form stock pile',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'guadalupe.score.win-condition',
+        title: 'Win condition',
+        text: 'first player to meld will have to play one or more complete sequences or groups from hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'guadalupe.score.description',
+        title: 'Scoring',
+        text: 'first player to meld will have to play one or more complete sequences or groups from hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'guadalupe.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Can draw 1-2 cards and meld, or draw 3 without melding',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'guadalupe.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must add at least one new card from hand when rearranging',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'guadalupe.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Cannot take cards from table back to hand',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'guadalupe.rules.key.4',
+        title: 'Key rule 4',
+        text: "Jokers can be moved if their declared rank/suit doesn't change",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'guadalupe.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Ace can be high or low but not interior of sequence',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'guadalupe.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Can knock with 5 or fewer points in hand to end play',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'guadalupe.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'guadalupe.rules.objective',
+          'guadalupe.rules.gameplay',
+        ],
+      },
+      {
+        id: 'guadalupe.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'guadalupe.setup.players',
+          'guadalupe.setup.deck',
+          'guadalupe.setup.equipment',
+          'guadalupe.setup.dealing',
+        ],
+      },
+      {
+        id: 'guadalupe.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'guadalupe.rules.key.1',
+          'guadalupe.rules.key.2',
+          'guadalupe.rules.key.3',
+          'guadalupe.rules.key.4',
+          'guadalupe.rules.key.5',
+          'guadalupe.rules.key.6',
+        ],
+      },
+      {
+        id: 'guadalupe.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'guadalupe.score.description',
+          'guadalupe.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'guadalupe.setup.dealing',
+        'guadalupe.rules.objective',
+      ],
+      play_card: [
+        'guadalupe.rules.gameplay',
+      ],
+    },
   },
 }

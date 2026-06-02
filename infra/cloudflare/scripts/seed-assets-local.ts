@@ -39,6 +39,7 @@ interface BucketObjectSummary {
 
 const execAsync = promisify(exec);
 const MAX_UPLOAD_RETRIES = 3;
+const WORKER_ASSET_API_MAX_BYTES = 10 * 1024 * 1024;
 const DEFAULT_PARALLELISM = typeof os.availableParallelism === 'function'
   ? os.availableParallelism()
   : Math.max(1, os.cpus().length);
@@ -46,6 +47,23 @@ const DEFAULT_SEED_CONCURRENCY = Math.max(2, Math.min(8, Math.floor(DEFAULT_PARA
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function shouldUseWorkerAssetApiForFile(useWorkerAssetApi: boolean, file: FileEntry): boolean {
+  return useWorkerAssetApi && file.size < WORKER_ASSET_API_MAX_BYTES;
+}
+
+function describeUploadTransport(useWorkerAssetApi: boolean, files: FileEntry[]): string {
+  if (!useWorkerAssetApi) {
+    return 'wrangler R2 CLI';
+  }
+
+  const wranglerFallbackCount = files.filter((file) => !shouldUseWorkerAssetApiForFile(useWorkerAssetApi, file)).length;
+  if (wranglerFallbackCount === 0) {
+    return 'worker asset API';
+  }
+
+  return `worker asset API with wrangler R2 CLI fallback for ${wranglerFallbackCount} large file(s)`;
 }
 
 async function runWithConcurrency<TInput, TOutput>(
@@ -554,19 +572,11 @@ async function main(): Promise<void> {
         } else {
           console.log(`[seed-assets-${modeLabel}] detected ${filesToUpload.length} changed file(s); uploading incrementally.`);
         }
-        if (useWorkerAssetApi) {
-          console.log(`[seed-assets-${modeLabel}] upload transport: worker asset API.`);
-        } else {
-          console.log(`[seed-assets-${modeLabel}] upload transport: wrangler R2 CLI.`);
-        }
+        console.log(`[seed-assets-${modeLabel}] upload transport: ${describeUploadTransport(useWorkerAssetApi, filesToUpload)}.`);
       }
     } else if (missingBucketKeys.size > 0) {
       filesToUpload = files.filter((file) => missingBucketKeys.has(file.relativePath));
-      if (useWorkerAssetApi) {
-        console.log(`[seed-assets-${modeLabel}] upload transport: worker asset API.`);
-      } else {
-        console.log(`[seed-assets-${modeLabel}] upload transport: wrangler R2 CLI.`);
-      }
+      console.log(`[seed-assets-${modeLabel}] upload transport: ${describeUploadTransport(useWorkerAssetApi, filesToUpload)}.`);
     }
 
     const progressFileHashes: Record<string, string> = { ...effectivePreviousFileHashes };
@@ -593,7 +603,7 @@ async function main(): Promise<void> {
 
     await runWithConcurrency(filesToUpload, uploadConcurrency, async (file) => {
       try {
-        if (useWorkerAssetApi) {
+        if (shouldUseWorkerAssetApiForFile(useWorkerAssetApi, file)) {
           await runWorkerPut(verifyBaseUrl, file.relativePath, file.fullPath);
         } else {
           await runWranglerPut(

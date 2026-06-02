@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Ferbli. Logic: See rules.objective and rules.gameplay.',
-    Player: "Ferbli is a traditional Hungarian vying (betting) game that was extremely popular in the 19th and early 20th centuries. It is closely related to Poker and is played with a 32ndcard Germanndsuited deck. The game involves multiple rounds of betting where players can 'vye' (bet) or 'pass'. Hand rankings are based on combinations of rank and suit, with 'Four of a Kind' and the 'Banda' (four cards of the same suit) being the most soughtndafter hands. In rural Hungary and Transylvania, it remains a cultural staple of cafÃ© life.",
+    LLM: 'Players are dealt 4 cards in two batches. Betting proceeds with players able to bet, call, or fold. The strongest hands are Four of a Kind and the Banda (four cards of same suit). The hand rankings follow a hierarchy similar to Poker but adapted for the 32-card deck.',
+    Player: 'Players are dealt 4 cards in two batches. Betting proceeds with players able to bet, call, or fold. The strongest hands are Four of a Kind and the Banda (four cards of same suit). The hand rankings follow a hierarchy similar to Poker but adapted for the 32-card deck.',
     objective: 'Win the pot either by having the best four-card ha- or by bluffing opponents into folding.',
     gameplay: 'Players are dealt 4 cards in two batches. Betting proceeds with players able to bet, call, or fold. The strongest hands are Four of a Kind and the Banda (four cards of same suit). The hand rankings follow a hierarchy similar to Poker but adapted for the 32-card deck.',
     keyRules: [
@@ -52,10 +52,162 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-7 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; system may use bet, call, raise, fold, check before round end.',
-      'Scoring check: Win the pot either by having the best fourndcard hand or by bluffing opponents into folding. Expected outcome: Win the pot either by having the best fourndcard hand or by bluffing opponents into folding..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the pot either by having the best four-card ha- or by bluffing opponents into folding.',
+      'Turn-flow example: Players are dealt 4 cards in two batches. Betting proceeds with players able to bet, call, or fold. The strongest hands are Four of a Kind and the Banda (four cards of same suit). The hand rankings follow a hierarchy similar to Poker but adapted for the 32-card deck.',
+      'Scoring example: Win the pot either by having the best fourndcard hand or by bluffing opponents into folding. Win the pot either by having the best fourndcard hand or by bluffing opponents into folding..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'ferbli.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot either by having the best four-card ha- or by bluffing opponents into folding.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'ferbli.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players are dealt 4 cards in two batches. Betting proceeds with players able to bet, call, or fold. The strongest hands are Four of a Kind and the Banda (four cards of same suit). The hand rankings follow a hierarchy similar to Poker but adapted for the 32-card deck.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'ferbli.setup.players',
+        title: 'Players',
+        text: '2 to 7 players. Best with 4 to 5.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'ferbli.setup.deck',
+        title: 'Deck',
+        text: '32-card German deck (William Tell design). Suits: Acorns, Leaves, Bells (Gourds), Hearts.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'ferbli.setup.equipment',
+        title: 'Equipment',
+        text: '32-card German deck (William Tell design). Suits: Acorns, Leaves, Bells (Gourds), Hearts.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'ferbli.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 4 cards in two batches of two. Dealing a- play proceed counterclockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'ferbli.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the pot either by having the best fourndcard hand or by bluffing opponents into folding.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'ferbli.score.description',
+        title: 'Scoring',
+        text: 'Win the pot either by having the best fourndcard hand or by bluffing opponents into folding.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'ferbli.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Play Again: If only one player bets and no one calls, they take the pot without showing.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'ferbli.rules.key.2',
+        title: 'Key rule 2',
+        text: "Positions: In a tie of hand rank and value, the player closest to the dealer's right (the 'Mano' or lead) wins because they had to act first.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'ferbli.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Aces (Pigs): The Ace is the highest-value card both in rank and points (11).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'ferbli.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'ferbli.rules.objective',
+          'ferbli.rules.gameplay',
+        ],
+      },
+      {
+        id: 'ferbli.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'ferbli.setup.players',
+          'ferbli.setup.deck',
+          'ferbli.setup.equipment',
+          'ferbli.setup.dealing',
+        ],
+      },
+      {
+        id: 'ferbli.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'ferbli.rules.key.1',
+          'ferbli.rules.key.2',
+          'ferbli.rules.key.3',
+        ],
+      },
+      {
+        id: 'ferbli.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'ferbli.score.description',
+          'ferbli.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'ferbli.setup.dealing',
+        'ferbli.rules.objective',
+      ],
+      fold: [
+        'ferbli.rules.gameplay',
+      ],
+      check: [
+        'ferbli.rules.gameplay',
+      ],
+      call: [
+        'ferbli.rules.gameplay',
+      ],
+      bet: [
+        'ferbli.rules.gameplay',
+      ],
+      raise: [
+        'ferbli.rules.gameplay',
+      ],
+      play_card: [
+        'ferbli.rules.gameplay',
+      ],
+    },
   },
 }

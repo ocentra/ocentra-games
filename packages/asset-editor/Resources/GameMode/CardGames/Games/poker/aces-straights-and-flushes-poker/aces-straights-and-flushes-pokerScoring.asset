@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Pot game. Best high hand under bug-joker rule wins.',
+      winCondition: 'Highest valid five-card poker hand at showdown wins.',
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: 'Pot game; no fixed target score; play ends at showdown.',
+        cardValues: 'Standard poker evaluates full five-card hands; no separate per-rank card value table is needed.',
+      },
+      splitRules: 'Tied high hands split the pot evenly.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'poker_ranking',
     patternMultipliers: null,
     priorityOrder: [],

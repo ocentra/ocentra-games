@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Bluchern. Logic: Win the stake by choosing or receiving the favourable packet or card result.',
-    Player: 'Bluchern is a simple historical gambling card game for any number of players using either a 52-card or 32-card pack.',
+    LLM: 'Players place stakes and reveal cards or packets in turn; the simple chance result determines whether the stake is won or lost.',
+    Player: 'Players place stakes and reveal cards or packets in turn; the simple chance result determines whether the stake is won or lost.',
     objective: 'Win the stake by choosing or receiving the favourable packet or card result.',
     gameplay: 'Players place stakes and reveal cards or packets in turn; the simple chance result determines whether the stake is won or lost.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-12 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Players win or lose stakes according to the revealed card or packet result. Expected outcome: Win the stake by choosing or receiving the favourable packet or card result..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the stake by choosing or receiving the favourable packet or card result.',
+      'Turn-flow example: Players place stakes and reveal cards or packets in turn; the simple chance result determines whether the stake is won or lost.',
+      'Scoring example: Players win or lose stakes according to the revealed card or packet result. Win the stake by choosing or receiving the favourable packet or card result..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'bluchern.rules.objective',
+        title: 'Objective',
+        text: 'Win the stake by choosing or receiving the favourable packet or card result.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bluchern.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players place stakes and reveal cards or packets in turn; the simple chance result determines whether the stake is won or lost.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bluchern.setup.players',
+        title: 'Players',
+        text: 'any number players use the table arrangement described for Bluchern.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bluchern.setup.deck',
+        title: 'Deck',
+        text: '52-card French pack or 32-card French or German pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bluchern.setup.equipment',
+        title: 'Equipment',
+        text: '52-card French pack or 32-card French or German pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bluchern.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare small packets or turn-up cards according to the local form, with players staking before the reveal.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bluchern.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the stake by choosing or receiving the favourable packet or card result.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bluchern.score.description',
+        title: 'Scoring',
+        text: 'Players win or lose stakes according to the revealed card or packet result.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bluchern.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Any number can play.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bluchern.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Either 52-card or 32-card packs may be used.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bluchern.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Stakes are decided by simple card reveals.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'bluchern.rules.key.4',
+        title: 'Key rule 4',
+        text: 'The game is primarily chance-based.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bluchern.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bluchern.rules.objective',
+          'bluchern.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bluchern.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bluchern.setup.players',
+          'bluchern.setup.deck',
+          'bluchern.setup.equipment',
+          'bluchern.setup.dealing',
+        ],
+      },
+      {
+        id: 'bluchern.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bluchern.rules.key.1',
+          'bluchern.rules.key.2',
+          'bluchern.rules.key.3',
+          'bluchern.rules.key.4',
+        ],
+      },
+      {
+        id: 'bluchern.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bluchern.score.description',
+          'bluchern.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bluchern.setup.dealing',
+        'bluchern.rules.objective',
+      ],
+      play_card: [
+        'bluchern.rules.gameplay',
+      ],
+    },
   },
 }

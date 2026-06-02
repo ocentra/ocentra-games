@@ -10,7 +10,30 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: "Only point cards score in tricks: 5s, 10s, and Kings. Round outcomes and level advancement depend on opponents' total captured points and variant thresholds.",
+      winCondition: 'Advance your partnership rank above the agreed target (commonly from 2 toward Ace) before opponents do.',
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {
+        '5': '5',
+        '10': '10',
+        K: '10',
+      },
+      nullReasons: {
+        targetScore: 'Match-end rank threshold is session-dependent (often stop at Ace or earlier by agreement).',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

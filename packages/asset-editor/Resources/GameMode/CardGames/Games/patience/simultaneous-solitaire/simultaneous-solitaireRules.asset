@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Simultaneous Solitaire. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Competitive patience: two or more players each play the same solitaire layout at the same time; first to complete wins.',
+    LLM: 'All players start at the same time and play the same patience game (e.g. Klondike) on their own layout. There are no turns; everyone plays simultaneously. Legal moves are those of the underlying patience (e.g. build down in alternating color on the tableau, build up in suit on foundations, turn stock as allowed). The first to finish wins.',
+    Player: 'All players start at the same time and play the same patience game (e.g. Klondike) on their own layout. There are no turns; everyone plays simultaneously. Legal moves are those of the underlying patience (e.g. build down in alternating color on the tableau, build up in suit on foundations, turn stock as allowed). The first to finish wins.',
     objective: "Be the first player to complete your solitaire layout by moving all cards to the foundations (or otherwise satisfying the chosen layout's win condition).",
     gameplay: 'All players start at the same time and play the same patience game (e.g. Klondike) on their own layout. There are no turns; everyone plays simultaneously. Legal moves are those of the underlying patience (e.g. build down in alternating color on the tableau, build up in suit on foundations, turn stock as allowed). The first to finish wins.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: First player to move all cards to the foundations (or complete the chosen layout) wins. Expected outcome: First player to move all cards to the foundations (or complete the chosen layout) wins..',
+      'Setup example: 0 card(s) per player.',
+      "Rule example: Be the first player to complete your solitaire layout by moving all cards to the foundations (or otherwise satisfying the chosen layout's win condition).",
+      'Turn-flow example: All players start at the same time and play the same patience game (e.g. Klondike) on their own layout. There are no turns; everyone plays simultaneously. Legal moves are those of the underlying patience (e.g. build down in alternating color on the tableau, build up in suit on foundations, turn stock as allowed). The first to finish wins.',
+      'Scoring example: First player to move all cards to the foundations (or complete the chosen layout) wins. First player to move all cards to the foundations (or complete the chosen layout) wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'simultaneous-solitaire.rules.objective',
+        title: 'Objective',
+        text: "Be the first player to complete your solitaire layout by moving all cards to the foundations (or otherwise satisfying the chosen layout's win condition).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'simultaneous-solitaire.rules.gameplay',
+        title: 'Turn flow',
+        text: 'All players start at the same time and play the same patience game (e.g. Klondike) on their own layout. There are no turns; everyone plays simultaneously. Legal moves are those of the underlying patience (e.g. build down in alternating color on the tableau, build up in suit on foundations, turn stock as allowed). The first to finish wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'simultaneous-solitaire.setup.players',
+        title: 'Players',
+        text: 'Two or more players; each needs their own deck and table space.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'simultaneous-solitaire.setup.deck',
+        title: 'Deck',
+        text: '52 cards per player',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'simultaneous-solitaire.setup.equipment',
+        title: 'Equipment',
+        text: 'One standard 52-card deck per player',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'simultaneous-solitaire.setup.dealing',
+        title: 'Deal',
+        text: 'Each player deals their own deck into the chosen layout (e.g. Klondike: seven tableau columns with one to seven cards, first card face-up; remainder as stock).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'simultaneous-solitaire.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to move all cards to the foundations (or complete the chosen layout) wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'simultaneous-solitaire.score.description',
+        title: 'Scoring',
+        text: 'First player to move all cards to the foundations (or complete the chosen layout) wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'simultaneous-solitaire.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Each player has an identical layout and deck.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'simultaneous-solitaire.rules.key.2',
+        title: 'Key rule 2',
+        text: 'All players play at once; no turn order.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'simultaneous-solitaire.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Legal moves follow the underlying patience rules (e.g. Klondike).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'simultaneous-solitaire.rules.key.4',
+        title: 'Key rule 4',
+        text: 'First player to complete their layout wins.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'simultaneous-solitaire.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'simultaneous-solitaire.rules.objective',
+          'simultaneous-solitaire.rules.gameplay',
+        ],
+      },
+      {
+        id: 'simultaneous-solitaire.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'simultaneous-solitaire.setup.players',
+          'simultaneous-solitaire.setup.deck',
+          'simultaneous-solitaire.setup.equipment',
+          'simultaneous-solitaire.setup.dealing',
+        ],
+      },
+      {
+        id: 'simultaneous-solitaire.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'simultaneous-solitaire.rules.key.1',
+          'simultaneous-solitaire.rules.key.2',
+          'simultaneous-solitaire.rules.key.3',
+          'simultaneous-solitaire.rules.key.4',
+        ],
+      },
+      {
+        id: 'simultaneous-solitaire.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'simultaneous-solitaire.score.description',
+          'simultaneous-solitaire.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'simultaneous-solitaire.setup.dealing',
+        'simultaneous-solitaire.rules.objective',
+      ],
+      play_card: [
+        'simultaneous-solitaire.rules.gameplay',
+      ],
+    },
   },
 }

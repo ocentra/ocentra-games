@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Femkort. Logic: Win the pot by controlling the decisive final trick, especially when the ace of hearts is involved.',
-    Player: 'Femkort is a Swedish last-trick card game where the final trick is decisive and the ace of hearts can win the pot.',
+    LLM: 'Players lead one card to each trick, follow suit when able, and compare the led suit and trump or rank hierarchy to decide the trick winner.',
+    Player: 'Players lead one card to each trick, follow suit when able, and compare the led suit and trump or rank hierarchy to decide the trick winner.',
     objective: 'Win the pot by controlling the decisive final trick, especially when the ace of hearts is involved.',
     gameplay: 'Players lead one card to each trick, follow suit when able, and compare the led suit and trump or rank hierarchy to decide the trick winner.',
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Captured tricks, card points, or the active contract determine the score. Expected outcome: Win the pot by controlling the decisive final trick, especially when the ace of hearts is involved..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win the pot by controlling the decisive final trick, especially when the ace of hearts is involved.',
+      'Turn-flow example: Players lead one card to each trick, follow suit when able, and compare the led suit and trump or rank hierarchy to decide the trick winner.',
+      'Scoring example: Captured tricks, card points, or the active contract determine the score. Win the pot by controlling the decisive final trick, especially when the ace of hearts is involved..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'femkort.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by controlling the decisive final trick, especially when the ace of hearts is involved.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'femkort.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players lead one card to each trick, follow suit when able, and compare the led suit and trump or rank hierarchy to decide the trick winner.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'femkort.setup.players',
+        title: 'Players',
+        text: '3-8 players use the table arrangement described for Femkort.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'femkort.setup.deck',
+        title: 'Deck',
+        text: '52-card French-suited Swedish Modern pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'femkort.setup.equipment',
+        title: 'Equipment',
+        text: '52-card French-suited Swedish Modern pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'femkort.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 52-card French-suited Swedish Modern pack for 3-8 players according to the local rules before the first trick.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'femkort.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the pot by controlling the decisive final trick, especially when the ace of hearts is involved.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'femkort.score.description',
+        title: 'Scoring',
+        text: 'Captured tricks, card points, or the active contract determine the score.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'femkort.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trick-taking structure.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'femkort.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players follow suit when able.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'femkort.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trump or rank hierarchy decides contested tricks.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'femkort.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Captured tricks or card points determine the result.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'femkort.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'femkort.rules.objective',
+          'femkort.rules.gameplay',
+        ],
+      },
+      {
+        id: 'femkort.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'femkort.setup.players',
+          'femkort.setup.deck',
+          'femkort.setup.equipment',
+          'femkort.setup.dealing',
+        ],
+      },
+      {
+        id: 'femkort.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'femkort.rules.key.1',
+          'femkort.rules.key.2',
+          'femkort.rules.key.3',
+          'femkort.rules.key.4',
+        ],
+      },
+      {
+        id: 'femkort.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'femkort.score.description',
+          'femkort.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'femkort.setup.dealing',
+        'femkort.rules.objective',
+      ],
+      play_card: [
+        'femkort.rules.gameplay',
+      ],
+      discard: [
+        'femkort.rules.gameplay',
+      ],
+      pass: [
+        'femkort.rules.gameplay',
+      ],
+      bid: [
+        'femkort.rules.gameplay',
+      ],
+    },
   },
 }

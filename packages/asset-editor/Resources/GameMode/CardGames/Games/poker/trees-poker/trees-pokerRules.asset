@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Trees Poker. Logic: See rules.',
-    Player: 'Poker variant with tree-themed or environmental twist.',
+    LLM: 'Players receive five cards face-down. After an ante and a round of betting (check, bet, call, raise, or fold), remaining players reveal hands; highest standard poker hand wins the pot. Tree-themed or environmental twist may apply to table stakes or house rules.',
+    Player: 'Players receive five cards face-down. After an ante and a round of betting (check, bet, call, raise, or fold), remaining players reveal hands; highest standard poker hand wins the pot. Tree-themed or environmental twist may apply to table stakes or house rules.',
     objective: 'Win the pot by having the best five-card hand at showdown.',
     gameplay: 'Players receive five cards face-down. After an ante and a round of betting (check, bet, call, raise, or fold), remaining players reveal hands; highest standard poker hand wins the pot. Tree-themed or environmental twist may apply to table stakes or house rules.',
     keyRules: [
@@ -50,10 +50,153 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; each_player_clockwise may use ante before deal.',
-      'Scoring check: Pot is won by the player with the highest standard poker hand at showdown; if all but one fold, that player wins without showing. Expected outcome: Highest standard poker hand at showdown wins the pot..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the pot by having the best five-card hand at showdown.',
+      'Turn-flow example: Players receive five cards face-down. After an ante and a round of betting (check, bet, call, raise, or fold), remaining players reveal hands; highest standard poker hand wins the pot. Tree-themed or environmental twist may apply to table stakes or house rules.',
+      'Scoring example: Pot is won by the player with the highest standard poker hand at showdown; if all but one fold, that player wins without showing. Highest standard poker hand at showdown wins the pot..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'trees-poker.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the best five-card hand at showdown.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'trees-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players receive five cards face-down. After an ante and a round of betting (check, bet, call, raise, or fold), remaining players reveal hands; highest standard poker hand wins the pot. Tree-themed or environmental twist may apply to table stakes or house rules.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'trees-poker.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'trees-poker.setup.deck',
+        title: 'Deck',
+        text: 'One standard 52-card deck with French suits (Hearts, Diamonds, Clubs, Spades); no jokers. Same composition as standard poker.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'trees-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards or tiles',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'trees-poker.setup.dealing',
+        title: 'Deal',
+        text: "Dealer shuffles; player to dealer's right cuts. Dealer deals five cards face-down to each player, one at a time, clockwise from the player to dealer's left.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'trees-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest standard poker hand at showdown wins the pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'trees-poker.score.description',
+        title: 'Scoring',
+        text: 'Pot is won by the player with the highest standard poker hand at showdown; if all but one fold, that player wins without showing.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'trees-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Standard poker hand rankings. Betting proceeds clockwise; players may check, bet, call, raise, or fold. Last aggressor or first active player shows first at showdown.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'trees-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'trees-poker.rules.objective',
+          'trees-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'trees-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'trees-poker.setup.players',
+          'trees-poker.setup.deck',
+          'trees-poker.setup.equipment',
+          'trees-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'trees-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'trees-poker.rules.key.1',
+        ],
+      },
+      {
+        id: 'trees-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'trees-poker.score.description',
+          'trees-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'trees-poker.setup.dealing',
+        'trees-poker.rules.objective',
+      ],
+      ante: [
+        'trees-poker.rules.gameplay',
+      ],
+      fold: [
+        'trees-poker.rules.gameplay',
+      ],
+      check: [
+        'trees-poker.rules.gameplay',
+      ],
+      call: [
+        'trees-poker.rules.gameplay',
+      ],
+      bet: [
+        'trees-poker.rules.gameplay',
+      ],
+      raise: [
+        'trees-poker.rules.gameplay',
+      ],
+      reveal_hand: [
+        'trees-poker.rules.gameplay',
+      ],
+      award_pot: [
+        'trees-poker.rules.gameplay',
+      ],
+      deal_initial: [
+        'trees-poker.rules.gameplay',
+      ],
+    },
   },
 }

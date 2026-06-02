@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_5_each before play.',
-      'Scoring check: Each team keeps a cumulative score. At end of play, count card points in tricks (120 total in pack) plus marianna bonuses; first team to 501 or more wins. Expected outcome: 501.',
+      'Setup example: 5 card(s) per player.',
+      "Rule example: Score 501 points through tricks and 'Marianna' bonuses.",
+      'Turn-flow example: 1. No obligation to follow suit initially.\n2. After each trick, players draw 1 card from the stock to stay at 5 cards.\n3. Once the stock is empty, players must follow suit (in some variations).\n4. The highest card of the suit led wins, unless someone trumps it.',
+      'Scoring example: Each team keeps a cumulative score. At end of play, count card points in tricks (120 total in pack) plus marianna bonuses; first team to 501 or more wins. First team to reach 501 or more points wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'marianna.rules.objective',
+        title: 'Objective',
+        text: "Score 501 points through tricks and 'Marianna' bonuses.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'marianna.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. No obligation to follow suit initially.\n2. After each trick, players draw 1 card from the stock to stay at 5 cards.\n3. Once the stock is empty, players must follow suit (in some variations).\n4. The highest card of the suit led wins, unless someone trumps it.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'marianna.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships (North-South vs East-West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'marianna.setup.deck',
+        title: 'Deck',
+        text: '40 cards. Ranking: Ace, 3, King, Knight, Jack, 7, 6, 5, 4, 2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'marianna.setup.equipment',
+        title: 'Equipment',
+        text: '40 cards. Ranking: Ace, 3, King, Knight, Jack, 7, 6, 5, 4, 2.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'marianna.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 5 cards at a time. No card is turned for trumps.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'marianna.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to reach 501 or more points wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'marianna.score.description',
+        title: 'Scoring',
+        text: 'Each team keeps a cumulative score. At end of play, count card points in tricks (120 total in pack) plus marianna bonuses; first team to 501 or more wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'marianna.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No obligation to follow suit; play any card. Trick won by highest of led suit, or highest trump if any trumps played.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'marianna.rules.key.2',
+        title: 'Key rule 2',
+        text: 'After each trick, winner draws first then each player in order so everyone has five cards again. Winner leads next trick.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'marianna.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Declare marianna (king and queen of same suit) at your turn to score bonus and set or change trump. First 40, second 60, third 80, fourth 100 points.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'marianna.rules.key.4',
+        title: 'Key rule 4',
+        text: 'After the last card is drawn from the stock, no more mariannas; last five tricks played from hand without drawing.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'marianna.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'marianna.rules.objective',
+          'marianna.rules.gameplay',
+        ],
+      },
+      {
+        id: 'marianna.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'marianna.setup.players',
+          'marianna.setup.deck',
+          'marianna.setup.equipment',
+          'marianna.setup.dealing',
+        ],
+      },
+      {
+        id: 'marianna.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'marianna.rules.key.1',
+          'marianna.rules.key.2',
+          'marianna.rules.key.3',
+          'marianna.rules.key.4',
+        ],
+      },
+      {
+        id: 'marianna.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'marianna.score.description',
+          'marianna.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'marianna.setup.dealing',
+        'marianna.rules.objective',
+      ],
+      play_card: [
+        'marianna.rules.gameplay',
+      ],
+      deal_5_each: [
+        'marianna.rules.gameplay',
+      ],
+      declare_marianna: [
+        'marianna.rules.gameplay',
+      ],
+    },
   },
 }

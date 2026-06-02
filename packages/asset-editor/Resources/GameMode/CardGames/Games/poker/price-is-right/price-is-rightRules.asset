@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win by having the best poker hand at showdown; price-guessing or bidding rounds may award bonuses or determine order.',
+      'Turn-flow example: Deal five cards to each player. Play proceeds with price-guessing or bidding rounds themed on The Price Is Right, then betting or showdown. Best standard poker hand wins.',
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'price-is-right.rules.objective',
+        title: 'Objective',
+        text: 'Win by having the best poker hand at showdown; price-guessing or bidding rounds may award bonuses or determine order.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'price-is-right.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Deal five cards to each player. Play proceeds with price-guessing or bidding rounds themed on The Price Is Right, then betting or showdown. Best standard poker hand wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'price-is-right.setup.players',
+        title: 'Players',
+        text: 'Two to six players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'price-is-right.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'price-is-right.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck and poker chips or tokens for price-guessing rounds.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'price-is-right.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer gives each player five cards; the remainder stays as stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'price-is-right.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'price-is-right.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'price-is-right.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Standard poker hand rankings apply.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'price-is-right.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Five cards per player.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'price-is-right.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Price-guessing or bidding may be used before or between betting rounds.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'price-is-right.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'price-is-right.rules.objective',
+          'price-is-right.rules.gameplay',
+        ],
+      },
+      {
+        id: 'price-is-right.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'price-is-right.setup.players',
+          'price-is-right.setup.deck',
+          'price-is-right.setup.equipment',
+          'price-is-right.setup.dealing',
+        ],
+      },
+      {
+        id: 'price-is-right.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'price-is-right.rules.key.1',
+          'price-is-right.rules.key.2',
+          'price-is-right.rules.key.3',
+        ],
+      },
+      {
+        id: 'price-is-right.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'price-is-right.score.description',
+          'price-is-right.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'price-is-right.setup.dealing',
+        'price-is-right.rules.objective',
+      ],
+      play_card: [
+        'price-is-right.rules.gameplay',
+      ],
+    },
   },
 }

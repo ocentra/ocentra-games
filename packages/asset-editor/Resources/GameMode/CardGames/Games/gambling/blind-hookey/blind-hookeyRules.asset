@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Blind Hookey. Logic: Win the chance outcome associated with the chosen card packet.',
-    Player: 'Blind Hookey is a simple chance card game also known as Dutch Bank, Banker and Broker, Honest John, Haufeln, Bockspiel, or Packchen Wenden.',
+    LLM: 'The banker or dealer prepares hidden packets, players stake on choices, and the reveal decides who receives payment.',
+    Player: 'The banker or dealer prepares hidden packets, players stake on choices, and the reveal decides who receives payment.',
     objective: 'Win the chance outcome associated with the chosen card packet.',
     gameplay: 'The banker or dealer prepares hidden packets, players stake on choices, and the reveal decides who receives payment.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-12 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Stakes are paid or collected by the banker after the reveal. Expected outcome: Win the chance outcome associated with the chosen card packet..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the chance outcome associated with the chosen card packet.',
+      'Turn-flow example: The banker or dealer prepares hidden packets, players stake on choices, and the reveal decides who receives payment.',
+      'Scoring example: Stakes are paid or collected by the banker after the reveal. Win the chance outcome associated with the chosen card packet..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'blind-hookey.rules.objective',
+        title: 'Objective',
+        text: 'Win the chance outcome associated with the chosen card packet.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'blind-hookey.rules.gameplay',
+        title: 'Turn flow',
+        text: 'The banker or dealer prepares hidden packets, players stake on choices, and the reveal decides who receives payment.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'blind-hookey.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Blind Hookey.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'blind-hookey.setup.deck',
+        title: 'Deck',
+        text: 'Standard playing-card pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'blind-hookey.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard playing-card pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'blind-hookey.setup.dealing',
+        title: 'Deal',
+        text: 'Use small packets or face-down cards; players stake before packets are turned or compared.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'blind-hookey.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the chance outcome associated with the chosen card packet.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'blind-hookey.score.description',
+        title: 'Scoring',
+        text: 'Stakes are paid or collected by the banker after the reveal.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'blind-hookey.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Simple gambling game of chance.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'blind-hookey.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Often uses small packets of cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'blind-hookey.rules.key.3',
+        title: 'Key rule 3',
+        text: 'One dealer or banker runs the reveal.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'blind-hookey.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Alternative names describe the same packet-turning idea.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'blind-hookey.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'blind-hookey.rules.objective',
+          'blind-hookey.rules.gameplay',
+        ],
+      },
+      {
+        id: 'blind-hookey.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'blind-hookey.setup.players',
+          'blind-hookey.setup.deck',
+          'blind-hookey.setup.equipment',
+          'blind-hookey.setup.dealing',
+        ],
+      },
+      {
+        id: 'blind-hookey.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'blind-hookey.rules.key.1',
+          'blind-hookey.rules.key.2',
+          'blind-hookey.rules.key.3',
+          'blind-hookey.rules.key.4',
+        ],
+      },
+      {
+        id: 'blind-hookey.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'blind-hookey.score.description',
+          'blind-hookey.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'blind-hookey.setup.dealing',
+        'blind-hookey.rules.objective',
+      ],
+      play_card: [
+        'blind-hookey.rules.gameplay',
+      ],
+    },
   },
 }

@@ -11,7 +11,11 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Standard pot-based resolution.',
+      winCondition: 'Best hand at showdown or all opponents fold.',
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {
         Ace: '11 points',
         King: '10 points',
         Queen: '10 points',
@@ -19,13 +23,39 @@
         Nine: '9 points',
         Eight: '8 points',
       },
+      sourceCardValues: {
+        raw: {
+          Ace: '11 points',
+          King: '10 points',
+          Queen: '10 points',
+          Jack: '10 points',
+          Nine: '9 points',
+          Eight: '8 points',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        targetScore: 'No fixed target; play until the session ends or one player has all chips.',
+        nullReasons: 'Not applicable.',
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: "Ties are broken by the player closest to the dealer's right (following play direction).",
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],
     winCondition: 'Best hand at showdown or all opponents fold.',
     cardValues: {},
-    penalties: '{\n  "Bust Cave": "Running out of chips in your Cave results in forced exit or rebuy."\n}',
+    penalties: '{"Bust Cave":"Running out of chips in your Cave results in forced exit or rebuy."}',
     targetScore: null,
     scoringDirection: 'high_wins',
     rankingAsset: {

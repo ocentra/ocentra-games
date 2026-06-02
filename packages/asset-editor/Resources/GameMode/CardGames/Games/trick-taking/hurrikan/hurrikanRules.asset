@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Hurrikan (German Scopa). 2-player, 32-40 card deck. Deal: 3 cards per player, 4 on table. Turn: Play card. Capture matching single card OR cards summing to card value (single match has priority). Hurrikan (empty table) = 1 bonus point. Scoring: Most cards (1), Most Hearts (1), Seven of Hearts (1), Hurrikan (1 each). Win: First to 16.',
-    Player: "Welcome to Hurrikan, the German sweep game. Play a card from your hand to capture cards from the table. You can take a single card of equal value or multiple cards that sum to your card's value. Complete a 'Hurrikan' (sweep) by taking all cards from the tableâ€”that's a bonus point. Prioritize Hearts and the Seven of Hearts. First to 16 points wins.",
+    LLM: '1. On your turn, play one card from your hand. 2. Capture: If your card matches a card on the table, you take both. If your card matches the SUM of multiple cards on the table, you take all of them. 3. Priority: You MUST capture a single card of equal value before combining cards. 4. The Hurrikan (Sweep): If your capture leaves the table empty, you score 1 bonus point. 5. If you cannot capture, you must add your card to the table.',
+    Player: '1. On your turn, play one card from your hand. 2. Capture: If your card matches a card on the table, you take both. If your card matches the SUM of multiple cards on the table, you take all of them. 3. Priority: You MUST capture a single card of equal value before combining cards. 4. The Hurrikan (Sweep): If your capture leaves the table empty, you score 1 bonus point. 5. If you cannot capture, you must add your card to the table.',
     objective: "Score 16 points by capturing cards and completing 'Hurrikans'.",
     gameplay: '1. On your turn, play one card from your hand. 2. Capture: If your card matches a card on the table, you take both. If your card matches the SUM of multiple cards on the table, you take all of them. 3. Priority: You MUST capture a single card of equal value before combining cards. 4. The Hurrikan (Sweep): If your capture leaves the table empty, you score 1 bonus point. 5. If you cannot capture, you must add your card to the table.',
     keyRules: [
@@ -53,10 +53,168 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before main_play.',
-      'Scoring check: Players score points by capturing cards and completing sweeps (Hurrikans). First to 16 wins. Expected outcome: 16.',
+      'Setup example: 3 card(s) per player.',
+      "Rule example: Score 16 points by capturing cards and completing 'Hurrikans'.",
+      'Turn-flow example: 1. On your turn, play one card from your hand. 2. Capture: If your card matches a card on the table, you take both. If your card matches the SUM of multiple cards on the table, you take all of them. 3. Priority: You MUST capture a single card of equal value before combining cards. 4. The Hurrikan (Sweep): If your capture leaves the table empty, you score 1 bonus point. 5. If you cannot capture, you must add your card to the table.',
+      'Scoring example: Players score points by capturing cards and completing sweeps (Hurrikans). First to 16 wins. First player to 16 points wins match..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hurrikan.rules.objective',
+        title: 'Objective',
+        text: "Score 16 points by capturing cards and completing 'Hurrikans'.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hurrikan.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. On your turn, play one card from your hand. 2. Capture: If your card matches a card on the table, you take both. If your card matches the SUM of multiple cards on the table, you take all of them. 3. Priority: You MUST capture a single card of equal value before combining cards. 4. The Hurrikan (Sweep): If your capture leaves the table empty, you score 1 bonus point. 5. If you cannot capture, you must add your card to the table.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hurrikan.setup.players',
+        title: 'Players',
+        text: '2 players (Standard).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hurrikan.setup.deck',
+        title: 'Deck',
+        text: 'Usually 32-40 cards. If using 52, remove 8s, 9s, 10s. Ranking: Ace (1), 2-7 (Face), Jack (8), Queen (9), King (10).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hurrikan.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck of cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hurrikan.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 3 cards to each player and 4 face-up on the table.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hurrikan.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to 16 points wins match.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hurrikan.score.description',
+        title: 'Scoring',
+        text: 'Players score points by capturing cards and completing sweeps (Hurrikans). First to 16 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hurrikan.rules.key.1',
+        title: 'Key rule 1',
+        text: 'You MUST capture a single card of equal value before combining cards',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hurrikan.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The Hurrikan (Sweep): capturing all cards from the table scores 1 bonus point',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hurrikan.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Scoring: Most cards (1 pt), Most Hearts (1 pt), Seven of Hearts (1 pt), Each Hurrikan (1 pt)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'hurrikan.rules.key.4',
+        title: 'Key rule 4',
+        text: 'First to 16 points wins the match',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hurrikan.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hurrikan.rules.objective',
+          'hurrikan.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hurrikan.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hurrikan.setup.players',
+          'hurrikan.setup.deck',
+          'hurrikan.setup.equipment',
+          'hurrikan.setup.dealing',
+        ],
+      },
+      {
+        id: 'hurrikan.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hurrikan.rules.key.1',
+          'hurrikan.rules.key.2',
+          'hurrikan.rules.key.3',
+          'hurrikan.rules.key.4',
+        ],
+      },
+      {
+        id: 'hurrikan.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hurrikan.score.description',
+          'hurrikan.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hurrikan.setup.dealing',
+        'hurrikan.rules.objective',
+      ],
+      deal: [
+        'hurrikan.rules.gameplay',
+      ],
+      reveal_market: [
+        'hurrikan.rules.gameplay',
+      ],
+      award_pot: [
+        'hurrikan.rules.gameplay',
+      ],
+      play_card: [
+        'hurrikan.rules.gameplay',
+      ],
+      discard: [
+        'hurrikan.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Guiñote. Objective: score more points than the opposition in the deal (card points, singing, last trick).',
-    Player: 'Guiñote: follow suit and overtake when required; sing 40 or 20 after winning tricks; aim to take more points than the opposition.',
+    LLM: "Dealer deals all 40 cards (e.g. 10 each in the four-player game), one at a time face down; the last card is turned for trump. Player to dealer's right leads. Players must follow suit and, when possible, beat the highest card so far in the trick; if unable to follow suit they must trump and overtake if able. Trick winner leads next. After winning a trick a player may sing one or more 20s or 40s (king and jack of same suit) before leading. When all cards are played, points in tricks, singing, and last trick are counted; higher total wins the deal.",
+    Player: "Dealer deals all 40 cards (e.g. 10 each in the four-player game), one at a time face down; the last card is turned for trump. Player to dealer's right leads. Players must follow suit and, when possible, beat the highest card so far in the trick; if unable to follow suit they must trump and overtake if able. Trick winner leads next. After winning a trick a player may sing one or more 20s or 40s (king and jack of same suit) before leading. When all cards are played, points in tricks, singing, and last trick are counted; higher total wins the deal.",
     objective: 'Win tricks containing high-value cards and score points from card values, singing (king and jack of same suit for 20 or 40 points), and the last trick (10 points). The team or player with more points wins the deal; in match play the side that wins more deals wins.',
     gameplay: "Dealer deals all 40 cards (e.g. 10 each in the four-player game), one at a time face down; the last card is turned for trump. Player to dealer's right leads. Players must follow suit and, when possible, beat the highest card so far in the trick; if unable to follow suit they must trump and overtake if able. Trick winner leads next. After winning a trick a player may sing one or more 20s or 40s (king and jack of same suit) before leading. When all cards are played, points in tricks, singing, and last trick are counted; higher total wins the deal.",
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Count card points in won tricks (Ace 11, Three 10, King 4, Jack 3, Horse 2), add 10 for last trick, add 20 or 40 for each sung combination. Higher total wins the deal. Expected outcome: NA.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win tricks containing high-value cards and score points from card values, singing (king and jack of same suit for 20 or 40 points), and the last trick (10 points). The team or player with more points wins the deal; in match play the side that wins more deals wins.',
+      "Turn-flow example: Dealer deals all 40 cards (e.g. 10 each in the four-player game), one at a time face down; the last card is turned for trump. Player to dealer's right leads. Players must follow suit and, when possible, beat the highest card so far in the trick; if unable to follow suit they must trump and overtake if able. Trick winner leads next. After winning a trick a player may sing one or more 20s or 40s (king and jack of same suit) before leading. When all cards are played, points in tricks, singing, and last trick are counted; higher total wins the deal.",
+      'Scoring example: Count card points in won tricks (Ace 11, Three 10, King 4, Jack 3, Horse 2), add 10 for last trick, add 20 or 40 for each sung combination. Higher total wins the deal. The team or player with more total points (cards in tricks, singing, and 10 for last trick) wins the deal. If tied, the side that won the last trick wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tute-guinote.rules.objective',
+        title: 'Objective',
+        text: 'Win tricks containing high-value cards and score points from card values, singing (king and jack of same suit for 20 or 40 points), and the last trick (10 points). The team or player with more points wins the deal; in match play the side that wins more deals wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tute-guinote.rules.gameplay',
+        title: 'Turn flow',
+        text: "Dealer deals all 40 cards (e.g. 10 each in the four-player game), one at a time face down; the last card is turned for trump. Player to dealer's right leads. Players must follow suit and, when possible, beat the highest card so far in the trick; if unable to follow suit they must trump and overtake if able. Trick winner leads next. After winning a trick a player may sing one or more 20s or 40s (king and jack of same suit) before leading. When all cards are played, points in tricks, singing, and last trick are counted; higher total wins the deal.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tute-guinote.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tute-guinote.setup.deck',
+        title: 'Deck',
+        text: 'Standard Spanish 40-card pack: four suits (Oros, Copas, Espadas, Bastos), ranks Ace down to Two. In Guiñote the jack (sota) ranks above the horse (caballo) and is worth 3 points; the horse is worth 2. Same pack as Tute.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tute-guinote.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tute-guinote.setup.dealing',
+        title: 'Deal',
+        text: 'The first dealer is chosen at random. In Guiñote the winner of the last trick deals the next hand; if a hand ends by claim the winner of the game deals next.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tute-guinote.score.win-condition',
+        title: 'Win condition',
+        text: 'The team or player with more total points (cards in tricks, singing, and 10 for last trick) wins the deal. If tied, the side that won the last trick wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tute-guinote.score.description',
+        title: 'Scoring',
+        text: 'Count card points in won tricks (Ace 11, Three 10, King 4, Jack 3, Horse 2), add 10 for last trick, add 20 or 40 for each sung combination. Higher total wins the deal.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tute-guinote.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Use 40-card Spanish deck; in Guiñote jack ranks above horse and is worth 3 points, horse 2.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tute-guinote.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Trump determined by turned card; follow suit and overtake when possible; must trump if cannot follow.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tute-guinote.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Sing 20 (king and jack of non-trump suit) or 40 (king and jack of trumps) after winning a trick; 40 must be declared before 20; multiple declarations allowed after one trick in Guiñote.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tute-guinote.rules.key.4',
+        title: 'Key rule 4',
+        text: 'No tute (four kings or four horses) validity in Guiñote. Winner of last trick deals next hand.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tute-guinote.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tute-guinote.rules.objective',
+          'tute-guinote.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tute-guinote.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tute-guinote.setup.players',
+          'tute-guinote.setup.deck',
+          'tute-guinote.setup.equipment',
+          'tute-guinote.setup.dealing',
+        ],
+      },
+      {
+        id: 'tute-guinote.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tute-guinote.rules.key.1',
+          'tute-guinote.rules.key.2',
+          'tute-guinote.rules.key.3',
+          'tute-guinote.rules.key.4',
+        ],
+      },
+      {
+        id: 'tute-guinote.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tute-guinote.score.description',
+          'tute-guinote.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tute-guinote.setup.dealing',
+        'tute-guinote.rules.objective',
+      ],
+      play_card: [
+        'tute-guinote.rules.gameplay',
+      ],
+    },
   },
 }

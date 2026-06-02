@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: All Fives (Cards). Type: Point-Trick (All Fours family). Scoring: Trump 10=10, 5=5, A=4, K=3, Q=2, J=1. All other cards=0. Rules: Stand/Beg mechanics. Target: 60.',
-    Player: 'Welcome to All Fives. You get 6 cards and a chance to beg for a better trump suit. In this game, only trumps are worth points! Capturing the 10 and 5 of trumps is the key to victory. Reach 60 points before your opponent to win.',
+    LLM: "1. **Trump Determination**: Eldest hand can 'Stand' or 'Beg'. If they beg, the dealer either gifts 1 point to the opponent or deals 3 more cards to each player to find a new trump suit. 2. **Trick Play**: Winner of the lead (or eldest) leads the first trick. Players must follow suit if they can, or they may trump. 3. **Winning**: Highest trump wins. If no trumps, the highest card of the led suit wins. 4. **Point Capture**: Points are ONLY awarded for the following cards IN THE TRUMP SUIT: \n   - **Ten**: 10 points\n   - **Five**: 5 points\n   - **Ace**: 4 points\n   - **King**: 3 points\n   - **Queen**: 2 points\n   - **Jack**: 1 point\n5. **Total**: There are 25 total points available in each hand. The first to reach 61 wins.",
+    Player: "1. **Trump Determination**: Eldest hand can 'Stand' or 'Beg'. If they beg, the dealer either gifts 1 point to the opponent or deals 3 more cards to each player to find a new trump suit. 2. **Trick Play**: Winner of the lead (or eldest) leads the first trick. Players must follow suit if they can, or they may trump. 3. **Winning**: Highest trump wins. If no trumps, the highest card of the led suit wins. 4. **Point Capture**: Points are ONLY awarded for the following cards IN THE TRUMP SUIT: \n   - **Ten**: 10 points\n   - **Five**: 5 points\n   - **Ace**: 4 points\n   - **King**: 3 points\n   - **Queen**: 2 points\n   - **Jack**: 1 point\n5. **Total**: There are 25 total points available in each hand. The first to reach 61 wins.",
     objective: 'Score 61 points by winning tricks containing the Ace, King, Queen, Jack, 10, or 5 of the trump suit.',
     gameplay: "1. **Trump Determination**: Eldest hand can 'Stand' or 'Beg'. If they beg, the dealer either gifts 1 point to the opponent or deals 3 more cards to each player to find a new trump suit. 2. **Trick Play**: Winner of the lead (or eldest) leads the first trick. Players must follow suit if they can, or they may trump. 3. **Winning**: Highest trump wins. If no trumps, the highest card of the led suit wins. 4. **Point Capture**: Points are ONLY awarded for the following cards IN THE TRUMP SUIT: \n   - **Ten**: 10 points\n   - **Five**: 5 points\n   - **Ace**: 4 points\n   - **King**: 3 points\n   - **Queen**: 2 points\n   - **Jack**: 1 point\n5. **Total**: There are 25 total points available in each hand. The first to reach 61 wins.",
     keyRules: [
@@ -52,10 +52,165 @@
       go_out: 'Hand ends when tricks are done; first to 61 total points wins game.',
     },
     exampleHands: [
-      'Opening deal: 2-3 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before reveal_trump.',
-      'Scoring check: Points are scored immediately upon winning a trick containing a point-card. Expected outcome: 61.',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Score 61 points by winning tricks containing the Ace, King, Queen, Jack, 10, or 5 of the trump suit.',
+      "Turn-flow example: 1. **Trump Determination**: Eldest hand can 'Stand' or 'Beg'. If they beg, the dealer either gifts 1 point to the opponent or deals 3 more cards to each player to find a new trump suit. 2. **Trick Play**: Winner of the lead (or eldest) leads the first trick. Players must follow suit if they can, or they may trump. 3. **Winning**: Highest trump wins. If no trumps, the highest card of the led suit wins. 4. **Point Capture**: Points are ONLY awarded for the following cards IN THE TRUMP SUIT: \n   - **Ten**: 10 points\n   - **Five**: 5 points\n   - **Ace**: 4 points\n   - **King**: 3 points\n   - **Queen**: 2 points\n   - **Jack**: 1 point\n5. **Total**: There are 25 total points available in each hand. The first to reach 61 wins.",
+      'Scoring example: Points are scored immediately upon winning a trick containing a point-card. First player to reach 61 points wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'all-fives-cards.rules.objective',
+        title: 'Objective',
+        text: 'Score 61 points by winning tricks containing the Ace, King, Queen, Jack, 10, or 5 of the trump suit.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'all-fives-cards.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Trump Determination**: Eldest hand can 'Stand' or 'Beg'. If they beg, the dealer either gifts 1 point to the opponent or deals 3 more cards to each player to find a new trump suit. 2. **Trick Play**: Winner of the lead (or eldest) leads the first trick. Players must follow suit if they can, or they may trump. 3. **Winning**: Highest trump wins. If no trumps, the highest card of the led suit wins. 4. **Point Capture**: Points are ONLY awarded for the following cards IN THE TRUMP SUIT: \n   - **Ten**: 10 points\n   - **Five**: 5 points\n   - **Ace**: 4 points\n   - **King**: 3 points\n   - **Queen**: 2 points\n   - **Jack**: 1 point\n5. **Total**: There are 25 total points available in each hand. The first to reach 61 wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'all-fives-cards.setup.players',
+        title: 'Players',
+        text: '2 or 3 (individual play).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'all-fives-cards.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'all-fives-cards.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, score tracking to 61.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'all-fives-cards.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer gives 6 cards to each player. The next card is turned up for trumps.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'all-fives-cards.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach 61 points wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'all-fives-cards.score.description',
+        title: 'Scoring',
+        text: 'Points are scored immediately upon winning a trick containing a point-card.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'all-fives-cards.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Only trumps score. Non-trump cards are worth 0 points.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'all-fives-cards.rules.key.2',
+        title: 'Key rule 2',
+        text: "The 'Beg' rule is identical to All Fours: dealer must either gift a point or run the cards (deal 3 more each).",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'all-fives-cards.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning the 10 and the 5 of trumps is the core goal, as they represent 60% of the total points.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'all-fives-cards.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'all-fives-cards.rules.objective',
+          'all-fives-cards.rules.gameplay',
+        ],
+      },
+      {
+        id: 'all-fives-cards.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'all-fives-cards.setup.players',
+          'all-fives-cards.setup.deck',
+          'all-fives-cards.setup.equipment',
+          'all-fives-cards.setup.dealing',
+        ],
+      },
+      {
+        id: 'all-fives-cards.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'all-fives-cards.rules.key.1',
+          'all-fives-cards.rules.key.2',
+          'all-fives-cards.rules.key.3',
+        ],
+      },
+      {
+        id: 'all-fives-cards.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'all-fives-cards.score.description',
+          'all-fives-cards.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'all-fives-cards.setup.dealing',
+        'all-fives-cards.rules.objective',
+      ],
+      deal: [
+        'all-fives-cards.rules.gameplay',
+      ],
+      reveal_market: [
+        'all-fives-cards.rules.gameplay',
+      ],
+      check: [
+        'all-fives-cards.rules.gameplay',
+      ],
+      award_pot: [
+        'all-fives-cards.rules.gameplay',
+      ],
+      play_card: [
+        'all-fives-cards.rules.gameplay',
+      ],
+      pass: [
+        'all-fives-cards.rules.gameplay',
+      ],
+      bid: [
+        'all-fives-cards.rules.gameplay',
+      ],
+    },
   },
 }

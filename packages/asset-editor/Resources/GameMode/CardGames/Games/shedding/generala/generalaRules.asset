@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Generala (Cameroon card game). Deal all 54 cards with jokers, play tricks counterclockwise with mandatory follow-suit, allow joker when void, resolve interrupted tricks with one-card pickup, and eliminate last player holding cards.',
-    Player: 'Generala: follow suit when possible, decide joker timing, and avoid interrupted-trick pickups that grow your hand.',
+    LLM: "The player on dealer's right leads the first trick with the last card dealt to them. Players in counterclockwise order must follow led suit if possible. A player without led suit may play a joker if desired. If all active players contribute a card, trick is completed; highest card wins, and if jokers appear the first joker played is highest. If a player cannot follow and does not play a joker, trick ends immediately: later players do not play, that player picks one non-joker card from trick into hand, and remaining trick cards are set aside face down. Trick winner leads next trick (with special handling if winner just played final card and has no cards left). Players who empty hand drop out; play continues until one player still has cards.",
+    Player: "The player on dealer's right leads the first trick with the last card dealt to them. Players in counterclockwise order must follow led suit if possible. A player without led suit may play a joker if desired. If all active players contribute a card, trick is completed; highest card wins, and if jokers appear the first joker played is highest. If a player cannot follow and does not play a joker, trick ends immediately: later players do not play, that player picks one non-joker card from trick into hand, and remaining trick cards are set aside face down. Trick winner leads next trick (with special handling if winner just played final card and has no cards left). Players who empty hand drop out; play continues until one player still has cards.",
     objective: 'In each game, avoid being the last player still holding cards. Across a series, survive eliminations to become champion.',
     gameplay: "The player on dealer's right leads the first trick with the last card dealt to them. Players in counterclockwise order must follow led suit if possible. A player without led suit may play a joker if desired. If all active players contribute a card, trick is completed; highest card wins, and if jokers appear the first joker played is highest. If a player cannot follow and does not play a joker, trick ends immediately: later players do not play, that player picks one non-joker card from trick into hand, and remaining trick cards are set aside face down. Trick winner leads next trick (with special handling if winner just played final card and has no cards left). Players who empty hand drop out; play continues until one player still has cards.",
     keyRules: [
@@ -53,10 +53,174 @@
       go_out: 'Occurs immediately after playing final card.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before trick_play.',
-      'Scoring check: Outcome is elimination-based: each game identifies one loser (last player with cards), and series continues with that player removed in multiplayer mode. Expected outcome: 1.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: In each game, avoid being the last player still holding cards. Across a series, survive eliminations to become champion.',
+      "Turn-flow example: The player on dealer's right leads the first trick with the last card dealt to them. Players in counterclockwise order must follow led suit if possible. A player without led suit may play a joker if desired. If all active players contribute a card, trick is completed; highest card wins, and if jokers appear the first joker played is highest. If a player cannot follow and does not play a joker, trick ends immediately: later players do not play, that player picks one non-joker card from trick into hand, and remaining trick cards are set aside face down. Trick winner leads next trick (with special handling if winner just played final card and has no cards left). Players who empty hand drop out; play continues until one player still has cards.",
+      'Scoring example: Outcome is elimination-based: each game identifies one loser (last player with cards), and series continues with that player removed in multiplayer mode. Across series, be the last remaining player not eliminated..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'generala.rules.objective',
+        title: 'Objective',
+        text: 'In each game, avoid being the last player still holding cards. Across a series, survive eliminations to become champion.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'generala.rules.gameplay',
+        title: 'Turn flow',
+        text: "The player on dealer's right leads the first trick with the last card dealt to them. Players in counterclockwise order must follow led suit if possible. A player without led suit may play a joker if desired. If all active players contribute a card, trick is completed; highest card wins, and if jokers appear the first joker played is highest. If a player cannot follow and does not play a joker, trick ends immediately: later players do not play, that player picks one non-joker card from trick into hand, and remaining trick cards are set aside face down. Trick winner leads next trick (with special handling if winner just played final card and has no cards left). Players who empty hand drop out; play continues until one player still has cards.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'generala.setup.players',
+        title: 'Players',
+        text: '2 to 10 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'generala.setup.deck',
+        title: 'Deck',
+        text: 'One 54-card international pack with two jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'generala.setup.equipment',
+        title: 'Equipment',
+        text: 'No extra equipment required.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'generala.setup.dealing',
+        title: 'Deal',
+        text: 'Deal all cards one by one counterclockwise. Some players may receive one more card than others.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'generala.score.win-condition',
+        title: 'Win condition',
+        text: 'Across series, be the last remaining player not eliminated.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'generala.score.description',
+        title: 'Scoring',
+        text: 'Outcome is elimination-based: each game identifies one loser (last player with cards), and series continues with that player removed in multiplayer mode.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'generala.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow suit is mandatory when possible.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'generala.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Joker is highest rank and can be played when void; if joker is led, others may play any cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'generala.rules.key.3',
+        title: 'Key rule 3',
+        text: 'On interrupted tricks, picker cannot take a joker from the trick.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'generala.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Series format eliminates the loser of each game; with two players each game is simply winner versus loser.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'generala.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'generala.rules.objective',
+          'generala.rules.gameplay',
+        ],
+      },
+      {
+        id: 'generala.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'generala.setup.players',
+          'generala.setup.deck',
+          'generala.setup.equipment',
+          'generala.setup.dealing',
+        ],
+      },
+      {
+        id: 'generala.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'generala.rules.key.1',
+          'generala.rules.key.2',
+          'generala.rules.key.3',
+          'generala.rules.key.4',
+        ],
+      },
+      {
+        id: 'generala.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'generala.score.description',
+          'generala.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'generala.setup.dealing',
+        'generala.rules.objective',
+      ],
+      deal: [
+        'generala.rules.gameplay',
+      ],
+      award_pot: [
+        'generala.rules.gameplay',
+      ],
+      play_card: [
+        'generala.rules.gameplay',
+      ],
+      draw: [
+        'generala.rules.gameplay',
+      ],
+      discard: [
+        'generala.rules.gameplay',
+      ],
+      pass: [
+        'generala.rules.gameplay',
+      ],
+      go_out: [
+        'generala.rules.gameplay',
+      ],
+    },
   },
 }

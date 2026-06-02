@@ -10,7 +10,32 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Ace-Ten scoring. A=11, 10=10, K=4, O/Q=3, U/J=2. Total=120 points. Highest scorer in round gets a stroke. 4 strokes = lose.',
+      winCondition: 'Last player without 4 strokes wins.',
+      targetScore: null,
+      scoringDirection: 'low_wins',
+      cardValues: {
+        '10': '10',
+        A: '11',
+        K: '4',
+        O: '3',
+        U: '2',
+      },
+      nullReasons: {
+        targetScore: 'No fixed target score; play by game rules.',
+      },
+      splitRules: '',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],
@@ -22,7 +47,7 @@
       O: 3,
       U: 2,
     },
-    penalties: '{\n  "Most Points": "Receive stroke mark on slate"\n}',
+    penalties: '{"Most Points":"Receive stroke mark on slate"}',
     targetScore: null,
     scoringDirection: 'low_wins',
     rankingAsset: {

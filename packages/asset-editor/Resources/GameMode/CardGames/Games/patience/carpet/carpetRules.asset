@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Carpet. Logic: See rules.objective and rules.gameplay.',
-    Player: "Carpet is a simple and rewarding patience (solitaire) game. Four Aces form the foundations, twenty cards are laid out in a 5Ã—4 grid called the 'carpet,' and the remaining cards form a stock. The goal is to build all cards onto the foundations in suit from Ace to King.",
+    LLM: 'Foundations build up in suit (Aceâ†’2â†’3â†’...â†’King). Cards available for play: all cards in the carpet, and the top card of the discard pile. Empty spaces in the carpet may be filled from the discard pile. Deal from stock one card at a time onto discard pile at any time. No redeals - when stock is empty, dealing stops.',
+    Player: 'Foundations build up in suit (Aceâ†’2â†’3â†’...â†’King). Cards available for play: all cards in the carpet, and the top card of the discard pile. Empty spaces in the carpet may be filled from the discard pile. Deal from stock one card at a time onto discard pile at any time. No redeals - when stock is empty, dealing stops.',
     objective: 'Move all cards onto the four foundations, building each up in suit from Ace to King.',
     gameplay: 'Foundations build up in suit (Aceâ†’2â†’3â†’...â†’King). Cards available for play: all cards in the carpet, and the top card of the discard pile. Empty spaces in the carpet may be filled from the discard pile. Deal from stock one card at a time onto discard pile at any time. No redeals - when stock is empty, dealing stops.',
     keyRules: [
@@ -56,10 +56,183 @@
       go_out: 'This action does not apply to this game.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Win by moving all cards to foundations. Most games are winnable. Score based on efficiency (cards remaining in stock when won). Expected outcome: Move all cards onto the four foundations, building each up in suit from Ace to King..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Move all cards onto the four foundations, building each up in suit from Ace to King.',
+      'Turn-flow example: Foundations build up in suit (Aceâ†’2â†’3â†’...â†’King). Cards available for play: all cards in the carpet, and the top card of the discard pile. Empty spaces in the carpet may be filled from the discard pile. Deal from stock one card at a time onto discard pile at any time. No redeals - when stock is empty, dealing stops.',
+      'Scoring example: Win by moving all cards to foundations. Most games are winnable. Score based on efficiency (cards remaining in stock when won). Move all cards onto the four foundations, building each up in suit from Ace to King..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'carpet.rules.objective',
+        title: 'Objective',
+        text: 'Move all cards onto the four foundations, building each up in suit from Ace to King.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'carpet.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Foundations build up in suit (Aceâ†’2â†’3â†’...â†’King). Cards available for play: all cards in the carpet, and the top card of the discard pile. Empty spaces in the carpet may be filled from the discard pile. Deal from stock one card at a time onto discard pile at any time. No redeals - when stock is empty, dealing stops.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'carpet.setup.players',
+        title: 'Players',
+        text: '1 player (solitaire)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'carpet.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack. Remove the four Aces to form foundations. The remaining 48 cards are shuffled.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'carpet.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck of cards, playing surface',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'carpet.setup.dealing',
+        title: 'Deal',
+        text: "Remove four Aces and place them as foundations. Deal 20 cards face up in a 5Ã—4 grid (the 'carpet') with no overlaps. Remaining 28 cards form the stock (held in hand). Discard pile starts empty.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'carpet.score.win-condition',
+        title: 'Win condition',
+        text: 'Move all cards onto the four foundations, building each up in suit from Ace to King.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'carpet.score.description',
+        title: 'Scoring',
+        text: 'Win by moving all cards to foundations. Most games are winnable. Score based on efficiency (cards remaining in stock when won).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'carpet.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Remove four Aces to start foundations',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'carpet.rules.key.2',
+        title: 'Key rule 2',
+        text: '20 cards in 5Ã—4 carpet (no overlaps)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'carpet.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Foundations build up in suit to King',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'carpet.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Carpet cards and top discard available for play',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'carpet.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Empty carpet spaces filled from discard pile',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'carpet.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Deal one card at a time from stock',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'carpet.rules.key.7',
+        title: 'Key rule 7',
+        text: 'No redeals',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'carpet.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'carpet.rules.objective',
+          'carpet.rules.gameplay',
+        ],
+      },
+      {
+        id: 'carpet.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'carpet.setup.players',
+          'carpet.setup.deck',
+          'carpet.setup.equipment',
+          'carpet.setup.dealing',
+        ],
+      },
+      {
+        id: 'carpet.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'carpet.rules.key.1',
+          'carpet.rules.key.2',
+          'carpet.rules.key.3',
+          'carpet.rules.key.4',
+          'carpet.rules.key.5',
+          'carpet.rules.key.6',
+          'carpet.rules.key.7',
+        ],
+      },
+      {
+        id: 'carpet.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'carpet.score.description',
+          'carpet.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'carpet.setup.dealing',
+        'carpet.rules.objective',
+      ],
+      play_card: [
+        'carpet.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players use proprietary cards representing wartime forces and events. Combat and campaign effects depend on the published rules and card text.',
+    Player: 'Players use proprietary cards representing wartime forces and events. Combat and campaign effects depend on the published rules and card text.',
     objective: 'Use a constructed deck to win the simulated World War II conflict under the official card rules.',
     gameplay: 'Players use proprietary cards representing wartime forces and events. Combat and campaign effects depend on the published rules and card text.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Use a constructed deck to win the simulated World War II conflict under the official card rules.',
+      'Turn-flow example: Players use proprietary cards representing wartime forces and events. Combat and campaign effects depend on the published rules and card text.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'the-last-crusade.rules.objective',
+        title: 'Objective',
+        text: 'Use a constructed deck to win the simulated World War II conflict under the official card rules.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'the-last-crusade.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players use proprietary cards representing wartime forces and events. Combat and campaign effects depend on the published rules and card text.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'the-last-crusade.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for The Last Crusade.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'the-last-crusade.setup.deck',
+        title: 'Deck',
+        text: 'Constructed The Last Crusade CCG decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'the-last-crusade.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed The Last Crusade CCG decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'the-last-crusade.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Constructed The Last Crusade CCG decks and deal or lay out cards according to the documented The Last Crusade rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'the-last-crusade.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'the-last-crusade.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'the-last-crusade.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Out-of-print collectible card game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'the-last-crusade.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Theme is World War II conflict.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'the-last-crusade.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Exact card effects are proprietary.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'the-last-crusade.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'the-last-crusade.rules.objective',
+          'the-last-crusade.rules.gameplay',
+        ],
+      },
+      {
+        id: 'the-last-crusade.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'the-last-crusade.setup.players',
+          'the-last-crusade.setup.deck',
+          'the-last-crusade.setup.equipment',
+          'the-last-crusade.setup.dealing',
+        ],
+      },
+      {
+        id: 'the-last-crusade.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'the-last-crusade.rules.key.1',
+          'the-last-crusade.rules.key.2',
+          'the-last-crusade.rules.key.3',
+        ],
+      },
+      {
+        id: 'the-last-crusade.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'the-last-crusade.score.description',
+          'the-last-crusade.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'the-last-crusade.setup.dealing',
+        'the-last-crusade.rules.objective',
+      ],
+      play_card: [
+        'the-last-crusade.rules.gameplay',
+      ],
+    },
   },
 }

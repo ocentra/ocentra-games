@@ -10,7 +10,28 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Winner scores total pips from all opponent hands. Avoidance variant: highest score is loser.',
+      winCondition: 'Empty hand first, or lowest pip total when boneyard empty and board blocked.',
+      targetScore: null,
+      scoringDirection: 'low_wins',
+      cardValues: {
+        'Pips per domino': '1',
+      },
+      nullReasons: {
+        targetScore: 'No fixed target score; play by game rules.',
+      },
+      splitRules: '',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],
@@ -18,7 +39,7 @@
     cardValues: {
       'Pips per domino': 1,
     },
-    penalties: '{\n  "Drawn Tiles": "Each drawn tile increases your pip total"\n}',
+    penalties: '{"Drawn Tiles":"Each drawn tile increases your pip total"}',
     targetScore: null,
     scoringDirection: 'low_wins',
     rankingAsset: {

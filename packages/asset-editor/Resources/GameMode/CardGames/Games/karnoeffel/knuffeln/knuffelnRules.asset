@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 9 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 9 card(s) per player.',
+      'Rule example: Partnerships aim to win at least five of the nine tricks in each deal; the first team to reach five tricks wins the hand.',
+      'Turn-flow example: 1. Standard lead-based play.\n2. **No Follow Suit**: Players are NOT required to follow suit or rank. They can play any card at any time.\n3. **Partnership Talk**: Partners can freely show cards and discuss strategy during the round.',
+      'Scoring example: Points or match rules. Partnership that wins at least five of the nine tricks wins the hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'knuffeln.rules.objective',
+        title: 'Objective',
+        text: 'Partnerships aim to win at least five of the nine tricks in each deal; the first team to reach five tricks wins the hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'knuffeln.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Standard lead-based play.\n2. **No Follow Suit**: Players are NOT required to follow suit or rank. They can play any card at any time.\n3. **Partnership Talk**: Partners can freely show cards and discuss strategy during the round.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'knuffeln.setup.players',
+        title: 'Players',
+        text: '4 players in two partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'knuffeln.setup.deck',
+        title: 'Deck',
+        text: '48 cards. Use two sets of 24 cards or remove Aces from 52. Standard ranks 2-10, Jack, Queen, King.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'knuffeln.setup.equipment',
+        title: 'Equipment',
+        text: '48 cards. Use two sets of 24 cards or remove Aces from 52. Standard ranks 2-10, Jack, Queen, King.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'knuffeln.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 9 cards (dealt 3-3-3). One card is turned up to determine the elected suit.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'knuffeln.score.win-condition',
+        title: 'Win condition',
+        text: 'Partnership that wins at least five of the nine tricks wins the hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'knuffeln.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'knuffeln.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No follow-suit requirement; players may play any card at any time.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'knuffeln.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Elected suit (determined by turned card) has special ranking: matadors, beaters, then plain cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'knuffeln.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Partners may openly communicate and bluff; first team to win five of nine tricks wins the hand.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'knuffeln.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'knuffeln.rules.objective',
+          'knuffeln.rules.gameplay',
+        ],
+      },
+      {
+        id: 'knuffeln.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'knuffeln.setup.players',
+          'knuffeln.setup.deck',
+          'knuffeln.setup.equipment',
+          'knuffeln.setup.dealing',
+        ],
+      },
+      {
+        id: 'knuffeln.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'knuffeln.rules.key.1',
+          'knuffeln.rules.key.2',
+          'knuffeln.rules.key.3',
+        ],
+      },
+      {
+        id: 'knuffeln.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'knuffeln.score.description',
+          'knuffeln.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'knuffeln.setup.dealing',
+        'knuffeln.rules.objective',
+      ],
+      play_card: [
+        'knuffeln.rules.gameplay',
+      ],
+    },
   },
 }

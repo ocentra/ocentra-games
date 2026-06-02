@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
 import JSON5 from 'json5';
+import { DEFAULT_SELECTED_GAME_CONTENT_PLAN } from '@ocentra/game-asset-domain/ui/selectedGame/SelectedGamePresentation';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,6 +11,7 @@ const repoRoot = path.resolve(__dirname, '../../..');
 const resourcesRoot = path.resolve(repoRoot, 'packages/asset-editor/Resources');
 const gamesRoot = path.resolve(resourcesRoot, 'GameMode/CardGames/Games');
 const SETUP_ROUND_ACTION_ID = 'setup_round';
+const PUBLIC_JUNK_TEXT_PATTERN = /\[.{1,120}\]|\b(T\.?B\.?D\.?|T\.?B\.A\.?|TODO|FIXME|placeholder|lorem ipsum|fill in|insert here|see pagat|see wikipedia|refer to source|documented in source)\b/i;
 
 interface AssetEnvelope {
   system?: {
@@ -69,8 +71,254 @@ function asText(value: unknown): string {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+function stringifyUnknown(value: unknown): string {
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (value == null) {
+    return '';
+  }
+  return JSON.stringify(value, null, 2);
+}
+
 function asNumber(value: unknown, fallback: number): number {
   return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
+}
+
+function asOptionalNumber(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+function firstNumber(...values: unknown[]): number | null {
+  for (const value of values) {
+    const numberValue = asOptionalNumber(value);
+    if (numberValue !== null) {
+      return numberValue;
+    }
+  }
+  return null;
+}
+
+function formatPlayerRange(minPlayers: number | null, maxPlayers: number | null): string {
+  if (minPlayers !== null && maxPlayers !== null) {
+    return minPlayers === maxPlayers ? `${minPlayers}` : `${minPlayers}-${maxPlayers}`;
+  }
+  return `${minPlayers ?? maxPlayers ?? 'unknown'}`;
+}
+
+function firstNumberFromText(text: unknown, pattern: RegExp): number | null {
+  const value = asText(text);
+  const match = value.match(pattern);
+  if (!match?.[1]) {
+    return null;
+  }
+  const parsed = Number(match[1]);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function buildDealSummary(source: Record<string, unknown>, initialHandSize: number | null): string {
+  const dealing = asText(asRecord(source.setup).dealing);
+  const deals = Array.from(dealing.matchAll(/(\d+)(?:\s*-\s*(\d+))?\s+players?\s+(\d+)\s+cards?\s+each/gi))
+    .map((match) => {
+      const players = match[2] ? `${match[1]}-${match[2]} players` : `${match[1]} players`;
+      return `${players}: ${match[3]} cards`;
+    });
+  if (deals.length > 0) {
+    return deals.join('; ');
+  }
+  if (initialHandSize !== null) {
+    return `${initialHandSize} card(s) per player`;
+  }
+  return firstPublicText(dealing.replace(/\s+/g, ' '), 'deal policy requires source review');
+}
+
+function cleanRuleExampleText(value: string): string {
+  return value.replace(/\bnull\b/gi, 'none');
+}
+
+function sourceSlug(source: Record<string, unknown>): string {
+  return firstPublicText(asText(source.filename).replace(/\.json$/i, ''), source.name, 'card-game');
+}
+
+function publicSetupEquipment(source: Record<string, unknown>): string {
+  const setup = asRecord(source.setup);
+  const overview = asRecord(source.overview);
+  return firstPublicText(setup.equipment, setup.deck, overview.deck);
+}
+
+function authoredRule(id: string, title: string, text: unknown, sourcePath: string): Record<string, unknown> | null {
+  const ruleText = publicText(text);
+  if (!ruleText) {
+    return null;
+  }
+  return {
+    id,
+    title,
+    text: ruleText,
+    sourceFields: [sourcePath],
+  };
+}
+
+function buildRuleRecords(source: Record<string, unknown>): Record<string, unknown>[] {
+  const slug = sourceSlug(source);
+  const rules = asRecord(source.rules);
+  const setup = asRecord(source.setup);
+  const scoring = asRecord(source.scoring);
+  return [
+    authoredRule(`${slug}.rules.objective`, 'Objective', rules.objective, 'rules.objective'),
+    authoredRule(`${slug}.rules.gameplay`, 'Turn flow', rules.gameplay, 'rules.gameplay'),
+    authoredRule(`${slug}.setup.players`, 'Players', setup.players, 'setup.players'),
+    authoredRule(`${slug}.setup.deck`, 'Deck', setup.deck, 'setup.deck'),
+    authoredRule(`${slug}.setup.equipment`, 'Equipment', publicSetupEquipment(source), 'setup.equipment'),
+    authoredRule(`${slug}.setup.dealing`, 'Deal', setup.dealing, 'setup.dealing'),
+    authoredRule(`${slug}.score.win-condition`, 'Win condition', scoring.winCondition, 'scoring.winCondition'),
+    authoredRule(`${slug}.score.description`, 'Scoring', scoring.description, 'scoring.description'),
+    ...asArray(rules.keyRules).map((ruleText, index) => (
+      authoredRule(`${slug}.rules.key.${index + 1}`, `Key rule ${index + 1}`, ruleText, `rules.keyRules.${index}`)
+    )),
+  ].filter((rule): rule is Record<string, unknown> => rule !== null);
+}
+
+function buildRuleGroups(source: Record<string, unknown>): Record<string, unknown>[] {
+  const slug = sourceSlug(source);
+  const keyRuleIds = asArray(asRecord(source.rules).keyRules)
+    .map((ruleText, index) => publicText(ruleText) ? `${slug}.rules.key.${index + 1}` : '')
+    .filter(Boolean);
+  return [
+    {
+      id: `${slug}.group.overview`,
+      label: 'Objective',
+      ruleIds: [`${slug}.rules.objective`, `${slug}.rules.gameplay`],
+    },
+    {
+      id: `${slug}.group.setup`,
+      label: 'Setup',
+      ruleIds: [
+        `${slug}.setup.players`,
+        `${slug}.setup.deck`,
+        `${slug}.setup.equipment`,
+        `${slug}.setup.dealing`,
+      ],
+    },
+    ...(keyRuleIds.length > 0
+      ? [{
+          id: `${slug}.group.key-rules`,
+          label: 'Key Rules',
+          ruleIds: keyRuleIds,
+        }]
+      : []),
+    {
+      id: `${slug}.group.scoring`,
+      label: 'Scoring',
+      ruleIds: [`${slug}.score.description`, `${slug}.score.win-condition`],
+    },
+  ];
+}
+
+function buildActionRuleLinks(source: Record<string, unknown>): Record<string, string[]> {
+  const slug = sourceSlug(source);
+  const engine = asRecord(source.engine);
+  const links: Record<string, string[]> = {
+    [SETUP_ROUND_ACTION_ID]: [`${slug}.setup.dealing`, `${slug}.rules.objective`],
+  };
+  for (const [actionId, action] of Object.entries(asRecord(engine.playerActions))) {
+    if (asRecord(action).supported === true) {
+      links[actionId] = [`${slug}.rules.gameplay`];
+    }
+  }
+  for (const action of asArray(engine.customActions).map(asRecord)) {
+    const actionId = asText(action.id);
+    if (actionId && action.supported === true) {
+      links[actionId] = [`${slug}.rules.gameplay`];
+    }
+  }
+  return links;
+}
+
+function isMeaningful(value: unknown): boolean {
+  if (value === null || value === undefined) {
+    return false;
+  }
+  if (typeof value === 'string') {
+    return Boolean(publicText(value));
+  }
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return true;
+  }
+  if (Array.isArray(value)) {
+    return value.some(isMeaningful);
+  }
+  if (typeof value === 'object') {
+    return Object.values(value).some(isMeaningful);
+  }
+  return false;
+}
+
+function normalizeNumericRecord(value: unknown): Record<string, number> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return {};
+  }
+  return Object.fromEntries(
+    Object.entries(value).flatMap(([key, entryValue]) => {
+      if (typeof entryValue === 'number' && Number.isFinite(entryValue)) {
+        return [[key, entryValue]];
+      }
+      if (typeof entryValue === 'string') {
+        const parsed = Number(entryValue);
+        if (Number.isFinite(parsed)) {
+          return [[key, parsed]];
+        }
+      }
+      return [];
+    }),
+  );
+}
+
+function buildScoringRulesSourceCardValues(value: unknown, numericValues: Record<string, number>): Record<string, unknown> | null {
+  const sourceValues = asRecord(value);
+  if (Object.keys(sourceValues).length === 0 || Object.keys(sourceValues).length === Object.keys(numericValues).length) {
+    return null;
+  }
+  return {
+    raw: sourceValues,
+    note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+  };
+}
+
+function buildScoringNullReasons(scoring: Record<string, unknown>, numericCardValues: Record<string, number>): Record<string, unknown> {
+  const sourceNullReasons = asRecord(scoring.nullReasons);
+  if (Object.keys(numericCardValues).length > 0 || isMeaningful(sourceNullReasons.cardValues)) {
+    return sourceNullReasons;
+  }
+  return {
+    ...sourceNullReasons,
+    cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+  };
+}
+
+function buildScoringRules(source: Record<string, unknown>): Record<string, unknown> {
+  const scoring = asRecord(source.scoring);
+  const numericCardValues = normalizeNumericRecord(scoring.cardValues);
+  const sourceCardValues = buildScoringRulesSourceCardValues(scoring.cardValues, numericCardValues);
+  return {
+    summary: scoring.description,
+    winCondition: scoring.winCondition,
+    targetScore: typeof scoring.targetScore === 'number' ? scoring.targetScore : null,
+    scoringDirection: scoring.scoringDirection,
+    cardValues: scoring.cardValues,
+    ...(sourceCardValues ? { sourceCardValues } : {}),
+    nullReasons: buildScoringNullReasons(scoring, numericCardValues),
+    splitRules: scoring.splitRules ?? null,
+    sourceFields: [
+      'scoring.description',
+      'scoring.winCondition',
+      'scoring.cardValues',
+      'scoring.targetScore',
+      'scoring.scoringDirection',
+      'scoring.nullReasons',
+      'scoring.splitRules',
+    ],
+  };
 }
 
 function normalizeResourcePath(value: string): string {
@@ -141,6 +389,298 @@ function buildSourcesContent(source: Record<string, unknown>): Record<string, un
     primary: normalizeSourceList(sources.primary),
     additional: normalizeSourceList(sources.additional),
   };
+}
+
+function publicText(value: unknown): string {
+  if (typeof value !== 'string') {
+    return '';
+  }
+  const trimmed = value.trim();
+  return trimmed && !PUBLIC_JUNK_TEXT_PATTERN.test(trimmed) ? trimmed : '';
+}
+
+function firstPublicText(...values: unknown[]): string {
+  for (const value of values) {
+    const text = publicText(value);
+    if (text) {
+      return text;
+    }
+  }
+  return '';
+}
+
+function paragraphBlocks(text: unknown): Record<string, unknown>[] {
+  return publicText(text)
+    .split(/\n{2,}/)
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => ({
+      type: 'paragraph',
+      text: entry,
+    }));
+}
+
+function listBlock(items: string[]): Record<string, unknown> | null {
+  const filtered = items.map((item) => item.trim()).filter(Boolean);
+  if (filtered.length === 0) {
+    return null;
+  }
+  return {
+    type: 'list',
+    style: 'unordered',
+    items: filtered.map((item) => ({ text: item })),
+  };
+}
+
+function buildPublicVariationList(source: Record<string, unknown>): Record<string, unknown>[] {
+  return asArray(asRecord(source.variations).list).flatMap((variation) => {
+    const record = asRecord(variation);
+    const name = publicText(record.name);
+    const description = publicText(record.description);
+    if (!name || !description) {
+      return [];
+    }
+    const id = publicText(record.id);
+    return [{
+      ...(id ? { id } : {}),
+      name,
+      description,
+    }];
+  });
+}
+
+function buildGameInfoSections(source: Record<string, unknown>): Record<string, unknown>[] {
+  const overview = asRecord(source.overview);
+  const history = asRecord(source.history);
+  const setup = asRecord(source.setup);
+  const synthesis = asRecord(source.synthesis);
+  const hero = asRecord(synthesis.hero);
+  const name = firstPublicText(source.name, source.filename, 'Card Game');
+  const aboutContent = [
+    ...paragraphBlocks(overview.description),
+    ...paragraphBlocks(history.origins),
+  ];
+  const setupContent = [
+    ...paragraphBlocks(setup.players),
+    ...paragraphBlocks(setup.deck),
+    ...paragraphBlocks(firstPublicText(setup.equipment, setup.deck, overview.deck)),
+    ...paragraphBlocks(setup.dealing),
+  ];
+  const variationsBlock = listBlock(
+    buildPublicVariationList(source).map((variation) => `${String(variation.name)}: ${String(variation.description)}`)
+  );
+
+  return [
+    {
+      type: 'about',
+      tabLabel: 'About',
+      pages: [
+        {
+          title: name,
+          subtitle: firstPublicText(hero.subtitle, 'Game Overview'),
+          content: aboutContent,
+        },
+        {
+          title: 'Setup',
+          subtitle: 'Table, deck, equipment, and deal',
+          content: setupContent,
+        },
+        ...(variationsBlock
+          ? [{
+              title: 'Variations',
+              subtitle: 'Known ways this game changes',
+              content: [variationsBlock],
+            }]
+          : []),
+      ],
+    },
+  ];
+}
+
+function buildCanonicalTagline(source: Record<string, unknown>): string {
+  const description = publicText(asRecord(source.overview).description);
+  if (description.length <= 140) {
+    return description;
+  }
+  const sentence = description.match(/^.{40,140}?[.!?](?:\s|$)/)?.[0]?.trim();
+  return sentence || `${description.slice(0, 137).trimEnd()}...`;
+}
+
+function buildAiConsiderations(source: Record<string, unknown>): string[] {
+  const rules = asRecord(source.rules);
+  return [
+    rules.objective,
+    rules.gameplay,
+    ...asArray(rules.keyRules),
+  ].map(publicText).filter(Boolean).slice(0, 4);
+}
+
+function buildAiContent(source: Record<string, unknown>): Record<string, unknown> {
+  const ai = asRecord(source.ai);
+  const overview = asRecord(source.overview);
+  return {
+    difficulty: isMeaningful(ai.difficulty) ? ai.difficulty : overview.difficulty,
+    considerations: isMeaningful(ai.considerations) ? ai.considerations : buildAiConsiderations(source),
+  };
+}
+
+function buildMoveValidityConditions(source: Record<string, unknown>): Record<string, string> {
+  const actions = asRecord(asRecord(source.engine).playerActions);
+  return Object.fromEntries(Object.entries(actions).flatMap(([actionId, action]) => {
+    const record = asRecord(action);
+    const supported = record.supported === true;
+    const text = supported ? firstPublicText(record.constraints) : firstPublicText(record.reason);
+    return text ? [[actionId, text]] : [];
+  }));
+}
+
+function buildRuleExampleHands(source: Record<string, unknown>): string[] {
+  const engine = asRecord(source.engine);
+  const rules = asRecord(source.rules);
+  const initialHandSize = firstNumber(engine.initialHandSize, firstNumberFromText(asRecord(source.setup).dealing, /(\d+)\s+cards?\s+each/i));
+  const dealSummary = buildDealSummary(source, initialHandSize);
+  const phases = asArray(engine.phases).map(asRecord);
+  const firstPhase = phases[0];
+  const scoring = asRecord(source.scoring);
+  return [
+    `Setup example: ${dealSummary}.`,
+    `Rule example: ${rules.objective}`,
+    asText(firstPhase.id) || publicText(rules.gameplay)
+      ? `Turn-flow example: ${rules.gameplay}`
+      : '',
+    `Scoring example: ${scoring.description} ${stringifyUnknown(scoring.winCondition)}.`,
+  ].map(cleanRuleExampleText).map(publicText).filter(Boolean);
+}
+
+function buildStrategySummary(source: Record<string, unknown>): string {
+  const strategy = asRecord(source.strategy);
+  const rules = asRecord(source.rules);
+  const authored = [strategy.basic, strategy.intermediate, strategy.advanced]
+    .map(publicText)
+    .filter(Boolean)
+    .join('\n\n');
+  if (authored.length >= 20) {
+    return authored;
+  }
+  return [rules.objective, rules.gameplay].map(publicText).filter(Boolean).join('\n\n');
+}
+
+function updateGameInfoFromSource(asset: AssetEnvelope, source: Record<string, unknown>): void {
+  const data = asRecord(asset.data);
+  const overview = asRecord(source.overview);
+  const history = asRecord(source.history);
+  const setup = asRecord(source.setup);
+  const name = firstPublicText(source.name, source.filename, data.hero);
+  data.hero = {
+    title: name,
+    subtitle: firstPublicText(overview.category, 'Card Game'),
+  };
+  data.description = overview.description;
+  data.LLM = overview.description;
+  data.Player = overview.description;
+  data.tagline = buildCanonicalTagline(source);
+  data.tags = Array.from(new Set(['card-game', ...asArray(source.tags).map(asText).filter(Boolean)]));
+  data.minPlayers = asNumber(asRecord(overview.players).minPlayers, asNumber(data.minPlayers, 2));
+  data.maxPlayers = asNumber(asRecord(overview.players).maxPlayers, asNumber(data.maxPlayers, 4));
+  data.routePath = asText(data.routePath) || asText(source.filename).replace(/\.json$/i, '');
+  data.gameCategory = firstPublicText(overview.category, data.gameCategory);
+  data.subcategory = firstPublicText(overview.subCategory, data.subcategory);
+  data.playerMode = firstPublicText(overview.playerMode, data.playerMode);
+  data.difficulty = firstPublicText(overview.difficulty, data.difficulty);
+  data.duration = firstPublicText(overview.duration, data.duration);
+  data.origin = firstPublicText(overview.origin, data.origin);
+  data.originName = firstPublicText(overview.originName, source.name);
+  data.deck = firstPublicText(overview.deck, data.deck);
+  data.alsoKnownAs = asArray(source.alsoKnownAs).map(asText).filter(Boolean);
+  data.playersDisplay = firstPublicText(asRecord(overview.players).display, data.playersDisplay);
+  data.quality = source.quality;
+  data.completeness = source.completeness;
+  data.historyContent = {
+    origins: history.origins,
+    originCountries: asArray(history.originCountries).map(asText).filter(Boolean),
+    timeline: asArray(history.timeline).map(asText).filter(Boolean),
+    evolution: firstPublicText(history.evolution),
+    cultural: firstPublicText(history.cultural),
+  };
+  data.setupContent = {
+    players: setup.players,
+    deck: setup.deck,
+    equipment: firstPublicText(setup.equipment, setup.deck, overview.deck),
+    dealing: setup.dealing,
+  };
+  const variations = asRecord(source.variations);
+  const variationList = buildPublicVariationList(source);
+  data.variationsContent = {
+    list: variationList,
+    noVariationsReason: variationList.length === 0 ? firstPublicText(variations.noVariationsReason, 'Base ruleset only.') : '',
+  };
+  data.aiContent = buildAiContent(source);
+  data.sourcesContent = buildSourcesContent(source);
+  data.sections = buildGameInfoSections(source);
+  asset.data = data;
+}
+
+function updateRulesFromSource(asset: AssetEnvelope, source: Record<string, unknown>): void {
+  const data = asRecord(asset.data);
+  const rules = asRecord(source.rules);
+  const setup = asRecord(source.setup);
+  const engine = asRecord(source.engine);
+  const audienceText = firstPublicText(rules.gameplay, rules.objective, asRecord(source.overview).description);
+  data.LLM = audienceText;
+  data.Player = audienceText;
+  data.objective = rules.objective;
+  data.gameplay = rules.gameplay;
+  data.keyRules = asArray(rules.keyRules).map(asText).filter(Boolean);
+  data.setup = {
+    players: setup.players,
+    deck: setup.deck,
+    equipment: firstPublicText(setup.equipment, setup.deck, asRecord(source.overview).deck),
+    dealing: setup.dealing,
+  };
+  data.turnFlow = rules.gameplay;
+  data.moveValidityConditions = buildMoveValidityConditions(source);
+  data.exampleHands = buildRuleExampleHands(source);
+  data.rules = buildRuleRecords(source);
+  data.ruleGroups = buildRuleGroups(source);
+  data.actionRuleLinks = buildActionRuleLinks(source);
+  data.useTrump = engine.useTrump;
+  data.trumpBonusValues = engine.trumpBonusValues ?? null;
+  asset.data = data;
+}
+
+function updateStrategyFromSource(asset: AssetEnvelope, source: Record<string, unknown>): void {
+  const data = asRecord(asset.data);
+  const strategy = asRecord(source.strategy);
+  const summary = buildStrategySummary(source);
+  data.LLM = summary;
+  data.Player = summary;
+  data.basic = firstPublicText(strategy.basic, asRecord(source.rules).objective);
+  data.intermediate = firstPublicText(strategy.intermediate);
+  data.advanced = firstPublicText(strategy.advanced);
+  data.tips = asArray(strategy.tips).map(publicText).filter(Boolean).map((tip) => ({
+    title: 'Tip',
+    description: tip,
+  }));
+  asset.data = data;
+}
+
+function updateScoringFromSource(asset: AssetEnvelope, source: Record<string, unknown>): void {
+  const data = asRecord(asset.data);
+  const scoring = asRecord(source.scoring);
+  data.description = scoring.description;
+  data.winCondition = scoring.winCondition;
+  data.cardValues = normalizeNumericRecord(scoring.cardValues);
+  data.penalties = JSON.stringify(scoring.penalties ?? '');
+  data.targetScore = typeof scoring.targetScore === 'number' ? scoring.targetScore : null;
+  data.scoringDirection = scoring.scoringDirection;
+  data.scoringRules = buildScoringRules(source);
+  asset.data = data;
+}
+
+function updateSelectedGameLayoutFromSource(asset: AssetEnvelope): void {
+  const data = asRecord(asset.data);
+  data.contentPlan = DEFAULT_SELECTED_GAME_CONTENT_PLAN;
+  asset.data = data;
 }
 
 function normalizePhase(value: unknown): Record<string, unknown> | null {
@@ -349,7 +889,11 @@ function repairGameMode(gameModePath: string): boolean {
 
   const gameDir = path.dirname(gameModePath);
   const linkedKeys = asRecord(asRecord(infoData.mechanicsContract).linkedAssetKeys);
+  const rulesEntry = loadAssetFromRef(gameModeData.gameRulesAsset);
+  const strategyEntry = loadAssetFromRef(gameModeData.strategyAsset);
+  const scoringEntry = loadAssetFromRef(gameModeData.scoringAsset);
   const mechanicsEntry = loadAssetFromRef(gameModeData.mechanicsAsset);
+  const selectedGameLayoutEntry = loadAssetFromRef(gameModeData.selectedGameLayoutAsset);
   const actionEntry = loadSiblingAsset(gameDir, linkedKeys.actionSet);
   const phaseFlowEntry = loadSiblingAsset(gameDir, linkedKeys.phaseFlowModel);
   const stateEventEntry = loadSiblingAsset(gameDir, linkedKeys.stateEventModel);
@@ -358,8 +902,19 @@ function repairGameMode(gameModePath: string): boolean {
     throw new Error(`Missing linked mechanics assets for ${gameModePath}`);
   }
 
-  infoData.sourcesContent = buildSourcesContent(source);
-  infoEntry.asset.data = infoData;
+  updateGameInfoFromSource(infoEntry.asset, source);
+  if (rulesEntry) {
+    updateRulesFromSource(rulesEntry.asset, source);
+  }
+  if (strategyEntry) {
+    updateStrategyFromSource(strategyEntry.asset, source);
+  }
+  if (scoringEntry) {
+    updateScoringFromSource(scoringEntry.asset, source);
+  }
+  if (selectedGameLayoutEntry) {
+    updateSelectedGameLayoutFromSource(selectedGameLayoutEntry.asset);
+  }
 
   const runtimePhases = buildRuntimePhases(source, asRecord(mechanicsEntry.asset.data).phases);
   const actionIds = addSetupAction(actionEntry.asset, source, runtimePhases);
@@ -376,6 +931,10 @@ function repairGameMode(gameModePath: string): boolean {
     updateStateEventModel(stateEventEntry.asset, runtimePhases, actionIds);
   }
 
+  const rulesStats = rulesEntry ? writeAsset(rulesEntry.filePath, rulesEntry.asset) : null;
+  const strategyStats = strategyEntry ? writeAsset(strategyEntry.filePath, strategyEntry.asset) : null;
+  const scoringStats = scoringEntry ? writeAsset(scoringEntry.filePath, scoringEntry.asset) : null;
+  const selectedGameLayoutStats = selectedGameLayoutEntry ? writeAsset(selectedGameLayoutEntry.filePath, selectedGameLayoutEntry.asset) : null;
   const actionStats = writeAsset(actionEntry.filePath, actionEntry.asset);
   const phaseFlowStats = phaseFlowEntry ? writeAsset(phaseFlowEntry.filePath, phaseFlowEntry.asset) : null;
   const stateEventStats = stateEventEntry ? writeAsset(stateEventEntry.filePath, stateEventEntry.asset) : null;
@@ -401,6 +960,18 @@ function repairGameMode(gameModePath: string): boolean {
 
   const infoStats = writeAsset(infoEntry.filePath, infoEntry.asset);
   const mechanicsStats = writeAsset(mechanicsEntry.filePath, mechanicsEntry.asset);
+  if (rulesStats) {
+    setRefStats(gameModeData.gameRulesAsset, rulesStats);
+  }
+  if (strategyStats) {
+    setRefStats(gameModeData.strategyAsset, strategyStats);
+  }
+  if (scoringStats) {
+    setRefStats(gameModeData.scoringAsset, scoringStats);
+  }
+  if (selectedGameLayoutStats) {
+    setRefStats(gameModeData.selectedGameLayoutAsset, selectedGameLayoutStats);
+  }
   setRefStats(gameModeData.gameInfoAsset, infoStats);
   setRefStats(gameModeData.mechanicsAsset, mechanicsStats);
   gameMode.data = gameModeData;

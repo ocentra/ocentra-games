@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: "Each player's hand penalty is the absolute difference between predicted and achieved card points. Lower cumulative penalty is better.",
+      winCondition: 'After an agreed equal-dealer session length, the player with the lowest cumulative penalty wins.',
+      targetScore: null,
+      scoringDirection: 'low_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: 'Differenzler sessions typically end after a fixed number of deals divisible by player count rather than a single target-point threshold.',
+        cardValues: 'Swiss Jass point values (Jack 2, Nine 0, Ace 11, Ten 10, King 4, Queen 3, lower 0; last trick 5) apply; see engine handRankingSystem.',
+      },
+      splitRules: '',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 8 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: No point scoring; the player who wins more tricks wins the game. Expected outcome: Win more tricks than the opponent (majority of 26 tricks)..',
+      'Setup example: 8 card(s) per player.',
+      'Rule example: The objective is to win more tricks than the opponent. There are 26 tricks in total; the player who wins the majority wins the game. There is no point scoring.',
+      'Turn-flow example: Two players; deal alternates. Each player gets 26 cards: 9 face down on table (5+4 rows), 9 face up on top, 8 in hand. Non-dealer leads. Each trick is two cards; play from hand or face-up layout; when a layout card is played the card beneath is turned face up. Must follow suit if possible. No trumps. Higher card of led suit wins; trick winner leads next. Player with more tricks wins.',
+      'Scoring example: No point scoring; the player who wins more tricks wins the game. Win more tricks than the opponent (majority of 26 tricks)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'russi-icelandic-layout-whist.rules.objective',
+        title: 'Objective',
+        text: 'The objective is to win more tricks than the opponent. There are 26 tricks in total; the player who wins the majority wins the game. There is no point scoring.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'russi-icelandic-layout-whist.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Two players; deal alternates. Each player gets 26 cards: 9 face down on table (5+4 rows), 9 face up on top, 8 in hand. Non-dealer leads. Each trick is two cards; play from hand or face-up layout; when a layout card is played the card beneath is turned face up. Must follow suit if possible. No trumps. Higher card of led suit wins; trick winner leads next. Player with more tricks wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'russi-icelandic-layout-whist.setup.players',
+        title: 'Players',
+        text: 'Two players only. A standard 52-card pack is used; cards in each suit rank A (high) down to 2 (low). Turn to deal alternates; each player receives 26 cards: 9 face down on the table, 9 face up on those, and 8 in hand.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'russi-icelandic-layout-whist.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack; A (high) to 2 (low) in each suit.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'russi-icelandic-layout-whist.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card pack; A (high) to 2 (low) in each suit.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'russi-icelandic-layout-whist.setup.dealing',
+        title: 'Deal',
+        text: "Turn to deal alternates. Each player receives 26 cards: 9 face down on table (5 lower row, 4 upper row), then 9 face up on top of those, then 8 to hand. Dealer's opponent receives first card; cards dealt alternately.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'russi-icelandic-layout-whist.score.win-condition',
+        title: 'Win condition',
+        text: 'Win more tricks than the opponent (majority of 26 tricks).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'russi-icelandic-layout-whist.score.description',
+        title: 'Scoring',
+        text: 'No point scoring; the player who wins more tricks wins the game.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'russi-icelandic-layout-whist.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if possible from hand or face-up layout.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'russi-icelandic-layout-whist.rules.key.2',
+        title: 'Key rule 2',
+        text: 'No trumps; highest card of led suit wins the trick.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'russi-icelandic-layout-whist.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trick winner leads to the next trick.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'russi-icelandic-layout-whist.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'russi-icelandic-layout-whist.rules.objective',
+          'russi-icelandic-layout-whist.rules.gameplay',
+        ],
+      },
+      {
+        id: 'russi-icelandic-layout-whist.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'russi-icelandic-layout-whist.setup.players',
+          'russi-icelandic-layout-whist.setup.deck',
+          'russi-icelandic-layout-whist.setup.equipment',
+          'russi-icelandic-layout-whist.setup.dealing',
+        ],
+      },
+      {
+        id: 'russi-icelandic-layout-whist.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'russi-icelandic-layout-whist.rules.key.1',
+          'russi-icelandic-layout-whist.rules.key.2',
+          'russi-icelandic-layout-whist.rules.key.3',
+        ],
+      },
+      {
+        id: 'russi-icelandic-layout-whist.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'russi-icelandic-layout-whist.score.description',
+          'russi-icelandic-layout-whist.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'russi-icelandic-layout-whist.setup.dealing',
+        'russi-icelandic-layout-whist.rules.objective',
+      ],
+      play_card: [
+        'russi-icelandic-layout-whist.rules.gameplay',
+      ],
+    },
   },
 }

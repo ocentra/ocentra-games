@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: American Toad. Logic: Build all foundations by suit from the base rank, wrapping through king to ace as needed.',
-    Player: 'American Toad is a two-deck patience game related to Canfield, using a reserve, tableau, waste, and foundations that begin from a dealt base rank.',
+    LLM: 'Move tableau, reserve, and waste cards onto foundations or legal tableau positions. The reserve must be opened while keeping foundation ranks synchronized across suits.',
+    Player: 'Move tableau, reserve, and waste cards onto foundations or legal tableau positions. The reserve must be opened while keeping foundation ranks synchronized across suits.',
     objective: 'Build all foundations by suit from the base rank, wrapping through king to ace as needed.',
     gameplay: 'Move tableau, reserve, and waste cards onto foundations or legal tableau positions. The reserve must be opened while keeping foundation ranks synchronized across suits.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: Win by transferring all cards to foundations. Expected outcome: Build all foundations by suit from the base rank, wrapping through king to ace as needed..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Build all foundations by suit from the base rank, wrapping through king to ace as needed.',
+      'Turn-flow example: Move tableau, reserve, and waste cards onto foundations or legal tableau positions. The reserve must be opened while keeping foundation ranks synchronized across suits.',
+      'Scoring example: Win by transferring all cards to foundations. Build all foundations by suit from the base rank, wrapping through king to ace as needed..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'american-toad.rules.objective',
+        title: 'Objective',
+        text: 'Build all foundations by suit from the base rank, wrapping through king to ace as needed.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'american-toad.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Move tableau, reserve, and waste cards onto foundations or legal tableau positions. The reserve must be opened while keeping foundation ranks synchronized across suits.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'american-toad.setup.players',
+        title: 'Players',
+        text: 'One player manages reserve, tableau, stock, waste, and foundations.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'american-toad.setup.deck',
+        title: 'Deck',
+        text: 'Use two shuffled standard packs.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'american-toad.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard 52-card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'american-toad.setup.dealing',
+        title: 'Deal',
+        text: 'Deal the reserve and tableau, turn a base card to determine the foundation rank, and place the rest as stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'american-toad.score.win-condition',
+        title: 'Win condition',
+        text: 'Build all foundations by suit from the base rank, wrapping through king to ace as needed.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'american-toad.score.description',
+        title: 'Scoring',
+        text: 'Win by transferring all cards to foundations.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'american-toad.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two-deck Canfield-family layout.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'american-toad.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Foundation base rank is determined by the deal.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'american-toad.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Tableau builds down by alternating color or by the layout rule used.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'american-toad.rules.key.4',
+        title: 'Key rule 4',
+        text: 'All cards must reach foundations to win.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'american-toad.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'american-toad.rules.objective',
+          'american-toad.rules.gameplay',
+        ],
+      },
+      {
+        id: 'american-toad.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'american-toad.setup.players',
+          'american-toad.setup.deck',
+          'american-toad.setup.equipment',
+          'american-toad.setup.dealing',
+        ],
+      },
+      {
+        id: 'american-toad.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'american-toad.rules.key.1',
+          'american-toad.rules.key.2',
+          'american-toad.rules.key.3',
+          'american-toad.rules.key.4',
+        ],
+      },
+      {
+        id: 'american-toad.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'american-toad.score.description',
+          'american-toad.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'american-toad.setup.dealing',
+        'american-toad.rules.objective',
+      ],
+      deal: [
+        'american-toad.rules.gameplay',
+      ],
+      play_card: [
+        'american-toad.rules.gameplay',
+      ],
+      draw: [
+        'american-toad.rules.gameplay',
+      ],
+    },
   },
 }

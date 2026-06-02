@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Fish Pitch. Objective: Primary objective: Meet the game winning condition.',
-    Player: 'Fish Pitch: play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: 'Fish Pitch proceeds through deal, legal play actions, and end-of-round resolution. As Pitch.',
+    Player: 'Fish Pitch proceeds through deal, legal play actions, and end-of-round resolution. As Pitch.',
     objective: 'The pitcher leads a card to the first trick, and the suit of this card becomes the trump suit.',
     gameplay: 'Fish Pitch proceeds through deal, legal play actions, and end-of-round resolution. As Pitch.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Each of the items High, Low, Jack and Game is worth one point. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: The pitcher leads a card to the first trick, and the suit of this card becomes the trump suit.',
+      'Turn-flow example: Fish Pitch proceeds through deal, legal play actions, and end-of-round resolution. As Pitch.',
+      'Scoring example: Each of the items High, Low, Jack and Game is worth one point. Each of the items High, Low, Jack and Game is worth one point..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pitch-fish.rules.objective',
+        title: 'Objective',
+        text: 'The pitcher leads a card to the first trick, and the suit of this card becomes the trump suit.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pitch-fish.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Fish Pitch proceeds through deal, legal play actions, and end-of-round resolution. As Pitch.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pitch-fish.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pitch-fish.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pitch-fish.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pitch-fish.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives six cards, dealt three at a time.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pitch-fish.score.win-condition',
+        title: 'Win condition',
+        text: 'Each of the items High, Low, Jack and Game is worth one point.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pitch-fish.score.description',
+        title: 'Scoring',
+        text: 'Each of the items High, Low, Jack and Game is worth one point.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pitch-fish.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Fish Pitch.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pitch-fish.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: Scoring summary: Variant.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pitch-fish.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Primary objective: Meet the game winning condition.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pitch-fish.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pitch-fish.rules.objective',
+          'pitch-fish.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pitch-fish.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pitch-fish.setup.players',
+          'pitch-fish.setup.deck',
+          'pitch-fish.setup.equipment',
+          'pitch-fish.setup.dealing',
+        ],
+      },
+      {
+        id: 'pitch-fish.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pitch-fish.rules.key.1',
+          'pitch-fish.rules.key.2',
+          'pitch-fish.rules.key.3',
+        ],
+      },
+      {
+        id: 'pitch-fish.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pitch-fish.score.description',
+          'pitch-fish.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pitch-fish.setup.dealing',
+        'pitch-fish.rules.objective',
+      ],
+      play_card: [
+        'pitch-fish.rules.gameplay',
+      ],
+    },
   },
 }

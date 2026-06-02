@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the pot by having the best five-card poker hand at showdown among players who declared in; players who stayed in but lost must pay an amount equal to the pot into the next deal (match pot).',
+      'Turn-flow example: 1. Ante: all players post an ante. 2. Deal: dealer gives five cards face down to each player; players look at their cards. 3. Card-offer round: dealer turns the next card face up and offers it to the player to the left. That player may accept the card (add to hand and discard one face up, offered to next player) or reject and pass the card to the next player. This continues around the table until a card is rejected by every player and returns to the player who discarded or first rejected it. 4. Declaration: all players declare in or out (simultaneously or in sequence as agreed). 5. Showdown: players who stayed in reveal hands; best five-card poker hand wins the pot. Any other player who stayed in must pay an amount equal to the pot for the next deal.',
+      'Scoring example: Points or match rules. Best five-card poker hand at showdown wins the pot; players who declared in but lost pay the match pot (amount equal to the pot) for the next deal..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'buddha-s-folly-poker.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the best five-card poker hand at showdown among players who declared in; players who stayed in but lost must pay an amount equal to the pot into the next deal (match pot).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'buddha-s-folly-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Ante: all players post an ante. 2. Deal: dealer gives five cards face down to each player; players look at their cards. 3. Card-offer round: dealer turns the next card face up and offers it to the player to the left. That player may accept the card (add to hand and discard one face up, offered to next player) or reject and pass the card to the next player. This continues around the table until a card is rejected by every player and returns to the player who discarded or first rejected it. 4. Declaration: all players declare in or out (simultaneously or in sequence as agreed). 5. Showdown: players who stayed in reveal hands; best five-card poker hand wins the pot. Any other player who stayed in must pay an amount equal to the pot for the next deal.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'buddha-s-folly-poker.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'buddha-s-folly-poker.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'buddha-s-folly-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'buddha-s-folly-poker.setup.dealing',
+        title: 'Deal',
+        text: 'Five cards face down to each player. Dealer then offers one card at a time from the deck to the player to the left; that player accepts (and discards one to the next) or passes the card on. Card-offer continues until a card has been rejected by everyone and returns to its originator.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'buddha-s-folly-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Best five-card poker hand at showdown wins the pot; players who declared in but lost pay the match pot (amount equal to the pot) for the next deal.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'buddha-s-folly-poker.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'buddha-s-folly-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Play proceeds in turn order with only legal actions allowed.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'buddha-s-folly-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: "Round resolution follows the variant's scoring and bonus conditions.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'buddha-s-folly-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Match winner is determined by agreed target score or elimination condition.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'buddha-s-folly-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'buddha-s-folly-poker.rules.objective',
+          'buddha-s-folly-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'buddha-s-folly-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'buddha-s-folly-poker.setup.players',
+          'buddha-s-folly-poker.setup.deck',
+          'buddha-s-folly-poker.setup.equipment',
+          'buddha-s-folly-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'buddha-s-folly-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'buddha-s-folly-poker.rules.key.1',
+          'buddha-s-folly-poker.rules.key.2',
+          'buddha-s-folly-poker.rules.key.3',
+        ],
+      },
+      {
+        id: 'buddha-s-folly-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'buddha-s-folly-poker.score.description',
+          'buddha-s-folly-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'buddha-s-folly-poker.setup.dealing',
+        'buddha-s-folly-poker.rules.objective',
+      ],
+      play_card: [
+        'buddha-s-folly-poker.rules.gameplay',
+      ],
+    },
   },
 }

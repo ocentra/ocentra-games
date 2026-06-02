@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tute corriente. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Tute corriente: standard Tute. 40-card Spanish.',
+    LLM: 'Non-dealer leads. Until stock is exhausted: no follow suit or trump required; second player may play any card. Winner of trick draws from stock first, then opponent; face-up trump is last card drawn. After stock empty: must follow suit and beat if possible, trump if cannot follow. After winning a trick, may sing one 40 or 20; tute wins the game. Trump 7 or 2 may be exchanged for turned card before play. Wrong claim of 101+ loses.',
+    Player: 'Non-dealer leads. Until stock is exhausted: no follow suit or trump required; second player may play any card. Winner of trick draws from stock first, then opponent; face-up trump is last card drawn. After stock empty: must follow suit and beat if possible, trump if cannot follow. After winning a trick, may sing one 40 or 20; tute wins the game. Trump 7 or 2 may be exchanged for turned card before play. Wrong claim of 101+ loses.',
     objective: 'Be first to reach 101 or more points from tricks, singing (20/40), and last trick (10); or declare tute (four kings or four horses) after winning a trick to win immediately.',
     gameplay: 'Non-dealer leads. Until stock is exhausted: no follow suit or trump required; second player may play any card. Winner of trick draws from stock first, then opponent; face-up trump is last card drawn. After stock empty: must follow suit and beat if possible, trump if cannot follow. After winning a trick, may sing one 40 or 20; tute wins the game. Trump 7 or 2 may be exchanged for turned card before play. Wrong claim of 101+ loses.',
     keyRules: [
@@ -53,10 +53,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_6_each_13th_trump_stock before play_with_stock.',
-      'Scoring check: Points from tricks, singing (20/40), and last trick (10). First to 101+ or tute declaration wins. Expected outcome: 101.',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Be first to reach 101 or more points from tricks, singing (20/40), and last trick (10); or declare tute (four kings or four horses) after winning a trick to win immediately.',
+      'Turn-flow example: Non-dealer leads. Until stock is exhausted: no follow suit or trump required; second player may play any card. Winner of trick draws from stock first, then opponent; face-up trump is last card drawn. After stock empty: must follow suit and beat if possible, trump if cannot follow. After winning a trick, may sing one 40 or 20; tute wins the game. Trump 7 or 2 may be exchanged for turned card before play. Wrong claim of 101+ loses.',
+      'Scoring example: Points from tricks, singing (20/40), and last trick (10). First to 101+ or tute declaration wins. 101+ or Tute..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tute-corriente.rules.objective',
+        title: 'Objective',
+        text: 'Be first to reach 101 or more points from tricks, singing (20/40), and last trick (10); or declare tute (four kings or four horses) after winning a trick to win immediately.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tute-corriente.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Non-dealer leads. Until stock is exhausted: no follow suit or trump required; second player may play any card. Winner of trick draws from stock first, then opponent; face-up trump is last card drawn. After stock empty: must follow suit and beat if possible, trump if cannot follow. After winning a trick, may sing one 40 or 20; tute wins the game. Trump 7 or 2 may be exchanged for turned card before play. Wrong claim of 101+ loses.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tute-corriente.setup.players',
+        title: 'Players',
+        text: 'Two players, each playing for themselves; no partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tute-corriente.setup.deck',
+        title: 'Deck',
+        text: '40-card Spanish pack.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tute-corriente.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tute-corriente.setup.dealing',
+        title: 'Deal',
+        text: 'Six cards each; 13th card face up for trump; rest form stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tute-corriente.score.win-condition',
+        title: 'Win condition',
+        text: '101+ or Tute.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tute-corriente.score.description',
+        title: 'Scoring',
+        text: 'Points from tricks, singing (20/40), and last trick (10). First to 101+ or tute declaration wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tute-corriente.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Corriente',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tute-corriente.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Relaxed play until stock empty, then follow suit',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tute-corriente.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Draw from stock after each trick',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tute-corriente.rules.key.4',
+        title: 'Key rule 4',
+        text: '101+ or tute to win',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tute-corriente.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tute-corriente.rules.objective',
+          'tute-corriente.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tute-corriente.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tute-corriente.setup.players',
+          'tute-corriente.setup.deck',
+          'tute-corriente.setup.equipment',
+          'tute-corriente.setup.dealing',
+        ],
+      },
+      {
+        id: 'tute-corriente.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tute-corriente.rules.key.1',
+          'tute-corriente.rules.key.2',
+          'tute-corriente.rules.key.3',
+          'tute-corriente.rules.key.4',
+        ],
+      },
+      {
+        id: 'tute-corriente.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tute-corriente.score.description',
+          'tute-corriente.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tute-corriente.setup.dealing',
+        'tute-corriente.rules.objective',
+      ],
+      play_card: [
+        'tute-corriente.rules.gameplay',
+      ],
+      deal_6_each_13th_trump_stock: [
+        'tute-corriente.rules.gameplay',
+      ],
+    },
   },
 }

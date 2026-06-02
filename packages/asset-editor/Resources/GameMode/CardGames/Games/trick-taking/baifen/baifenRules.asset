@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: BÄƒi FÄ“n. Type: Point-Collection Trick-taking. Rules: 54 cards (1 deck + jokers). Points: 5=5, 10=10, K=10. Total 100. Attackers need 40. Rotating Trump Rank.',
-    Player: 'Welcome to the Hundred Point Challenge. You and your partner are the Attackers. You need 40 points to take the lead. The trump rank is 2. Will you use your Red Joker to steal this King, or safe it for the final trick?',
+    LLM: 'Standard trick-taking rules apply. Players must follow suit if possible. The highest trump wins the trick; if no trumps, the highest card of the led suit wins.',
+    Player: 'Standard trick-taking rules apply. Players must follow suit if possible. The highest trump wins the trick; if no trumps, the highest card of the led suit wins.',
     objective: "The 'Attacking' team must collect at least 40 points in their tricks to 'win' the round. Collecting 100 points (all point cards) is a 'cleaning' victory.",
     gameplay: 'Standard trick-taking rules apply. Players must follow suit if possible. The highest trump wins the trick; if no trumps, the highest card of the led suit wins.',
     keyRules: [
@@ -51,10 +51,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in dealing; dealer may use deal_individual_cards before trump_declaration.',
-      "Scoring check: Points are tallied at the end of each hand. Only the Attacking team's points are counted towards the 'Win/Loss' threshold. Expected outcome: 40.",
+      'Setup example: 13 card(s) per player.',
+      "Rule example: The 'Attacking' team must collect at least 40 points in their tricks to 'win' the round. Collecting 100 points (all point cards) is a 'cleaning' victory.",
+      'Turn-flow example: Standard trick-taking rules apply. Players must follow suit if possible. The highest trump wins the trick; if no trumps, the highest card of the led suit wins.',
+      "Scoring example: Points are tallied at the end of each hand. Only the Attacking team's points are counted towards the 'Win/Loss' threshold. 40 points = Attacker wins. 80 points = Attacker wins big (+2 levels in Sheng Ji variants)..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'baifen.rules.objective',
+        title: 'Objective',
+        text: "The 'Attacking' team must collect at least 40 points in their tricks to 'win' the round. Collecting 100 points (all point cards) is a 'cleaning' victory.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'baifen.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Standard trick-taking rules apply. Players must follow suit if possible. The highest trump wins the trick; if no trumps, the highest card of the led suit wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'baifen.setup.players',
+        title: 'Players',
+        text: '4 players in two fixed partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'baifen.setup.deck',
+        title: 'Deck',
+        text: 'One standard 52-card deck plus both Jokers (Red and Black).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'baifen.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'baifen.setup.dealing',
+        title: 'Deal',
+        text: 'The deck is shuffled and players draw one card at a time until the deck is exhausted. The dealer role rotates clockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'baifen.score.win-condition',
+        title: 'Win condition',
+        text: '40 points = Attacker wins. 80 points = Attacker wins big (+2 levels in Sheng Ji variants).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'baifen.score.description',
+        title: 'Scoring',
+        text: "Points are tallied at the end of each hand. Only the Attacking team's points are counted towards the 'Win/Loss' threshold.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'baifen.rules.key.1',
+        title: 'Key rule 1',
+        text: "The 'Kicker': On the final trick, if the Attacker wins, the points in the final trick are multiplied (doubled or tripled depending on the house rules).",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'baifen.rules.key.2',
+        title: 'Key rule 2',
+        text: 'No Trump: In some variants, if no trump suit is declared, only Rank cards and Jokers are trumps.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'baifen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'baifen.rules.objective',
+          'baifen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'baifen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'baifen.setup.players',
+          'baifen.setup.deck',
+          'baifen.setup.equipment',
+          'baifen.setup.dealing',
+        ],
+      },
+      {
+        id: 'baifen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'baifen.rules.key.1',
+          'baifen.rules.key.2',
+        ],
+      },
+      {
+        id: 'baifen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'baifen.score.description',
+          'baifen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'baifen.setup.dealing',
+        'baifen.rules.objective',
+      ],
+      deal_individual_cards: [
+        'baifen.rules.gameplay',
+      ],
+      declare_trump_suit: [
+        'baifen.rules.gameplay',
+      ],
+      lead_card: [
+        'baifen.rules.gameplay',
+      ],
+      follow_suit: [
+        'baifen.rules.gameplay',
+      ],
+      play_trump: [
+        'baifen.rules.gameplay',
+      ],
+      sum_points: [
+        'baifen.rules.gameplay',
+      ],
+      check_threshold: [
+        'baifen.rules.gameplay',
+      ],
+    },
   },
 }

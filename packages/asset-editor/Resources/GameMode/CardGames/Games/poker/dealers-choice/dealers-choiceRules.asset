@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Dealer's Choice. Format: Mixed. Current Dealer chooses variant. Strategy: Versatility and specialized rule knowledge.",
-    Player: 'The button reaches you. The table is playing tight. Do you call a wild-card game to loosen them up, or stay with standard Stud?',
+    LLM: "1. Rotation: Each player takes turns as the dealer.\n2. Announcement: Before the deal, the dealer must clearly and concisely name and explain the variant (e.g., 'Seven Card Stud, high-low split, deuces wild').\n3. Consistent Stakes: Betting limits and antes usually remain constant across the session regardless of the variant.\n4. Dispute Resolution: The dealer's word is final on the interpretation of 'house rules' for that specific hand.",
+    Player: "1. Rotation: Each player takes turns as the dealer.\n2. Announcement: Before the deal, the dealer must clearly and concisely name and explain the variant (e.g., 'Seven Card Stud, high-low split, deuces wild').\n3. Consistent Stakes: Betting limits and antes usually remain constant across the session regardless of the variant.\n4. Dispute Resolution: The dealer's word is final on the interpretation of 'house rules' for that specific hand.",
     objective: 'Win the pot by having the best hand or inducing all other players to fold, based on the specific variant chosen by the current dealer.',
     gameplay: "1. Rotation: Each player takes turns as the dealer.\n2. Announcement: Before the deal, the dealer must clearly and concisely name and explain the variant (e.g., 'Seven Card Stud, high-low split, deuces wild').\n3. Consistent Stakes: Betting limits and antes usually remain constant across the session regardless of the variant.\n4. Dispute Resolution: The dealer's word is final on the interpretation of 'house rules' for that specific hand.",
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'Go-out win conditions belong to shedding/rummy styles, not this baseline poker framework.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 2 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in selection; dealer may use select_variant, explain_rules before ante.',
-      'Scoring check: Standard Poker hand rankings apply unless the chosen variant specifies otherwise (e.g., Lowball, Badugi ranking). Expected outcome: Highest/Lowest hand or successfully bluffing the table..',
+      'Setup example: 2 card(s) per player.',
+      'Rule example: Win the pot by having the best hand or inducing all other players to fold, based on the specific variant chosen by the current dealer.',
+      "Turn-flow example: 1. Rotation: Each player takes turns as the dealer.\n2. Announcement: Before the deal, the dealer must clearly and concisely name and explain the variant (e.g., 'Seven Card Stud, high-low split, deuces wild').\n3. Consistent Stakes: Betting limits and antes usually remain constant across the session regardless of the variant.\n4. Dispute Resolution: The dealer's word is final on the interpretation of 'house rules' for that specific hand.",
+      'Scoring example: Standard Poker hand rankings apply unless the chosen variant specifies otherwise (e.g., Lowball, Badugi ranking). Highest/Lowest hand or successfully bluffing the table..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'dealers-choice.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the best hand or inducing all other players to fold, based on the specific variant chosen by the current dealer.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'dealers-choice.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Rotation: Each player takes turns as the dealer.\n2. Announcement: Before the deal, the dealer must clearly and concisely name and explain the variant (e.g., 'Seven Card Stud, high-low split, deuces wild').\n3. Consistent Stakes: Betting limits and antes usually remain constant across the session regardless of the variant.\n4. Dispute Resolution: The dealer's word is final on the interpretation of 'house rules' for that specific hand.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'dealers-choice.setup.players',
+        title: 'Players',
+        text: "5-7 players (Ideal: 6). Too many players limit 'Shared Card' or 'Stud' variants; too few make 'Draw' variants less tactical.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'dealers-choice.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack. Two packs of different colors are recommended (one being shuffled while the other is in play).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'dealers-choice.setup.equipment',
+        title: 'Equipment',
+        text: 'Poker chips, dealer button, reference sheet for complex variants.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'dealers-choice.setup.dealing',
+        title: 'Deal',
+        text: 'The first dealer is chosen randomly. After each variant is complete, the deal passes clockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'dealers-choice.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest/Lowest hand or successfully bluffing the table.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'dealers-choice.score.description',
+        title: 'Scoring',
+        text: 'Standard Poker hand rankings apply unless the chosen variant specifies otherwise (e.g., Lowball, Badugi ranking).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'dealers-choice.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The dealer must be able to explain the rules before starting.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'dealers-choice.rules.key.2',
+        title: 'Key rule 2',
+        text: "Once significant betting action starts, the hand must be played out (no 'misdeal' re-calls for rule confusion).",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'dealers-choice.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Variants can include Draw, Stud, Shared-Card, Lowball, Hi-Lo, and Wild Card games.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'dealers-choice.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'dealers-choice.rules.objective',
+          'dealers-choice.rules.gameplay',
+        ],
+      },
+      {
+        id: 'dealers-choice.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'dealers-choice.setup.players',
+          'dealers-choice.setup.deck',
+          'dealers-choice.setup.equipment',
+          'dealers-choice.setup.dealing',
+        ],
+      },
+      {
+        id: 'dealers-choice.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'dealers-choice.rules.key.1',
+          'dealers-choice.rules.key.2',
+          'dealers-choice.rules.key.3',
+        ],
+      },
+      {
+        id: 'dealers-choice.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'dealers-choice.score.description',
+          'dealers-choice.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'dealers-choice.setup.dealing',
+        'dealers-choice.rules.objective',
+      ],
+      ante: [
+        'dealers-choice.rules.gameplay',
+      ],
+      select_variant: [
+        'dealers-choice.rules.gameplay',
+      ],
+      explain_rules: [
+        'dealers-choice.rules.gameplay',
+      ],
+    },
   },
 }

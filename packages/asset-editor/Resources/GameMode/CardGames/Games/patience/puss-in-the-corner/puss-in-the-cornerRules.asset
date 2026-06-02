@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Aces and Kings. Logic: Complete all eight foundations, four building up from ace to king and four building down from king to ace, without regard to suit.',
-    Player: 'Aces and Kings is a difficult two-deck solitaire in which eight foundations build both upward from aces and downward from kings without regard to suit.',
+    LLM: 'Remove the aces to form the central foundations, then deal through the remaining stock. Cards may be built to foundations by color sequence, while waste piles at the corners hold cards that cannot yet be used.',
+    Player: 'Remove the aces to form the central foundations, then deal through the remaining stock. Cards may be built to foundations by color sequence, while waste piles at the corners hold cards that cannot yet be used.',
     objective: 'Build the four ace foundations up to kings by color while managing the corner waste piles.',
     gameplay: 'Remove the aces to form the central foundations, then deal through the remaining stock. Cards may be built to foundations by color sequence, while waste piles at the corners hold cards that cannot yet be used.',
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: The game is won only by completing all foundations; otherwise the deal is lost when the stock is exhausted. Expected outcome: 1.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Build the four ace foundations up to kings by color while managing the corner waste piles.',
+      'Turn-flow example: Remove the aces to form the central foundations, then deal through the remaining stock. Cards may be built to foundations by color sequence, while waste piles at the corners hold cards that cannot yet be used.',
+      'Scoring example: The game is won only by completing all foundations; otherwise the deal is lost when the stock is exhausted. Complete all eight foundations, four building up from ace to king and four building down from king to ace, without regard to suit..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'puss-in-the-corner.rules.objective',
+        title: 'Objective',
+        text: 'Build the four ace foundations up to kings by color while managing the corner waste piles.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'puss-in-the-corner.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Remove the aces to form the central foundations, then deal through the remaining stock. Cards may be built to foundations by color sequence, while waste piles at the corners hold cards that cannot yet be used.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'puss-in-the-corner.setup.players',
+        title: 'Players',
+        text: '1 players use the table arrangement described for Puss in the Corner.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'puss-in-the-corner.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'puss-in-the-corner.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'puss-in-the-corner.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Standard 52-card pack and deal or lay out cards according to the documented Puss in the Corner rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'puss-in-the-corner.score.win-condition',
+        title: 'Win condition',
+        text: 'Complete all eight foundations, four building up from ace to king and four building down from king to ace, without regard to suit.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'puss-in-the-corner.score.description',
+        title: 'Scoring',
+        text: 'The game is won only by completing all foundations; otherwise the deal is lost when the stock is exhausted.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'puss-in-the-corner.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Four aces start the foundations.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'puss-in-the-corner.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Foundations build upward by color rather than exact suit.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'puss-in-the-corner.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Corner waste piles create the distinctive layout and restrict later access.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'puss-in-the-corner.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'puss-in-the-corner.rules.objective',
+          'puss-in-the-corner.rules.gameplay',
+        ],
+      },
+      {
+        id: 'puss-in-the-corner.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'puss-in-the-corner.setup.players',
+          'puss-in-the-corner.setup.deck',
+          'puss-in-the-corner.setup.equipment',
+          'puss-in-the-corner.setup.dealing',
+        ],
+      },
+      {
+        id: 'puss-in-the-corner.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'puss-in-the-corner.rules.key.1',
+          'puss-in-the-corner.rules.key.2',
+          'puss-in-the-corner.rules.key.3',
+        ],
+      },
+      {
+        id: 'puss-in-the-corner.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'puss-in-the-corner.score.description',
+          'puss-in-the-corner.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'puss-in-the-corner.setup.dealing',
+        'puss-in-the-corner.rules.objective',
+      ],
+      deal: [
+        'puss-in-the-corner.rules.gameplay',
+      ],
+      play_card: [
+        'puss-in-the-corner.rules.gameplay',
+      ],
+      draw: [
+        'puss-in-the-corner.rules.gameplay',
+      ],
+    },
   },
 }

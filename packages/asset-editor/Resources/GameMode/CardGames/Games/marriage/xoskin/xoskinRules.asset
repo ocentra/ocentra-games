@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Xoşkîn. Logic: See rules.objective and rules.gameplay.',
-    Player: "Xoşkîn is a Kurdish trick-taking card game similar to 3-player double-deck Pinochle. Played in eastern/southeastern Turkey (Northern Kurdistan). Features bidding and melds. Also known as Nezere or Pinîkêr. Name possibly derived from English 'Auction' via 'Okşin'.",
+    LLM: 'Bidding for contract. Winner takes widow, discards. Declare melds for points. Play tricks. Must follow suit and trump. Card point values for A, 10, K, Q, J.',
+    Player: 'Bidding for contract. Winner takes widow, discards. Declare melds for points. Play tricks. Must follow suit and trump. Card point values for A, 10, K, Q, J.',
     objective: 'Win the most card points through bidding, meld declarations, and trick play; the highest total score wins the game.',
     gameplay: 'Bidding for contract. Winner takes widow, discards. Declare melds for points. Play tricks. Must follow suit and trump. Card point values for A, 10, K, Q, J.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Melds + card points from tricks. Penalties for failed contracts. Expected outcome: Win card points through tricks and declare melds..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the most card points through bidding, meld declarations, and trick play; the highest total score wins the game.',
+      'Turn-flow example: Bidding for contract. Winner takes widow, discards. Declare melds for points. Play tricks. Must follow suit and trump. Card point values for A, 10, K, Q, J.',
+      'Scoring example: Melds + card points from tricks. Penalties for failed contracts. Win card points through tricks and declare melds..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'xoskin.rules.objective',
+        title: 'Objective',
+        text: 'Win the most card points through bidding, meld declarations, and trick play; the highest total score wins the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'xoskin.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Bidding for contract. Winner takes widow, discards. Declare melds for points. Play tricks. Must follow suit and trump. Card point values for A, 10, K, Q, J.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'xoskin.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'xoskin.setup.deck',
+        title: 'Deck',
+        text: 'Double deck, Pinochle-style.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'xoskin.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'xoskin.setup.dealing',
+        title: 'Deal',
+        text: 'Cards dealt to 3 players with widow.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'xoskin.score.win-condition',
+        title: 'Win condition',
+        text: 'Win card points through tricks and declare melds.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'xoskin.score.description',
+        title: 'Scoring',
+        text: 'Melds + card points from tricks. Penalties for failed contracts.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'xoskin.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Bidding auction',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'xoskin.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Widow exchange',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'xoskin.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Meld declarations',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'xoskin.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Follow suit + must trump',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'xoskin.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Double deck',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'xoskin.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'xoskin.rules.objective',
+          'xoskin.rules.gameplay',
+        ],
+      },
+      {
+        id: 'xoskin.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'xoskin.setup.players',
+          'xoskin.setup.deck',
+          'xoskin.setup.equipment',
+          'xoskin.setup.dealing',
+        ],
+      },
+      {
+        id: 'xoskin.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'xoskin.rules.key.1',
+          'xoskin.rules.key.2',
+          'xoskin.rules.key.3',
+          'xoskin.rules.key.4',
+          'xoskin.rules.key.5',
+        ],
+      },
+      {
+        id: 'xoskin.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'xoskin.score.description',
+          'xoskin.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'xoskin.setup.dealing',
+        'xoskin.rules.objective',
+      ],
+      play_card: [
+        'xoskin.rules.gameplay',
+      ],
+    },
   },
 }

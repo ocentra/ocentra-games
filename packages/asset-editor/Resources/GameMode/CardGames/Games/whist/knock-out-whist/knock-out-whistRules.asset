@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Knock-Out Whist. Follow suit; highest trump or led suit wins. Track knock-out and dog's life; seven rounds diminishing hand size.",
-    Player: "Trick-taking; follow suit. Zero tricks knocks you out (first time: dog's life). Seven hands, 7 to 1 cards. Last survivor or winner of final trick wins.",
+    LLM: "Player to dealer's left leads. Must follow suit if able; otherwise any card. Highest trump wins the trick, else highest card of the led suit. Trick winner leads next. A player who takes no tricks is knocked out (first such player gets one dog's life hand of one card). Seven hands per game with 7, 6, 5, 4, 3, 2, 1 cards dealt respectively.",
+    Player: "Player to dealer's left leads. Must follow suit if able; otherwise any card. Highest trump wins the trick, else highest card of the led suit. Trick winner leads next. A player who takes no tricks is knocked out (first such player gets one dog's life hand of one card). Seven hands per game with 7, 6, 5, 4, 3, 2, 1 cards dealt respectively.",
     objective: 'Be the last player remaining by avoiding taking zero tricks in any hand; players who take no tricks are knocked out. Win the final one-trick hand or be the sole survivor.',
     gameplay: "Player to dealer's left leads. Must follow suit if able; otherwise any card. Highest trump wins the trick, else highest card of the led suit. Trick winner leads next. A player who takes no tricks is knocked out (first such player gets one dog's life hand of one card). Seven hands per game with 7, 6, 5, 4, 3, 2, 1 cards dealt respectively.",
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-7 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      "Scoring check: No points; players are eliminated when they take no tricks in a hand. First such player gets one dog's life; thereafter elimination is immediate. Expected outcome: Last player standing wins; or winner of the one trick in the final (one-card) hand..",
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Be the last player remaining by avoiding taking zero tricks in any hand; players who take no tricks are knocked out. Win the final one-trick hand or be the sole survivor.',
+      "Turn-flow example: Player to dealer's left leads. Must follow suit if able; otherwise any card. Highest trump wins the trick, else highest card of the led suit. Trick winner leads next. A player who takes no tricks is knocked out (first such player gets one dog's life hand of one card). Seven hands per game with 7, 6, 5, 4, 3, 2, 1 cards dealt respectively.",
+      "Scoring example: No points; players are eliminated when they take no tricks in a hand. First such player gets one dog's life; thereafter elimination is immediate. Last player standing wins; or winner of the one trick in the final (one-card) hand..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'knock-out-whist.rules.objective',
+        title: 'Objective',
+        text: 'Be the last player remaining by avoiding taking zero tricks in any hand; players who take no tricks are knocked out. Win the final one-trick hand or be the sole survivor.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'knock-out-whist.rules.gameplay',
+        title: 'Turn flow',
+        text: "Player to dealer's left leads. Must follow suit if able; otherwise any card. Highest trump wins the trick, else highest card of the led suit. Trick winner leads next. A player who takes no tricks is knocked out (first such player gets one dog's life hand of one card). Seven hands per game with 7, 6, 5, 4, 3, 2, 1 cards dealt respectively.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'knock-out-whist.setup.players',
+        title: 'Players',
+        text: 'Two to seven players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'knock-out-whist.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'knock-out-whist.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'knock-out-whist.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer deals seven cards each (first hand), clockwise. Uppermost undealt card is turned face up for trump. Subsequent hands: six cards each, then five, four, three, two, one. Winner of previous hand chooses trump after looking at their cards; on a tie, players cut for the right to choose.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'knock-out-whist.score.win-condition',
+        title: 'Win condition',
+        text: 'Last player standing wins; or winner of the one trick in the final (one-card) hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'knock-out-whist.score.description',
+        title: 'Scoring',
+        text: "No points; players are eliminated when they take no tricks in a hand. First such player gets one dog's life; thereafter elimination is immediate.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'knock-out-whist.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if able.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'knock-out-whist.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Highest trump in trick wins; otherwise highest card of led suit.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'knock-out-whist.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trick winner leads to the next trick.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'knock-out-whist.rules.key.4',
+        title: 'Key rule 4',
+        text: "Zero tricks in a hand knocks you out; first time only you get a dog's life (one card next hand).",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'knock-out-whist.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Winner of most tricks chooses trumps for next hand; tie resolved by cutting.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'knock-out-whist.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'knock-out-whist.rules.objective',
+          'knock-out-whist.rules.gameplay',
+        ],
+      },
+      {
+        id: 'knock-out-whist.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'knock-out-whist.setup.players',
+          'knock-out-whist.setup.deck',
+          'knock-out-whist.setup.equipment',
+          'knock-out-whist.setup.dealing',
+        ],
+      },
+      {
+        id: 'knock-out-whist.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'knock-out-whist.rules.key.1',
+          'knock-out-whist.rules.key.2',
+          'knock-out-whist.rules.key.3',
+          'knock-out-whist.rules.key.4',
+          'knock-out-whist.rules.key.5',
+        ],
+      },
+      {
+        id: 'knock-out-whist.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'knock-out-whist.score.description',
+          'knock-out-whist.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'knock-out-whist.setup.dealing',
+        'knock-out-whist.rules.objective',
+      ],
+      play_card: [
+        'knock-out-whist.rules.gameplay',
+      ],
+    },
   },
 }

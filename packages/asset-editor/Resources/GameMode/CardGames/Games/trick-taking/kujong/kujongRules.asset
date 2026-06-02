@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kujong (Couillon). Logic: Partnership trick-taking with 24-card deck. Key: 21-point threshold to score, Kapot (all tricks) = bonus.',
-    Player: 'Kujong is a Belgian trick-taking game for 4 players in partnerships. 24-card deck (A-K-Q-J-10-9). Ace=4, King=3, Queen=2, Jack=1. Turned card sets trump. Must win 21 of 40 points to erase a branch from your score tree. First team to erase all branches wins.',
+    LLM: '1. Must follow suit. If unable, play any card (or Trump).\n2. Highest Trump wins, or highest card of the led suit.\n3. **Points**: Trick capture is based on rank (A-K-Q-J-10-9). Point cards in the entire deck total 40.',
+    Player: '1. Must follow suit. If unable, play any card (or Trump).\n2. Highest Trump wins, or highest card of the led suit.\n3. **Points**: Trick capture is based on rank (A-K-Q-J-10-9). Point cards in the entire deck total 40.',
     objective: "Win more points in tricks than the other team to 'erase' a branch from your score tree.",
     gameplay: '1. Must follow suit. If unable, play any card (or Trump).\n2. Highest Trump wins, or highest card of the led suit.\n3. **Points**: Trick capture is based on rank (A-K-Q-J-10-9). Point cards in the entire deck total 40.',
     keyRules: [
@@ -54,10 +54,180 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal, reveal_trump before trump_decision.',
-      'Scoring check: Win 21+ of 40 points to erase a branch. First team to erase all branches wins. Expected outcome: 10.',
+      'Setup example: 6 card(s) per player.',
+      "Rule example: Win more points in tricks than the other team to 'erase' a branch from your score tree.",
+      'Turn-flow example: 1. Must follow suit. If unable, play any card (or Trump).\n2. Highest Trump wins, or highest card of the led suit.\n3. **Points**: Trick capture is based on rank (A-K-Q-J-10-9). Point cards in the entire deck total 40.',
+      'Scoring example: Win 21+ of 40 points to erase a branch. First team to erase all branches wins. First team to erase all branches from their score tree.',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'kujong.rules.objective',
+        title: 'Objective',
+        text: "Win more points in tricks than the other team to 'erase' a branch from your score tree.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kujong.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Must follow suit. If unable, play any card (or Trump).\n2. Highest Trump wins, or highest card of the led suit.\n3. **Points**: Trick capture is based on rank (A-K-Q-J-10-9). Point cards in the entire deck total 40.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kujong.setup.players',
+        title: 'Players',
+        text: '4 players in two fixed partnerships (A+C vs B+D).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kujong.setup.deck',
+        title: 'Deck',
+        text: '24 cards: A, K, Q, J, 10, 9 in four suits. Ace is highest (4 pts), King (3), Queen (2), Jack (1).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kujong.setup.equipment',
+        title: 'Equipment',
+        text: '24 cards: A, K, Q, J, 10, 9 in four suits. Ace is highest (4 pts), King (3), Queen (2), Jack (1).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kujong.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 3 cards initially. The next card is turned up for the Trump suit. After the suit is accepted or rejected, each player gets 3 more cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kujong.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to erase all branches from their score tree',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kujong.score.description',
+        title: 'Scoring',
+        text: 'Win 21+ of 40 points to erase a branch. First team to erase all branches wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kujong.rules.key.1',
+        title: 'Key rule 1',
+        text: '24-card deck: A, K, Q, J, 10, 9 in four suits',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kujong.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Ace=4pts, King=3pts, Queen=2pts, Jack=1pt, 10/9=0pts',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kujong.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Total points per round: 40',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kujong.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Must win at least 21 points to erase a branch',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'kujong.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Kapot (all tricks) erases multiple branches',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kujong.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kujong.rules.objective',
+          'kujong.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kujong.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kujong.setup.players',
+          'kujong.setup.deck',
+          'kujong.setup.equipment',
+          'kujong.setup.dealing',
+        ],
+      },
+      {
+        id: 'kujong.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kujong.rules.key.1',
+          'kujong.rules.key.2',
+          'kujong.rules.key.3',
+          'kujong.rules.key.4',
+          'kujong.rules.key.5',
+        ],
+      },
+      {
+        id: 'kujong.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kujong.score.description',
+          'kujong.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kujong.setup.dealing',
+        'kujong.rules.objective',
+      ],
+      deal: [
+        'kujong.rules.gameplay',
+      ],
+      call: [
+        'kujong.rules.gameplay',
+      ],
+      play_card: [
+        'kujong.rules.gameplay',
+      ],
+      pass: [
+        'kujong.rules.gameplay',
+      ],
+      reveal_trump: [
+        'kujong.rules.gameplay',
+      ],
+      count_points: [
+        'kujong.rules.gameplay',
+      ],
+    },
   },
 }

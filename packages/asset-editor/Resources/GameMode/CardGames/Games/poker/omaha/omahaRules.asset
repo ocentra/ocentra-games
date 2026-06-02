@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Omaha. 4 hole cards, 5 board. Must use exactly 2 hole + 3 board. Hand ranking: standard poker. Betting: pot limit or fixed. Omaha/8: split pot high/low, 8-or-better qualifier for low.',
-    Player: 'You have four cards. At showdown you must use exactly two of them with exactly three board cards. Coordinate your suits and ranksâ€”straights and flushes are common.',
+    LLM: '1. Blinds posted (small and big blind). 2. Each player receives four hole cards. 3. First betting round (pre-flop). 4. Dealer burns one card and deals three community cards (flop). 5. Second betting round. 6. Burn and deal one card (turn). 7. Third betting round. 8. Burn and deal one card (river). 9. Final betting round. 10. Showdown: each active player must use exactly two hole cards and exactly three board cards to make their best hand.',
+    Player: '1. Blinds posted (small and big blind). 2. Each player receives four hole cards. 3. First betting round (pre-flop). 4. Dealer burns one card and deals three community cards (flop). 5. Second betting round. 6. Burn and deal one card (turn). 7. Third betting round. 8. Burn and deal one card (river). 9. Final betting round. 10. Showdown: each active player must use exactly two hole cards and exactly three board cards to make their best hand.',
     objective: 'Win the pot by having the best five-card hand at showdown, using exactly two hole cards and exactly three board cards.',
     gameplay: '1. Blinds posted (small and big blind). 2. Each player receives four hole cards. 3. First betting round (pre-flop). 4. Dealer burns one card and deals three community cards (flop). 5. Second betting round. 6. Burn and deal one card (turn). 7. Third betting round. 8. Burn and deal one card (river). 9. Final betting round. 10. Showdown: each active player must use exactly two hole cards and exactly three board cards to make their best hand.',
     keyRules: [
@@ -53,10 +53,183 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before preflop_bet.',
-      'Scoring check: Pot-split poker. No points; chips go to the winner(s). In Omaha/8, the pot is split between high and low. Expected outcome: Best five-card hand wins the pot (or half in Omaha/8)..',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Win the pot by having the best five-card hand at showdown, using exactly two hole cards and exactly three board cards.',
+      'Turn-flow example: 1. Blinds posted (small and big blind). 2. Each player receives four hole cards. 3. First betting round (pre-flop). 4. Dealer burns one card and deals three community cards (flop). 5. Second betting round. 6. Burn and deal one card (turn). 7. Third betting round. 8. Burn and deal one card (river). 9. Final betting round. 10. Showdown: each active player must use exactly two hole cards and exactly three board cards to make their best hand.',
+      'Scoring example: Pot-split poker. No points; chips go to the winner(s). In Omaha/8, the pot is split between high and low. Best five-card hand wins the pot (or half in Omaha/8)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'omaha.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the best five-card hand at showdown, using exactly two hole cards and exactly three board cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'omaha.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Blinds posted (small and big blind). 2. Each player receives four hole cards. 3. First betting round (pre-flop). 4. Dealer burns one card and deals three community cards (flop). 5. Second betting round. 6. Burn and deal one card (turn). 7. Third betting round. 8. Burn and deal one card (river). 9. Final betting round. 10. Showdown: each active player must use exactly two hole cards and exactly three board cards to make their best hand.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'omaha.setup.players',
+        title: 'Players',
+        text: '2-10 players (typically 6-9 at a full table).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'omaha.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. No jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'omaha.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, poker chips, dealer button.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'omaha.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives four hole cards face-down. Five community cards are dealt in stages: flop (3), turn (1), river (1).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'omaha.score.win-condition',
+        title: 'Win condition',
+        text: 'Best five-card hand wins the pot (or half in Omaha/8).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'omaha.score.description',
+        title: 'Scoring',
+        text: 'Pot-split poker. No points; chips go to the winner(s). In Omaha/8, the pot is split between high and low.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'omaha.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Exactly two hole cards and exactly three board cards must be usedâ€”no more, no fewer.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'omaha.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Standard poker hand rankings apply.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'omaha.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Pot Limit Omaha (PLO): maximum raise equals current pot size.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'omaha.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Omaha/8: Pot splits 50/50 between best high hand and best qualifying low (8-or-better); ace plays low for low.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'omaha.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'omaha.rules.objective',
+          'omaha.rules.gameplay',
+        ],
+      },
+      {
+        id: 'omaha.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'omaha.setup.players',
+          'omaha.setup.deck',
+          'omaha.setup.equipment',
+          'omaha.setup.dealing',
+        ],
+      },
+      {
+        id: 'omaha.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'omaha.rules.key.1',
+          'omaha.rules.key.2',
+          'omaha.rules.key.3',
+          'omaha.rules.key.4',
+        ],
+      },
+      {
+        id: 'omaha.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'omaha.score.description',
+          'omaha.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'omaha.setup.dealing',
+        'omaha.rules.objective',
+      ],
+      deal: [
+        'omaha.rules.gameplay',
+      ],
+      fold: [
+        'omaha.rules.gameplay',
+      ],
+      check: [
+        'omaha.rules.gameplay',
+      ],
+      call: [
+        'omaha.rules.gameplay',
+      ],
+      bet: [
+        'omaha.rules.gameplay',
+      ],
+      raise: [
+        'omaha.rules.gameplay',
+      ],
+      reveal_hand: [
+        'omaha.rules.gameplay',
+      ],
+      deal_flop: [
+        'omaha.rules.gameplay',
+      ],
+      deal_turn: [
+        'omaha.rules.gameplay',
+      ],
+      deal_river: [
+        'omaha.rules.gameplay',
+      ],
+    },
   },
 }

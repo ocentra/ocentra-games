@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Crazy Eights. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Crazy Eights is a popular shedding card game, especially beloved by children. The objective is simple: be the first player to discard all your cards. Players take turns playing cards to a central discard pile, matching either the rank or suit of the top card. The eponymous "crazy" 8s are wild cards that can be played on anything and allow the player to change the suit.',
+    LLM: 'Use a 36-card pack and play clockwise. Players take turns playing legal cards according to the family shedding rule, with the local variant determining when a player must pick up, pass, or continue. The game ends when the losing position is resolved.',
+    Player: 'Use a 36-card pack and play clockwise. Players take turns playing legal cards according to the family shedding rule, with the local variant determining when a player must pick up, pass, or continue. The game ends when the losing position is resolved.',
     objective: 'Shed cards efficiently and avoid being left in the losing position defined by the local round rule.',
     gameplay: 'Use a 36-card pack and play clockwise. Players take turns playing legal cards according to the family shedding rule, with the local variant determining when a player must pick up, pass, or continue. The game ends when the losing position is resolved.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Be the first player to discard all cards from your hand. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Shed cards efficiently and avoid being left in the losing position defined by the local round rule.',
+      'Turn-flow example: Use a 36-card pack and play clockwise. Players take turns playing legal cards according to the family shedding rule, with the local variant determining when a player must pick up, pass, or continue. The game ends when the losing position is resolved.',
+      'Scoring example: Be the first player to discard all cards from your hand. Be the first player to discard all cards from your hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hahndreier.rules.objective',
+        title: 'Objective',
+        text: 'Shed cards efficiently and avoid being left in the losing position defined by the local round rule.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hahndreier.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Use a 36-card pack and play clockwise. Players take turns playing legal cards according to the family shedding rule, with the local variant determining when a player must pick up, pass, or continue. The game ends when the losing position is resolved.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hahndreier.setup.players',
+        title: 'Players',
+        text: '2-4 players use the table arrangement described for Hahndreier.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hahndreier.setup.deck',
+        title: 'Deck',
+        text: '36-card French-suited pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hahndreier.setup.equipment',
+        title: 'Equipment',
+        text: '36-card French-suited pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hahndreier.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare 36-card French-suited pack and deal or lay out cards according to the documented Hahndreier rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hahndreier.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hahndreier.score.description',
+        title: 'Scoring',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hahndreier.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The standard source classifies Hahndreier as a shedding game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hahndreier.rules.key.2',
+        title: 'Key rule 2',
+        text: 'It uses a 36-card French-suited pack ranked ace high.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hahndreier.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Regional variants preserve different names and penalties but share the family shedding structure.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hahndreier.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hahndreier.rules.objective',
+          'hahndreier.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hahndreier.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hahndreier.setup.players',
+          'hahndreier.setup.deck',
+          'hahndreier.setup.equipment',
+          'hahndreier.setup.dealing',
+        ],
+      },
+      {
+        id: 'hahndreier.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hahndreier.rules.key.1',
+          'hahndreier.rules.key.2',
+          'hahndreier.rules.key.3',
+        ],
+      },
+      {
+        id: 'hahndreier.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hahndreier.score.description',
+          'hahndreier.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hahndreier.setup.dealing',
+        'hahndreier.rules.objective',
+      ],
+      play_card: [
+        'hahndreier.rules.gameplay',
+      ],
+    },
   },
 }

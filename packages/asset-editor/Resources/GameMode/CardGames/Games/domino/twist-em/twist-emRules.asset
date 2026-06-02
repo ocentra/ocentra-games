@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Twist'em. Logic: See rules.objective and rules.gameplay.",
-    Player: "Twist'em (Double-Hand Dominoes) is a casino banking game played with a double-six domino set. Each player and the banker receive three tiles and arrange them into a top hand and a bottom hand (pip totals mod 10, nine high). Players bet against the banker; both hands must outrank the banker's two hands to win. Based on Pai Gow but with Western dominoes.",
+    LLM: 'Players bet; each receives three tiles and arranges them in a line to form top and bottom hand (totals mod 10). Tiles placed face-down. Banker exposes three tiles and arranges similarly. Compare: player top vs banker top, player bottom vs banker bottom. Both player hands win or one wins and one ties = player wins even money; one wins one loses = push; otherwise player loses. Banker wins ties.',
+    Player: 'Players bet; each receives three tiles and arranges them in a line to form top and bottom hand (totals mod 10). Tiles placed face-down. Banker exposes three tiles and arranges similarly. Compare: player top vs banker top, player bottom vs banker bottom. Both player hands win or one wins and one ties = player wins even money; one wins one loses = push; otherwise player loses. Banker wins ties.',
     objective: "Form two hands (top and bottom) that respectively outrank the banker's two hands; baccarat-style scoring (pip total mod 10, nine high).",
     gameplay: 'Players bet; each receives three tiles and arranges them in a line to form top and bottom hand (totals mod 10). Tiles placed face-down. Banker exposes three tiles and arranges similarly. Compare: player top vs banker top, player bottom vs banker bottom. Both player hands win or one wins and one ties = player wins even money; one wins one loses = push; otherwise player loses. Banker wins ties.',
     keyRules: [
@@ -53,10 +53,174 @@
       go_out: 'Round ends at comparison; no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-9 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in wagering; current_player may use bet before dealing.',
-      "Scoring check: Baccarat-style: total each hand (top and bottom), drop tens digit; nine high, zero low. Expected outcome: Both player hands beat banker's two hands = win even money; one win one tie = win; one win one lose = push; otherwise lose. Banker wins ties..",
+      'Setup example: 3 card(s) per player.',
+      "Rule example: Form two hands (top and bottom) that respectively outrank the banker's two hands; baccarat-style scoring (pip total mod 10, nine high).",
+      'Turn-flow example: Players bet; each receives three tiles and arranges them in a line to form top and bottom hand (totals mod 10). Tiles placed face-down. Banker exposes three tiles and arranges similarly. Compare: player top vs banker top, player bottom vs banker bottom. Both player hands win or one wins and one ties = player wins even money; one wins one loses = push; otherwise player loses. Banker wins ties.',
+      "Scoring example: Baccarat-style: total each hand (top and bottom), drop tens digit; nine high, zero low. Both player hands beat banker's two hands = win even money; one win one tie = win; one win one lose = push; otherwise lose. Banker wins ties..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'twist-em.rules.objective',
+        title: 'Objective',
+        text: "Form two hands (top and bottom) that respectively outrank the banker's two hands; baccarat-style scoring (pip total mod 10, nine high).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'twist-em.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players bet; each receives three tiles and arranges them in a line to form top and bottom hand (totals mod 10). Tiles placed face-down. Banker exposes three tiles and arranges similarly. Compare: player top vs banker top, player bottom vs banker bottom. Both player hands win or one wins and one ties = player wins even money; one wins one loses = push; otherwise player loses. Banker wins ties.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'twist-em.setup.players',
+        title: 'Players',
+        text: '2-9 (one banker or house banks; up to eight others bet).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'twist-em.setup.deck',
+        title: 'Deck',
+        text: 'Double-six domino set (28 tiles).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'twist-em.setup.equipment',
+        title: 'Equipment',
+        text: 'Double-six dominoes, gaming table, chips.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'twist-em.setup.dealing',
+        title: 'Deal',
+        text: 'Each player places a bet and receives three tiles; banker receives three tiles.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'twist-em.score.win-condition',
+        title: 'Win condition',
+        text: "Both player hands beat banker's two hands = win even money; one win one tie = win; one win one lose = push; otherwise lose. Banker wins ties.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'twist-em.score.description',
+        title: 'Scoring',
+        text: 'Baccarat-style: total each hand (top and bottom), drop tens digit; nine high, zero low.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'twist-em.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Three tiles each; arrange into top and bottom hand',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'twist-em.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Scoring as Baccarat or Pai Gow: total each hand, drop tens digit; nine high, zero low',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'twist-em.rules.key.3',
+        title: 'Key rule 3',
+        text: 'If top outranks bottom by mistake, dealer may turn tiles 180 degrees',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'twist-em.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Banker wins when both hands tie',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'twist-em.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'twist-em.rules.objective',
+          'twist-em.rules.gameplay',
+        ],
+      },
+      {
+        id: 'twist-em.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'twist-em.setup.players',
+          'twist-em.setup.deck',
+          'twist-em.setup.equipment',
+          'twist-em.setup.dealing',
+        ],
+      },
+      {
+        id: 'twist-em.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'twist-em.rules.key.1',
+          'twist-em.rules.key.2',
+          'twist-em.rules.key.3',
+          'twist-em.rules.key.4',
+        ],
+      },
+      {
+        id: 'twist-em.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'twist-em.score.description',
+          'twist-em.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'twist-em.setup.dealing',
+        'twist-em.rules.objective',
+      ],
+      bet: [
+        'twist-em.rules.gameplay',
+      ],
+      deal_three_tiles: [
+        'twist-em.rules.gameplay',
+      ],
+      arrange_tiles: [
+        'twist-em.rules.gameplay',
+      ],
+      banker_arrange: [
+        'twist-em.rules.gameplay',
+      ],
+      compare_hands: [
+        'twist-em.rules.gameplay',
+      ],
+      payout_bets: [
+        'twist-em.rules.gameplay',
+      ],
+      rotate_banker: [
+        'twist-em.rules.gameplay',
+      ],
+    },
   },
 }

@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Card points won in tricks using standard Briscola values: ace 11, three 10, king 4, queen 3, jack 2, and all other cards worth 0. Each deal contains 120 card points. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the first player to achieve the winning condition through strategic play of cards.',
+      'Turn-flow example: 1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
+      'Scoring example: Card points won in tricks using standard Briscola values: ace 11, three 10, king 4, queen 3, jack 2, and all other cards worth 0. Each deal contains 120 card points. Play several deals and add the card points from tricks; the first player to reach the agreed cumulative target (commonly 121 or 151 points) wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'briscolone.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to achieve the winning condition through strategic play of cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'briscolone.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'briscolone.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 2\nOptimal Players: 2\nPartnerships: Not used; Briscolone is played head-to-head.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'briscolone.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'briscolone.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'briscolone.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'briscolone.score.win-condition',
+        title: 'Win condition',
+        text: 'Play several deals and add the card points from tricks; the first player to reach the agreed cumulative target (commonly 121 or 151 points) wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'briscolone.score.description',
+        title: 'Scoring',
+        text: 'Card points won in tricks using standard Briscola values: ace 11, three 10, king 4, queen 3, jack 2, and all other cards worth 0. Each deal contains 120 card points.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'briscolone.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Play proceeds in turn order with only legal actions allowed.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'briscolone.rules.key.2',
+        title: 'Key rule 2',
+        text: "Round resolution follows the variant's scoring and bonus conditions.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'briscolone.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Match winner is determined by agreed target score or elimination condition.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'briscolone.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'briscolone.rules.objective',
+          'briscolone.rules.gameplay',
+        ],
+      },
+      {
+        id: 'briscolone.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'briscolone.setup.players',
+          'briscolone.setup.deck',
+          'briscolone.setup.equipment',
+          'briscolone.setup.dealing',
+        ],
+      },
+      {
+        id: 'briscolone.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'briscolone.rules.key.1',
+          'briscolone.rules.key.2',
+          'briscolone.rules.key.3',
+        ],
+      },
+      {
+        id: 'briscolone.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'briscolone.score.description',
+          'briscolone.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'briscolone.setup.dealing',
+        'briscolone.rules.objective',
+      ],
+      play_card: [
+        'briscolone.rules.gameplay',
+      ],
+    },
   },
 }

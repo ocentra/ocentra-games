@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win at least three tricks to score points. The first player to reach 5 points wins the game.',
+      "Turn-flow example: 1. King of Trumps: If the turned-up card is a King, the dealer scores 1 point immediately. If a player holds the King of Trumps in their hand, they must declare it before the first trick to score 1 point.\n2. The Proposal: The nonnddealer (Elder Hand), if unhappy with their cards, can 'propose' to discard. If the dealer agrees, both players discard any number of cards and draw replacements from the deck. This can continue until the deck is empty or a proposal is refused.\n3. The Play: Standard trickndtaking. You MUST follow suit if possible and MUST win the trick (over-trump or over-play) if you are able.",
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'ecarte.rules.objective',
+        title: 'Objective',
+        text: 'Win at least three tricks to score points. The first player to reach 5 points wins the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'ecarte.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. King of Trumps: If the turned-up card is a King, the dealer scores 1 point immediately. If a player holds the King of Trumps in their hand, they must declare it before the first trick to score 1 point.\n2. The Proposal: The nonnddealer (Elder Hand), if unhappy with their cards, can 'propose' to discard. If the dealer agrees, both players discard any number of cards and draw replacements from the deck. This can continue until the deck is empty or a proposal is refused.\n3. The Play: Standard trickndtaking. You MUST follow suit if possible and MUST win the trick (over-trump or over-play) if you are able.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'ecarte.setup.players',
+        title: 'Players',
+        text: 'Écarté is played by exactly two players. The players cut to determine the dealer; the elder hand (non-dealer) sits opposite the dealer. There are no partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'ecarte.setup.deck',
+        title: 'Deck',
+        text: '32ndcard French pack (A, K, Q, J, 10, 9, 8, 7).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'ecarte.setup.equipment',
+        title: 'Equipment',
+        text: '32ndcard French pack (A, K, Q, J, 10, 9, 8, 7).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'ecarte.setup.dealing',
+        title: 'Deal',
+        text: '1. Five cards are dealt to each player (usually in sets of 2 and 3).\n2. The 11th card is turned face-up to determine the Trump Suit.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'ecarte.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'ecarte.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'ecarte.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit and win the trick if possible.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'ecarte.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Aces rank between Kings and Queens.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'ecarte.rules.key.3',
+        title: 'Key rule 3',
+        text: 'King of Trumps is a powerful scoring card and must be declared immediately.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'ecarte.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'ecarte.rules.objective',
+          'ecarte.rules.gameplay',
+        ],
+      },
+      {
+        id: 'ecarte.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'ecarte.setup.players',
+          'ecarte.setup.deck',
+          'ecarte.setup.equipment',
+          'ecarte.setup.dealing',
+        ],
+      },
+      {
+        id: 'ecarte.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'ecarte.rules.key.1',
+          'ecarte.rules.key.2',
+          'ecarte.rules.key.3',
+        ],
+      },
+      {
+        id: 'ecarte.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'ecarte.score.description',
+          'ecarte.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'ecarte.setup.dealing',
+        'ecarte.rules.objective',
+      ],
+      play_card: [
+        'ecarte.rules.gameplay',
+      ],
+    },
   },
 }

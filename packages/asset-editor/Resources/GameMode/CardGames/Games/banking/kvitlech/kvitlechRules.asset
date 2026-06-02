@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kvitlech. Logic: Banking game to 21. Key: 12 can be 12/9, Ace=1, framed 2+11=auto 21. Banker plays last.',
-    Player: 'Kvitlech is a Jewish Hanukkah banking game similar to 21. 24-card deck (two sets 1-12, no suits). Get closest to 21 without busting. 12 can be 12 or 9. Ace always = 1. Banker plays last and must beat all hands.',
+    LLM: "1. Players bet against the house.\n2. Players can 'Hit' (draw more cards) one by one.\n3. If a player reaches 21, they win immediately.\n4. If they exceed 21, they are out.\n5. The Banker draws last and must beat all 'Open' hands to win their bets.",
+    Player: "1. Players bet against the house.\n2. Players can 'Hit' (draw more cards) one by one.\n3. If a player reaches 21, they win immediately.\n4. If they exceed 21, they are out.\n5. The Banker draws last and must beat all 'Open' hands to win their bets.",
     objective: 'Get a card total of exactly 21, or as close as possible without exceeding it (busting).',
     gameplay: "1. Players bet against the house.\n2. Players can 'Hit' (draw more cards) one by one.\n3. If a player reaches 21, they win immediately.\n4. If they exceed 21, they are out.\n5. The Banker draws last and must beat all 'Open' hands to win their bets.",
     keyRules: [
@@ -55,10 +55,189 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 1 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before player_turns.',
-      'Scoring check: Closest to 21 without exceeding wins. 21 is automatic winner. Expected outcome: 21.',
+      'Setup example: 1 card(s) per player.',
+      'Rule example: Get a card total of exactly 21, or as close as possible without exceeding it (busting).',
+      "Turn-flow example: 1. Players bet against the house.\n2. Players can 'Hit' (draw more cards) one by one.\n3. If a player reaches 21, they win immediately.\n4. If they exceed 21, they are out.\n5. The Banker draws last and must beat all 'Open' hands to win their bets.",
+      'Scoring example: Closest to 21 without exceeding wins. 21 is automatic winner. Closest to 21 without busting.',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'kvitlech.rules.objective',
+        title: 'Objective',
+        text: 'Get a card total of exactly 21, or as close as possible without exceeding it (busting).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kvitlech.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Players bet against the house.\n2. Players can 'Hit' (draw more cards) one by one.\n3. If a player reaches 21, they win immediately.\n4. If they exceed 21, they are out.\n5. The Banker draws last and must beat all 'Open' hands to win their bets.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kvitlech.setup.players',
+        title: 'Players',
+        text: 'A Banker is chosen; other players are bettors.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kvitlech.setup.deck',
+        title: 'Deck',
+        text: 'Standard 24-card deck contains two sets of numbers 1-12. No suits, Kings, or Queens.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kvitlech.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 24-card deck contains two sets of numbers 1-12. No suits, Kings, or Queens.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kvitlech.setup.dealing',
+        title: 'Deal',
+        text: 'The Banker deals one card face-down to each player and one to themselves.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kvitlech.score.win-condition',
+        title: 'Win condition',
+        text: 'Closest to 21 without busting',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kvitlech.score.description',
+        title: 'Scoring',
+        text: 'Closest to 21 without exceeding wins. 21 is automatic winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kvitlech.rules.key.1',
+        title: 'Key rule 1',
+        text: '24-card deck: two sets of numbers 1-12',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kvitlech.rules.key.2',
+        title: 'Key rule 2',
+        text: 'No standard suits or court cards',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kvitlech.rules.key.3',
+        title: 'Key rule 3',
+        text: "12 can count as 12 or 9 (player's choice)",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kvitlech.rules.key.4',
+        title: 'Key rule 4',
+        text: '1 (Ace) always counts as 1 (never 11)',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'kvitlech.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Framed 2s and 11s together count as automatic 21',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'kvitlech.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Banker plays last and must beat all remaining hands',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kvitlech.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kvitlech.rules.objective',
+          'kvitlech.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kvitlech.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kvitlech.setup.players',
+          'kvitlech.setup.deck',
+          'kvitlech.setup.equipment',
+          'kvitlech.setup.dealing',
+        ],
+      },
+      {
+        id: 'kvitlech.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kvitlech.rules.key.1',
+          'kvitlech.rules.key.2',
+          'kvitlech.rules.key.3',
+          'kvitlech.rules.key.4',
+          'kvitlech.rules.key.5',
+          'kvitlech.rules.key.6',
+        ],
+      },
+      {
+        id: 'kvitlech.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kvitlech.score.description',
+          'kvitlech.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kvitlech.setup.dealing',
+        'kvitlech.rules.objective',
+      ],
+      ante: [
+        'kvitlech.rules.gameplay',
+      ],
+      deal: [
+        'kvitlech.rules.gameplay',
+      ],
+      bet: [
+        'kvitlech.rules.gameplay',
+      ],
+      award_pot: [
+        'kvitlech.rules.gameplay',
+      ],
+      draw: [
+        'kvitlech.rules.gameplay',
+      ],
+      pass: [
+        'kvitlech.rules.gameplay',
+      ],
+    },
   },
 }

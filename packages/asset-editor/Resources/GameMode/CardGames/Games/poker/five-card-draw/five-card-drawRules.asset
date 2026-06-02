@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Five Card Draw. Logic: See rules.objective and rules.gameplay.',
-    Player: "Five Card Draw is the quintessential variant of Poker and was for decades the most popular form of the game played in homes and Western films. Unlike communityndcard games like Texas Hold 'em, Five Card Draw is a 'closed' game where all cards are held privately. The game features a unique 'Draw' phase where players can discard unwanted cards and replace them with new ones from the deck, allowing for sophisticated bluffing based on the number of cards drawn.",
+    LLM: '1. The Deal: 5 cards dealt to each player.\n2. 1st Betting Round: Starts from the player to the left of the blinds/dealer.\n3. The Draw: Players discard 0-3 cards (or 4 if holding an Ace) and receive replacements.\n4. 2nd Betting Round: A final chance to bet or bluff based on the improved hand.\n5. Showdown: Remaining players reveal hands.',
+    Player: '1. The Deal: 5 cards dealt to each player.\n2. 1st Betting Round: Starts from the player to the left of the blinds/dealer.\n3. The Draw: Players discard 0-3 cards (or 4 if holding an Ace) and receive replacements.\n4. 2nd Betting Round: A final chance to bet or bluff based on the improved hand.\n5. Showdown: Remaining players reveal hands.',
     objective: 'Win the pot by having the highest-ranking 5-card poker hand at showdown or by forcing all other players to fold.',
     gameplay: '1. The Deal: 5 cards dealt to each player.\n2. 1st Betting Round: Starts from the player to the left of the blinds/dealer.\n3. The Draw: Players discard 0-3 cards (or 4 if holding an Ace) and receive replacements.\n4. 2nd Betting Round: A final chance to bet or bluff based on the improved hand.\n5. Showdown: Remaining players reveal hands.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game does not support go out.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Win the pot by having the highest-ranking 5-card poker hand at showdown or by forcing all other players to fold. Expected outcome: Win the pot by having the highest-ranking 5-card poker hand at showdown or by forcing all other players to fold..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the pot by having the highest-ranking 5-card poker hand at showdown or by forcing all other players to fold.',
+      'Turn-flow example: 1. The Deal: 5 cards dealt to each player.\n2. 1st Betting Round: Starts from the player to the left of the blinds/dealer.\n3. The Draw: Players discard 0-3 cards (or 4 if holding an Ace) and receive replacements.\n4. 2nd Betting Round: A final chance to bet or bluff based on the improved hand.\n5. Showdown: Remaining players reveal hands.',
+      'Scoring example: Win the pot by having the highest-ranking 5-card poker hand at showdown or by forcing all other players to fold. Win the pot by having the highest-ranking 5-card poker hand at showdown or by forcing all other players to fold..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'five-card-draw.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the highest-ranking 5-card poker hand at showdown or by forcing all other players to fold.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'five-card-draw.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. The Deal: 5 cards dealt to each player.\n2. 1st Betting Round: Starts from the player to the left of the blinds/dealer.\n3. The Draw: Players discard 0-3 cards (or 4 if holding an Ace) and receive replacements.\n4. 2nd Betting Round: A final chance to bet or bluff based on the improved hand.\n5. Showdown: Remaining players reveal hands.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'five-card-draw.setup.players',
+        title: 'Players',
+        text: '2 to 6 players. Best with 5 or 6.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'five-card-draw.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'five-card-draw.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'five-card-draw.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 5 cards face down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'five-card-draw.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the pot by having the highest-ranking 5-card poker hand at showdown or by forcing all other players to fold.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'five-card-draw.score.description',
+        title: 'Scoring',
+        text: 'Win the pot by having the highest-ranking 5-card poker hand at showdown or by forcing all other players to fold.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'five-card-draw.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Stand Pat: Choosing to draw zero cards, often signaling a very strong hand (like a Straight or Flush).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'five-card-draw.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Drawing 3: Standard for improving a single pair.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'five-card-draw.rules.key.3',
+        title: 'Key rule 3',
+        text: "Burning: The dealer usually 'burns' the top card before the draw to prevent cheating.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'five-card-draw.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'five-card-draw.rules.objective',
+          'five-card-draw.rules.gameplay',
+        ],
+      },
+      {
+        id: 'five-card-draw.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'five-card-draw.setup.players',
+          'five-card-draw.setup.deck',
+          'five-card-draw.setup.equipment',
+          'five-card-draw.setup.dealing',
+        ],
+      },
+      {
+        id: 'five-card-draw.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'five-card-draw.rules.key.1',
+          'five-card-draw.rules.key.2',
+          'five-card-draw.rules.key.3',
+        ],
+      },
+      {
+        id: 'five-card-draw.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'five-card-draw.score.description',
+          'five-card-draw.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'five-card-draw.setup.dealing',
+        'five-card-draw.rules.objective',
+      ],
+      play_card: [
+        'five-card-draw.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,7 +10,26 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: "At end of hand each player counts pips in hand; lowest wins the hand and scores sum of losers' pips minus own total. Tie for lowest scores nothing. Game ends when a player reaches 100 (2P/partnership) or 61 (3–4P).",
+      winCondition: 'Empty your hand first (domino) or have fewest pips when blocked; first to reach target score wins the game.',
+      targetScore: 100,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        cardValues: 'Scoring uses pip count on domino tiles, not card face values; cardValues do not apply.',
+      },
+      splitRules: 'Tie for lowest hand score: nobody scores for that hand.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Irish Poker (Drinking/Social). 2-10 players, 52-card deck. Setup: 4 face-down cards per player. Rounds: 1-Red/Black (guess color), 2-Higher/Lower (vs card 1), 3-Inside/Outside (vs cards 1-2), 4-Suit (guess suit). Scoring: Correct round = give drinks 2,4,6,8. Wrong = take drinks. Social winner: lowest total drinks.',
-    Player: 'Welcome to Irish Poker, the ultimate prediction game. You have 4 face-down cards. Round 1: Guess Red or Black on card 1 (give/take 2 drinks). Round 2: Higher or Lower than card 1 on card 2 (give/take 4). Round 3: Inside or Outside the first two on card 3 (give/take 6). Round 4: Guess the Suit of card 4 (give/take 8). Strategy: Remember your cards and use probability!',
+    LLM: "1. **Round 1 (Red or Black)**: Guess the color of your first card. Correct = Give 2 drinks; Wrong = Take 2.\n2. **Round 2 (Higher or Lower)**: Guess if your second card is higher or lower than the first. Correct = Give 4; Wrong = Take 4.\n3. **Round 3 (Inside or Outside)**: Guess if your third card's value is between or outside the first two. Correct = Give 6; Wrong = Take 6.\n4. **Round 4 (Suit)**: Guess the specific suit of your final card. Correct = Give 8; Wrong = Take 8.",
+    Player: "1. **Round 1 (Red or Black)**: Guess the color of your first card. Correct = Give 2 drinks; Wrong = Take 2.\n2. **Round 2 (Higher or Lower)**: Guess if your second card is higher or lower than the first. Correct = Give 4; Wrong = Take 4.\n3. **Round 3 (Inside or Outside)**: Guess if your third card's value is between or outside the first two. Correct = Give 6; Wrong = Take 6.\n4. **Round 4 (Suit)**: Guess the specific suit of your final card. Correct = Give 8; Wrong = Take 8.",
     objective: 'Correctly guess the attributes of your four hidden cards to avoid penalties (taking drinks) and assign rewards (giving drinks).',
     gameplay: "1. **Round 1 (Red or Black)**: Guess the color of your first card. Correct = Give 2 drinks; Wrong = Take 2.\n2. **Round 2 (Higher or Lower)**: Guess if your second card is higher or lower than the first. Correct = Give 4; Wrong = Take 4.\n3. **Round 3 (Inside or Outside)**: Guess if your third card's value is between or outside the first two. Correct = Give 6; Wrong = Take 6.\n4. **Round 4 (Suit)**: Guess the specific suit of your final card. Correct = Give 8; Wrong = Take 8.",
     keyRules: [
@@ -52,10 +52,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before round_1.',
-      'Scoring check: Players predict card attributes and give/take drinks based on correctness. Drinks double each round: 2, 4, 6, 8. Expected outcome: NA.',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Correctly guess the attributes of your four hidden cards to avoid penalties (taking drinks) and assign rewards (giving drinks).',
+      "Turn-flow example: 1. **Round 1 (Red or Black)**: Guess the color of your first card. Correct = Give 2 drinks; Wrong = Take 2.\n2. **Round 2 (Higher or Lower)**: Guess if your second card is higher or lower than the first. Correct = Give 4; Wrong = Take 4.\n3. **Round 3 (Inside or Outside)**: Guess if your third card's value is between or outside the first two. Correct = Give 6; Wrong = Take 6.\n4. **Round 4 (Suit)**: Guess the specific suit of your final card. Correct = Give 8; Wrong = Take 8.",
+      'Scoring example: Players predict card attributes and give/take drinks based on correctness. Drinks double each round: 2, 4, 6, 8. Social game; winner is who drinks least..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'irish-poker.rules.objective',
+        title: 'Objective',
+        text: 'Correctly guess the attributes of your four hidden cards to avoid penalties (taking drinks) and assign rewards (giving drinks).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'irish-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Round 1 (Red or Black)**: Guess the color of your first card. Correct = Give 2 drinks; Wrong = Take 2.\n2. **Round 2 (Higher or Lower)**: Guess if your second card is higher or lower than the first. Correct = Give 4; Wrong = Take 4.\n3. **Round 3 (Inside or Outside)**: Guess if your third card's value is between or outside the first two. Correct = Give 6; Wrong = Take 6.\n4. **Round 4 (Suit)**: Guess the specific suit of your final card. Correct = Give 8; Wrong = Take 8.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'irish-poker.setup.players',
+        title: 'Players',
+        text: 'Best with 3-6 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'irish-poker.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'irish-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'irish-poker.setup.dealing',
+        title: 'Deal',
+        text: 'Deal four cards face-down to each player in a line.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'irish-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Social game; winner is who drinks least.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'irish-poker.score.description',
+        title: 'Scoring',
+        text: 'Players predict card attributes and give/take drinks based on correctness. Drinks double each round: 2, 4, 6, 8.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'irish-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Irish Poker.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'irish-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: Scoring summary: Players predict card attributes and give/take drinks based on correctness.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'irish-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Correctly guess the attributes of your four hidden cards to avoid penalties (taking drinks) and assign rewards (giving drinks).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'irish-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'irish-poker.rules.objective',
+          'irish-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'irish-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'irish-poker.setup.players',
+          'irish-poker.setup.deck',
+          'irish-poker.setup.equipment',
+          'irish-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'irish-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'irish-poker.rules.key.1',
+          'irish-poker.rules.key.2',
+          'irish-poker.rules.key.3',
+        ],
+      },
+      {
+        id: 'irish-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'irish-poker.score.description',
+          'irish-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'irish-poker.setup.dealing',
+        'irish-poker.rules.objective',
+      ],
+      deal: [
+        'irish-poker.rules.gameplay',
+      ],
+      play_card: [
+        'irish-poker.rules.gameplay',
+      ],
+      guess_color: [
+        'irish-poker.rules.gameplay',
+      ],
+      guess_direction: [
+        'irish-poker.rules.gameplay',
+      ],
+      guess_range: [
+        'irish-poker.rules.gameplay',
+      ],
+      guess_suit: [
+        'irish-poker.rules.gameplay',
+      ],
+      finish_game: [
+        'irish-poker.rules.gameplay',
+      ],
+    },
   },
 }

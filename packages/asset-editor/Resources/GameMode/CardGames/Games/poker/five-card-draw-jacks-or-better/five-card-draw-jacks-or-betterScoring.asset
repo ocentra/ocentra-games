@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Standard Five Card Draw scoring. Opener requirement ensures qualified hands only.',
+      winCondition: 'Highest 5-card Poker hand at showdown wins pot. Only players with Jacks or better can open.',
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: 'No fixed target score; play by game rules.',
+        cardValues: 'Poker uses hand rankings, not point accumulation.',
+      },
+      splitRules: 'No pot splitting. Single winner.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'poker_ranking',
     patternMultipliers: null,
     priorityOrder: [],

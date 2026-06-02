@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Fluxx. Logic: Be the player whose keepers satisfy the currently active goal after the rule set changes through card play.',
-    Player: 'Fluxx is a commercial Looney Labs card game where the rules, hand limits, play counts, and win condition change during play.',
+    LLM: 'Players draw and play cards under the current rule set. New rule cards alter turn structure, goals define the win condition, and keepers are used to satisfy those goals.',
+    Player: 'Players draw and play cards under the current rule set. New rule cards alter turn structure, goals define the win condition, and keepers are used to satisfy those goals.',
     objective: 'Be the player whose keepers satisfy the currently active goal after the rule set changes through card play.',
     gameplay: 'Players draw and play cards under the current rule set. New rule cards alter turn structure, goals define the win condition, and keepers are used to satisfy those goals.',
     keyRules: [
@@ -54,10 +54,168 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: Published endgame scoring or victory conditions determine the winner. Expected outcome: Be the player whose keepers satisfy the currently active goal after the rule set changes through card play..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the player whose keepers satisfy the currently active goal after the rule set changes through card play.',
+      'Turn-flow example: Players draw and play cards under the current rule set. New rule cards alter turn structure, goals define the win condition, and keepers are used to satisfy those goals.',
+      'Scoring example: Published endgame scoring or victory conditions determine the winner. Be the player whose keepers satisfy the currently active goal after the rule set changes through card play..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'fluxx.rules.objective',
+        title: 'Objective',
+        text: 'Be the player whose keepers satisfy the currently active goal after the rule set changes through card play.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'fluxx.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players draw and play cards under the current rule set. New rule cards alter turn structure, goals define the win condition, and keepers are used to satisfy those goals.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'fluxx.setup.players',
+        title: 'Players',
+        text: '2-6 players use the table arrangement described for Fluxx.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'fluxx.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Fluxx keeper, goal, rule, action, and new-rule cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'fluxx.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Fluxx keeper, goal, rule, action, and new-rule cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'fluxx.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare the dedicated Fluxx deck and any shared scoring, resource, or tableau area described by the rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'fluxx.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the player whose keepers satisfy the currently active goal after the rule set changes through card play.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'fluxx.score.description',
+        title: 'Scoring',
+        text: 'Published endgame scoring or victory conditions determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'fluxx.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Rules can change during play.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'fluxx.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Goal cards define the current win condition.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'fluxx.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Keeper cards satisfy goals.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'fluxx.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Action cards create one-shot effects.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'fluxx.rules.key.5',
+        title: 'Key rule 5',
+        text: 'A player wins immediately when current conditions are met.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'fluxx.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'fluxx.rules.objective',
+          'fluxx.rules.gameplay',
+        ],
+      },
+      {
+        id: 'fluxx.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'fluxx.setup.players',
+          'fluxx.setup.deck',
+          'fluxx.setup.equipment',
+          'fluxx.setup.dealing',
+        ],
+      },
+      {
+        id: 'fluxx.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'fluxx.rules.key.1',
+          'fluxx.rules.key.2',
+          'fluxx.rules.key.3',
+          'fluxx.rules.key.4',
+          'fluxx.rules.key.5',
+        ],
+      },
+      {
+        id: 'fluxx.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'fluxx.score.description',
+          'fluxx.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'fluxx.setup.dealing',
+        'fluxx.rules.objective',
+      ],
+      play_card: [
+        'fluxx.rules.gameplay',
+      ],
+      flip_top_card: [
+        'fluxx.rules.gameplay',
+      ],
+    },
   },
 }

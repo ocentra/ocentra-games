@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Partners communicate and bluff while comparing cards in a short-hand structure related to Truc, Aluette, Brisca, and Mus. The social bluffing is a major part of play.',
+    Player: 'Partners communicate and bluff while comparing cards in a short-hand structure related to Truc, Aluette, Brisca, and Mus. The social bluffing is a major part of play.',
     objective: 'Win points through short-hand card contests, bluffing, and partner signals.',
     gameplay: 'Partners communicate and bluff while comparing cards in a short-hand structure related to Truc, Aluette, Brisca, and Mus. The social bluffing is a major part of play.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Win points through short-hand card contests, bluffing, and partner signals.',
+      'Turn-flow example: Partners communicate and bluff while comparing cards in a short-hand structure related to Truc, Aluette, Brisca, and Mus. The social bluffing is a major part of play.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'truc-y-flou.rules.objective',
+        title: 'Objective',
+        text: 'Win points through short-hand card contests, bluffing, and partner signals.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'truc-y-flou.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Partners communicate and bluff while comparing cards in a short-hand structure related to Truc, Aluette, Brisca, and Mus. The social bluffing is a major part of play.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'truc-y-flou.setup.players',
+        title: 'Players',
+        text: '4 players use the table arrangement described for Truc y Flou.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'truc-y-flou.setup.deck',
+        title: 'Deck',
+        text: 'Spanish or French regional pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'truc-y-flou.setup.equipment',
+        title: 'Equipment',
+        text: 'Spanish or French regional pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'truc-y-flou.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Spanish or French regional pack and deal or lay out cards according to the documented Truc y Flou rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'truc-y-flou.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'truc-y-flou.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'truc-y-flou.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Partnership communication and bluffing are allowed.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'truc-y-flou.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The game belongs to the Put or Truco-like family.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'truc-y-flou.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Played in Aragon and French Pyrenees regions.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'truc-y-flou.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'truc-y-flou.rules.objective',
+          'truc-y-flou.rules.gameplay',
+        ],
+      },
+      {
+        id: 'truc-y-flou.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'truc-y-flou.setup.players',
+          'truc-y-flou.setup.deck',
+          'truc-y-flou.setup.equipment',
+          'truc-y-flou.setup.dealing',
+        ],
+      },
+      {
+        id: 'truc-y-flou.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'truc-y-flou.rules.key.1',
+          'truc-y-flou.rules.key.2',
+          'truc-y-flou.rules.key.3',
+        ],
+      },
+      {
+        id: 'truc-y-flou.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'truc-y-flou.score.description',
+          'truc-y-flou.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'truc-y-flou.setup.dealing',
+        'truc-y-flou.rules.objective',
+      ],
+      play_card: [
+        'truc-y-flou.rules.gameplay',
+      ],
+    },
   },
 }

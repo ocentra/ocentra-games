@@ -52,10 +52,156 @@
       go_out: 'Hand must satisfy structure and scoring rules.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use draw, discard, meld, go_out before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Complete a legal winning hand that satisfies the active Wuhan scoring profile.',
+      'Turn-flow example: Players draw one tile and discard one tile in turn. Other players may claim discards for legal melds when claim rules permit. A player wins when their tiles form a complete hand and the scoring profile accepts the win.',
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'wuhan-mahjong.rules.objective',
+        title: 'Objective',
+        text: 'Complete a legal winning hand that satisfies the active Wuhan scoring profile.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'wuhan-mahjong.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players draw one tile and discard one tile in turn. Other players may claim discards for legal melds when claim rules permit. A player wins when their tiles form a complete hand and the scoring profile accepts the win.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'wuhan-mahjong.setup.players',
+        title: 'Players',
+        text: '4 players seated by wind position.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'wuhan-mahjong.setup.deck',
+        title: 'Deck',
+        text: 'Standard Mahjong set with suited tiles, honor tiles, and bonus tiles according to table profile.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'wuhan-mahjong.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard Mahjong set with suited tiles, honor tiles, and bonus tiles according to table profile.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'wuhan-mahjong.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 13 tiles; dealer receives 14 and discards first.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'wuhan-mahjong.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'wuhan-mahjong.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'wuhan-mahjong.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Default loop is draw then discard.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'wuhan-mahjong.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Claims interrupt the turn sequence only when a legal meld is formed.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'wuhan-mahjong.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning requires a complete 14-tile hand and profile-accepted validity.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'wuhan-mahjong.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'wuhan-mahjong.rules.objective',
+          'wuhan-mahjong.rules.gameplay',
+        ],
+      },
+      {
+        id: 'wuhan-mahjong.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'wuhan-mahjong.setup.players',
+          'wuhan-mahjong.setup.deck',
+          'wuhan-mahjong.setup.equipment',
+          'wuhan-mahjong.setup.dealing',
+        ],
+      },
+      {
+        id: 'wuhan-mahjong.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'wuhan-mahjong.rules.key.1',
+          'wuhan-mahjong.rules.key.2',
+          'wuhan-mahjong.rules.key.3',
+        ],
+      },
+      {
+        id: 'wuhan-mahjong.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'wuhan-mahjong.score.description',
+          'wuhan-mahjong.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'wuhan-mahjong.setup.dealing',
+        'wuhan-mahjong.rules.objective',
+      ],
+      draw: [
+        'wuhan-mahjong.rules.gameplay',
+      ],
+      discard: [
+        'wuhan-mahjong.rules.gameplay',
+      ],
+      meld: [
+        'wuhan-mahjong.rules.gameplay',
+      ],
+      go_out: [
+        'wuhan-mahjong.rules.gameplay',
+      ],
+    },
   },
 }

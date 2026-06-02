@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: 2 points for most cards (tie at 26 each = no points), 1 for most clubs, 1 for capturing the 2 of clubs (good 2), 1 for the 10 of diamonds (good 10). Majority of round points wins the round; overall winner is whoever wins more rounds. Variant: first to an agreed total (e.g. 21) wins. Expected outcome: NA.',
+      'Setup example: 4 card(s) per player.',
+      "Rule example: Score the most points by capturing specific 'score cards' and the largest volume of cards.",
+      'Turn-flow example: 1. Play a card from hand to capture from the field.\n2. **Rank Match**: Match a Jack, Queen, King, or numeral rank to take it (e.g., King takes King).\n3. **Sum Match**: Use a numeral card (e.g., a 9) to take multiple cards whose values sum to it (e.g., 9 takes a 4, a 2, and an Ace (1)).\n4. **Discard**: If you cannot capture, leave your card on the table.\n5. When hands are empty, deal 4 more cards each from stock until the stock is gone.',
+      'Scoring example: 2 points for most cards (tie at 26 each = no points), 1 for most clubs, 1 for capturing the 2 of clubs (good 2), 1 for the 10 of diamonds (good 10). Majority of round points wins the round; overall winner is whoever wins more rounds. Variant: first to an agreed total (e.g. 21) wins. Win the majority of rounds (most round wins). Variant: first to reach an agreed point total (e.g. 21) wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'kontsina.rules.objective',
+        title: 'Objective',
+        text: "Score the most points by capturing specific 'score cards' and the largest volume of cards.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kontsina.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Play a card from hand to capture from the field.\n2. **Rank Match**: Match a Jack, Queen, King, or numeral rank to take it (e.g., King takes King).\n3. **Sum Match**: Use a numeral card (e.g., a 9) to take multiple cards whose values sum to it (e.g., 9 takes a 4, a 2, and an Ace (1)).\n4. **Discard**: If you cannot capture, leave your card on the table.\n5. When hands are empty, deal 4 more cards each from stock until the stock is gone.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kontsina.setup.players',
+        title: 'Players',
+        text: 'Best with 2 players or 4 in partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kontsina.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Ace = 1. Jacks/Queens/Kings have no numerical sum value (rank-only).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kontsina.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. Ace = 1. Jacks/Queens/Kings have no numerical sum value (rank-only).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kontsina.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 4 cards. 4 cards are placed face-up in the center field. The rest form a stock pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kontsina.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the majority of rounds (most round wins). Variant: first to reach an agreed point total (e.g. 21) wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kontsina.score.description',
+        title: 'Scoring',
+        text: '2 points for most cards (tie at 26 each = no points), 1 for most clubs, 1 for capturing the 2 of clubs (good 2), 1 for the 10 of diamonds (good 10). Majority of round points wins the round; overall winner is whoever wins more rounds. Variant: first to an agreed total (e.g. 21) wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kontsina.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Capture by matching rank (e.g. 7 takes 7, Queen takes Queen) or by sum (numeral card takes cards summing to it; Ace = 1; face cards only match rank).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kontsina.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If you cannot or do not wish to capture, play a card face up to the tableau (laying).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kontsina.rules.key.3',
+        title: 'Key rule 3',
+        text: 'When hands are empty, dealer deals 4 more cards each from the talon; no new cards to the tableau. Non-dealer plays first after each deal.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kontsina.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Round ends when the last hand is played; remaining tableau cards go to the player who last made a capture.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kontsina.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kontsina.rules.objective',
+          'kontsina.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kontsina.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kontsina.setup.players',
+          'kontsina.setup.deck',
+          'kontsina.setup.equipment',
+          'kontsina.setup.dealing',
+        ],
+      },
+      {
+        id: 'kontsina.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kontsina.rules.key.1',
+          'kontsina.rules.key.2',
+          'kontsina.rules.key.3',
+          'kontsina.rules.key.4',
+        ],
+      },
+      {
+        id: 'kontsina.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kontsina.score.description',
+          'kontsina.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kontsina.setup.dealing',
+        'kontsina.rules.objective',
+      ],
+      play_card: [
+        'kontsina.rules.gameplay',
+      ],
+    },
   },
 }

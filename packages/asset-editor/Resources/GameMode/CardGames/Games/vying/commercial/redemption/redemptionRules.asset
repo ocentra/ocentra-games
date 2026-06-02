@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players use proprietary cards depicting heroes, enhancements, sites, and events. Conflict resolution and special powers depend on the official rules and individual card text.',
+    Player: 'Players use proprietary cards depicting heroes, enhancements, sites, and events. Conflict resolution and special powers depend on the official rules and individual card text.',
     objective: 'Win by using the constructed deck to complete the game objective defined by Redemption rules and card text.',
     gameplay: 'Players use proprietary cards depicting heroes, enhancements, sites, and events. Conflict resolution and special powers depend on the official rules and individual card text.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Win by using the constructed deck to complete the game objective defined by Redemption rules and card text.',
+      'Turn-flow example: Players use proprietary cards depicting heroes, enhancements, sites, and events. Conflict resolution and special powers depend on the official rules and individual card text.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'redemption.rules.objective',
+        title: 'Objective',
+        text: 'Win by using the constructed deck to complete the game objective defined by Redemption rules and card text.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'redemption.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players use proprietary cards depicting heroes, enhancements, sites, and events. Conflict resolution and special powers depend on the official rules and individual card text.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'redemption.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Redemption.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'redemption.setup.deck',
+        title: 'Deck',
+        text: 'Proprietary Redemption CCG decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'redemption.setup.equipment',
+        title: 'Equipment',
+        text: 'Proprietary Redemption CCG decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'redemption.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Proprietary Redemption CCG decks and deal or lay out cards according to the documented Redemption rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'redemption.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'redemption.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'redemption.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Collectible card game with constructed decks.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'redemption.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The theme and card pool are proprietary.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'redemption.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Digital implementation must use original replacement content unless rights are secured.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'redemption.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'redemption.rules.objective',
+          'redemption.rules.gameplay',
+        ],
+      },
+      {
+        id: 'redemption.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'redemption.setup.players',
+          'redemption.setup.deck',
+          'redemption.setup.equipment',
+          'redemption.setup.dealing',
+        ],
+      },
+      {
+        id: 'redemption.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'redemption.rules.key.1',
+          'redemption.rules.key.2',
+          'redemption.rules.key.3',
+        ],
+      },
+      {
+        id: 'redemption.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'redemption.score.description',
+          'redemption.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'redemption.setup.dealing',
+        'redemption.rules.objective',
+      ],
+      play_card: [
+        'redemption.rules.gameplay',
+      ],
+    },
   },
 }

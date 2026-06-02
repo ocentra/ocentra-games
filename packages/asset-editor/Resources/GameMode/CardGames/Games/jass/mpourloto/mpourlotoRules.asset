@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points from melds, card values, and bonuses. Target is 1000 points. Expected outcome: 1000.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the first partnership to reach 1000 points by winning tricks, capturing valuable cards, and declaring melds.',
+      'Turn-flow example: Player left of dealer leads. Must follow suit if possible. If unable, must play a trump. Must beat the highest card played so far if possible (overtaking is compulsory).',
+      'Scoring example: Points from melds, card values, and bonuses. Target is 1000 points. First partnership to reach 1000 points wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'mpourloto.rules.objective',
+        title: 'Objective',
+        text: 'Be the first partnership to reach 1000 points by winning tricks, capturing valuable cards, and declaring melds.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mpourloto.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Player left of dealer leads. Must follow suit if possible. If unable, must play a trump. Must beat the highest card played so far if possible (overtaking is compulsory).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mpourloto.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships, partners sitting opposite each other.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mpourloto.setup.deck',
+        title: 'Deck',
+        text: '32-card pack (7 through Ace in each suit: Hearts, Diamonds, Clubs, Spades).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mpourloto.setup.equipment',
+        title: 'Equipment',
+        text: '32-card deck, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mpourloto.setup.dealing',
+        title: 'Deal',
+        text: '5 cards to each player, one at a time. The next card is turned face up to propose trumps. After bidding, 3 more cards are dealt to each player.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mpourloto.score.win-condition',
+        title: 'Win condition',
+        text: 'First partnership to reach 1000 points wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mpourloto.score.description',
+        title: 'Scoring',
+        text: 'Points from melds, card values, and bonuses. Target is 1000 points.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mpourloto.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Jack and 9 of trumps are highest cards',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'mpourloto.rules.key.2',
+        title: 'Key rule 2',
+        text: 'All melds count toward score',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'mpourloto.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Must follow suit, must trump if void',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'mpourloto.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Must overtake if possible',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'mpourloto.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Mesa: failed contract gives all points to opponents',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mpourloto.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mpourloto.rules.objective',
+          'mpourloto.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mpourloto.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mpourloto.setup.players',
+          'mpourloto.setup.deck',
+          'mpourloto.setup.equipment',
+          'mpourloto.setup.dealing',
+        ],
+      },
+      {
+        id: 'mpourloto.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mpourloto.rules.key.1',
+          'mpourloto.rules.key.2',
+          'mpourloto.rules.key.3',
+          'mpourloto.rules.key.4',
+          'mpourloto.rules.key.5',
+        ],
+      },
+      {
+        id: 'mpourloto.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mpourloto.score.description',
+          'mpourloto.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mpourloto.setup.dealing',
+        'mpourloto.rules.objective',
+      ],
+      play_card: [
+        'mpourloto.rules.gameplay',
+      ],
+    },
   },
 }

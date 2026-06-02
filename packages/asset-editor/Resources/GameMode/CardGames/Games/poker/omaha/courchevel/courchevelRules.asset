@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Courchevel. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Courchevel: five hole cards, one board card before first betting; then flop, turn, river. Use exactly two hole and three board. Best hand wins the pot.',
+    LLM: 'Deal five hole cards to each player and one community card face up. First betting round. Dealer burns one, deals two more board cards (flop). Second betting round. Turn card; third betting round. River card; fourth betting round. Showdown: active players show all five hole cards; best five-card hand using exactly two hole and three board wins the pot.',
+    Player: 'Deal five hole cards to each player and one community card face up. First betting round. Dealer burns one, deals two more board cards (flop). Second betting round. Turn card; third betting round. River card; fourth betting round. Showdown: active players show all five hole cards; best five-card hand using exactly two hole and three board wins the pot.',
     objective: 'Make the best five-card hand using exactly two of your five hole cards and exactly three of the five board cards. Win the pot at showdown.',
     gameplay: 'Deal five hole cards to each player and one community card face up. First betting round. Dealer burns one, deals two more board cards (flop). Second betting round. Turn card; third betting round. River card; fourth betting round. Showdown: active players show all five hole cards; best five-card hand using exactly two hole and three board wins the pot.',
     keyRules: [
@@ -52,10 +52,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-9 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in initial_deal; dealer may use complete_initial_deal before preflop_bet.',
-      'Scoring check: Pot to best hand at showdown. Expected outcome: NA.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Make the best five-card hand using exactly two of your five hole cards and exactly three of the five board cards. Win the pot at showdown.',
+      'Turn-flow example: Deal five hole cards to each player and one community card face up. First betting round. Dealer burns one, deals two more board cards (flop). Second betting round. Turn card; third betting round. River card; fourth betting round. Showdown: active players show all five hole cards; best five-card hand using exactly two hole and three board wins the pot.',
+      'Scoring example: Pot to best hand at showdown. Make the best five-card hand using exactly two hole cards and three board cards. Win the pot at showdown..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'courchevel.rules.objective',
+        title: 'Objective',
+        text: 'Make the best five-card hand using exactly two of your five hole cards and exactly three of the five board cards. Win the pot at showdown.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'courchevel.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Deal five hole cards to each player and one community card face up. First betting round. Dealer burns one, deals two more board cards (flop). Second betting round. Turn card; third betting round. River card; fourth betting round. Showdown: active players show all five hole cards; best five-card hand using exactly two hole and three board wins the pot.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'courchevel.setup.players',
+        title: 'Players',
+        text: 'Minimum 2, maximum 9. Optimal 4-6. No partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'courchevel.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck. One deck. No jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'courchevel.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck, chips.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'courchevel.setup.dealing',
+        title: 'Deal',
+        text: 'Five hole cards each, dealt face down. One community card dealt face up before the first betting round. After that round, dealer burns one card and deals two more face up (three-card flop). Then turn (one card) and river (one card), with a burn before each. Betting after each street.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'courchevel.score.win-condition',
+        title: 'Win condition',
+        text: 'Make the best five-card hand using exactly two hole cards and three board cards. Win the pot at showdown.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'courchevel.score.description',
+        title: 'Scoring',
+        text: 'Pot to best hand at showdown.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'courchevel.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Five hole cards; one board card before first betting, then flop (two more), turn, river.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'courchevel.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must use exactly two hole cards and three board cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'courchevel.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Standard poker hand ranking. Pot Limit or other limits as agreed.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'courchevel.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'courchevel.rules.objective',
+          'courchevel.rules.gameplay',
+        ],
+      },
+      {
+        id: 'courchevel.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'courchevel.setup.players',
+          'courchevel.setup.deck',
+          'courchevel.setup.equipment',
+          'courchevel.setup.dealing',
+        ],
+      },
+      {
+        id: 'courchevel.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'courchevel.rules.key.1',
+          'courchevel.rules.key.2',
+          'courchevel.rules.key.3',
+        ],
+      },
+      {
+        id: 'courchevel.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'courchevel.score.description',
+          'courchevel.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'courchevel.setup.dealing',
+        'courchevel.rules.objective',
+      ],
+      fold: [
+        'courchevel.rules.gameplay',
+      ],
+      check: [
+        'courchevel.rules.gameplay',
+      ],
+      call: [
+        'courchevel.rules.gameplay',
+      ],
+      bet: [
+        'courchevel.rules.gameplay',
+      ],
+      raise: [
+        'courchevel.rules.gameplay',
+      ],
+      reveal_hand: [
+        'courchevel.rules.gameplay',
+      ],
+      complete_initial_deal: [
+        'courchevel.rules.gameplay',
+      ],
+      complete_flop: [
+        'courchevel.rules.gameplay',
+      ],
+      complete_turn: [
+        'courchevel.rules.gameplay',
+      ],
+      complete_river: [
+        'courchevel.rules.gameplay',
+      ],
+    },
   },
 }

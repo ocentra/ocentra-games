@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Passing Dominoes. Draw variant with pass. 7 or 6 tiles. 101/61 target.',
-    Player: 'Passing Dominoes: play, draw, or pass. Lowest pips wins hand. 101 (2p) or 61 (3-4p) to win.',
+    LLM: "1. Draw for lead. 2. Each turn: (a) add tile to either end of train, or (b) draw from boneyard (unless only 2 left), or (c) pass. 3. Doubles played across; not spinners. 4. Hand ends when one dominoes or nobody can play. 5. Score: lowest gets sum of losers' pips minus own total. Tie = no score.",
+    Player: "1. Draw for lead. 2. Each turn: (a) add tile to either end of train, or (b) draw from boneyard (unless only 2 left), or (c) pass. 3. Doubles played across; not spinners. 4. Hand ends when one dominoes or nobody can play. 5. Score: lowest gets sum of losers' pips minus own total. Tie = no score.",
     objective: 'Be first to 101 (2p/partnership) or 61 (3-4p). Lowest pip total wins each hand.',
     gameplay: "1. Draw for lead. 2. Each turn: (a) add tile to either end of train, or (b) draw from boneyard (unless only 2 left), or (c) pass. 3. Doubles played across; not spinners. 4. Hand ends when one dominoes or nobody can play. 5. Score: lowest gets sum of losers' pips minus own total. Tie = no score.",
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: Lowest pip total wins; scores sum of losers minus own. Tie = no score. Expected outcome: 101.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be first to 101 (2p/partnership) or 61 (3-4p). Lowest pip total wins each hand.',
+      "Turn-flow example: 1. Draw for lead. 2. Each turn: (a) add tile to either end of train, or (b) draw from boneyard (unless only 2 left), or (c) pass. 3. Doubles played across; not spinners. 4. Hand ends when one dominoes or nobody can play. 5. Score: lowest gets sum of losers' pips minus own total. Tie = no score.",
+      'Scoring example: Lowest pip total wins; scores sum of losers minus own. Tie = no score. First to 101 (2p/partnership) or 61 (3-4p)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'passing-dominoes.rules.objective',
+        title: 'Objective',
+        text: 'Be first to 101 (2p/partnership) or 61 (3-4p). Lowest pip total wins each hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'passing-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Draw for lead. 2. Each turn: (a) add tile to either end of train, or (b) draw from boneyard (unless only 2 left), or (c) pass. 3. Doubles played across; not spinners. 4. Hand ends when one dominoes or nobody can play. 5. Score: lowest gets sum of losers' pips minus own total. Tie = no score.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'passing-dominoes.setup.players',
+        title: 'Players',
+        text: '2-4. Four can play partnership or individuals.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'passing-dominoes.setup.deck',
+        title: 'Deck',
+        text: 'Double-six set. Last two tiles cannot be drawn.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'passing-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'Double-six domino set.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'passing-dominoes.setup.dealing',
+        title: 'Deal',
+        text: '2-3 players: 7 each. 4 players: 6 each. Remainder = boneyard.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'passing-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 101 (2p/partnership) or 61 (3-4p).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'passing-dominoes.score.description',
+        title: 'Scoring',
+        text: 'Lowest pip total wins; scores sum of losers minus own. Tie = no score.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'passing-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Three options: play, draw, or pass.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'passing-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Cannot draw when boneyard has only 2 tiles.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'passing-dominoes.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Doubles across line; not spinners.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'passing-dominoes.rules.key.4',
+        title: 'Key rule 4',
+        text: '101 target (2p/partnership); 61 (3-4p).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'passing-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'passing-dominoes.rules.objective',
+          'passing-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: 'passing-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'passing-dominoes.setup.players',
+          'passing-dominoes.setup.deck',
+          'passing-dominoes.setup.equipment',
+          'passing-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: 'passing-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'passing-dominoes.rules.key.1',
+          'passing-dominoes.rules.key.2',
+          'passing-dominoes.rules.key.3',
+          'passing-dominoes.rules.key.4',
+        ],
+      },
+      {
+        id: 'passing-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'passing-dominoes.score.description',
+          'passing-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'passing-dominoes.setup.dealing',
+        'passing-dominoes.rules.objective',
+      ],
+      deal: [
+        'passing-dominoes.rules.gameplay',
+      ],
+      play_card: [
+        'passing-dominoes.rules.gameplay',
+      ],
+      draw: [
+        'passing-dominoes.rules.gameplay',
+      ],
+      pass: [
+        'passing-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

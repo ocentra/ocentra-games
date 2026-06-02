@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Shoot. Logic: See rules.objective and rules.gameplay.',
-    Player: "In Shoot, each player bets against the dealer's pot, then tries to reveal a higher card of the same suit as the dealer's turned-up card.",
+    LLM: 'Each betting turn, the active player stakes between table minimum and current pot size. Dealer reveals a card. If the player can show a card in hand of the same suit and higher rank, the player wins an equal amount from pot; otherwise the stake is lost to pot. If pot empties mid-deal, remaining players do not bet and deal passes left.',
+    Player: 'Each betting turn, the active player stakes between table minimum and current pot size. Dealer reveals a card. If the player can show a card in hand of the same suit and higher rank, the player wins an equal amount from pot; otherwise the stake is lost to pot. If pot empties mid-deal, remaining players do not bet and deal passes left.',
     objective: "Win bets from the bank by proving a same-suit higher card against the dealer's turned-up card.",
     gameplay: 'Each betting turn, the active player stakes between table minimum and current pot size. Dealer reveals a card. If the player can show a card in hand of the same suit and higher rank, the player wins an equal amount from pot; otherwise the stake is lost to pot. If pot empties mid-deal, remaining players do not bet and deal passes left.',
     keyRules: [
@@ -52,10 +52,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before betting.',
-      'Scoring check: Shoot is bankroll-based: successful bets pay from pot, failed bets feed the pot, and deal rotation depends on pot survival or bust. Expected outcome: Session winner is the player/dealer position with best net profit under agreed stop condition..',
+      'Setup example: 3 card(s) per player.',
+      "Rule example: Win bets from the bank by proving a same-suit higher card against the dealer's turned-up card.",
+      'Turn-flow example: Each betting turn, the active player stakes between table minimum and current pot size. Dealer reveals a card. If the player can show a card in hand of the same suit and higher rank, the player wins an equal amount from pot; otherwise the stake is lost to pot. If pot empties mid-deal, remaining players do not bet and deal passes left.',
+      'Scoring example: Shoot is bankroll-based: successful bets pay from pot, failed bets feed the pot, and deal rotation depends on pot survival or bust. Session winner is the player/dealer position with best net profit under agreed stop condition..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'shoot.rules.objective',
+        title: 'Objective',
+        text: "Win bets from the bank by proving a same-suit higher card against the dealer's turned-up card.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'shoot.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Each betting turn, the active player stakes between table minimum and current pot size. Dealer reveals a card. If the player can show a card in hand of the same suit and higher rank, the player wins an equal amount from pot; otherwise the stake is lost to pot. If pot empties mid-deal, remaining players do not bet and deal passes left.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'shoot.setup.players',
+        title: 'Players',
+        text: '3 to about 8 players, with one acting as dealer/banker.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'shoot.setup.deck',
+        title: 'Deck',
+        text: '52-card deck, ace high.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'shoot.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards and money/chips for a shared dealer-controlled pot.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'shoot.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer stakes the pot, then deals 3 cards to each non-dealer player. Players look at cards only just before their own bet.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'shoot.score.win-condition',
+        title: 'Win condition',
+        text: 'Session winner is the player/dealer position with best net profit under agreed stop condition.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'shoot.score.description',
+        title: 'Scoring',
+        text: 'Shoot is bankroll-based: successful bets pay from pot, failed bets feed the pot, and deal rotation depends on pot survival or bust.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'shoot.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dealer alone funds the initial pot in Shoot.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'shoot.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players are dealt only three cards each.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'shoot.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Pot exhaustion immediately ends remaining bets for that deal.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'shoot.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'shoot.rules.objective',
+          'shoot.rules.gameplay',
+        ],
+      },
+      {
+        id: 'shoot.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'shoot.setup.players',
+          'shoot.setup.deck',
+          'shoot.setup.equipment',
+          'shoot.setup.dealing',
+        ],
+      },
+      {
+        id: 'shoot.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'shoot.rules.key.1',
+          'shoot.rules.key.2',
+          'shoot.rules.key.3',
+        ],
+      },
+      {
+        id: 'shoot.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'shoot.score.description',
+          'shoot.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'shoot.setup.dealing',
+        'shoot.rules.objective',
+      ],
+      deal: [
+        'shoot.rules.gameplay',
+      ],
+      reveal_market: [
+        'shoot.rules.gameplay',
+      ],
+      bet: [
+        'shoot.rules.gameplay',
+      ],
+      award_pot: [
+        'shoot.rules.gameplay',
+      ],
+      pass: [
+        'shoot.rules.gameplay',
+      ],
+    },
   },
 }

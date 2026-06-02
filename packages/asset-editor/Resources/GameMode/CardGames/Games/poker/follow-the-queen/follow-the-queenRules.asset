@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Follow the Queen (Seven Card Stud variant). Deal: 2 down, 4 up, 1 down across 7 streets. Wild cards: All Queens are wild. After any Queen is dealt face-up, the rank of the immediately following up-card becomes wild for all players. Wild status shifts if another Queen appears. Hand rankings: Five-of-a-Kind is highest (beats Royal Flush). Betting: Each street has a betting round. Win: Highest 5-card Poker hand at showdown.',
-    Player: 'Welcome to Follow the Queen, a Seven Card Stud variant with dynamic wild cards. All Queens are wild. The card dealt immediately after a Queen is also wildâ€”until the next Queen appears. Build the best hand with these shifting wild cards. First to show the highest hand at showdown wins.',
+    LLM: '1. Initial Deal: 2 down, 1 up. Betting.\n2. 4th, 5th, 6th Streets: One upcard each, with a betting round after each. If a Queen is dealt, watch the next card closely!\n3. The River: One final down-card. Final betting round.',
+    Player: '1. Initial Deal: 2 down, 1 up. Betting.\n2. 4th, 5th, 6th Streets: One upcard each, with a betting round after each. If a Queen is dealt, watch the next card closely!\n3. The River: One final down-card. Final betting round.',
     objective: 'Win the pot by forming the highest-ranking 5-card Poker hand using any of the seven cards dealt, utilizing the current wild cards.',
     gameplay: '1. Initial Deal: 2 down, 1 up. Betting.\n2. 4th, 5th, 6th Streets: One upcard each, with a betting round after each. If a Queen is dealt, watch the next card closely!\n3. The River: One final down-card. Final betting round.',
     keyRules: [
@@ -52,10 +52,168 @@
       go_out: 'This game does not support go out.',
     },
     exampleHands: [
-      'Opening deal: 2-7 player(s), 2 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in ante; all_simultaneous may use post_ante before deal_initial.',
-      'Scoring check: Points scored through betting rounds and won by highest Poker hand at showdown. Cash game or chip-based play. Expected outcome: NA.',
+      'Setup example: 2 card(s) per player.',
+      'Rule example: Win the pot by forming the highest-ranking 5-card Poker hand using any of the seven cards dealt, utilizing the current wild cards.',
+      'Turn-flow example: 1. Initial Deal: 2 down, 1 up. Betting.\n2. 4th, 5th, 6th Streets: One upcard each, with a betting round after each. If a Queen is dealt, watch the next card closely!\n3. The River: One final down-card. Final betting round.',
+      'Scoring example: Points scored through betting rounds and won by highest Poker hand at showdown. Cash game or chip-based play. Player with the highest 5-card Poker hand from their 7 cards wins the pot. With Five-of-a-Kind (wild cards + naturals) ranking highest..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'follow-the-queen.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by forming the highest-ranking 5-card Poker hand using any of the seven cards dealt, utilizing the current wild cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'follow-the-queen.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Initial Deal: 2 down, 1 up. Betting.\n2. 4th, 5th, 6th Streets: One upcard each, with a betting round after each. If a Queen is dealt, watch the next card closely!\n3. The River: One final down-card. Final betting round.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'follow-the-queen.setup.players',
+        title: 'Players',
+        text: '2 to 7 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'follow-the-queen.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'follow-the-queen.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'follow-the-queen.setup.dealing',
+        title: 'Deal',
+        text: 'Standard Seven Card Stud deal: 2 down, 4 up, 1 down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'follow-the-queen.score.win-condition',
+        title: 'Win condition',
+        text: 'Player with the highest 5-card Poker hand from their 7 cards wins the pot. With Five-of-a-Kind (wild cards + naturals) ranking highest.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'follow-the-queen.score.description',
+        title: 'Scoring',
+        text: 'Points scored through betting rounds and won by highest Poker hand at showdown. Cash game or chip-based play.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'follow-the-queen.rules.key.1',
+        title: 'Key rule 1',
+        text: "Natural is Better: In some house rules, a 'Natural' hand (without wild cards) beats a wild hand of the same rank.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'follow-the-queen.rules.key.2',
+        title: 'Key rule 2',
+        text: "No Queen No Game: If no Queen appears face-up by the end of dealing, many play that there are NO wild cards, or that the hand is a 'misdeal' and everyone re-antes.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'follow-the-queen.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Win the pot by forming the highest-ranking 5-card Poker hand using any of the seven cards dealt, utilizing the current wild cards.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'follow-the-queen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'follow-the-queen.rules.objective',
+          'follow-the-queen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'follow-the-queen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'follow-the-queen.setup.players',
+          'follow-the-queen.setup.deck',
+          'follow-the-queen.setup.equipment',
+          'follow-the-queen.setup.dealing',
+        ],
+      },
+      {
+        id: 'follow-the-queen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'follow-the-queen.rules.key.1',
+          'follow-the-queen.rules.key.2',
+          'follow-the-queen.rules.key.3',
+        ],
+      },
+      {
+        id: 'follow-the-queen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'follow-the-queen.score.description',
+          'follow-the-queen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'follow-the-queen.setup.dealing',
+        'follow-the-queen.rules.objective',
+      ],
+      deal: [
+        'follow-the-queen.rules.gameplay',
+      ],
+      fold: [
+        'follow-the-queen.rules.gameplay',
+      ],
+      check: [
+        'follow-the-queen.rules.gameplay',
+      ],
+      call: [
+        'follow-the-queen.rules.gameplay',
+      ],
+      bet: [
+        'follow-the-queen.rules.gameplay',
+      ],
+      raise: [
+        'follow-the-queen.rules.gameplay',
+      ],
+      post_ante: [
+        'follow-the-queen.rules.gameplay',
+      ],
+      show_hand: [
+        'follow-the-queen.rules.gameplay',
+      ],
+    },
   },
 }

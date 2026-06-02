@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 7 Card Draw. Logic: See rules.objective and rules.gameplay.',
-    Player: '7 Card Draw: each player gets seven cards, then may draw/discard (typically once) to improve. Best five-card hand wins. Less common than 5 Card Draw; often limit or pot-limit. USA.',
+    LLM: 'Each player receives seven cards. Betting round; then each player discards and draws (typically once) to replace discarded cards. Final betting; showdown; best five-card hand wins.',
+    Player: 'Each player receives seven cards. Betting round; then each player discards and draws (typically once) to replace discarded cards. Final betting; showdown; best five-card hand wins.',
     objective: 'Make the best five-card poker hand from your seven cards after the draw.',
     gameplay: 'Each player receives seven cards. Betting round; then each player discards and draws (typically once) to replace discarded cards. Final betting; showdown; best five-card hand wins.',
     keyRules: [
@@ -52,10 +52,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before pre_draw_bet.',
-      'Scoring check: Pot to winner; no points. Expected outcome: Make the best five-card poker hand from your seven cards after the draw..',
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Make the best five-card poker hand from your seven cards after the draw.',
+      'Turn-flow example: Each player receives seven cards. Betting round; then each player discards and draws (typically once) to replace discarded cards. Final betting; showdown; best five-card hand wins.',
+      'Scoring example: Pot to winner; no points. Make the best five-card poker hand from your seven cards after the draw..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '7-card-draw.rules.objective',
+        title: 'Objective',
+        text: 'Make the best five-card poker hand from your seven cards after the draw.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '7-card-draw.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Each player receives seven cards. Betting round; then each player discards and draws (typically once) to replace discarded cards. Final betting; showdown; best five-card hand wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '7-card-draw.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '7-card-draw.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '7-card-draw.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '7-card-draw.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '7-card-draw.score.win-condition',
+        title: 'Win condition',
+        text: 'Make the best five-card poker hand from your seven cards after the draw.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '7-card-draw.score.description',
+        title: 'Scoring',
+        text: 'Pot to winner; no points.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '7-card-draw.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Seven cards each; one (or two) draw round(s)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '7-card-draw.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Best five cards count',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '7-card-draw.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Standard poker hand ranking',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '7-card-draw.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '7-card-draw.rules.objective',
+          '7-card-draw.rules.gameplay',
+        ],
+      },
+      {
+        id: '7-card-draw.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '7-card-draw.setup.players',
+          '7-card-draw.setup.deck',
+          '7-card-draw.setup.equipment',
+          '7-card-draw.setup.dealing',
+        ],
+      },
+      {
+        id: '7-card-draw.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '7-card-draw.rules.key.1',
+          '7-card-draw.rules.key.2',
+          '7-card-draw.rules.key.3',
+        ],
+      },
+      {
+        id: '7-card-draw.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '7-card-draw.score.description',
+          '7-card-draw.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '7-card-draw.setup.dealing',
+        '7-card-draw.rules.objective',
+      ],
+      ante: [
+        '7-card-draw.rules.gameplay',
+      ],
+      deal: [
+        '7-card-draw.rules.gameplay',
+      ],
+      fold: [
+        '7-card-draw.rules.gameplay',
+      ],
+      check: [
+        '7-card-draw.rules.gameplay',
+      ],
+      call: [
+        '7-card-draw.rules.gameplay',
+      ],
+      bet: [
+        '7-card-draw.rules.gameplay',
+      ],
+      raise: [
+        '7-card-draw.rules.gameplay',
+      ],
+      reveal_hand: [
+        '7-card-draw.rules.gameplay',
+      ],
+      draw: [
+        '7-card-draw.rules.gameplay',
+      ],
+      discard: [
+        '7-card-draw.rules.gameplay',
+      ],
+    },
   },
 }

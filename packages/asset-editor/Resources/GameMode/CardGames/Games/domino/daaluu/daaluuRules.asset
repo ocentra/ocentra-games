@@ -52,10 +52,147 @@
       go_out: 'Hand-end resolution is profile logic, not a discrete player action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Follow the active daaluu profile to complete legal tile progressions and achieve the best scoring outcome.',
+      'Turn-flow example: Players act according to the chosen daaluu profile. The shared model captures family identity and generic turn flow, while local rules define exact opening constraints, legal placements, and scoring.',
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'daaluu.rules.objective',
+        title: 'Objective',
+        text: 'Follow the active daaluu profile to complete legal tile progressions and achieve the best scoring outcome.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'daaluu.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players act according to the chosen daaluu profile. The shared model captures family identity and generic turn flow, while local rules define exact opening constraints, legal placements, and scoring.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'daaluu.setup.players',
+        title: 'Players',
+        text: '2 to 8 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'daaluu.setup.deck',
+        title: 'Deck',
+        text: 'One Daaluu 64 tile set.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'daaluu.setup.equipment',
+        title: 'Equipment',
+        text: 'Daaluu tiles and score tracking if the table profile uses cumulative scoring.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'daaluu.setup.dealing',
+        title: 'Deal',
+        text: 'Tiles are distributed according to the active daaluu profile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'daaluu.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'daaluu.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'daaluu.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Tile legality follows daaluu-profile constraints.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'daaluu.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Turn flow is profile-driven with legal placement and progression rules.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'daaluu.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Hand-end and scoring depend on the selected daaluu profile.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'daaluu.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'daaluu.rules.objective',
+          'daaluu.rules.gameplay',
+        ],
+      },
+      {
+        id: 'daaluu.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'daaluu.setup.players',
+          'daaluu.setup.deck',
+          'daaluu.setup.equipment',
+          'daaluu.setup.dealing',
+        ],
+      },
+      {
+        id: 'daaluu.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'daaluu.rules.key.1',
+          'daaluu.rules.key.2',
+          'daaluu.rules.key.3',
+        ],
+      },
+      {
+        id: 'daaluu.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'daaluu.score.description',
+          'daaluu.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'daaluu.setup.dealing',
+        'daaluu.rules.objective',
+      ],
+      play_card: [
+        'daaluu.rules.gameplay',
+      ],
+    },
   },
 }

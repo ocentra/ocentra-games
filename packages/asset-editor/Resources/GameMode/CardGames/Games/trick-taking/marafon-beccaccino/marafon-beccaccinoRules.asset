@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Marafon-Beccaccino. Type: Tressette with Trump. Rank: 3 > 2 > A > K > C > J. Goal: 41 points. Signals: Busso (Knock), Striscio (Slide), Volo (Fly).',
-    Player: "You hold the 3 of Clubs (Trump) and the King of Clubs. You play the King first and KNOCK on the table (Busso). You are telling your partner: 'I have the Master (the 3)! Lead this suit back to me immediately when you get in!'",
+    LLM: "1. **Lead**: Player to dealer's right leads. 2. **Follow Suit**: Players MUST follow suit. 3. **Trump**: If void in led suit, you may play a Trump (rank rules apply) or discard. You are not forced to trump if you can discard (unlike some games). 4. **Winning**: Highest Trump wins. If no trump, highest card of led suit wins. 5. **Signals**: Players observe strict signaling rules when playing cards (e.g., knocking on the table).",
+    Player: "1. **Lead**: Player to dealer's right leads. 2. **Follow Suit**: Players MUST follow suit. 3. **Trump**: If void in led suit, you may play a Trump (rank rules apply) or discard. You are not forced to trump if you can discard (unlike some games). 4. **Winning**: Highest Trump wins. If no trump, highest card of led suit wins. 5. **Signals**: Players observe strict signaling rules when playing cards (e.g., knocking on the table).",
     objective: 'Score game points by winning card points in tricks. First team to 41 Game Points wins.',
     gameplay: "1. **Lead**: Player to dealer's right leads. 2. **Follow Suit**: Players MUST follow suit. 3. **Trump**: If void in led suit, you may play a Trump (rank rules apply) or discard. You are not forced to trump if you can discard (unlike some games). 4. **Winning**: Highest Trump wins. If no trump, highest card of led suit wins. 5. **Signals**: Players observe strict signaling rules when playing cards (e.g., knocking on the table).",
     keyRules: [
@@ -52,10 +52,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_10_each, turn_trump before declare_cricca.',
-      'Scoring check: Points are tallied cumulatively. Expected outcome: 41.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Score game points by winning card points in tricks. First team to 41 Game Points wins.',
+      "Turn-flow example: 1. **Lead**: Player to dealer's right leads. 2. **Follow Suit**: Players MUST follow suit. 3. **Trump**: If void in led suit, you may play a Trump (rank rules apply) or discard. You are not forced to trump if you can discard (unlike some games). 4. **Winning**: Highest Trump wins. If no trump, highest card of led suit wins. 5. **Signals**: Players observe strict signaling rules when playing cards (e.g., knocking on the table).",
+      'Scoring example: Points are tallied cumulatively. First to 41 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'marafon-beccaccino.rules.objective',
+        title: 'Objective',
+        text: 'Score game points by winning card points in tricks. First team to 41 Game Points wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'marafon-beccaccino.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Lead**: Player to dealer's right leads. 2. **Follow Suit**: Players MUST follow suit. 3. **Trump**: If void in led suit, you may play a Trump (rank rules apply) or discard. You are not forced to trump if you can discard (unlike some games). 4. **Winning**: Highest Trump wins. If no trump, highest card of led suit wins. 5. **Signals**: Players observe strict signaling rules when playing cards (e.g., knocking on the table).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'marafon-beccaccino.setup.players',
+        title: 'Players',
+        text: '4 players in two fixed partnerships (partners sit opposite).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'marafon-beccaccino.setup.deck',
+        title: 'Deck',
+        text: '40 cards. Ranking in all suits: 3 (Highest), 2, Ace, King, Knight (Cavallo), Jack (Fante), 7, 6, 5, 4 (Lowest).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'marafon-beccaccino.setup.equipment',
+        title: 'Equipment',
+        text: 'Italian deck (or 52-card deck with 8s, 9s, 10s removed). Score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'marafon-beccaccino.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer deals 10 cards to each player. The Trump suit is determined by turning the last card dealt to the dealer (or by dealer declaration in some variants).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'marafon-beccaccino.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 41 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'marafon-beccaccino.score.description',
+        title: 'Scoring',
+        text: 'Points are tallied cumulatively.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'marafon-beccaccino.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The 3 is higher than the 2, which is higher than the Ace.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'marafon-beccaccino.rules.key.2',
+        title: 'Key rule 2',
+        text: 'You do not have to head the trick if you follow suit.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'marafon-beccaccino.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trumping is optional if void in led suit (you can undercut/discard).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'marafon-beccaccino.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'marafon-beccaccino.rules.objective',
+          'marafon-beccaccino.rules.gameplay',
+        ],
+      },
+      {
+        id: 'marafon-beccaccino.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'marafon-beccaccino.setup.players',
+          'marafon-beccaccino.setup.deck',
+          'marafon-beccaccino.setup.equipment',
+          'marafon-beccaccino.setup.dealing',
+        ],
+      },
+      {
+        id: 'marafon-beccaccino.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'marafon-beccaccino.rules.key.1',
+          'marafon-beccaccino.rules.key.2',
+          'marafon-beccaccino.rules.key.3',
+        ],
+      },
+      {
+        id: 'marafon-beccaccino.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'marafon-beccaccino.score.description',
+          'marafon-beccaccino.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'marafon-beccaccino.setup.dealing',
+        'marafon-beccaccino.rules.objective',
+      ],
+      pass: [
+        'marafon-beccaccino.rules.gameplay',
+      ],
+      deal_10_each: [
+        'marafon-beccaccino.rules.gameplay',
+      ],
+      turn_trump: [
+        'marafon-beccaccino.rules.gameplay',
+      ],
+      declare_cricca: [
+        'marafon-beccaccino.rules.gameplay',
+      ],
+      play_card_with_signal: [
+        'marafon-beccaccino.rules.gameplay',
+      ],
+    },
   },
 }

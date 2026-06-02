@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Boston. Type: Auction Trick-taking. Rules: 4 individuals. 52 cards. Bid determines contract (High tricks vs Misère). Diamonds are Preference. Declarer vs 3 Defenders.',
-    Player: "You have a hand full of low cards but the Ace of Diamonds (Preference). Do you bid a small Boston, or risk a 'Petit Misère' to lose every single trick?",
+    LLM: "1. **Auction**: Players bid for contracts (e.g., 'Boston' for 8 tricks, 'Petit Misère' for zero). 2. **Trump**: The suit of the turned-up card from the second deck usually determines the 'preference' suit for trumps. 3. **The Play**: Standard trick-taking rules. Must follow suit. 4. **Tricks**: Highest trump wins; else highest card of led suit wins.",
+    Player: "1. **Auction**: Players bid for contracts (e.g., 'Boston' for 8 tricks, 'Petit Misère' for zero). 2. **Trump**: The suit of the turned-up card from the second deck usually determines the 'preference' suit for trumps. 3. **The Play**: Standard trick-taking rules. Must follow suit. 4. **Tricks**: Highest trump wins; else highest card of led suit wins.",
     objective: 'Win tricks according to the level of the declared contract. Higher contracts pay more but carry greater penalties.',
     gameplay: "1. **Auction**: Players bid for contracts (e.g., 'Boston' for 8 tricks, 'Petit Misère' for zero). 2. **Trump**: The suit of the turned-up card from the second deck usually determines the 'preference' suit for trumps. 3. **The Play**: Standard trick-taking rules. Must follow suit. 4. **Tricks**: Highest trump wins; else highest card of led suit wins.",
     keyRules: [
@@ -52,10 +52,162 @@
       go_out: 'The hand terminates automatically once all thirteen tricks have been played by all participants.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in dealing; system may use deal_13_each before auction.',
-      'Scoring check: Scoring is performed via a detailed table matching bid level to result. Losers pay declarer, or declarer pays each defender. Expected outcome: Highest point total after a set number of hands..',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Win tricks according to the level of the declared contract. Higher contracts pay more but carry greater penalties.',
+      "Turn-flow example: 1. **Auction**: Players bid for contracts (e.g., 'Boston' for 8 tricks, 'Petit Misère' for zero). 2. **Trump**: The suit of the turned-up card from the second deck usually determines the 'preference' suit for trumps. 3. **The Play**: Standard trick-taking rules. Must follow suit. 4. **Tricks**: Highest trump wins; else highest card of led suit wins.",
+      'Scoring example: Scoring is performed via a detailed table matching bid level to result. Losers pay declarer, or declarer pays each defender. Highest point total after a set number of hands..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'boston.rules.objective',
+        title: 'Objective',
+        text: 'Win tricks according to the level of the declared contract. Higher contracts pay more but carry greater penalties.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'boston.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Auction**: Players bid for contracts (e.g., 'Boston' for 8 tricks, 'Petit Misère' for zero). 2. **Trump**: The suit of the turned-up card from the second deck usually determines the 'preference' suit for trumps. 3. **The Play**: Standard trick-taking rules. Must follow suit. 4. **Tricks**: Highest trump wins; else highest card of led suit wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'boston.setup.players',
+        title: 'Players',
+        text: '4 players playing individually (cut-throat style).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'boston.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card French pack. Two packs are often used: one for play and one for determining trump rotation.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'boston.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, extensive scoring counters (fiches), and a specific Boston score table.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'boston.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 13 cards to each player (usually in batches of 4-4-5).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'boston.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest point total after a set number of hands.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'boston.score.description',
+        title: 'Scoring',
+        text: 'Scoring is performed via a detailed table matching bid level to result. Losers pay declarer, or declarer pays each defender.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'boston.rules.key.1',
+        title: 'Key rule 1',
+        text: "Preference Suit: One suit (usually Diamonds) is the 'Preference' and outranks other suits in the auction.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'boston.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Misère: A contract to lose every trick; there are no trumps in Misère hands.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'boston.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Independence: Unlike Whist, you usually play alone against the other three defenders.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'boston.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'boston.rules.objective',
+          'boston.rules.gameplay',
+        ],
+      },
+      {
+        id: 'boston.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'boston.setup.players',
+          'boston.setup.deck',
+          'boston.setup.equipment',
+          'boston.setup.dealing',
+        ],
+      },
+      {
+        id: 'boston.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'boston.rules.key.1',
+          'boston.rules.key.2',
+          'boston.rules.key.3',
+        ],
+      },
+      {
+        id: 'boston.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'boston.score.description',
+          'boston.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'boston.setup.dealing',
+        'boston.rules.objective',
+      ],
+      play_card: [
+        'boston.rules.gameplay',
+      ],
+      pass: [
+        'boston.rules.gameplay',
+      ],
+      bid: [
+        'boston.rules.gameplay',
+      ],
+      deal_13_each: [
+        'boston.rules.gameplay',
+      ],
+      bid_contract: [
+        'boston.rules.gameplay',
+      ],
+      calculate_boston_score: [
+        'boston.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Brusquembille. Logic: Win card points in tricks while replenishing hands from the stock.',
-    Player: 'Brusquembille is a historical French trick-and-draw point-trick game for two to five players using a 32-card piquet pack.',
+    LLM: 'Players play to tricks, draw replacement cards while the stock lasts, and count point cards captured in tricks.',
+    Player: 'Players play to tricks, draw replacement cards while the stock lasts, and count point cards captured in tricks.',
     objective: 'Win card points in tricks while replenishing hands from the stock.',
     gameplay: 'Players play to tricks, draw replacement cards while the stock lasts, and count point cards captured in tricks.',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Card points captured in tricks decide the hand. Expected outcome: Win card points in tricks while replenishing hands from the stock..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win card points in tricks while replenishing hands from the stock.',
+      'Turn-flow example: Players play to tricks, draw replacement cards while the stock lasts, and count point cards captured in tricks.',
+      'Scoring example: Card points captured in tricks decide the hand. Win card points in tricks while replenishing hands from the stock..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'brusquembille.rules.objective',
+        title: 'Objective',
+        text: 'Win card points in tricks while replenishing hands from the stock.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'brusquembille.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play to tricks, draw replacement cards while the stock lasts, and count point cards captured in tricks.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'brusquembille.setup.players',
+        title: 'Players',
+        text: '2-5 players use the table arrangement described for Brusquembille.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'brusquembille.setup.deck',
+        title: 'Deck',
+        text: '32-card piquet pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'brusquembille.setup.equipment',
+        title: 'Equipment',
+        text: '32-card piquet pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'brusquembille.setup.dealing',
+        title: 'Deal',
+        text: 'Deal three-card hands from a 32-card piquet pack and leave a stock for drawing after tricks.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'brusquembille.score.win-condition',
+        title: 'Win condition',
+        text: 'Win card points in tricks while replenishing hands from the stock.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'brusquembille.score.description',
+        title: 'Scoring',
+        text: 'Card points captured in tricks decide the hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'brusquembille.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two to five players.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'brusquembille.rules.key.2',
+        title: 'Key rule 2',
+        text: '32-card piquet pack.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'brusquembille.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Three-card trick-and-draw structure.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'brusquembille.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Card-point ranking A-10-K-Q-J-9-8-7.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'brusquembille.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Captured points decide the winner.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'brusquembille.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'brusquembille.rules.objective',
+          'brusquembille.rules.gameplay',
+        ],
+      },
+      {
+        id: 'brusquembille.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'brusquembille.setup.players',
+          'brusquembille.setup.deck',
+          'brusquembille.setup.equipment',
+          'brusquembille.setup.dealing',
+        ],
+      },
+      {
+        id: 'brusquembille.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'brusquembille.rules.key.1',
+          'brusquembille.rules.key.2',
+          'brusquembille.rules.key.3',
+          'brusquembille.rules.key.4',
+          'brusquembille.rules.key.5',
+        ],
+      },
+      {
+        id: 'brusquembille.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'brusquembille.score.description',
+          'brusquembille.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'brusquembille.setup.dealing',
+        'brusquembille.rules.objective',
+      ],
+      play_card: [
+        'brusquembille.rules.gameplay',
+      ],
+      discard: [
+        'brusquembille.rules.gameplay',
+      ],
+      pass: [
+        'brusquembille.rules.gameplay',
+      ],
+      bid: [
+        'brusquembille.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Crazy Eights. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Crazy Eights is a popular shedding card game, especially beloved by children. The objective is simple: be the first player to discard all your cards. Players take turns playing cards to a central discard pile, matching either the rank or suit of the top card. The eponymous "crazy" 8s are wild cards that can be played on anything and allow the player to change the suit.',
+    LLM: 'Players follow Uno-style matching rules, but Flip cards turn every hand, draw pile, and discard pile to the opposite side. The dark side has stronger penalties and different colors.',
+    Player: 'Players follow Uno-style matching rules, but Flip cards turn every hand, draw pile, and discard pile to the opposite side. The dark side has stronger penalties and different colors.',
     objective: 'Empty your hand while adapting to light-side and dark-side action cards.',
     gameplay: 'Players follow Uno-style matching rules, but Flip cards turn every hand, draw pile, and discard pile to the opposite side. The dark side has stronger penalties and different colors.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Be the first player to discard all cards from your hand. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Empty your hand while adapting to light-side and dark-side action cards.',
+      'Turn-flow example: Players follow Uno-style matching rules, but Flip cards turn every hand, draw pile, and discard pile to the opposite side. The dark side has stronger penalties and different colors.',
+      'Scoring example: Be the first player to discard all cards from your hand. Be the first player to discard all cards from your hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'uno-flip.rules.objective',
+        title: 'Objective',
+        text: 'Empty your hand while adapting to light-side and dark-side action cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'uno-flip.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players follow Uno-style matching rules, but Flip cards turn every hand, draw pile, and discard pile to the opposite side. The dark side has stronger penalties and different colors.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'uno-flip.setup.players',
+        title: 'Players',
+        text: '2-10 players use the table arrangement described for Uno Flip.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'uno-flip.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated double-sided Uno Flip deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'uno-flip.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated double-sided Uno Flip deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'uno-flip.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated double-sided Uno Flip deck and deal or lay out cards according to the documented Uno Flip rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'uno-flip.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'uno-flip.score.description',
+        title: 'Scoring',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'uno-flip.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Cards are double-sided with light and dark sides.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'uno-flip.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Flip cards switch all active cards to the opposite side.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'uno-flip.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The first player to empty hand wins the hand.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'uno-flip.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'uno-flip.rules.objective',
+          'uno-flip.rules.gameplay',
+        ],
+      },
+      {
+        id: 'uno-flip.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'uno-flip.setup.players',
+          'uno-flip.setup.deck',
+          'uno-flip.setup.equipment',
+          'uno-flip.setup.dealing',
+        ],
+      },
+      {
+        id: 'uno-flip.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'uno-flip.rules.key.1',
+          'uno-flip.rules.key.2',
+          'uno-flip.rules.key.3',
+        ],
+      },
+      {
+        id: 'uno-flip.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'uno-flip.score.description',
+          'uno-flip.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'uno-flip.setup.dealing',
+        'uno-flip.rules.objective',
+      ],
+      play_card: [
+        'uno-flip.rules.gameplay',
+      ],
+    },
   },
 }

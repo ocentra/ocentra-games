@@ -11,7 +11,11 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Card points: Ace (11), 10 (10), King (4), Queen (3), Jack (2). Last trick +20. Marriage values: Spades 40, Clubs 60, Diamonds 80, Hearts 100. First partnership to 500 points wins.',
+      winCondition: 'First partnership to 500 points wins.',
+      targetScore: 500,
+      scoringDirection: 'high_wins',
+      cardValues: {
         '10': '10 points',
         Ace: '11 points',
         King: '4 points',
@@ -24,13 +28,42 @@
         'Marriage Diamonds': '80 points',
         'Marriage Hearts': '100 points',
       },
+      sourceCardValues: {
+        raw: {
+          '10': '10 points',
+          Ace: '11 points',
+          King: '4 points',
+          Queen: '3 points',
+          Jack: '2 points',
+          '9-2': '0 points',
+          'Last Trick': '20 points',
+          'Marriage Spades': '40 points',
+          'Marriage Clubs': '60 points',
+          'Marriage Diamonds': '80 points',
+          'Marriage Hearts': '100 points',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],
     winCondition: 'First partnership to 500 points wins.',
     cardValues: {},
-    penalties: '{\n  "Bid Failure": "Lose bid amount"\n}',
+    penalties: '{"Bid Failure":"Lose bid amount"}',
     targetScore: 500,
     scoringDirection: 'high_wins',
     rankingAsset: {

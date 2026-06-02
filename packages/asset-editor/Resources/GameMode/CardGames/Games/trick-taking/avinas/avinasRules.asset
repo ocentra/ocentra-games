@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Avinas. Type: Partnership point-trick. Rules: 32 cards. Trumps: QC > 7-Trump > other Qs > Js > Trump-suit A-10-K-9-8. Goal: 61/120 points. Lose = get horns.',
-    Player: "Welcome to Avinas! You have 8 cards. Note the Queen of Clubs—it's the highest card in the game. The Seven of the trump suit is the second-highest. Can you work with your partner to reach 61 points and avoid the Horns of the Ram?",
+    LLM: "1. **Determining Trump**: If no 7 was flipped during dealing, the dealer determines trump or it follows a rotation. 2. **Tricks**: Players must follow suit. If they cannot, they may trump or discard. 3. **The 'Ram'**: The goal is to reach 61 points. If the declarer's side fails, they receive one 'Horn'. If they fail to get 31 (Schneider), they receive two 'Horns'. 4. **Card Points**: Ace (11), 10 (10), King (4), Queen (3), Jack (2). The Sevens used as trumps count 0 points.",
+    Player: "1. **Determining Trump**: If no 7 was flipped during dealing, the dealer determines trump or it follows a rotation. 2. **Tricks**: Players must follow suit. If they cannot, they may trump or discard. 3. **The 'Ram'**: The goal is to reach 61 points. If the declarer's side fails, they receive one 'Horn'. If they fail to get 31 (Schneider), they receive two 'Horns'. 4. **Card Points**: Ace (11), 10 (10), King (4), Queen (3), Jack (2). The Sevens used as trumps count 0 points.",
     objective: "Capture at least 61 points in tricks to avoid being 'Horned' (penalized).",
     gameplay: "1. **Determining Trump**: If no 7 was flipped during dealing, the dealer determines trump or it follows a rotation. 2. **Tricks**: Players must follow suit. If they cannot, they may trump or discard. 3. **The 'Ram'**: The goal is to reach 61 points. If the declarer's side fails, they receive one 'Horn'. If they fail to get 31 (Schneider), they receive two 'Horns'. 4. **Card Points**: Ace (11), 10 (10), King (4), Queen (3), Jack (2). The Sevens used as trumps count 0 points.",
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Round ends after eight tricks; horns assigned by system.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 8 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_batches_4 before trump_declaration.',
-      "Scoring check: Scoring uses a 'Horn' (Avinas) system. Points captured in cards are calculated at round's end. Expected outcome: 61.",
+      'Setup example: 8 card(s) per player.',
+      "Rule example: Capture at least 61 points in tricks to avoid being 'Horned' (penalized).",
+      "Turn-flow example: 1. **Determining Trump**: If no 7 was flipped during dealing, the dealer determines trump or it follows a rotation. 2. **Tricks**: Players must follow suit. If they cannot, they may trump or discard. 3. **The 'Ram'**: The goal is to reach 61 points. If the declarer's side fails, they receive one 'Horn'. If they fail to get 31 (Schneider), they receive two 'Horns'. 4. **Card Points**: Ace (11), 10 (10), King (4), Queen (3), Jack (2). The Sevens used as trumps count 0 points.",
+      "Scoring example: Scoring uses a 'Horn' (Avinas) system. Points captured in cards are calculated at round's end. The partnership with the fewest 'Horns' after an agreed number of rounds wins..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'avinas.rules.objective',
+        title: 'Objective',
+        text: "Capture at least 61 points in tricks to avoid being 'Horned' (penalized).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'avinas.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Determining Trump**: If no 7 was flipped during dealing, the dealer determines trump or it follows a rotation. 2. **Tricks**: Players must follow suit. If they cannot, they may trump or discard. 3. **The 'Ram'**: The goal is to reach 61 points. If the declarer's side fails, they receive one 'Horn'. If they fail to get 31 (Schneider), they receive two 'Horns'. 4. **Card Points**: Ace (11), 10 (10), King (4), Queen (3), Jack (2). The Sevens used as trumps count 0 points.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'avinas.setup.players',
+        title: 'Players',
+        text: '4 players in two fixed partnerships (North-South vs. East-West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'avinas.setup.deck',
+        title: 'Deck',
+        text: '32 cards (standard Skat/Schafkopf pack). A-10-K-Q-J-9-8-7.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'avinas.setup.equipment',
+        title: 'Equipment',
+        text: "32-card pack, score sheet for tracking 'Horns' (penalties).",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'avinas.setup.dealing',
+        title: 'Deal',
+        text: 'Cards are dealt face down in two rounds of 4. If a 7 is accidentally dealt face up, it determines the trump suit and the declarer.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'avinas.score.win-condition',
+        title: 'Win condition',
+        text: "The partnership with the fewest 'Horns' after an agreed number of rounds wins.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'avinas.score.description',
+        title: 'Scoring',
+        text: "Scoring uses a 'Horn' (Avinas) system. Points captured in cards are calculated at round's end.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'avinas.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Total points in the deck is 120; 60-60 results in a win for the non-bidding side.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'avinas.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The Seven as a high trump is a unique feature that changes the standard Schafkopf strategy.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'avinas.rules.key.3',
+        title: 'Key rule 3',
+        text: 'If a player is dealt two 7s face up during a botched deal, the first one seen usually determines trumps.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'avinas.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'avinas.rules.objective',
+          'avinas.rules.gameplay',
+        ],
+      },
+      {
+        id: 'avinas.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'avinas.setup.players',
+          'avinas.setup.deck',
+          'avinas.setup.equipment',
+          'avinas.setup.dealing',
+        ],
+      },
+      {
+        id: 'avinas.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'avinas.rules.key.1',
+          'avinas.rules.key.2',
+          'avinas.rules.key.3',
+        ],
+      },
+      {
+        id: 'avinas.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'avinas.score.description',
+          'avinas.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'avinas.setup.dealing',
+        'avinas.rules.objective',
+      ],
+      play_card: [
+        'avinas.rules.gameplay',
+      ],
+      deal_batches_4: [
+        'avinas.rules.gameplay',
+      ],
+      declare_suit: [
+        'avinas.rules.gameplay',
+      ],
+      calculate_120_and_assign_horns: [
+        'avinas.rules.gameplay',
+      ],
+    },
   },
 }

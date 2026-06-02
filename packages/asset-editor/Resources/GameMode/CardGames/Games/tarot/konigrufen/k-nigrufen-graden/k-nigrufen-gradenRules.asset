@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: KÃ¶nigrufen Graden. Logic: Tarock trick-taking with bidding. Key: 36-point threshold, talon exchange, call king for partner, announcements double bonuses.',
-    Player: 'KÃ¶nigrufen Graden is an Austrian Tarock game for 4 players. 54 cards (22 tarocks + 4 suits). Bid contracts, call a king for partner, exchange with talon. Need 36 of 70 points. Special bonuses for Trull, Four Kings, Pagat Ultimo.',
+    LLM: 'Bidding follows the graduated (Graden) structure. Players bid contracts in ascending order of value. After winning bid, declarer may call a king for partner, exchange with talon, and make announcements. Must follow suit, play tarock if void, highest tarock wins.',
+    Player: 'Bidding follows the graduated (Graden) structure. Players bid contracts in ascending order of value. After winning bid, declarer may call a king for partner, exchange with talon, and make announcements. Must follow suit, play tarock if void, highest tarock wins.',
     objective: 'In positive contracts, take at least 36 of 70 card points. Negative contracts have specific objectives like winning no tricks or exact trick counts.',
     gameplay: 'Bidding follows the graduated (Graden) structure. Players bid contracts in ascending order of value. After winning bid, declarer may call a king for partner, exchange with talon, and make announcements. Must follow suit, play tarock if void, highest tarock wins.',
     keyRules: [
@@ -56,10 +56,213 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 12 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal, form_talon before bidding.',
-      'Scoring check: Standard KÃ¶nigrufen scoring with Graden-specific contract values. Card points determine contract success; game points determine payments. Expected outcome: Reach target score through game points.',
+      'Setup example: 12 card(s) per player.',
+      'Rule example: In positive contracts, take at least 36 of 70 card points. Negative contracts have specific objectives like winning no tricks or exact trick counts.',
+      'Turn-flow example: Bidding follows the graduated (Graden) structure. Players bid contracts in ascending order of value. After winning bid, declarer may call a king for partner, exchange with talon, and make announcements. Must follow suit, play tarock if void, highest tarock wins.',
+      'Scoring example: Standard KÃ¶nigrufen scoring with Graden-specific contract values. Card points determine contract success; game points determine payments. Reach target score through game points.',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'k-nigrufen-graden.rules.objective',
+        title: 'Objective',
+        text: 'In positive contracts, take at least 36 of 70 card points. Negative contracts have specific objectives like winning no tricks or exact trick counts.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'k-nigrufen-graden.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Bidding follows the graduated (Graden) structure. Players bid contracts in ascending order of value. After winning bid, declarer may call a king for partner, exchange with talon, and make announcements. Must follow suit, play tarock if void, highest tarock wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'k-nigrufen-graden.setup.players',
+        title: 'Players',
+        text: 'Four players. Partnerships determined by calling a king or playing solo contracts.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'k-nigrufen-graden.setup.deck',
+        title: 'Deck',
+        text: '54-card Austrian Tarock pack: 22 trumps (Tarocks I-XXI plus SkÃ¼s), 8 cards each in four suits (Clubs, Spades, Hearts, Diamonds).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'k-nigrufen-graden.setup.equipment',
+        title: 'Equipment',
+        text: '54-card Austrian Tarock pack: 22 trumps (Tarocks I-XXI plus SkÃ¼s), 8 cards each in four suits (Clubs, Spades, Hearts, Diamonds).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'k-nigrufen-graden.setup.dealing',
+        title: 'Deal',
+        text: 'Standard KÃ¶nigrufen deal: 12 cards to each player, 6 cards to talon, dealt in packets of 6 anticlockwise. Play proceeds anticlockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'k-nigrufen-graden.score.win-condition',
+        title: 'Win condition',
+        text: 'Reach target score through game points',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'k-nigrufen-graden.score.description',
+        title: 'Scoring',
+        text: 'Standard KÃ¶nigrufen scoring with Graden-specific contract values. Card points determine contract success; game points determine payments.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'k-nigrufen-graden.rules.key.1',
+        title: 'Key rule 1',
+        text: '54-card deck: 22 tarocks + 8 cards in each of 4 suits',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'k-nigrufen-graden.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Card values: Kings=5, SkÃ¼s/XXI/I=5, Queens=4, Knights=3, Jacks=2, Others=1',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'k-nigrufen-graden.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Total card points: 70',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'k-nigrufen-graden.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Need 36+ points to win positive contract',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'k-nigrufen-graden.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Talon exchange in most contracts',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'k-nigrufen-graden.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Call a King to find partner (unless in talon/own hand)',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'k-nigrufen-graden.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Must follow suit, play tarock if void',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'k-nigrufen-graden.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'k-nigrufen-graden.rules.objective',
+          'k-nigrufen-graden.rules.gameplay',
+        ],
+      },
+      {
+        id: 'k-nigrufen-graden.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'k-nigrufen-graden.setup.players',
+          'k-nigrufen-graden.setup.deck',
+          'k-nigrufen-graden.setup.equipment',
+          'k-nigrufen-graden.setup.dealing',
+        ],
+      },
+      {
+        id: 'k-nigrufen-graden.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'k-nigrufen-graden.rules.key.1',
+          'k-nigrufen-graden.rules.key.2',
+          'k-nigrufen-graden.rules.key.3',
+          'k-nigrufen-graden.rules.key.4',
+          'k-nigrufen-graden.rules.key.5',
+          'k-nigrufen-graden.rules.key.6',
+          'k-nigrufen-graden.rules.key.7',
+        ],
+      },
+      {
+        id: 'k-nigrufen-graden.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'k-nigrufen-graden.score.description',
+          'k-nigrufen-graden.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'k-nigrufen-graden.setup.dealing',
+        'k-nigrufen-graden.rules.objective',
+      ],
+      deal: [
+        'k-nigrufen-graden.rules.gameplay',
+      ],
+      call: [
+        'k-nigrufen-graden.rules.gameplay',
+      ],
+      declare: [
+        'k-nigrufen-graden.rules.gameplay',
+      ],
+      award_pot: [
+        'k-nigrufen-graden.rules.gameplay',
+      ],
+      play_card: [
+        'k-nigrufen-graden.rules.gameplay',
+      ],
+      draw: [
+        'k-nigrufen-graden.rules.gameplay',
+      ],
+      discard: [
+        'k-nigrufen-graden.rules.gameplay',
+      ],
+      pass: [
+        'k-nigrufen-graden.rules.gameplay',
+      ],
+      bid: [
+        'k-nigrufen-graden.rules.gameplay',
+      ],
+      form_talon: [
+        'k-nigrufen-graden.rules.gameplay',
+      ],
+      count_points: [
+        'k-nigrufen-graden.rules.gameplay',
+      ],
+    },
   },
 }

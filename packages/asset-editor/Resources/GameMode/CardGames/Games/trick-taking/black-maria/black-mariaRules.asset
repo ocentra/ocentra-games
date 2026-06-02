@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Black Maria. Type: Hearts-variant. Penalty: Hearts=1pt each, Qâ™ =13. No trump. Pass 3 cards right. Avoid penalty tricks. Detect Shoot-the-Moon.',
-    Player: 'You were passed the Qâ™  (Black Maria, 13 pts)! You have the Aâ™  and Kâ™  as guards. Lead the Aâ™  to flush out lower spades, then Kâ™ , then dump the Queen on a later Spade lead. Never lead the Queen blind.',
+    LLM: '1. Player left of dealer leads to first trick. 2. All players must follow suit if they can. 3. Highest card of led suit wins the trick (no trump). 4. Winner of trick leads the next. 5. Play continues until all cards played.',
+    Player: '1. Player left of dealer leads to first trick. 2. All players must follow suit if they can. 3. Highest card of led suit wins the trick (no trump). 4. Winner of trick leads the next. 5. Play continues until all cards played.',
     objective: 'Avoid capturing penalty cards (all hearts plus the Queen, King, and Ace of Spades) in tricks. The player with the lowest total penalty score when someone reaches the agreed limit (e.g. 100 points) wins the game.',
     gameplay: '1. Player left of dealer leads to first trick. 2. All players must follow suit if they can. 3. Highest card of led suit wins the trick (no trump). 4. Winner of trick leads the next. 5. Play continues until all cards played.',
     keyRules: [
@@ -51,10 +51,144 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-7 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal_all before passing.',
-      'Scoring check: Penalties accumulate over multiple rounds. Expected outcome: 100.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Avoid capturing penalty cards (all hearts plus the Queen, King, and Ace of Spades) in tricks. The player with the lowest total penalty score when someone reaches the agreed limit (e.g. 100 points) wins the game.',
+      'Turn-flow example: 1. Player left of dealer leads to first trick. 2. All players must follow suit if they can. 3. Highest card of led suit wins the trick (no trump). 4. Winner of trick leads the next. 5. Play continues until all cards played.',
+      'Scoring example: Penalties accumulate over multiple rounds. Have lowest score when any player reaches the agreed limit (e.g., 100 or 500)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'black-maria.rules.objective',
+        title: 'Objective',
+        text: 'Avoid capturing penalty cards (all hearts plus the Queen, King, and Ace of Spades) in tricks. The player with the lowest total penalty score when someone reaches the agreed limit (e.g. 100 points) wins the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'black-maria.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Player left of dealer leads to first trick. 2. All players must follow suit if they can. 3. Highest card of led suit wins the trick (no trump). 4. Winner of trick leads the next. 5. Play continues until all cards played.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'black-maria.setup.players',
+        title: 'Players',
+        text: '3-7 players. (For 3: remove 2â™£ and 2â™¦. For 4: standard 52 cards.)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'black-maria.setup.deck',
+        title: 'Deck',
+        text: '52 cards, adjusted to divide evenly.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'black-maria.setup.equipment',
+        title: 'Equipment',
+        text: 'Score pad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'black-maria.setup.dealing',
+        title: 'Deal',
+        text: 'Deal all cards as evenly as possible clockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'black-maria.score.win-condition',
+        title: 'Win condition',
+        text: 'Have lowest score when any player reaches the agreed limit (e.g., 100 or 500).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'black-maria.score.description',
+        title: 'Scoring',
+        text: 'Penalties accumulate over multiple rounds.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'black-maria.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Hearts may not be led until a Heart has been discarded on a trick (or in some versions, never on the first trick).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'black-maria.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Player with lowest cumuluative score when someone hits 100 (or agreed limit) wins.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'black-maria.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'black-maria.rules.objective',
+          'black-maria.rules.gameplay',
+        ],
+      },
+      {
+        id: 'black-maria.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'black-maria.setup.players',
+          'black-maria.setup.deck',
+          'black-maria.setup.equipment',
+          'black-maria.setup.dealing',
+        ],
+      },
+      {
+        id: 'black-maria.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'black-maria.rules.key.1',
+          'black-maria.rules.key.2',
+        ],
+      },
+      {
+        id: 'black-maria.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'black-maria.score.description',
+          'black-maria.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'black-maria.setup.dealing',
+        'black-maria.rules.objective',
+      ],
+      play_card: [
+        'black-maria.rules.gameplay',
+      ],
+      deal_all: [
+        'black-maria.rules.gameplay',
+      ],
+      pass_3_right: [
+        'black-maria.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Zwanzigerrufen. Logic: See rules.objective and rules.gameplay.',
-    Player: "Zwanzigerrufen ('Call the Twenty') is an Austrian Tarot game. 4 players. 40-card deck (from 54-card Industrie und Glück). 20 Tarocks + 20 suit cards. Declarer calls Tarock XX to find secret partner. Win 45+ of 88 card points. Simpler than Königrufen. Trull cards: Pagát(I), Mond(XXI), Sküs = 5pts each.",
+    LLM: 'Declarer calls Tarock XX = secret partner. Follow suit, must trump if void. Trull (I, XXI, Sküs) = 5pts each. K=5, Q=4, Knight=3, J=2, others=1. Total=88.',
+    Player: 'Declarer calls Tarock XX = secret partner. Follow suit, must trump if void. Trull (I, XXI, Sküs) = 5pts each. K=5, Q=4, Knight=3, J=2, others=1. Total=88.',
     objective: "The declarer's team (or soloist) must win at least 45 of the 88 card points in tricks to win the game. In a normal game the calling team plays against the defenders; the first team to reach 45 or more points wins.",
     gameplay: 'Declarer calls Tarock XX = secret partner. Follow suit, must trump if void. Trull (I, XXI, Sküs) = 5pts each. K=5, Q=4, Knight=3, J=2, others=1. Total=88.',
     keyRules: [
@@ -54,10 +54,177 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before auction.',
-      "Scoring check: 45+ wins. Double game at higher thresholds. Bonuses for Trull, Pagát ultimo, Volát. Expected outcome: Declarer's team: 45+ of 88 card points..",
+      'Setup example: 10 card(s) per player.',
+      "Rule example: The declarer's team (or soloist) must win at least 45 of the 88 card points in tricks to win the game. In a normal game the calling team plays against the defenders; the first team to reach 45 or more points wins.",
+      'Turn-flow example: Declarer calls Tarock XX = secret partner. Follow suit, must trump if void. Trull (I, XXI, Sküs) = 5pts each. K=5, Q=4, Knight=3, J=2, others=1. Total=88.',
+      "Scoring example: 45+ wins. Double game at higher thresholds. Bonuses for Trull, Pagát ultimo, Volát. Declarer's team: 45+ of 88 card points..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'zwanzigerrufen.rules.objective',
+        title: 'Objective',
+        text: "The declarer's team (or soloist) must win at least 45 of the 88 card points in tricks to win the game. In a normal game the calling team plays against the defenders; the first team to reach 45 or more points wins.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'zwanzigerrufen.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Declarer calls Tarock XX = secret partner. Follow suit, must trump if void. Trull (I, XXI, Sküs) = 5pts each. K=5, Q=4, Knight=3, J=2, others=1. Total=88.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'zwanzigerrufen.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'zwanzigerrufen.setup.deck',
+        title: 'Deck',
+        text: '40 cards: 20 Tarocks (I-XXI minus II,III + Sküs) + 20 suit.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'zwanzigerrufen.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'zwanzigerrufen.setup.dealing',
+        title: 'Deal',
+        text: "Dealer shuffles; player to dealer's left cuts. Each player receives 10 cards in two packets of five, forehand first. No talon. Optionally, cutter may knock and dealer places four stacks of 10 for players to choose from, forehand first.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'zwanzigerrufen.score.win-condition',
+        title: 'Win condition',
+        text: "Declarer's team: 45+ of 88 card points.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'zwanzigerrufen.score.description',
+        title: 'Scoring',
+        text: '45+ wins. Double game at higher thresholds. Bonuses for Trull, Pagát ultimo, Volát.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'zwanzigerrufen.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Call XX for secret partner',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'zwanzigerrufen.rules.key.2',
+        title: 'Key rule 2',
+        text: '40-card Tarot deck',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'zwanzigerrufen.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Must trump if void',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'zwanzigerrufen.rules.key.4',
+        title: 'Key rule 4',
+        text: '88 total card points',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'zwanzigerrufen.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Trull bonus',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'zwanzigerrufen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'zwanzigerrufen.rules.objective',
+          'zwanzigerrufen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'zwanzigerrufen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'zwanzigerrufen.setup.players',
+          'zwanzigerrufen.setup.deck',
+          'zwanzigerrufen.setup.equipment',
+          'zwanzigerrufen.setup.dealing',
+        ],
+      },
+      {
+        id: 'zwanzigerrufen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'zwanzigerrufen.rules.key.1',
+          'zwanzigerrufen.rules.key.2',
+          'zwanzigerrufen.rules.key.3',
+          'zwanzigerrufen.rules.key.4',
+          'zwanzigerrufen.rules.key.5',
+        ],
+      },
+      {
+        id: 'zwanzigerrufen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'zwanzigerrufen.score.description',
+          'zwanzigerrufen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'zwanzigerrufen.setup.dealing',
+        'zwanzigerrufen.rules.objective',
+      ],
+      deal: [
+        'zwanzigerrufen.rules.gameplay',
+      ],
+      declare: [
+        'zwanzigerrufen.rules.gameplay',
+      ],
+      play_card: [
+        'zwanzigerrufen.rules.gameplay',
+      ],
+      pass: [
+        'zwanzigerrufen.rules.gameplay',
+      ],
+      bid: [
+        'zwanzigerrufen.rules.gameplay',
+      ],
+    },
   },
 }

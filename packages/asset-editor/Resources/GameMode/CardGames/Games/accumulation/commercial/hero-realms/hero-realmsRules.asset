@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Hero Realms. Logic: Build a stronger deck and reduce opponents health or meet the scenario victory condition.',
-    Player: 'Hero Realms is a commercial fantasy deck-building card game where players acquire market cards and attack opposing champions or players.',
+    LLM: 'Players play hands for gold, combat, and effects, buy market cards into their decks, attack opposing champions, and cycle improved decks through reshuffles.',
+    Player: 'Players play hands for gold, combat, and effects, buy market cards into their decks, attack opposing champions, and cycle improved decks through reshuffles.',
     objective: 'Build a stronger deck and reduce opponents health or meet the scenario victory condition.',
     gameplay: 'Players play hands for gold, combat, and effects, buy market cards into their decks, attack opposing champions, and cycle improved decks through reshuffles.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Published endgame scoring or victory conditions determine the winner. Expected outcome: Build a stronger deck and reduce opponents health or meet the scenario victory condition..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Build a stronger deck and reduce opponents health or meet the scenario victory condition.',
+      'Turn-flow example: Players play hands for gold, combat, and effects, buy market cards into their decks, attack opposing champions, and cycle improved decks through reshuffles.',
+      'Scoring example: Published endgame scoring or victory conditions determine the winner. Build a stronger deck and reduce opponents health or meet the scenario victory condition..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hero-realms.rules.objective',
+        title: 'Objective',
+        text: 'Build a stronger deck and reduce opponents health or meet the scenario victory condition.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hero-realms.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play hands for gold, combat, and effects, buy market cards into their decks, attack opposing champions, and cycle improved decks through reshuffles.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hero-realms.setup.players',
+        title: 'Players',
+        text: '2-4 players use the table arrangement described for Hero Realms.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hero-realms.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Hero Realms market and player decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hero-realms.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Hero Realms market and player decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hero-realms.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare the dedicated Hero Realms deck and any shared scoring, resource, or tableau area described by the rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hero-realms.score.win-condition',
+        title: 'Win condition',
+        text: 'Build a stronger deck and reduce opponents health or meet the scenario victory condition.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hero-realms.score.description',
+        title: 'Scoring',
+        text: 'Published endgame scoring or victory conditions determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hero-realms.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Personal decks improve over time.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hero-realms.rules.key.2',
+        title: 'Key rule 2',
+        text: 'A shared market offers cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hero-realms.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Gold buys cards.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'hero-realms.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Combat damages opponents or champions.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'hero-realms.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Last surviving player usually wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hero-realms.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hero-realms.rules.objective',
+          'hero-realms.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hero-realms.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hero-realms.setup.players',
+          'hero-realms.setup.deck',
+          'hero-realms.setup.equipment',
+          'hero-realms.setup.dealing',
+        ],
+      },
+      {
+        id: 'hero-realms.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hero-realms.rules.key.1',
+          'hero-realms.rules.key.2',
+          'hero-realms.rules.key.3',
+          'hero-realms.rules.key.4',
+          'hero-realms.rules.key.5',
+        ],
+      },
+      {
+        id: 'hero-realms.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hero-realms.score.description',
+          'hero-realms.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hero-realms.setup.dealing',
+        'hero-realms.rules.objective',
+      ],
+      play_card: [
+        'hero-realms.rules.gameplay',
+      ],
+    },
   },
 }

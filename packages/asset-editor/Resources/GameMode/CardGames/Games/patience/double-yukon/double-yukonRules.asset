@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Double Yukon (Solitaire). Logic: See rules.objective and rules.gameplay.',
-    Player: "Double Yukon is a massive, two-deck variation of the famous Yukon Solitaire. Unlike Klondike, all 104 cards are dealt into the tableau at once, with no stock or waste pile. The game is known for its 'group move' mechanic, allowing players to move any visible stack of cards regardless of their sequence, provided the base card of the stack fits the alternating-color building rule. This makes Double Yukon a deep, analytical game with high win rates for careful players.",
+    LLM: '1. Tableau Building: Build down in alternating colors (e.g., a Black 10 on a Red Jack).\n2. Group Moves: Any face-up card, along with all cards sitting on top of it, can be moved as a unit. The cards above the base card do NOT need to be in any specific order.\n3. Foundations: Build up in suit (A-2-3...K). Once a card is on a foundation, it usually cannot be moved back to the tableau.',
+    Player: '1. Tableau Building: Build down in alternating colors (e.g., a Black 10 on a Red Jack).\n2. Group Moves: Any face-up card, along with all cards sitting on top of it, can be moved as a unit. The cards above the base card do NOT need to be in any specific order.\n3. Foundations: Build up in suit (A-2-3...K). Once a card is on a foundation, it usually cannot be moved back to the tableau.',
     objective: 'Move all 104 cards to the 8 foundation piles, building each suit up from Ace to King.',
     gameplay: '1. Tableau Building: Build down in alternating colors (e.g., a Black 10 on a Red Jack).\n2. Group Moves: Any face-up card, along with all cards sitting on top of it, can be moved as a unit. The cards above the base card do NOT need to be in any specific order.\n3. Foundations: Build up in suit (A-2-3...K). Once a card is on a foundation, it usually cannot be moved back to the tableau.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Double Yukon (Solitaire) is modeled as a Patience flow; go out is not a core player action in its documented rules.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Progress is tracked by the number of cards successfully moved to the 8 foundation piles. Expected outcome: Move all 104 cards to the 8 foundation piles, building each suit up from Ace to King..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Move all 104 cards to the 8 foundation piles, building each suit up from Ace to King.',
+      'Turn-flow example: 1. Tableau Building: Build down in alternating colors (e.g., a Black 10 on a Red Jack).\n2. Group Moves: Any face-up card, along with all cards sitting on top of it, can be moved as a unit. The cards above the base card do NOT need to be in any specific order.\n3. Foundations: Build up in suit (A-2-3...K). Once a card is on a foundation, it usually cannot be moved back to the tableau.',
+      'Scoring example: Progress is tracked by the number of cards successfully moved to the 8 foundation piles. Move all 104 cards to the 8 foundation piles, building each suit up from Ace to King..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'double-yukon.rules.objective',
+        title: 'Objective',
+        text: 'Move all 104 cards to the 8 foundation piles, building each suit up from Ace to King.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'double-yukon.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Tableau Building: Build down in alternating colors (e.g., a Black 10 on a Red Jack).\n2. Group Moves: Any face-up card, along with all cards sitting on top of it, can be moved as a unit. The cards above the base card do NOT need to be in any specific order.\n3. Foundations: Build up in suit (A-2-3...K). Once a card is on a foundation, it usually cannot be moved back to the tableau.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'double-yukon.setup.players',
+        title: 'Players',
+        text: 'One player only. Double Yukon is a solitaire (patience) game; the player plays alone against the layout, moving cards between tableau columns and to foundations with no opponent or partner.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'double-yukon.setup.deck',
+        title: 'Deck',
+        text: '104 cards (Two identical 52ndcard decks).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'double-yukon.setup.equipment',
+        title: 'Equipment',
+        text: 'Two card decks, large playing surface.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'double-yukon.setup.dealing',
+        title: 'Deal',
+        text: 'Cards are dealt into 10 columns. Column 1 has 5 cards (all face-up). Columns 2 through 10 have 7 to 15 cards respectively, with the last 6 cards in each column always face-up and the underlying cards face-down. There is no stock; all cards are on the table.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'double-yukon.score.win-condition',
+        title: 'Win condition',
+        text: 'Move all 104 cards to the 8 foundation piles, building each suit up from Ace to King.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'double-yukon.score.description',
+        title: 'Scoring',
+        text: 'Progress is tracked by the number of cards successfully moved to the 8 foundation piles.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'double-yukon.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Only a King (or a group headed by a King) can be moved into an empty tableau space.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'double-yukon.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Flipping Cards: When a face-down card is exposed by moving the cards above it, flip it over immediately.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'double-yukon.rules.key.3',
+        title: 'Key rule 3',
+        text: 'With 104 cards, you have 8 Aces and 8 Kings to manage.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'double-yukon.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'double-yukon.rules.objective',
+          'double-yukon.rules.gameplay',
+        ],
+      },
+      {
+        id: 'double-yukon.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'double-yukon.setup.players',
+          'double-yukon.setup.deck',
+          'double-yukon.setup.equipment',
+          'double-yukon.setup.dealing',
+        ],
+      },
+      {
+        id: 'double-yukon.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'double-yukon.rules.key.1',
+          'double-yukon.rules.key.2',
+          'double-yukon.rules.key.3',
+        ],
+      },
+      {
+        id: 'double-yukon.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'double-yukon.score.description',
+          'double-yukon.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'double-yukon.setup.dealing',
+        'double-yukon.rules.objective',
+      ],
+      deal: [
+        'double-yukon.rules.gameplay',
+      ],
+      play_card: [
+        'double-yukon.rules.gameplay',
+      ],
+      draw: [
+        'double-yukon.rules.gameplay',
+      ],
+      discard: [
+        'double-yukon.rules.gameplay',
+      ],
+    },
   },
 }

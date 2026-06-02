@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'AI is considering which card to play and what the current rank sequence requires.',
-    Player: 'What card do you want to play?',
+    LLM: "1. Lead: The player to the dealer's left plays any card from their hand. For example, a 5.\n2. Matching: The next player must play a 5 if they have one. Each subsequent player must match that rank.\n3. The Rhyme: With each card played, the player MUST say the corresponding line:\n   - 1st Card: 'There's as good as 5 can be.'\n   - 2nd Card: 'There's a 5 as good as he.'\n   - 3rd Card: 'There's the best of all the three.'\n   - 4th Card: 'And there's the Earl of Coventry!'\n4. Re-Lead: The person who plays the 4th card of the rank (the Earl) immediately leads any card they wish to start the next sequence.",
+    Player: "1. Lead: The player to the dealer's left plays any card from their hand. For example, a 5.\n2. Matching: The next player must play a 5 if they have one. Each subsequent player must match that rank.\n3. The Rhyme: With each card played, the player MUST say the corresponding line:\n   - 1st Card: 'There's as good as 5 can be.'\n   - 2nd Card: 'There's a 5 as good as he.'\n   - 3rd Card: 'There's the best of all the three.'\n   - 4th Card: 'And there's the Earl of Coventry!'\n4. Re-Lead: The person who plays the 4th card of the rank (the Earl) immediately leads any card they wish to start the next sequence.",
     objective: 'Be the first player to shed all cards from your hand.',
     gameplay: "1. Lead: The player to the dealer's left plays any card from their hand. For example, a 5.\n2. Matching: The next player must play a 5 if they have one. Each subsequent player must match that rank.\n3. The Rhyme: With each card played, the player MUST say the corresponding line:\n   - 1st Card: 'There's as good as 5 can be.'\n   - 2nd Card: 'There's a 5 as good as he.'\n   - 3rd Card: 'There's the best of all the three.'\n   - 4th Card: 'And there's the Earl of Coventry!'\n4. Re-Lead: The person who plays the 4th card of the rank (the Earl) immediately leads any card they wish to start the next sequence.",
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'Earl of Coventry is a shedding game with automatic win when hand is emptied.',
     },
     exampleHands: [
-      'Opening deal: 4-8 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: The player who empties their hand first wins the game. Expected outcome: First player to shed all cards from their hand wins..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the first player to shed all cards from your hand.',
+      "Turn-flow example: 1. Lead: The player to the dealer's left plays any card from their hand. For example, a 5.\n2. Matching: The next player must play a 5 if they have one. Each subsequent player must match that rank.\n3. The Rhyme: With each card played, the player MUST say the corresponding line:\n   - 1st Card: 'There's as good as 5 can be.'\n   - 2nd Card: 'There's a 5 as good as he.'\n   - 3rd Card: 'There's the best of all the three.'\n   - 4th Card: 'And there's the Earl of Coventry!'\n4. Re-Lead: The person who plays the 4th card of the rank (the Earl) immediately leads any card they wish to start the next sequence.",
+      'Scoring example: The player who empties their hand first wins the game. First player to shed all cards from their hand wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'earl-of-coventry.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to shed all cards from your hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'earl-of-coventry.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Lead: The player to the dealer's left plays any card from their hand. For example, a 5.\n2. Matching: The next player must play a 5 if they have one. Each subsequent player must match that rank.\n3. The Rhyme: With each card played, the player MUST say the corresponding line:\n   - 1st Card: 'There's as good as 5 can be.'\n   - 2nd Card: 'There's a 5 as good as he.'\n   - 3rd Card: 'There's the best of all the three.'\n   - 4th Card: 'And there's the Earl of Coventry!'\n4. Re-Lead: The person who plays the 4th card of the rank (the Earl) immediately leads any card they wish to start the next sequence.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'earl-of-coventry.setup.players',
+        title: 'Players',
+        text: '4 to 8 players; best with a larger group to ensure cards are widely distributed.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'earl-of-coventry.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack. Aces are low.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'earl-of-coventry.setup.equipment',
+        title: 'Equipment',
+        text: '52-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'earl-of-coventry.setup.dealing',
+        title: 'Deal',
+        text: 'The entire deck is dealt out one by one. It does not matter if some players have one card more than others.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'earl-of-coventry.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to shed all cards from their hand wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'earl-of-coventry.score.description',
+        title: 'Scoring',
+        text: 'The player who empties their hand first wins the game.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'earl-of-coventry.rules.key.1',
+        title: 'Key rule 1',
+        text: 'If you do not have a card of the rank currently being played, you pass your turn.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'earl-of-coventry.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If NO ONE can play the next card in the sequence (e.g., the remaining 3s have already been played earlier), the last person to play a card of that rank leads a new card.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'earl-of-coventry.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Verbal accuracy is traditionally required; failure to say the rhyme correctly may result in a small penalty in home rules.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'earl-of-coventry.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'earl-of-coventry.rules.objective',
+          'earl-of-coventry.rules.gameplay',
+        ],
+      },
+      {
+        id: 'earl-of-coventry.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'earl-of-coventry.setup.players',
+          'earl-of-coventry.setup.deck',
+          'earl-of-coventry.setup.equipment',
+          'earl-of-coventry.setup.dealing',
+        ],
+      },
+      {
+        id: 'earl-of-coventry.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'earl-of-coventry.rules.key.1',
+          'earl-of-coventry.rules.key.2',
+          'earl-of-coventry.rules.key.3',
+        ],
+      },
+      {
+        id: 'earl-of-coventry.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'earl-of-coventry.score.description',
+          'earl-of-coventry.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'earl-of-coventry.setup.dealing',
+        'earl-of-coventry.rules.objective',
+      ],
+      deal: [
+        'earl-of-coventry.rules.gameplay',
+      ],
+      play_card: [
+        'earl-of-coventry.rules.gameplay',
+      ],
+      pass: [
+        'earl-of-coventry.rules.gameplay',
+      ],
+    },
   },
 }

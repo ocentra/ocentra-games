@@ -11,13 +11,38 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Points for melds, canastas, cards in hand. Deductions for unmelded cards. Clean canastas worth 500, dirty canastas worth 300. Red Threes +100 if melded, -100 if caught. Game played over 4 rounds.',
+      winCondition: 'Highest total score after 4 rounds wins. First partnership to 10,000+ points across multiple games wins the session.',
+      targetScore: 10000,
+      scoringDirection: 'high_wins',
+      cardValues: {
         Joker: '50 points',
         '2/Ace': '20 points',
         'K-8': '10 points',
         '7-3': '5 points',
         'Red Three (melded)': '100',
       },
+      sourceCardValues: {
+        raw: {
+          Joker: '50 points',
+          '2/Ace': '20 points',
+          'K-8': '10 points',
+          '7-3': '5 points',
+          'Red Three (melded)': '100',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {},
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,
@@ -26,7 +51,7 @@
     cardValues: {
       'Red Three (melded)': 100,
     },
-    penalties: '{\n  "Unmelded_Cards": "Point value per card left in hand/foot",\n  "Red_Three_unmelded": "100 points deducted if caught in hand/foot",\n  "Black_Three_unmelded": "5 points deducted if caught in hand/foot"\n}',
+    penalties: '{"Unmelded_Cards":"Point value per card left in hand/foot","Red_Three_unmelded":"100 points deducted if caught in hand/foot","Black_Three_unmelded":"5 points deducted if caught in hand/foot"}',
     targetScore: 10000,
     scoringDirection: 'high_wins',
     rankingAsset: {

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Spot Hearts. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Hearts variant: spot cards have point values; face cards zero.',
+    LLM: 'Play follows standard Hearts. The holder of the 2 of clubs leads it to the first trick. Players must follow the suit led if possible; the highest card of the suit led wins the trick. Hearts may not be led until a heart has been played to a previous trick (hearts broken), unless a player holds only hearts. Shooting the moon (taking all penalty cards) reverses the score for that hand. Deal and passing cycle are as in standard Hearts.',
+    Player: 'Play follows standard Hearts. The holder of the 2 of clubs leads it to the first trick. Players must follow the suit led if possible; the highest card of the suit led wins the trick. Hearts may not be led until a heart has been played to a previous trick (hearts broken), unless a player holds only hearts. Shooting the moon (taking all penalty cards) reverses the score for that hand. Deal and passing cycle are as in standard Hearts.',
     objective: 'The object is to avoid scoring penalty points. Each heart scores its pip value (2–10 at face value, jack 11, queen 12, king 13, ace 14; queen of spades 25). The game is played to a higher target (e.g. 500); the player with the lowest score when someone reaches or exceeds the target wins.',
     gameplay: 'Play follows standard Hearts. The holder of the 2 of clubs leads it to the first trick. Players must follow the suit led if possible; the highest card of the suit led wins the trick. Hearts may not be led until a heart has been played to a previous trick (hearts broken), unless a player holds only hearts. Shooting the moon (taking all penalty cards) reverses the score for that hand. Deal and passing cycle are as in standard Hearts.',
     keyRules: [
@@ -55,10 +55,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Spot card values Expected outcome: Lowest score; spot values..',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: The object is to avoid scoring penalty points. Each heart scores its pip value (2–10 at face value, jack 11, queen 12, king 13, ace 14; queen of spades 25). The game is played to a higher target (e.g. 500); the player with the lowest score when someone reaches or exceeds the target wins.',
+      'Turn-flow example: Play follows standard Hearts. The holder of the 2 of clubs leads it to the first trick. Players must follow the suit led if possible; the highest card of the suit led wins the trick. Hearts may not be led until a heart has been played to a previous trick (hearts broken), unless a player holds only hearts. Shooting the moon (taking all penalty cards) reverses the score for that hand. Deal and passing cycle are as in standard Hearts.',
+      'Scoring example: Spot card values Lowest score; spot values..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hearts-spot.rules.objective',
+        title: 'Objective',
+        text: 'The object is to avoid scoring penalty points. Each heart scores its pip value (2–10 at face value, jack 11, queen 12, king 13, ace 14; queen of spades 25). The game is played to a higher target (e.g. 500); the player with the lowest score when someone reaches or exceeds the target wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hearts-spot.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Play follows standard Hearts. The holder of the 2 of clubs leads it to the first trick. Players must follow the suit led if possible; the highest card of the suit led wins the trick. Hearts may not be led until a heart has been played to a previous trick (hearts broken), unless a player holds only hearts. Shooting the moon (taking all penalty cards) reverses the score for that hand. Deal and passing cycle are as in standard Hearts.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hearts-spot.setup.players',
+        title: 'Players',
+        text: 'Four players. Spot Hearts is most commonly played by four; there are no formal partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hearts-spot.setup.deck',
+        title: 'Deck',
+        text: 'A standard 52-card deck is used, with no jokers. All 52 cards are dealt out one at a time so each player receives 13 cards. Spot Hearts uses the same deck as standard Hearts; only the penalty scoring differs (hearts count their pip value, queen of spades 25).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hearts-spot.setup.equipment',
+        title: 'Equipment',
+        text: 'A standard 52-card deck is used, with no jokers. All 52 cards are dealt out one at a time so each player receives 13 cards. Spot Hearts uses the same deck as standard Hearts; only the penalty scoring differs (hearts count their pip value, queen of spades 25).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hearts-spot.setup.dealing',
+        title: 'Deal',
+        text: 'Deal and play are clockwise. All 52 cards are dealt out one at a time so that each player has 13. After the deal, each player passes three cards face-down (first hand to the left, second to the right, third across, fourth hand no pass; the cycle repeats).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hearts-spot.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest score; spot values.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hearts-spot.score.description',
+        title: 'Scoring',
+        text: 'Spot card values',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hearts-spot.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Spot scoring',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hearts-spot.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Pip-value hearts',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hearts-spot.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Queen of spades 25',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'hearts-spot.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Follow suit',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'hearts-spot.rules.key.5',
+        title: 'Key rule 5',
+        text: 'No leading hearts until broken',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'hearts-spot.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Shooting the moon reverses points',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hearts-spot.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hearts-spot.rules.objective',
+          'hearts-spot.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hearts-spot.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hearts-spot.setup.players',
+          'hearts-spot.setup.deck',
+          'hearts-spot.setup.equipment',
+          'hearts-spot.setup.dealing',
+        ],
+      },
+      {
+        id: 'hearts-spot.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hearts-spot.rules.key.1',
+          'hearts-spot.rules.key.2',
+          'hearts-spot.rules.key.3',
+          'hearts-spot.rules.key.4',
+          'hearts-spot.rules.key.5',
+          'hearts-spot.rules.key.6',
+        ],
+      },
+      {
+        id: 'hearts-spot.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hearts-spot.score.description',
+          'hearts-spot.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hearts-spot.setup.dealing',
+        'hearts-spot.rules.objective',
+      ],
+      play_card: [
+        'hearts-spot.rules.gameplay',
+      ],
+    },
   },
 }

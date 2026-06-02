@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Make the best five-card poker hand from seven cards; your lowest hole card is wild for you.',
+      "Turn-flow example: Betting rounds as in 7-card stud. At showdown, each player's lowest card in the hole is wild for that player only; use any five of seven for best hand.",
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'mexican-stud.rules.objective',
+        title: 'Objective',
+        text: 'Make the best five-card poker hand from seven cards; your lowest hole card is wild for you.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mexican-stud.rules.gameplay',
+        title: 'Turn flow',
+        text: "Betting rounds as in 7-card stud. At showdown, each player's lowest card in the hole is wild for that player only; use any five of seven for best hand.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mexican-stud.setup.players',
+        title: 'Players',
+        text: 'From two to eight players may take part, using a standard 52-card pack. The game is best with five to seven players. When eight play, the deck may run out toward the end of the deal, so five to seven is the recommended range for a full deal and betting structure as in standard seven-card stud.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mexican-stud.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. No jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mexican-stud.setup.equipment',
+        title: 'Equipment',
+        text: 'Chips; table space.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mexican-stud.setup.dealing',
+        title: 'Deal',
+        text: 'Same as 7-card stud: 2 down, 1 up, then 4 more (3 up, 1 down). Lowest hole card is wild for that player.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mexican-stud.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mexican-stud.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mexican-stud.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Lowest hole card is wild for that player',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'mexican-stud.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Wild can change when new hole cards are dealt',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'mexican-stud.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Standard 7-card stud deal and betting',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mexican-stud.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mexican-stud.rules.objective',
+          'mexican-stud.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mexican-stud.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mexican-stud.setup.players',
+          'mexican-stud.setup.deck',
+          'mexican-stud.setup.equipment',
+          'mexican-stud.setup.dealing',
+        ],
+      },
+      {
+        id: 'mexican-stud.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mexican-stud.rules.key.1',
+          'mexican-stud.rules.key.2',
+          'mexican-stud.rules.key.3',
+        ],
+      },
+      {
+        id: 'mexican-stud.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mexican-stud.score.description',
+          'mexican-stud.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mexican-stud.setup.dealing',
+        'mexican-stud.rules.objective',
+      ],
+      play_card: [
+        'mexican-stud.rules.gameplay',
+      ],
+    },
   },
 }

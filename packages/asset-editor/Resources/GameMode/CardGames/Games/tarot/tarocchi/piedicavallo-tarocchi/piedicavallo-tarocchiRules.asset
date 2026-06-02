@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Piedicavallo Tarocchi. Logic: See rules.objective and rules.gameplay.',
-    Player: "Piedicavallo Tarocchi is a rare and highly localized variant of Italian Tarot played exclusively in the Valle Cervo of the Piedmont region. It uses a modified 62-card 'Tarocco Piemontese' deck. The game is famous for its 'Open Communication' system, where partners are legally allowed to speak to each other and signal their cards (using taps and code words) as long as the information is audible to the opponents. It is a game of deep tactical coordination, memory, and traditional heritage.",
+    LLM: "Four players in fixed partnerships (partners opposite) play four deals anticlockwise. Each deal: dealer gives 15 cards to the player to his right, 15 to partner, 15 to the player to his left, and 17 to himself; dealer then discards two cards face-down (scarto). Player to dealer's right leads to the first trick. Follow suit if possible; if not, play a trump if possible; otherwise play any card. Trick with trumps is won by highest trump; trick without trumps by highest card of led suit. Winner of each trick leads to the next. The Fool may be played to any trick and never wins; it is added to the team of whoever played it. Team with more than 57 of the 114 points over the four deals wins the game.",
+    Player: "Four players in fixed partnerships (partners opposite) play four deals anticlockwise. Each deal: dealer gives 15 cards to the player to his right, 15 to partner, 15 to the player to his left, and 17 to himself; dealer then discards two cards face-down (scarto). Player to dealer's right leads to the first trick. Follow suit if possible; if not, play a trump if possible; otherwise play any card. Trick with trumps is won by highest trump; trick without trumps by highest card of led suit. Winner of each trick leads to the next. The Fool may be played to any trick and never wins; it is added to the team of whoever played it. Team with more than 57 of the 114 points over the four deals wins the game.",
     objective: 'Score 57 or more points from a pool of 114 available points.',
     gameplay: "Four players in fixed partnerships (partners opposite) play four deals anticlockwise. Each deal: dealer gives 15 cards to the player to his right, 15 to partner, 15 to the player to his left, and 17 to himself; dealer then discards two cards face-down (scarto). Player to dealer's right leads to the first trick. Follow suit if possible; if not, play a trump if possible; otherwise play any card. Trick with trumps is won by highest trump; trick without trumps by highest card of led suit. Winner of each trick leads to the next. The Fool may be played to any trick and never wins; it is added to the team of whoever played it. Team with more than 57 of the 114 points over the four deals wins the game.",
     keyRules: [
@@ -54,10 +54,171 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 15 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use perform_deal before scarto.',
-      'Scoring check: Score 57 or more points from a pool of 114 available points. Expected outcome: Score 57 or more points from a pool of 114 available points..',
+      'Setup example: 15 card(s) per player.',
+      'Rule example: Score 57 or more points from a pool of 114 available points.',
+      "Turn-flow example: Four players in fixed partnerships (partners opposite) play four deals anticlockwise. Each deal: dealer gives 15 cards to the player to his right, 15 to partner, 15 to the player to his left, and 17 to himself; dealer then discards two cards face-down (scarto). Player to dealer's right leads to the first trick. Follow suit if possible; if not, play a trump if possible; otherwise play any card. Trick with trumps is won by highest trump; trick without trumps by highest card of led suit. Winner of each trick leads to the next. The Fool may be played to any trick and never wins; it is added to the team of whoever played it. Team with more than 57 of the 114 points over the four deals wins the game.",
+      'Scoring example: Score 57 or more points from a pool of 114 available points. Score 57 or more points from a pool of 114 available points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'piedicavallo-tarocchi.rules.objective',
+        title: 'Objective',
+        text: 'Score 57 or more points from a pool of 114 available points.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'piedicavallo-tarocchi.rules.gameplay',
+        title: 'Turn flow',
+        text: "Four players in fixed partnerships (partners opposite) play four deals anticlockwise. Each deal: dealer gives 15 cards to the player to his right, 15 to partner, 15 to the player to his left, and 17 to himself; dealer then discards two cards face-down (scarto). Player to dealer's right leads to the first trick. Follow suit if possible; if not, play a trump if possible; otherwise play any card. Trick with trumps is won by highest trump; trick without trumps by highest card of led suit. Winner of each trick leads to the next. The Fool may be played to any trick and never wins; it is added to the team of whoever played it. Team with more than 57 of the 114 points over the four deals wins the game.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'piedicavallo-tarocchi.setup.players',
+        title: 'Players',
+        text: '4 players in two teams. Partners sit opposite.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'piedicavallo-tarocchi.setup.deck',
+        title: 'Deck',
+        text: '62 cards (22 trumps + 40 suit cards). Low cards (1-4 Swords/Batons, 7-10 Cups/Coins) are removed.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'piedicavallo-tarocchi.setup.equipment',
+        title: 'Equipment',
+        text: '62 cards (22 trumps + 40 suit cards). Low cards (1-4 Swords/Batons, 7-10 Cups/Coins) are removed.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'piedicavallo-tarocchi.setup.dealing',
+        title: 'Deal',
+        text: "Dealer gets 17 cards, others 15 cards. The dealer discards 2 cards face-down (the 'Scarto').",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'piedicavallo-tarocchi.score.win-condition',
+        title: 'Win condition',
+        text: 'Score 57 or more points from a pool of 114 available points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'piedicavallo-tarocchi.score.description',
+        title: 'Scoring',
+        text: 'Score 57 or more points from a pool of 114 available points.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'piedicavallo-tarocchi.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow suit if possible; if void in suit led, must play a trump if possible.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'piedicavallo-tarocchi.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Fool may be played to any trick; it never wins and is not captured; it counts for the team of the player who played it.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'piedicavallo-tarocchi.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Dealer may not discard 5-point cards (Kings, Trump 21, Trump 1, Fool).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'piedicavallo-tarocchi.rules.key.4',
+        title: 'Key rule 4',
+        text: '57 or more points of 114 wins a deal; team ahead on total points after four deals wins the game.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'piedicavallo-tarocchi.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Partners may communicate about their cards and tactics within defined limits (open communication).',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'piedicavallo-tarocchi.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'piedicavallo-tarocchi.rules.objective',
+          'piedicavallo-tarocchi.rules.gameplay',
+        ],
+      },
+      {
+        id: 'piedicavallo-tarocchi.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'piedicavallo-tarocchi.setup.players',
+          'piedicavallo-tarocchi.setup.deck',
+          'piedicavallo-tarocchi.setup.equipment',
+          'piedicavallo-tarocchi.setup.dealing',
+        ],
+      },
+      {
+        id: 'piedicavallo-tarocchi.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'piedicavallo-tarocchi.rules.key.1',
+          'piedicavallo-tarocchi.rules.key.2',
+          'piedicavallo-tarocchi.rules.key.3',
+          'piedicavallo-tarocchi.rules.key.4',
+          'piedicavallo-tarocchi.rules.key.5',
+        ],
+      },
+      {
+        id: 'piedicavallo-tarocchi.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'piedicavallo-tarocchi.score.description',
+          'piedicavallo-tarocchi.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'piedicavallo-tarocchi.setup.dealing',
+        'piedicavallo-tarocchi.rules.objective',
+      ],
+      play_card: [
+        'piedicavallo-tarocchi.rules.gameplay',
+      ],
+      perform_deal: [
+        'piedicavallo-tarocchi.rules.gameplay',
+      ],
+      discard_scarto: [
+        'piedicavallo-tarocchi.rules.gameplay',
+      ],
+    },
   },
 }

@@ -11,7 +11,11 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: '31 card points to win.',
+      winCondition: 'First to accumulate 31+ card points in tricks.',
+      targetScore: 31,
+      scoringDirection: 'high_wins',
+      cardValues: {
         '6': '0 points',
         '7': '0 points',
         '8': '0 points',
@@ -22,6 +26,33 @@
         Q: '3 points',
         J: '2 points',
       },
+      sourceCardValues: {
+        raw: {
+          '6': '0 points',
+          '7': '0 points',
+          '8': '0 points',
+          '9': '0 points',
+          '10': '10 points',
+          A: '11 points',
+          K: '4 points',
+          Q: '3 points',
+          J: '2 points',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,

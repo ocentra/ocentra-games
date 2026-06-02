@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Doomtrooper. Logic: Defeat opposing forces and meet the published victory condition through combat and card effects.',
-    Player: 'Doomtrooper is an out-of-print collectible card game where players deploy warriors and resources from the Mutant Chronicles setting.',
+    LLM: 'Players recruit warriors, equip them, attack opposing cards or players, and resolve combat and tactical effects printed on the cards.',
+    Player: 'Players recruit warriors, equip them, attack opposing cards or players, and resolve combat and tactical effects printed on the cards.',
     objective: 'Defeat opposing forces and meet the published victory condition through combat and card effects.',
     gameplay: 'Players recruit warriors, equip them, attack opposing cards or players, and resolve combat and tactical effects printed on the cards.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published victory condition or points from defeated cards determine the winner. Expected outcome: Defeat opposing forces and meet the published victory condition through combat and card effects..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Defeat opposing forces and meet the published victory condition through combat and card effects.',
+      'Turn-flow example: Players recruit warriors, equip them, attack opposing cards or players, and resolve combat and tactical effects printed on the cards.',
+      'Scoring example: The published victory condition or points from defeated cards determine the winner. Defeat opposing forces and meet the published victory condition through combat and card effects..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'doomtrooper.rules.objective',
+        title: 'Objective',
+        text: 'Defeat opposing forces and meet the published victory condition through combat and card effects.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'doomtrooper.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players recruit warriors, equip them, attack opposing cards or players, and resolve combat and tactical effects printed on the cards.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'doomtrooper.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Doomtrooper.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'doomtrooper.setup.deck',
+        title: 'Deck',
+        text: 'Constructed Doomtrooper collectible card decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'doomtrooper.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed Doomtrooper collectible card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'doomtrooper.setup.dealing',
+        title: 'Deal',
+        text: 'Each player uses a constructed deck and draws an opening hand, then builds forces and resources during play.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'doomtrooper.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat opposing forces and meet the published victory condition through combat and card effects.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'doomtrooper.score.description',
+        title: 'Scoring',
+        text: 'The published victory condition or points from defeated cards determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'doomtrooper.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Collectible card game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'doomtrooper.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Constructed decks.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'doomtrooper.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Warriors and resources are deployed.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'doomtrooper.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Combat and card text drive play.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'doomtrooper.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Victory follows the CCG scenario or score condition.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'doomtrooper.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'doomtrooper.rules.objective',
+          'doomtrooper.rules.gameplay',
+        ],
+      },
+      {
+        id: 'doomtrooper.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'doomtrooper.setup.players',
+          'doomtrooper.setup.deck',
+          'doomtrooper.setup.equipment',
+          'doomtrooper.setup.dealing',
+        ],
+      },
+      {
+        id: 'doomtrooper.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'doomtrooper.rules.key.1',
+          'doomtrooper.rules.key.2',
+          'doomtrooper.rules.key.3',
+          'doomtrooper.rules.key.4',
+          'doomtrooper.rules.key.5',
+        ],
+      },
+      {
+        id: 'doomtrooper.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'doomtrooper.score.description',
+          'doomtrooper.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'doomtrooper.setup.dealing',
+        'doomtrooper.rules.objective',
+      ],
+      play_card: [
+        'doomtrooper.rules.gameplay',
+      ],
+    },
   },
 }

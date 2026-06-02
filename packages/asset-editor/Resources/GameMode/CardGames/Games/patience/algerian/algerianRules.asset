@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Algerian (Solitaire). Type: Two-deck. Rules: 8 foundations (4 A-up, 4 K-down). Built in suit. Tableau builds +/- suit with wrap. Redeal batches to reserve. Goal: Clear all 104 cards.',
-    Player: 'Welcome to Algerian Patience! You have eight foundations above and a complex web of cards below. Remember: build Aces up and Kings down. Good luck—the reserve piles are the key to victory.',
+    LLM: '1. Deal layout: 8 tableau depots (1 card each), 6 reserve piles (4 cards each), stock = remainder. 2. Play phase: Move exposed top cards from reserve or tableau to foundations (4 A-up, 4 K-down in suit) or build on tableau in ascending/descending suit (wrap King-Ace). Vacant depots accept any exposed card. Reserve piles cannot be built on. 3. Redeal: When no moves, deal 2 more cards to each reserve; repeat until 8 cards left, then 1 per depot. 4. Win when all 104 cards are on foundations.',
+    Player: '1. Deal layout: 8 tableau depots (1 card each), 6 reserve piles (4 cards each), stock = remainder. 2. Play phase: Move exposed top cards from reserve or tableau to foundations (4 A-up, 4 K-down in suit) or build on tableau in ascending/descending suit (wrap King-Ace). Vacant depots accept any exposed card. Reserve piles cannot be built on. 3. Redeal: When no moves, deal 2 more cards to each reserve; repeat until 8 cards left, then 1 per depot. 4. Win when all 104 cards are on foundations.',
     objective: 'Consolidate all 104 cards into the 8 foundation piles (A-K and K-A).',
     gameplay: '1. Deal layout: 8 tableau depots (1 card each), 6 reserve piles (4 cards each), stock = remainder. 2. Play phase: Move exposed top cards from reserve or tableau to foundations (4 A-up, 4 K-down in suit) or build on tableau in ascending/descending suit (wrap King-Ace). Vacant depots accept any exposed card. Reserve piles cannot be built on. 3. Redeal: When no moves, deal 2 more cards to each reserve; repeat until 8 cards left, then 1 per depot. 4. Win when all 104 cards are on foundations.',
     keyRules: [
@@ -52,10 +52,162 @@
       go_out: 'Game ends when all 104 cards are on foundations (evaluate_completion).',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in setup; system may use deal_tableau, deal_reserve before play_loop.',
-      'Scoring check: Scoring is based on the total cards moved to foundations. Expected outcome: 104.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Consolidate all 104 cards into the 8 foundation piles (A-K and K-A).',
+      'Turn-flow example: 1. Deal layout: 8 tableau depots (1 card each), 6 reserve piles (4 cards each), stock = remainder. 2. Play phase: Move exposed top cards from reserve or tableau to foundations (4 A-up, 4 K-down in suit) or build on tableau in ascending/descending suit (wrap King-Ace). Vacant depots accept any exposed card. Reserve piles cannot be built on. 3. Redeal: When no moves, deal 2 more cards to each reserve; repeat until 8 cards left, then 1 per depot. 4. Win when all 104 cards are on foundations.',
+      'Scoring example: Scoring is based on the total cards moved to foundations. Complete all foundations (104 cards)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'algerian.rules.objective',
+        title: 'Objective',
+        text: 'Consolidate all 104 cards into the 8 foundation piles (A-K and K-A).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'algerian.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Deal layout: 8 tableau depots (1 card each), 6 reserve piles (4 cards each), stock = remainder. 2. Play phase: Move exposed top cards from reserve or tableau to foundations (4 A-up, 4 K-down in suit) or build on tableau in ascending/descending suit (wrap King-Ace). Vacant depots accept any exposed card. Reserve piles cannot be built on. 3. Redeal: When no moves, deal 2 more cards to each reserve; repeat until 8 cards left, then 1 per depot. 4. Win when all 104 cards are on foundations.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'algerian.setup.players',
+        title: 'Players',
+        text: 'One player only. Algerian is a solitaire (patience) game played by a single player.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'algerian.setup.deck',
+        title: 'Deck',
+        text: 'Two standard 52-card decks shuffled together (104 cards).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'algerian.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard tabletop or digital interface.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'algerian.setup.dealing',
+        title: 'Deal',
+        text: '1. **Foundations**: 8 slots (initially empty or 4 Aces/4 Kings placed if drawn). 2. **Tableau**: 8 depots with 1 card each. 3. **Reserve**: 6 piles with 4 cards each. 4. **Stock**: Remainder of the 104 cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'algerian.score.win-condition',
+        title: 'Win condition',
+        text: 'Complete all foundations (104 cards).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'algerian.score.description',
+        title: 'Scoring',
+        text: 'Scoring is based on the total cards moved to foundations.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'algerian.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The reserve piles cannot be built upon; they only serve as sources of cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'algerian.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Empty tableau depots can be filled by ANY available card.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'algerian.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The game is won only when ALL cards are on foundations.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'algerian.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'algerian.rules.objective',
+          'algerian.rules.gameplay',
+        ],
+      },
+      {
+        id: 'algerian.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'algerian.setup.players',
+          'algerian.setup.deck',
+          'algerian.setup.equipment',
+          'algerian.setup.dealing',
+        ],
+      },
+      {
+        id: 'algerian.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'algerian.rules.key.1',
+          'algerian.rules.key.2',
+          'algerian.rules.key.3',
+        ],
+      },
+      {
+        id: 'algerian.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'algerian.score.description',
+          'algerian.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'algerian.setup.dealing',
+        'algerian.rules.objective',
+      ],
+      deal_tableau: [
+        'algerian.rules.gameplay',
+      ],
+      deal_reserve: [
+        'algerian.rules.gameplay',
+      ],
+      move_to_foundation: [
+        'algerian.rules.gameplay',
+      ],
+      move_to_tableau: [
+        'algerian.rules.gameplay',
+      ],
+      deal_from_stock: [
+        'algerian.rules.gameplay',
+      ],
+      evaluate_completion: [
+        'algerian.rules.gameplay',
+      ],
+    },
   },
 }

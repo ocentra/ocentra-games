@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kout Bo 6. Logic: See rules.objective and rules.gameplay.',
-    Player: "Kout Bo 6 (or simply Koutbo6) is a high-stakes, team-based trick-taking game popular in Egypt, Kuwait, and across the Arab world. Played by two teams of three (6 players total), it utilizes 54 cards (standard 52 + 2 Jokers). It is a game of bidding, where the winning team's contract (Hokm) dictates the trump suit, and the Red and Black Jokers serve as the most powerful permanent trumps.",
+    LLM: '1. Must follow suit. If unable, play any card.\n2. Jokers can be played even if a player HAS the suit led.\n3. Leading a Joker forces all other players to play a Trump card if they have one.',
+    Player: '1. Must follow suit. If unable, play any card.\n2. Jokers can be played even if a player HAS the suit led.\n3. Leading a Joker forces all other players to play a Trump card if they have one.',
     objective: 'As the bidding team, fulfill your contract (win the number of tricks bid). As the defenders, prevent them from doing so.',
     gameplay: '1. Must follow suit. If unable, play any card.\n2. Jokers can be played even if a player HAS the suit led.\n3. Leading a Joker forces all other players to play a Trump card if they have one.',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 6-6 player(s), 9 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_9_counterclockwise before bid.',
-      'Scoring check: Bidding team wins if tricks won >= bid. If they win, they gain points. If they lose, the defending team gets double the bid value. Expected outcome: 101.',
+      'Setup example: 9 card(s) per player.',
+      'Rule example: As the bidding team, fulfill your contract (win the number of tricks bid). As the defenders, prevent them from doing so.',
+      'Turn-flow example: 1. Must follow suit. If unable, play any card.\n2. Jokers can be played even if a player HAS the suit led.\n3. Leading a Joker forces all other players to play a Trump card if they have one.',
+      'Scoring example: Bidding team wins if tricks won >= bid. If they win, they gain points. If they lose, the defending team gets double the bid value. As the bidding team, fulfill your contract (win the number of tricks bid). As the defenders, prevent them from doing so..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'koutbo6.rules.objective',
+        title: 'Objective',
+        text: 'As the bidding team, fulfill your contract (win the number of tricks bid). As the defenders, prevent them from doing so.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'koutbo6.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Must follow suit. If unable, play any card.\n2. Jokers can be played even if a player HAS the suit led.\n3. Leading a Joker forces all other players to play a Trump card if they have one.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'koutbo6.setup.players',
+        title: 'Players',
+        text: '6 players in two teams of 3. Teammates sit in alternating positions (A1, B1, A2, B2, A3, B3).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'koutbo6.setup.deck',
+        title: 'Deck',
+        text: '54 cards (including Red and Black Jokers).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'koutbo6.setup.equipment',
+        title: 'Equipment',
+        text: '54 cards (including Red and Black Jokers).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'koutbo6.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 9 cards. Dealing and play are counter-clockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'koutbo6.score.win-condition',
+        title: 'Win condition',
+        text: 'As the bidding team, fulfill your contract (win the number of tricks bid). As the defenders, prevent them from doing so.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'koutbo6.score.description',
+        title: 'Scoring',
+        text: 'Bidding team wins if tricks won >= bid. If they win, they gain points. If they lose, the defending team gets double the bid value.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'koutbo6.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit when able; if void may play any card including trump or Joker.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'koutbo6.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Jokers may be played to an existing trick anytime; leading a Joker has restrictions (bid 8/9 or trump face cards played).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'koutbo6.rules.key.3',
+        title: 'Key rule 3',
+        text: 'High bidder declares trump (Hokm); Red and Black Jokers are permanent trumps, Color Joker highest.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'koutbo6.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Bid 5 (Bab) to 9 (Bawan); if first five pass, dealer must bid at least 5 (Malzom).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'koutbo6.rules.key.5',
+        title: 'Key rule 5',
+        text: 'First to 101 points wins; or 51+ vs 0; or Bawan made on first hand.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'koutbo6.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'koutbo6.rules.objective',
+          'koutbo6.rules.gameplay',
+        ],
+      },
+      {
+        id: 'koutbo6.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'koutbo6.setup.players',
+          'koutbo6.setup.deck',
+          'koutbo6.setup.equipment',
+          'koutbo6.setup.dealing',
+        ],
+      },
+      {
+        id: 'koutbo6.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'koutbo6.rules.key.1',
+          'koutbo6.rules.key.2',
+          'koutbo6.rules.key.3',
+          'koutbo6.rules.key.4',
+          'koutbo6.rules.key.5',
+        ],
+      },
+      {
+        id: 'koutbo6.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'koutbo6.score.description',
+          'koutbo6.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'koutbo6.setup.dealing',
+        'koutbo6.rules.objective',
+      ],
+      play_card: [
+        'koutbo6.rules.gameplay',
+      ],
+      pass: [
+        'koutbo6.rules.gameplay',
+      ],
+      bid: [
+        'koutbo6.rules.gameplay',
+      ],
+      deal_9_counterclockwise: [
+        'koutbo6.rules.gameplay',
+      ],
+    },
   },
 }

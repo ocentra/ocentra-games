@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tàihé A Bāo 泰和A包. Logic: First out wins; declarer wins or loses stakes per opponent based on bidding.',
-    Player: 'Tàihé A Bāo (泰和A包) is a Chinese climbing game from Taihe county, Jiangxi province. Four players: one declarer vs the other three each hand. 40-card deck (remove 2s, 3s, 8s); rank A, K, Q, J, 10, 9, 7, 6, 5, 4. Cards drawn from deck counterclockwise (not dealt). Bidding: declare or pass; if all pass, second round—call for a card (exchange); last caller is declarer. Play: declarer leads combinations; others beat or pass. Combinations: singles, pairs, sequences, double sequences, three-of-a-kind, four-of-a-kind (bombs beat any non-bomb). First out wins; if declarer wins they collect stakes from each opponent. Often played for money.',
+    LLM: '1. Deal: Each player takes 10 cards one at a time in counterclockwise order from the face-down deck. 2. Bidding round 1: In turn, each player may declare (become declarer; play starts immediately) or pass. 3. If all pass, bidding round 2: Each may call for a card (name rank and suit; holder gives it face-up, you give one face-down in exchange) or pass; last player to call is declarer. If all pass again, redeal. 4. Play: Declarer leads any legal combination. Each in turn may beat it (same type, higher rank) or pass. Three consecutive passes clear the table; the last player to have played leads any legal combination. 5. First player out of cards wins the hand: if declarer, they win; if an opponent, declarer loses. Stakes are paid per opponent based on how many called in bidding.',
+    Player: '1. Deal: Each player takes 10 cards one at a time in counterclockwise order from the face-down deck. 2. Bidding round 1: In turn, each player may declare (become declarer; play starts immediately) or pass. 3. If all pass, bidding round 2: Each may call for a card (name rank and suit; holder gives it face-up, you give one face-down in exchange) or pass; last player to call is declarer. If all pass again, redeal. 4. Play: Declarer leads any legal combination. Each in turn may beat it (same type, higher rank) or pass. Three consecutive passes clear the table; the last player to have played leads any legal combination. 5. First player out of cards wins the hand: if declarer, they win; if an opponent, declarer loses. Stakes are paid per opponent based on how many called in bidding.',
     objective: 'As declarer, be the first to empty your hand to win and collect stakes from each opponent; as an opponent, empty your hand first to make the declarer lose and pay each of you.',
     gameplay: '1. Deal: Each player takes 10 cards one at a time in counterclockwise order from the face-down deck. 2. Bidding round 1: In turn, each player may declare (become declarer; play starts immediately) or pass. 3. If all pass, bidding round 2: Each may call for a card (name rank and suit; holder gives it face-up, you give one face-down in exchange) or pass; last player to call is declarer. If all pass again, redeal. 4. Play: Declarer leads any legal combination. Each in turn may beat it (same type, higher rank) or pass. Three consecutive passes clear the table; the last player to have played leads any legal combination. 5. First player out of cards wins the hand: if declarer, they win; if an opponent, declarer loses. Stakes are paid per opponent based on how many called in bidding.',
     keyRules: [
@@ -52,10 +52,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-5 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in take_cards; system may use deal_10_counterclockwise before bidding_1.',
-      'Scoring check: Hand value in stakes: if declarer called for a card, value equals number of players who called; if declarer declared in round 1, value equals number of players plus one. Declarer wins or loses that many stakes to each opponent. Expected outcome: 1.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: As declarer, be the first to empty your hand to win and collect stakes from each opponent; as an opponent, empty your hand first to make the declarer lose and pay each of you.',
+      'Turn-flow example: 1. Deal: Each player takes 10 cards one at a time in counterclockwise order from the face-down deck. 2. Bidding round 1: In turn, each player may declare (become declarer; play starts immediately) or pass. 3. If all pass, bidding round 2: Each may call for a card (name rank and suit; holder gives it face-up, you give one face-down in exchange) or pass; last player to call is declarer. If all pass again, redeal. 4. Play: Declarer leads any legal combination. Each in turn may beat it (same type, higher rank) or pass. Three consecutive passes clear the table; the last player to have played leads any legal combination. 5. First player out of cards wins the hand: if declarer, they win; if an opponent, declarer loses. Stakes are paid per opponent based on how many called in bidding.',
+      'Scoring example: Hand value in stakes: if declarer called for a card, value equals number of players who called; if declarer declared in round 1, value equals number of players plus one. Declarer wins or loses that many stakes to each opponent. First player to empty their hand wins the hand: if declarer, they win and collect stakes from each opponent; if an opponent, declarer loses and pays each opponent..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'taihe-a-bao.rules.objective',
+        title: 'Objective',
+        text: 'As declarer, be the first to empty your hand to win and collect stakes from each opponent; as an opponent, empty your hand first to make the declarer lose and pay each of you.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'taihe-a-bao.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Deal: Each player takes 10 cards one at a time in counterclockwise order from the face-down deck. 2. Bidding round 1: In turn, each player may declare (become declarer; play starts immediately) or pass. 3. If all pass, bidding round 2: Each may call for a card (name rank and suit; holder gives it face-up, you give one face-down in exchange) or pass; last player to call is declarer. If all pass again, redeal. 4. Play: Declarer leads any legal combination. Each in turn may beat it (same type, higher rank) or pass. Three consecutive passes clear the table; the last player to have played leads any legal combination. 5. First player out of cards wins the hand: if declarer, they win; if an opponent, declarer loses. Stakes are paid per opponent based on how many called in bidding.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'taihe-a-bao.setup.players',
+        title: 'Players',
+        text: '4 (3 or 5 in variants)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'taihe-a-bao.setup.deck',
+        title: 'Deck',
+        text: '40 cards (remove 2s, 3s, 8s from 52)',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'taihe-a-bao.setup.equipment',
+        title: 'Equipment',
+        text: '52-card deck (40 used), optional stakes',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'taihe-a-bao.setup.dealing',
+        title: 'Deal',
+        text: 'The deck is shuffled and placed face-down in the center. Each player receives 10 cards by taking one card at a time in turn in counterclockwise order.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'taihe-a-bao.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to empty their hand wins the hand: if declarer, they win and collect stakes from each opponent; if an opponent, declarer loses and pays each opponent.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'taihe-a-bao.score.description',
+        title: 'Scoring',
+        text: 'Hand value in stakes: if declarer called for a card, value equals number of players who called; if declarer declared in round 1, value equals number of players plus one. Declarer wins or loses that many stakes to each opponent.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'taihe-a-bao.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Combinations: single, pair, sequence (3+ consecutive ranks; Aces not in sequences; 7 and 9 not consecutive), double sequence, three-of-a-kind, four-of-a-kind. Three- and four-of-a-kind (bombs) beat any non-bomb.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'taihe-a-bao.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Rank order high to low: A, K, Q, J, 10, 9, 7, 6, 5, 4. Suits do not affect rank.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'taihe-a-bao.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Hand value in stakes: if declarer called for a card, value = number of players who called; if declarer declared in round 1, value = number of players plus one. Declarer wins or loses that many stakes to each opponent.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'taihe-a-bao.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'taihe-a-bao.rules.objective',
+          'taihe-a-bao.rules.gameplay',
+        ],
+      },
+      {
+        id: 'taihe-a-bao.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'taihe-a-bao.setup.players',
+          'taihe-a-bao.setup.deck',
+          'taihe-a-bao.setup.equipment',
+          'taihe-a-bao.setup.dealing',
+        ],
+      },
+      {
+        id: 'taihe-a-bao.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'taihe-a-bao.rules.key.1',
+          'taihe-a-bao.rules.key.2',
+          'taihe-a-bao.rules.key.3',
+        ],
+      },
+      {
+        id: 'taihe-a-bao.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'taihe-a-bao.score.description',
+          'taihe-a-bao.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'taihe-a-bao.setup.dealing',
+        'taihe-a-bao.rules.objective',
+      ],
+      declare: [
+        'taihe-a-bao.rules.gameplay',
+      ],
+      play_card: [
+        'taihe-a-bao.rules.gameplay',
+      ],
+      pass: [
+        'taihe-a-bao.rules.gameplay',
+      ],
+      bid: [
+        'taihe-a-bao.rules.gameplay',
+      ],
+      deal_10_counterclockwise: [
+        'taihe-a-bao.rules.gameplay',
+      ],
+      play_combination: [
+        'taihe-a-bao.rules.gameplay',
+      ],
+    },
   },
 }

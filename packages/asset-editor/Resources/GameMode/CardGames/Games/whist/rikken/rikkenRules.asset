@@ -52,10 +52,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before bid.',
-      'Scoring check: Base points per contract; overtricks +1; undertricks to opponents. Expected outcome: NA.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Fulfill contract. Rik: 8 tricks with called Ace partner. Solo: 8-13 tricks alone. MisÃ¨re: 0 tricks. Piek: exactly 1 trick.',
+      'Turn-flow example: 1. Bidding: left of dealer first; must bid higher or pass; three passes ends. 2. Declarer names trump (if applicable), calls Ace for partner (Rik/Rik Beter). 3. Play: follow suit; trump beats non-trump. 4. Scoring: base + overtricks or undertricks.',
+      'Scoring example: Base points per contract; overtricks +1; undertricks to opponents. Highest score after agreed hands..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'rikken.rules.objective',
+        title: 'Objective',
+        text: 'Fulfill contract. Rik: 8 tricks with called Ace partner. Solo: 8-13 tricks alone. MisÃ¨re: 0 tricks. Piek: exactly 1 trick.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'rikken.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Bidding: left of dealer first; must bid higher or pass; three passes ends. 2. Declarer names trump (if applicable), calls Ace for partner (Rik/Rik Beter). 3. Play: follow suit; trump beats non-trump. 4. Scoring: base + overtricks or undertricks.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'rikken.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'rikken.setup.deck',
+        title: 'Deck',
+        text: '52 cards. A high, 2 low.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'rikken.setup.equipment',
+        title: 'Equipment',
+        text: 'Deck. No shuffle between hands.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'rikken.setup.dealing',
+        title: 'Deal',
+        text: '7+6 each (13). Deal clockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'rikken.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest score after agreed hands.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'rikken.score.description',
+        title: 'Scoring',
+        text: 'Base points per contract; overtricks +1; undertricks to opponents.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'rikken.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Rik: call Ace for partner; 8 tricks. Rik Beter: hearts always trump.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'rikken.rules.key.2',
+        title: 'Key rule 2',
+        text: '8-13 Alleen: solo, choose trump. Open variants: hand face-up after first trick.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'rikken.rules.key.3',
+        title: 'Key rule 3',
+        text: 'MisÃ¨re/Piek: no trump. Cards never shuffled between hands.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'rikken.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'rikken.rules.objective',
+          'rikken.rules.gameplay',
+        ],
+      },
+      {
+        id: 'rikken.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'rikken.setup.players',
+          'rikken.setup.deck',
+          'rikken.setup.equipment',
+          'rikken.setup.dealing',
+        ],
+      },
+      {
+        id: 'rikken.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'rikken.rules.key.1',
+          'rikken.rules.key.2',
+          'rikken.rules.key.3',
+        ],
+      },
+      {
+        id: 'rikken.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'rikken.score.description',
+          'rikken.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'rikken.setup.dealing',
+        'rikken.rules.objective',
+      ],
+      deal: [
+        'rikken.rules.gameplay',
+      ],
+      play_card: [
+        'rikken.rules.gameplay',
+      ],
+      pass: [
+        'rikken.rules.gameplay',
+      ],
+      bid: [
+        'rikken.rules.gameplay',
+      ],
+      lead: [
+        'rikken.rules.gameplay',
+      ],
+    },
   },
 }

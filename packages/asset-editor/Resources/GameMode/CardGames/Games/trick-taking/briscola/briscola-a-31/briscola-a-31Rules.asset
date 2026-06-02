@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Card points are counted using Briscola values (Ace 11, Three 10, King 4, Queen 3, Jack 2; others 0). In Briscola a 31, play stops as soon as a player claims to have at least 31 points in their tricks; if the claim is correct they win, and if it is incorrect the opponent wins the hand. Expected outcome: 31.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the first player to achieve the winning condition through strategic play of cards.',
+      'Turn-flow example: 1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
+      'Scoring example: Card points are counted using Briscola values (Ace 11, Three 10, King 4, Queen 3, Jack 2; others 0). In Briscola a 31, play stops as soon as a player claims to have at least 31 points in their tricks; if the claim is correct they win, and if it is incorrect the opponent wins the hand. First player to correctly claim 31 or more card points in their tricks wins the hand; an incorrect claim immediately gives the win to the opponent..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'briscola-a-31.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to achieve the winning condition through strategic play of cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'briscola-a-31.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'briscola-a-31.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'briscola-a-31.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'briscola-a-31.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'briscola-a-31.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'briscola-a-31.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to correctly claim 31 or more card points in their tricks wins the hand; an incorrect claim immediately gives the win to the opponent.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'briscola-a-31.score.description',
+        title: 'Scoring',
+        text: 'Card points are counted using Briscola values (Ace 11, Three 10, King 4, Queen 3, Jack 2; others 0). In Briscola a 31, play stops as soon as a player claims to have at least 31 points in their tricks; if the claim is correct they win, and if it is incorrect the opponent wins the hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'briscola-a-31.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Play proceeds in turn order with only legal actions allowed.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'briscola-a-31.rules.key.2',
+        title: 'Key rule 2',
+        text: "Round resolution follows the variant's scoring and bonus conditions.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'briscola-a-31.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Match winner is determined by agreed target score or elimination condition.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'briscola-a-31.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'briscola-a-31.rules.objective',
+          'briscola-a-31.rules.gameplay',
+        ],
+      },
+      {
+        id: 'briscola-a-31.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'briscola-a-31.setup.players',
+          'briscola-a-31.setup.deck',
+          'briscola-a-31.setup.equipment',
+          'briscola-a-31.setup.dealing',
+        ],
+      },
+      {
+        id: 'briscola-a-31.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'briscola-a-31.rules.key.1',
+          'briscola-a-31.rules.key.2',
+          'briscola-a-31.rules.key.3',
+        ],
+      },
+      {
+        id: 'briscola-a-31.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'briscola-a-31.score.description',
+          'briscola-a-31.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'briscola-a-31.setup.dealing',
+        'briscola-a-31.rules.objective',
+      ],
+      play_card: [
+        'briscola-a-31.rules.gameplay',
+      ],
+    },
   },
 }

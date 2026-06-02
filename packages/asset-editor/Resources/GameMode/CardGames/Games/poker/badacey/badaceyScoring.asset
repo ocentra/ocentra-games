@@ -11,9 +11,33 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Pot-limit or Fixed-limit betting rounds.',
+      winCondition: 'Lowest ranks in two specific categories.',
+      targetScore: null,
+      scoringDirection: 'low_wins',
+      cardValues: {
         '2-K': '2-13',
       },
+      sourceCardValues: {
+        raw: {
+          '2-K': '2-13',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        targetScore: 'No fixed target; play until session ends; chip count determines winner.',
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: 'The pot is split 50/50 between the two halves. Ties in either half result in that half being subdivided.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'poker_ranking',
     patternMultipliers: null,

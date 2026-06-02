@@ -10,7 +10,26 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'After each play, total the two open ends of the layout; if the total is a multiple of 5, 3 or both, score immediately (3→1, 5→1, 6→2, 9→3, 10→2, 12→4, 15→8, 18→6, 20→4). Chip-out scores 1. First to exactly 61 wins; scores that would exceed 61 are disregarded.',
+      winCondition: 'First player or team to reach exactly 61 points wins.',
+      targetScore: 61,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        cardValues: 'Scoring is by open-end totals (multiples of 3 and 5), not by individual tile values.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

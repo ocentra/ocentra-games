@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Konijnen. Logic: See rules.objective and rules.gameplay.',
-    Player: "Konijnen (Dutch for 'Rabbits') is a fast-paced, family-friendly shedding game popular in the Netherlands and Scandinavia (where it is known as 'Kanin'). The objective is to be the first to empty your hand by playing cards into numerical sequences on the table. It is known for its speed and the 'tactical shifting' rules that allow players to rearrange table piles to fit their cards.",
+    LLM: "1. Players take turns clockwise.\n2. On your turn, you must play as many cards as possible into existing sequences or start new ones.\n3. **Starting Sequences**: A new sequence must start with an Ace (1) or a Two (2).\n4. **Building**: You can add a card to any sequence if it is exactly one rank higher than the current top card (e.g., a 7 on a 6).\n5. **Shifting (Tactical Maneuver)**: Some house rules allow you to 'break' a long sequence (e.g., 1-2-3-4-5) to start a new branch if you have the cards to support both (e.g., moving the 4-5 to a different pile).\n6. **Drawing**: If you cannot play at least one card, you must draw one from the stock and your turn ends.",
+    Player: "1. Players take turns clockwise.\n2. On your turn, you must play as many cards as possible into existing sequences or start new ones.\n3. **Starting Sequences**: A new sequence must start with an Ace (1) or a Two (2).\n4. **Building**: You can add a card to any sequence if it is exactly one rank higher than the current top card (e.g., a 7 on a 6).\n5. **Shifting (Tactical Maneuver)**: Some house rules allow you to 'break' a long sequence (e.g., 1-2-3-4-5) to start a new branch if you have the cards to support both (e.g., moving the 4-5 to a different pile).\n6. **Drawing**: If you cannot play at least one card, you must draw one from the stock and your turn ends.",
     objective: 'Be the first player to discard all your cards by placing them into numerical sequences on the table.',
     gameplay: "1. Players take turns clockwise.\n2. On your turn, you must play as many cards as possible into existing sequences or start new ones.\n3. **Starting Sequences**: A new sequence must start with an Ace (1) or a Two (2).\n4. **Building**: You can add a card to any sequence if it is exactly one rank higher than the current top card (e.g., a 7 on a 6).\n5. **Shifting (Tactical Maneuver)**: Some house rules allow you to 'break' a long sequence (e.g., 1-2-3-4-5) to start a new branch if you have the cards to support both (e.g., moving the 4-5 to a different pile).\n6. **Drawing**: If you cannot play at least one card, you must draw one from the stock and your turn ends.",
     keyRules: [
@@ -53,10 +53,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card, draw before round end.',
-      'Scoring check: Be the first player to discard all your cards by placing them into numerical sequences on the table. Expected outcome: 1.',
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Be the first player to discard all your cards by placing them into numerical sequences on the table.',
+      "Turn-flow example: 1. Players take turns clockwise.\n2. On your turn, you must play as many cards as possible into existing sequences or start new ones.\n3. **Starting Sequences**: A new sequence must start with an Ace (1) or a Two (2).\n4. **Building**: You can add a card to any sequence if it is exactly one rank higher than the current top card (e.g., a 7 on a 6).\n5. **Shifting (Tactical Maneuver)**: Some house rules allow you to 'break' a long sequence (e.g., 1-2-3-4-5) to start a new branch if you have the cards to support both (e.g., moving the 4-5 to a different pile).\n6. **Drawing**: If you cannot play at least one card, you must draw one from the stock and your turn ends.",
+      'Scoring example: Be the first player to discard all your cards by placing them into numerical sequences on the table. Be the first player to discard all your cards by placing them into numerical sequences on the table..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'konijnen.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to discard all your cards by placing them into numerical sequences on the table.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'konijnen.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Players take turns clockwise.\n2. On your turn, you must play as many cards as possible into existing sequences or start new ones.\n3. **Starting Sequences**: A new sequence must start with an Ace (1) or a Two (2).\n4. **Building**: You can add a card to any sequence if it is exactly one rank higher than the current top card (e.g., a 7 on a 6).\n5. **Shifting (Tactical Maneuver)**: Some house rules allow you to 'break' a long sequence (e.g., 1-2-3-4-5) to start a new branch if you have the cards to support both (e.g., moving the 4-5 to a different pile).\n6. **Drawing**: If you cannot play at least one card, you must draw one from the stock and your turn ends.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'konijnen.setup.players',
+        title: 'Players',
+        text: '2 to 5 players; 3 to 4 is optimal.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'konijnen.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Aces are low (1).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'konijnen.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. Aces are low (1).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'konijnen.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 7 to 10 cards. The remainder forms the draw pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'konijnen.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to discard all your cards by placing them into numerical sequences on the table.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'konijnen.score.description',
+        title: 'Scoring',
+        text: 'Be the first player to discard all your cards by placing them into numerical sequences on the table.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'konijnen.rules.key.1',
+        title: 'Key rule 1',
+        text: 'New sequences start with Ace or 2 only.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'konijnen.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Building: add a card exactly one rank higher than the current top of any sequence.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'konijnen.rules.key.3',
+        title: 'Key rule 3',
+        text: 'If you cannot play at least one card, you must draw one from the stock and your turn ends.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'konijnen.rules.key.4',
+        title: 'Key rule 4',
+        text: 'First player to empty their hand wins.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'konijnen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'konijnen.rules.objective',
+          'konijnen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'konijnen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'konijnen.setup.players',
+          'konijnen.setup.deck',
+          'konijnen.setup.equipment',
+          'konijnen.setup.dealing',
+        ],
+      },
+      {
+        id: 'konijnen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'konijnen.rules.key.1',
+          'konijnen.rules.key.2',
+          'konijnen.rules.key.3',
+          'konijnen.rules.key.4',
+        ],
+      },
+      {
+        id: 'konijnen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'konijnen.score.description',
+          'konijnen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'konijnen.setup.dealing',
+        'konijnen.rules.objective',
+      ],
+      play_card: [
+        'konijnen.rules.gameplay',
+      ],
+      draw: [
+        'konijnen.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Exact bid: 10 plus square of tricks; off by N tricks: minus 10N. Zero bid: fail -50 for first trick then +10 each; zero made under 50, over 30. Cumulative total; game ends when one reaches agreed target; highest wins; tie broken by further hands.',
+      winCondition: 'First player to reach or exceed the agreed target score wins. Tie: play further hands until one player has highest total.',
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: 'Target score is agreed before the start of the game; no fixed default.',
+        cardValues: 'Scoring is by exact tricks bid and made; no per-card point values.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

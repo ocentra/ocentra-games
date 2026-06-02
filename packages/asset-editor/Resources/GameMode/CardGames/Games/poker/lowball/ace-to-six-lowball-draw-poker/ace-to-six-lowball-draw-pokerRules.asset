@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Ace-To-Six Lowball (Draw) Poker. Flow: forced bet, deal 5 down, bet, single draw, bet, showdown. Rank by ace-to-six low with straights/flushes counting.',
-    Player: 'Ace-to-six draw lowball: build the lowest hand, avoiding straights and flushes while navigating one draw round.',
+    LLM: 'Players contribute forced bets (ante or blinds), receive five down cards, complete first betting, perform a single draw (discard 0-5 then draw equal replacements, or stand pat), complete final betting, and go to showdown.',
+    Player: 'Players contribute forced bets (ante or blinds), receive five down cards, complete first betting, perform a single draw (discard 0-5 then draw equal replacements, or stand pat), complete final betting, and go to showdown.',
     objective: 'Make the lowest five-card hand by ace-to-six ranking.',
     gameplay: 'Players contribute forced bets (ante or blinds), receive five down cards, complete first betting, perform a single draw (discard 0-5 then draw equal replacements, or stand pat), complete final betting, and go to showdown.',
     keyRules: [
@@ -54,10 +54,195 @@
       go_out: 'Game ends at showdown when all betting is complete; no go-out-to-win mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; each_player_clockwise may use ante before initial_deal.',
-      'Scoring check: Pot game; best low hand wins the pot at showdown. Expected outcome: NA.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Make the lowest five-card hand by ace-to-six ranking.',
+      'Turn-flow example: Players contribute forced bets (ante or blinds), receive five down cards, complete first betting, perform a single draw (discard 0-5 then draw equal replacements, or stand pat), complete final betting, and go to showdown.',
+      'Scoring example: Pot game; best low hand wins the pot at showdown. Lowest valid ace-to-six hand at showdown wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'ace-to-six-lowball-draw-poker.rules.objective',
+        title: 'Objective',
+        text: 'Make the lowest five-card hand by ace-to-six ranking.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'ace-to-six-lowball-draw-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players contribute forced bets (ante or blinds), receive five down cards, complete first betting, perform a single draw (discard 0-5 then draw equal replacements, or stand pat), complete final betting, and go to showdown.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'ace-to-six-lowball-draw-poker.setup.players',
+        title: 'Players',
+        text: "Two to six players. As with other five-card draw lowball variants, the game is typically played in this range; with more than six players the deck can run short when many draw replacements, so six is a practical maximum. Play proceeds clockwise from the dealer's left.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'ace-to-six-lowball-draw-poker.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck; optional joker bug in some house rules.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'ace-to-six-lowball-draw-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Deck, chips, dealer button, and blind markers if blind structure is used.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'ace-to-six-lowball-draw-poker.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 5 cards face-down to each player.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'ace-to-six-lowball-draw-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest valid ace-to-six hand at showdown wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'ace-to-six-lowball-draw-poker.score.description',
+        title: 'Scoring',
+        text: 'Pot game; best low hand wins the pot at showdown.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'ace-to-six-lowball-draw-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Aces are always low.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'ace-to-six-lowball-draw-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Straights and flushes count and are bad for low ranking.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'ace-to-six-lowball-draw-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Best hand is 6-4-3-2-A (not a flush).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'ace-to-six-lowball-draw-poker.rules.key.4',
+        title: 'Key rule 4',
+        text: 'A-2-3-4-5 is a straight and therefore weak in this variant.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'ace-to-six-lowball-draw-poker.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Hands are compared from highest card downward among low hands.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'ace-to-six-lowball-draw-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'ace-to-six-lowball-draw-poker.rules.objective',
+          'ace-to-six-lowball-draw-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'ace-to-six-lowball-draw-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'ace-to-six-lowball-draw-poker.setup.players',
+          'ace-to-six-lowball-draw-poker.setup.deck',
+          'ace-to-six-lowball-draw-poker.setup.equipment',
+          'ace-to-six-lowball-draw-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'ace-to-six-lowball-draw-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'ace-to-six-lowball-draw-poker.rules.key.1',
+          'ace-to-six-lowball-draw-poker.rules.key.2',
+          'ace-to-six-lowball-draw-poker.rules.key.3',
+          'ace-to-six-lowball-draw-poker.rules.key.4',
+          'ace-to-six-lowball-draw-poker.rules.key.5',
+        ],
+      },
+      {
+        id: 'ace-to-six-lowball-draw-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'ace-to-six-lowball-draw-poker.score.description',
+          'ace-to-six-lowball-draw-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'ace-to-six-lowball-draw-poker.setup.dealing',
+        'ace-to-six-lowball-draw-poker.rules.objective',
+      ],
+      ante: [
+        'ace-to-six-lowball-draw-poker.rules.gameplay',
+      ],
+      deal: [
+        'ace-to-six-lowball-draw-poker.rules.gameplay',
+      ],
+      fold: [
+        'ace-to-six-lowball-draw-poker.rules.gameplay',
+      ],
+      check: [
+        'ace-to-six-lowball-draw-poker.rules.gameplay',
+      ],
+      call: [
+        'ace-to-six-lowball-draw-poker.rules.gameplay',
+      ],
+      bet: [
+        'ace-to-six-lowball-draw-poker.rules.gameplay',
+      ],
+      raise: [
+        'ace-to-six-lowball-draw-poker.rules.gameplay',
+      ],
+      reveal_hand: [
+        'ace-to-six-lowball-draw-poker.rules.gameplay',
+      ],
+      award_pot: [
+        'ace-to-six-lowball-draw-poker.rules.gameplay',
+      ],
+      draw: [
+        'ace-to-six-lowball-draw-poker.rules.gameplay',
+      ],
+      discard: [
+        'ace-to-six-lowball-draw-poker.rules.gameplay',
+      ],
+    },
   },
 }

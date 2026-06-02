@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Bauerchen. Logic: Win valuable cards in tricks, especially with the four high bowers controlling trump play.',
-    Player: 'Bauerchen is a Palatinate four-player trick-taking game in which the four jacks are permanent top trumps above a reduced ace-ten pack.',
+    LLM: 'Players follow suit when able. The four jacks outrank the suit cards as permanent trumps, and ordinary suit cards rank in the ace-ten order used by the local pack.',
+    Player: 'Players follow suit when able. The four jacks outrank the suit cards as permanent trumps, and ordinary suit cards rank in the ace-ten order used by the local pack.',
     objective: 'Win valuable cards in tricks, especially with the four high bowers controlling trump play.',
     gameplay: 'Players follow suit when able. The four jacks outrank the suit cards as permanent trumps, and ordinary suit cards rank in the ace-ten order used by the local pack.',
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Players score from card points captured in tricks. Expected outcome: Win valuable cards in tricks, especially with the four high bowers controlling trump play..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win valuable cards in tricks, especially with the four high bowers controlling trump play.',
+      'Turn-flow example: Players follow suit when able. The four jacks outrank the suit cards as permanent trumps, and ordinary suit cards rank in the ace-ten order used by the local pack.',
+      'Scoring example: Players score from card points captured in tricks. Win valuable cards in tricks, especially with the four high bowers controlling trump play..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'bauerchen.rules.objective',
+        title: 'Objective',
+        text: 'Win valuable cards in tricks, especially with the four high bowers controlling trump play.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bauerchen.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players follow suit when able. The four jacks outrank the suit cards as permanent trumps, and ordinary suit cards rank in the ace-ten order used by the local pack.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bauerchen.setup.players',
+        title: 'Players',
+        text: '4 players use the table arrangement described for Bauerchen.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bauerchen.setup.deck',
+        title: 'Deck',
+        text: '20-card French pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bauerchen.setup.equipment',
+        title: 'Equipment',
+        text: '20-card French pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bauerchen.setup.dealing',
+        title: 'Deal',
+        text: 'Use the reduced 20-card pack and deal the cards evenly for four players.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bauerchen.score.win-condition',
+        title: 'Win condition',
+        text: 'Win valuable cards in tricks, especially with the four high bowers controlling trump play.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bauerchen.score.description',
+        title: 'Scoring',
+        text: 'Players score from card points captured in tricks.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bauerchen.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Four players use a 20-card pack.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bauerchen.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The four jacks are the highest trumps.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bauerchen.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Follow suit when possible.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'bauerchen.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Card points decide the deal result.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bauerchen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bauerchen.rules.objective',
+          'bauerchen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bauerchen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bauerchen.setup.players',
+          'bauerchen.setup.deck',
+          'bauerchen.setup.equipment',
+          'bauerchen.setup.dealing',
+        ],
+      },
+      {
+        id: 'bauerchen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bauerchen.rules.key.1',
+          'bauerchen.rules.key.2',
+          'bauerchen.rules.key.3',
+          'bauerchen.rules.key.4',
+        ],
+      },
+      {
+        id: 'bauerchen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bauerchen.score.description',
+          'bauerchen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bauerchen.setup.dealing',
+        'bauerchen.rules.objective',
+      ],
+      play_card: [
+        'bauerchen.rules.gameplay',
+      ],
+      discard: [
+        'bauerchen.rules.gameplay',
+      ],
+      pass: [
+        'bauerchen.rules.gameplay',
+      ],
+      bid: [
+        'bauerchen.rules.gameplay',
+      ],
+    },
   },
 }

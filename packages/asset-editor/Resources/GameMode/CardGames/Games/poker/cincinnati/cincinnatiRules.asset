@@ -52,10 +52,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in bet_1; current_player may use check, bet, call, raise, fold before bet_2.',
-      'Scoring check: Pot is won by the highest five-card hand at showdown; no point target. Expected outcome: NA.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the pot by having the highest five-card poker hand, formed from any combination of your five hole cards and the five community cards.',
+      "Turn-flow example: 1. Deal: five cards face down to each player and five face down to the table. 2. Players look at their hands. 3. Dealer turns the table cards face up one at a time; after each card is turned there is a round of betting (check, bet, call, raise, or fold). 4. After the fifth and final betting round, showdown: each active player's hand is the best five-card hand from any combination of their hole cards and the five table cards. 5. Highest hand wins the pot.",
+      'Scoring example: Pot is won by the highest five-card hand at showdown; no point target. Highest five-card hand using any combination of hole cards and the five community cards wins the pot..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'cincinnati.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the highest five-card poker hand, formed from any combination of your five hole cards and the five community cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'cincinnati.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Deal: five cards face down to each player and five face down to the table. 2. Players look at their hands. 3. Dealer turns the table cards face up one at a time; after each card is turned there is a round of betting (check, bet, call, raise, or fold). 4. After the fifth and final betting round, showdown: each active player's hand is the best five-card hand from any combination of their hole cards and the five table cards. 5. Highest hand wins the pot.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'cincinnati.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'cincinnati.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'cincinnati.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'cincinnati.setup.dealing',
+        title: 'Deal',
+        text: 'Five cards face down to each player, then five cards face down to the table. Dealer turns table cards face up one at a time; after each card a betting round. Clockwise from dealer.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'cincinnati.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest five-card hand using any combination of hole cards and the five community cards wins the pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'cincinnati.score.description',
+        title: 'Scoring',
+        text: 'Pot is won by the highest five-card hand at showdown; no point target.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'cincinnati.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Each player has five hole cards; five community cards are revealed one by one with a betting round after each.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'cincinnati.rules.key.2',
+        title: 'Key rule 2',
+        text: "Best five-card hand uses any combination of the player's five hole cards and the five community cards.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'cincinnati.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Standard poker hand rankings determine the winner; standard betting order applies (e.g. check, bet, call, raise, fold).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'cincinnati.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'cincinnati.rules.objective',
+          'cincinnati.rules.gameplay',
+        ],
+      },
+      {
+        id: 'cincinnati.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'cincinnati.setup.players',
+          'cincinnati.setup.deck',
+          'cincinnati.setup.equipment',
+          'cincinnati.setup.dealing',
+        ],
+      },
+      {
+        id: 'cincinnati.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'cincinnati.rules.key.1',
+          'cincinnati.rules.key.2',
+          'cincinnati.rules.key.3',
+        ],
+      },
+      {
+        id: 'cincinnati.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'cincinnati.score.description',
+          'cincinnati.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'cincinnati.setup.dealing',
+        'cincinnati.rules.objective',
+      ],
+      fold: [
+        'cincinnati.rules.gameplay',
+      ],
+      check: [
+        'cincinnati.rules.gameplay',
+      ],
+      call: [
+        'cincinnati.rules.gameplay',
+      ],
+      bet: [
+        'cincinnati.rules.gameplay',
+      ],
+      raise: [
+        'cincinnati.rules.gameplay',
+      ],
+      reveal_hand: [
+        'cincinnati.rules.gameplay',
+      ],
+      award_pot: [
+        'cincinnati.rules.gameplay',
+      ],
+    },
   },
 }

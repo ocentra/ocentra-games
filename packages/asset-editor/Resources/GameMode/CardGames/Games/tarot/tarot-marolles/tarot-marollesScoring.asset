@@ -10,7 +10,32 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Marques are won or paid for: declarations (Tarots, Kings+Fool, Triomphes, Imperials, Brizigole, Tous les trois), playing or capturing Tarots in tricks, Ultimo (last trick with King or Trump I), and card points (Tarots 5, Queens 4, Cavaliers 3, Jacks 2; pack total 74). Below 25 points = loser pays winner(s); above 25 = winner collects.',
+      winCondition: 'After the hand, the player(s) with above-average card points (25 or more) win; the player(s) with below average (24 or less) pay. Two losers each pay the single winner per 5-point band below 25; two winners each collect from the single loser per 5-point band above 25. Ultimo (last trick with King or Trump I) pays 6 marques from each opponent.',
+      targetScore: null,
+      scoringDirection: null,
+      cardValues: {
+        'Tarots (XXI,I,Fool,Kings)': '5',
+        Queens: '4',
+        Cavaliers: '3',
+        Jacks: '2',
+      },
+      nullReasons: {
+        targetScore: 'No fixed target score; play by game rules.',
+        scoringDirection: 'Scoring direction is not applicable; winner is determined by game rules.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

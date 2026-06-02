@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 31. Logic: See rules.objective and rules.gameplay.',
-    Player: '31 (Scat) is a knock game. Get 31 points in one suit (A=11, face=10, number=face value) or highest three-card hand. Draw one, discard one. Knock when confident; lowest hand loses a life. Blitz: 31 in three cards declared immediately; others lose a life. Last player with lives wins.',
+    LLM: 'Draw one from stock or discard, discard one. Knock: tap; others get one turn; show hands. Lowest loses one life; knocker lowest loses two. Blitz (31 in three): show at once; others lose a life.',
+    Player: 'Draw one from stock or discard, discard one. Knock: tap; others get one turn; show hands. Lowest loses one life; knocker lowest loses two. Blitz (31 in three): show at once; others lose a life.',
     objective: 'Highest three-card hand (same suit total or high card). Avoid lowest when someone knocks.',
     gameplay: 'Draw one from stock or discard, discard one. Knock: tap; others get one turn; show hands. Lowest loses one life; knocker lowest loses two. Blitz (31 in three): show at once; others lose a life.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-9 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Lives; last with lives wins. Expected outcome: Highest three-card hand (same suit total or high card). Avoid lowest when someone knocks..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Highest three-card hand (same suit total or high card). Avoid lowest when someone knocks.',
+      'Turn-flow example: Draw one from stock or discard, discard one. Knock: tap; others get one turn; show hands. Lowest loses one life; knocker lowest loses two. Blitz (31 in three): show at once; others lose a life.',
+      'Scoring example: Lives; last with lives wins. Highest three-card hand (same suit total or high card). Avoid lowest when someone knocks..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '31.rules.objective',
+        title: 'Objective',
+        text: 'Highest three-card hand (same suit total or high card). Avoid lowest when someone knocks.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '31.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Draw one from stock or discard, discard one. Knock: tap; others get one turn; show hands. Lowest loses one life; knocker lowest loses two. Blitz (31 in three): show at once; others lose a life.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '31.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '31.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Aces count 11, court cards 10, other cards face value. Dutch variant (Eenendertigen) uses a 32-card pack (7 and above).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '31.setup.equipment',
+        title: 'Equipment',
+        text: '52-card deck, 3-4 lives per player',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '31.setup.dealing',
+        title: 'Deal',
+        text: '3 cards each; one card up for discard; rest stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '31.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest three-card hand (same suit total or high card). Avoid lowest when someone knocks.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '31.score.description',
+        title: 'Scoring',
+        text: 'Lives; last with lives wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '31.rules.key.1',
+        title: 'Key rule 1',
+        text: 'A=11, K/Q/J=10',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '31.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Knock then reveal; lowest loses life',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '31.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Blitz ends round',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '31.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '31.rules.objective',
+          '31.rules.gameplay',
+        ],
+      },
+      {
+        id: '31.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '31.setup.players',
+          '31.setup.deck',
+          '31.setup.equipment',
+          '31.setup.dealing',
+        ],
+      },
+      {
+        id: '31.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '31.rules.key.1',
+          '31.rules.key.2',
+          '31.rules.key.3',
+        ],
+      },
+      {
+        id: '31.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '31.score.description',
+          '31.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '31.setup.dealing',
+        '31.rules.objective',
+      ],
+      play_card: [
+        '31.rules.gameplay',
+      ],
+    },
   },
 }

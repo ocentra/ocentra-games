@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Block/draw variant: play all or lowest pips if blocked. Expected outcome: First to play all tiles or lowest pips remaining..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Play all tiles first, or have fewest pips if blocked; or reach 36/45 points in scoring variants.',
+      "Turn-flow example: Match to open ends; doubles crosswise. Block: pass if cannot play. Draw: draw until playable. Winner scores opponents' pips or lowest hand if blocked.",
+      'Scoring example: Block/draw variant: play all or lowest pips if blocked. First to play all tiles or lowest pips remaining..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '36-45-dominoes.rules.objective',
+        title: 'Objective',
+        text: 'Play all tiles first, or have fewest pips if blocked; or reach 36/45 points in scoring variants.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '36-45-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: "Match to open ends; doubles crosswise. Block: pass if cannot play. Draw: draw until playable. Winner scores opponents' pips or lowest hand if blocked.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '36-45-dominoes.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '36-45-dominoes.setup.deck',
+        title: 'Deck',
+        text: '36 or 45 tiles (extended set or scoring target)',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '36-45-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'Domino set, table',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '36-45-dominoes.setup.dealing',
+        title: 'Deal',
+        text: 'Tiles dealt per variant; remainder boneyard in draw games.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '36-45-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'First to play all tiles or lowest pips remaining.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '36-45-dominoes.score.description',
+        title: 'Scoring',
+        text: 'Block/draw variant: play all or lowest pips if blocked.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '36-45-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Match to open ends; doubles crosswise',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '36-45-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: '36 or 45 tiles or target score',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '36-45-dominoes.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Block or draw variant',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '36-45-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '36-45-dominoes.rules.objective',
+          '36-45-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: '36-45-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '36-45-dominoes.setup.players',
+          '36-45-dominoes.setup.deck',
+          '36-45-dominoes.setup.equipment',
+          '36-45-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: '36-45-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '36-45-dominoes.rules.key.1',
+          '36-45-dominoes.rules.key.2',
+          '36-45-dominoes.rules.key.3',
+        ],
+      },
+      {
+        id: '36-45-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '36-45-dominoes.score.description',
+          '36-45-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '36-45-dominoes.setup.dealing',
+        '36-45-dominoes.rules.objective',
+      ],
+      play_card: [
+        '36-45-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

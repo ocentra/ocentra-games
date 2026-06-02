@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Spit in the Ocean Poker. Logic: See rules.',
-    Player: 'Poker variant with one shared community card. Wild card affects all hands.',
+    LLM: "After the deal, there is a betting round. Then each player in turn may discard any number of cards and receive that many replacements from the deck. A second betting round follows, then showdown. Each hand is the player's four cards plus the community card; the table card and all cards of its rank are wild. Highest hand wins.",
+    Player: "After the deal, there is a betting round. Then each player in turn may discard any number of cards and receive that many replacements from the deck. A second betting round follows, then showdown. Each hand is the player's four cards plus the community card; the table card and all cards of its rank are wild. Highest hand wins.",
     objective: 'Win the pot by having the highest five-card poker hand at showdown, using your four private cards plus the single community card (with wilds).',
     gameplay: "After the deal, there is a betting round. Then each player in turn may discard any number of cards and receive that many replacements from the deck. A second betting round follows, then showdown. Each hand is the player's four cards plus the community card; the table card and all cards of its rank are wild. Highest hand wins.",
     keyRules: [
@@ -52,10 +52,168 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in pre_draw_bet; each_player_clockwise may use check, bet, call, raise, fold before draw.',
-      'Scoring check: Highest five-card hand at showdown wins the pot. Standard poker hand rankings; the community card and all cards of its rank are wild. Expected outcome: Highest five-card poker hand at showdown wins the pot..',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Win the pot by having the highest five-card poker hand at showdown, using your four private cards plus the single community card (with wilds).',
+      "Turn-flow example: After the deal, there is a betting round. Then each player in turn may discard any number of cards and receive that many replacements from the deck. A second betting round follows, then showdown. Each hand is the player's four cards plus the community card; the table card and all cards of its rank are wild. Highest hand wins.",
+      'Scoring example: Highest five-card hand at showdown wins the pot. Standard poker hand rankings; the community card and all cards of its rank are wild. Highest five-card poker hand at showdown wins the pot..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'spit-in-the-ocean.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the highest five-card poker hand at showdown, using your four private cards plus the single community card (with wilds).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'spit-in-the-ocean.rules.gameplay',
+        title: 'Turn flow',
+        text: "After the deal, there is a betting round. Then each player in turn may discard any number of cards and receive that many replacements from the deck. A second betting round follows, then showdown. Each hand is the player's four cards plus the community card; the table card and all cards of its rank are wild. Highest hand wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'spit-in-the-ocean.setup.players',
+        title: 'Players',
+        text: 'Two to six players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'spit-in-the-ocean.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'spit-in-the-ocean.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'spit-in-the-ocean.setup.dealing',
+        title: 'Deal',
+        text: 'Four cards face down to each player, then one card face up to the table. The table card and all cards of the same rank are wild.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'spit-in-the-ocean.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest five-card poker hand at showdown wins the pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'spit-in-the-ocean.score.description',
+        title: 'Scoring',
+        text: 'Highest five-card hand at showdown wins the pot. Standard poker hand rankings; the community card and all cards of its rank are wild.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'spit-in-the-ocean.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Four cards per player plus one face-up community card; that card and all of same rank are wild.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'spit-in-the-ocean.rules.key.2',
+        title: 'Key rule 2',
+        text: 'One betting round after the deal, then a draw round (discard and replace), then a second betting round, then showdown.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'spit-in-the-ocean.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Best five-card hand using four hole cards plus the community card wins the pot.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'spit-in-the-ocean.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'spit-in-the-ocean.rules.objective',
+          'spit-in-the-ocean.rules.gameplay',
+        ],
+      },
+      {
+        id: 'spit-in-the-ocean.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'spit-in-the-ocean.setup.players',
+          'spit-in-the-ocean.setup.deck',
+          'spit-in-the-ocean.setup.equipment',
+          'spit-in-the-ocean.setup.dealing',
+        ],
+      },
+      {
+        id: 'spit-in-the-ocean.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'spit-in-the-ocean.rules.key.1',
+          'spit-in-the-ocean.rules.key.2',
+          'spit-in-the-ocean.rules.key.3',
+        ],
+      },
+      {
+        id: 'spit-in-the-ocean.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'spit-in-the-ocean.score.description',
+          'spit-in-the-ocean.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'spit-in-the-ocean.setup.dealing',
+        'spit-in-the-ocean.rules.objective',
+      ],
+      fold: [
+        'spit-in-the-ocean.rules.gameplay',
+      ],
+      check: [
+        'spit-in-the-ocean.rules.gameplay',
+      ],
+      call: [
+        'spit-in-the-ocean.rules.gameplay',
+      ],
+      bet: [
+        'spit-in-the-ocean.rules.gameplay',
+      ],
+      raise: [
+        'spit-in-the-ocean.rules.gameplay',
+      ],
+      reveal_hand: [
+        'spit-in-the-ocean.rules.gameplay',
+      ],
+      award_pot: [
+        'spit-in-the-ocean.rules.gameplay',
+      ],
+      draw: [
+        'spit-in-the-ocean.rules.gameplay',
+      ],
+    },
   },
 }

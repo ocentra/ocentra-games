@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Fipsen (German solo trick-taker). 3-5 players (optimal 4). 32-card deck (some regions use 36). Bidding: Each player bids 1-8 tricks (highest bidder becomes soloist). Soloist may draw from Skat (optional). Gameplay: 8 tricks total. Lead player starts; others follow suit if able. Scoring: Soloist scores bid amount if they make bid tricks; lose bid amount if fail. Defenders win if soloist fails. Rotate bidder for next round.',
-    Player: 'Welcome to Fipsen! Bid for the number of tricks you think you can make (1-8). If you win the bidding, you play solo against the other three players. Make your bid and you score the bid amount; fail and you lose those points. The 7 of Diamonds is specialâ€”watch for it!',
+    LLM: '1. Lead: The bidder leads the first trick.\n2. Following Suit: Players must follow suit if possible.\n3. Trumps: If you cannot follow suit, you may play a trump.',
+    Player: '1. Lead: The bidder leads the first trick.\n2. Following Suit: Players must follow suit if possible.\n3. Trumps: If you cannot follow suit, you may play a trump.',
     objective: 'Win the number of tricks declared during the bidding phase. If the bidder succeeds, they win points; if they fail, they are penalized.',
     gameplay: '1. Lead: The bidder leads the first trick.\n2. Following Suit: Players must follow suit if possible.\n3. Trumps: If you cannot follow suit, you may play a trump.',
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-5 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Trick-based scoring. Bidder tries to achieve bid tricks; defenders try to stop them. Points awarded based on bid success. Expected outcome: Bidder wins if tricks taken >= bid. Defenders win if bidder fails. Game continues with rotating bidder..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win the number of tricks declared during the bidding phase. If the bidder succeeds, they win points; if they fail, they are penalized.',
+      'Turn-flow example: 1. Lead: The bidder leads the first trick.\n2. Following Suit: Players must follow suit if possible.\n3. Trumps: If you cannot follow suit, you may play a trump.',
+      'Scoring example: Trick-based scoring. Bidder tries to achieve bid tricks; defenders try to stop them. Points awarded based on bid success. Bidder wins if tricks taken >= bid. Defenders win if bidder fails. Game continues with rotating bidder..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'fipsen.rules.objective',
+        title: 'Objective',
+        text: 'Win the number of tricks declared during the bidding phase. If the bidder succeeds, they win points; if they fail, they are penalized.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'fipsen.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Lead: The bidder leads the first trick.\n2. Following Suit: Players must follow suit if possible.\n3. Trumps: If you cannot follow suit, you may play a trump.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'fipsen.setup.players',
+        title: 'Players',
+        text: '4 players (standard). Each player plays for themselves, but three act as a temporary team against the highest bidder.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'fipsen.setup.deck',
+        title: 'Deck',
+        text: '25 cards. Start with a 32ndcard Skat deck and remove all Diamonds except the Seven of Diamonds.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'fipsen.setup.equipment',
+        title: 'Equipment',
+        text: '25 cards. Start with a 32ndcard Skat deck and remove all Diamonds except the Seven of Diamonds.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'fipsen.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 5 cards (traditionally 3 then 2). Two cards are dealt face-down to the center (the Skat). Three cards are left over and set aside.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'fipsen.score.win-condition',
+        title: 'Win condition',
+        text: 'Bidder wins if tricks taken >= bid. Defenders win if bidder fails. Game continues with rotating bidder.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'fipsen.score.description',
+        title: 'Scoring',
+        text: 'Trick-based scoring. Bidder tries to achieve bid tricks; defenders try to stop them. Points awarded based on bid success.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'fipsen.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Siebener Fips: If a player is dealt all four Sevens (Club, Spade, Heart, and Diamond) plus an Ace, they win immediately and score 30 points.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'fipsen.rules.key.2',
+        title: 'Key rule 2',
+        text: "Doubling: Scoring values double if Clubs are trumps or if a player declares 'Diamonds' (Ruten).",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'fipsen.rules.key.3',
+        title: 'Key rule 3',
+        text: "Kloppen: An opponent can 'Knock' (Kloppen) to double the stakes again.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'fipsen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'fipsen.rules.objective',
+          'fipsen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'fipsen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'fipsen.setup.players',
+          'fipsen.setup.deck',
+          'fipsen.setup.equipment',
+          'fipsen.setup.dealing',
+        ],
+      },
+      {
+        id: 'fipsen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'fipsen.rules.key.1',
+          'fipsen.rules.key.2',
+          'fipsen.rules.key.3',
+        ],
+      },
+      {
+        id: 'fipsen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'fipsen.score.description',
+          'fipsen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'fipsen.setup.dealing',
+        'fipsen.rules.objective',
+      ],
+      play_card: [
+        'fipsen.rules.gameplay',
+      ],
+      pass: [
+        'fipsen.rules.gameplay',
+      ],
+      bid: [
+        'fipsen.rules.gameplay',
+      ],
+    },
   },
 }

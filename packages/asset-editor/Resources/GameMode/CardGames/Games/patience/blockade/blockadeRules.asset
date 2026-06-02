@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Blockade. Logic: Build all cards onto foundations by suit.',
-    Player: 'Blockade is a two-pack patience game related to Forty Thieves, using twelve tableau piles and foundations built by suit.',
+    LLM: 'Move exposed cards in descending order on tableau piles, build foundations up by suit, and manage stock access so blocked cards can be released.',
+    Player: 'Move exposed cards in descending order on tableau piles, build foundations up by suit, and manage stock access so blocked cards can be released.',
     objective: 'Build all cards from the two-deck tableau onto the foundations by suit while using the twelve piles to unblock buried cards.',
     gameplay: 'Move exposed cards in descending order on tableau piles, build foundations up by suit, and manage stock access so blocked cards can be released.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: The game is won when every card is moved to a foundation. Expected outcome: Build all cards onto foundations by suit..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Build all cards from the two-deck tableau onto the foundations by suit while using the twelve piles to unblock buried cards.',
+      'Turn-flow example: Move exposed cards in descending order on tableau piles, build foundations up by suit, and manage stock access so blocked cards can be released.',
+      'Scoring example: The game is won when every card is moved to a foundation. Build all cards onto foundations by suit..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'blockade.rules.objective',
+        title: 'Objective',
+        text: 'Build all cards from the two-deck tableau onto the foundations by suit while using the twelve piles to unblock buried cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'blockade.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Move exposed cards in descending order on tableau piles, build foundations up by suit, and manage stock access so blocked cards can be released.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'blockade.setup.players',
+        title: 'Players',
+        text: '1 players use the table arrangement described for Blockade.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'blockade.setup.deck',
+        title: 'Deck',
+        text: 'Two standard 52-card decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'blockade.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard 52-card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'blockade.setup.dealing',
+        title: 'Deal',
+        text: 'Deal twelve tableau piles from two decks, then use the stock and waste to feed legal builds.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'blockade.score.win-condition',
+        title: 'Win condition',
+        text: 'Build all cards onto foundations by suit.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'blockade.score.description',
+        title: 'Scoring',
+        text: 'The game is won when every card is moved to a foundation.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'blockade.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two decks are used.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'blockade.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Twelve tableau piles are used.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'blockade.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Foundations build by suit.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'blockade.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Blocked tableau cards create the main puzzle.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'blockade.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'blockade.rules.objective',
+          'blockade.rules.gameplay',
+        ],
+      },
+      {
+        id: 'blockade.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'blockade.setup.players',
+          'blockade.setup.deck',
+          'blockade.setup.equipment',
+          'blockade.setup.dealing',
+        ],
+      },
+      {
+        id: 'blockade.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'blockade.rules.key.1',
+          'blockade.rules.key.2',
+          'blockade.rules.key.3',
+          'blockade.rules.key.4',
+        ],
+      },
+      {
+        id: 'blockade.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'blockade.score.description',
+          'blockade.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'blockade.setup.dealing',
+        'blockade.rules.objective',
+      ],
+      deal: [
+        'blockade.rules.gameplay',
+      ],
+      play_card: [
+        'blockade.rules.gameplay',
+      ],
+      draw: [
+        'blockade.rules.gameplay',
+      ],
+    },
   },
 }

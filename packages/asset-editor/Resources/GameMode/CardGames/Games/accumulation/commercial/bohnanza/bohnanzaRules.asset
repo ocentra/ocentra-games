@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Bohnanza. Logic: Earn the most coins by planting and harvesting valuable sets of bean cards.',
-    Player: 'Bohnanza is a commercial trading card game where players plant, trade, and harvest bean cards for coins while hand order is restricted.',
+    LLM: 'Players must plant from the front of the hand, reveal trade offers, negotiate swaps or gifts, plant acquired beans, and harvest fields for coins when profitable or necessary.',
+    Player: 'Players must plant from the front of the hand, reveal trade offers, negotiate swaps or gifts, plant acquired beans, and harvest fields for coins when profitable or necessary.',
     objective: 'Earn the most coins by planting and harvesting valuable sets of bean cards.',
     gameplay: 'Players must plant from the front of the hand, reveal trade offers, negotiate swaps or gifts, plant acquired beans, and harvest fields for coins when profitable or necessary.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-7 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Harvested bean cards become coins; most coins wins. Expected outcome: Earn the most coins by planting and harvesting valuable sets of bean cards..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Earn the most coins by planting and harvesting valuable sets of bean cards.',
+      'Turn-flow example: Players must plant from the front of the hand, reveal trade offers, negotiate swaps or gifts, plant acquired beans, and harvest fields for coins when profitable or necessary.',
+      'Scoring example: Harvested bean cards become coins; most coins wins. Earn the most coins by planting and harvesting valuable sets of bean cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'bohnanza.rules.objective',
+        title: 'Objective',
+        text: 'Earn the most coins by planting and harvesting valuable sets of bean cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bohnanza.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players must plant from the front of the hand, reveal trade offers, negotiate swaps or gifts, plant acquired beans, and harvest fields for coins when profitable or necessary.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bohnanza.setup.players',
+        title: 'Players',
+        text: '2-7 players use the table arrangement described for Bohnanza.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bohnanza.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Bohnanza bean deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bohnanza.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Bohnanza bean deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bohnanza.setup.dealing',
+        title: 'Deal',
+        text: 'Deal each player a hand that must keep its order; prepare bean fields and the draw deck.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bohnanza.score.win-condition',
+        title: 'Win condition',
+        text: 'Earn the most coins by planting and harvesting valuable sets of bean cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bohnanza.score.description',
+        title: 'Scoring',
+        text: 'Harvested bean cards become coins; most coins wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bohnanza.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Hand order may not be rearranged.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bohnanza.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players trade actively each turn.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bohnanza.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Bean fields hold matching bean types.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'bohnanza.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Harvested bean sets convert to coins.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'bohnanza.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Most coins wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bohnanza.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bohnanza.rules.objective',
+          'bohnanza.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bohnanza.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bohnanza.setup.players',
+          'bohnanza.setup.deck',
+          'bohnanza.setup.equipment',
+          'bohnanza.setup.dealing',
+        ],
+      },
+      {
+        id: 'bohnanza.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bohnanza.rules.key.1',
+          'bohnanza.rules.key.2',
+          'bohnanza.rules.key.3',
+          'bohnanza.rules.key.4',
+          'bohnanza.rules.key.5',
+        ],
+      },
+      {
+        id: 'bohnanza.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bohnanza.score.description',
+          'bohnanza.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bohnanza.setup.dealing',
+        'bohnanza.rules.objective',
+      ],
+      play_card: [
+        'bohnanza.rules.gameplay',
+      ],
+    },
   },
 }

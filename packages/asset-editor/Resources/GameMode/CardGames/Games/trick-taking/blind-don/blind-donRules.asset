@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Blind Don. Type: Point-Trick. Rules: 2 players. 13+13 deal. Rank: A>K...2. Point values: 9=9, 5=5, A=4, K=3, Q=2, J=1. First lead sets trump. Memory of Part One is critical for Part Two.',
-    Player: "You hold the 9 of Clubs, 5 of Clubs, and the Ace of Hearts. Your first lead sets trumps! Do you pitch the 5♣ to lock in Clubs, protecting your high-value 9♣ under your own 'Don'?",
+    LLM: '1. **Part One**: Play 13 tricks with the first deal. Trump is set by the first card led. 2. **Part Two**: Deal the remaining 26 cards (13 each). Play the remaining 13 tricks using the same trump suit. 3. **The Play**: Must follow suit if possible. If void, may trump or discard.',
+    Player: '1. **Part One**: Play 13 tricks with the first deal. Trump is set by the first card led. 2. **Part Two**: Deal the remaining 26 cards (13 each). Play the remaining 13 tricks using the same trump suit. 3. **The Play**: Must follow suit if possible. If void, may trump or discard.',
     objective: 'Score points by capturing specific cards in tricks. Points: Nines (9 each), Fives (5 each), Aces (4 each), Kings (3), Queens (2), Jacks (1).',
     gameplay: '1. **Part One**: Play 13 tricks with the first deal. Trump is set by the first card led. 2. **Part Two**: Deal the remaining 26 cards (13 each). Play the remaining 13 tricks using the same trump suit. 3. **The Play**: Must follow suit if possible. If void, may trump or discard.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'The game ends automatically once all 26 tricks have been played by both participants.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in dealing_1; system may use deal_13_each before pitch.',
-      'Scoring check: Points are tallied after all 26 tricks. First to reach 80 points wins the match. Expected outcome: 80.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Score points by capturing specific cards in tricks. Points: Nines (9 each), Fives (5 each), Aces (4 each), Kings (3), Queens (2), Jacks (1).',
+      'Turn-flow example: 1. **Part One**: Play 13 tricks with the first deal. Trump is set by the first card led. 2. **Part Two**: Deal the remaining 26 cards (13 each). Play the remaining 13 tricks using the same trump suit. 3. **The Play**: Must follow suit if possible. If void, may trump or discard.',
+      'Scoring example: Points are tallied after all 26 tricks. First to reach 80 points wins the match. First player to reach 80 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'blind-don.rules.objective',
+        title: 'Objective',
+        text: 'Score points by capturing specific cards in tricks. Points: Nines (9 each), Fives (5 each), Aces (4 each), Kings (3), Queens (2), Jacks (1).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'blind-don.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Part One**: Play 13 tricks with the first deal. Trump is set by the first card led. 2. **Part Two**: Deal the remaining 26 cards (13 each). Play the remaining 13 tricks using the same trump suit. 3. **The Play**: Must follow suit if possible. If void, may trump or discard.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'blind-don.setup.players',
+        title: 'Players',
+        text: 'Exactly 2 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'blind-don.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card French pack. Ranks: A, K, Q, J, 10, 9, 8, 7, 6, 5, 4, 3, 2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'blind-don.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, score pad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'blind-don.setup.dealing',
+        title: 'Deal',
+        text: "Deal 13 cards to each player. The remaining 26 cards are set aside face-down for the second half of the game. The first card played (the 'pitch') by the non-dealer sets the trump suit for the entire hand.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'blind-don.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach 80 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'blind-don.score.description',
+        title: 'Scoring',
+        text: 'Points are tallied after all 26 tricks. First to reach 80 points wins the match.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'blind-don.rules.key.1',
+        title: 'Key rule 1',
+        text: "The Five of Trumps is known as the 'Don'.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'blind-don.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Winning the last trick of the game (the 26th trick) scores no bonus points, but captures the cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'blind-don.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Players must follow suit if they can; trumps rank high.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'blind-don.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'blind-don.rules.objective',
+          'blind-don.rules.gameplay',
+        ],
+      },
+      {
+        id: 'blind-don.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'blind-don.setup.players',
+          'blind-don.setup.deck',
+          'blind-don.setup.equipment',
+          'blind-don.setup.dealing',
+        ],
+      },
+      {
+        id: 'blind-don.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'blind-don.rules.key.1',
+          'blind-don.rules.key.2',
+          'blind-don.rules.key.3',
+        ],
+      },
+      {
+        id: 'blind-don.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'blind-don.score.description',
+          'blind-don.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'blind-don.setup.dealing',
+        'blind-don.rules.objective',
+      ],
+      play_card: [
+        'blind-don.rules.gameplay',
+      ],
+      deal_13_each: [
+        'blind-don.rules.gameplay',
+      ],
+      deal_remaining_26: [
+        'blind-don.rules.gameplay',
+      ],
+      calculate_don_points: [
+        'blind-don.rules.gameplay',
+      ],
+    },
   },
 }

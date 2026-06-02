@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kaiserspiel. Logic: Win the tricks, card points, or contract result required by the local form of the game.',
-    Player: 'Kaiserspiel is a traditional trick-taking card game using 40 or 48-card Swiss Kaiserspiel deck for 2, 4, or 6 players. It uses one chosen suit and belongs to the Karnöffel environment.',
+    LLM: 'Players play a point-trick game with regional drinking-game context. The source documents Schlauch as a standalone extinct Bavarian game that should be kept separate from other Tarock or Skat-family entries.',
+    Player: 'Players play a point-trick game with regional drinking-game context. The source documents Schlauch as a standalone extinct Bavarian game that should be kept separate from other Tarock or Skat-family entries.',
     objective: 'Win the point-trick objective defined by the Bavarian Schlauch rules.',
     gameplay: 'Players play a point-trick game with regional drinking-game context. The source documents Schlauch as a standalone extinct Bavarian game that should be kept separate from other Tarock or Skat-family entries.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Tricks, card points, or contract success determine scoring. Expected outcome: 1.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win the point-trick objective defined by the Bavarian Schlauch rules.',
+      'Turn-flow example: Players play a point-trick game with regional drinking-game context. The source documents Schlauch as a standalone extinct Bavarian game that should be kept separate from other Tarock or Skat-family entries.',
+      'Scoring example: Tricks, card points, or contract success determine scoring. Win the tricks, card points, or contract result required by the local form of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'schlauch.rules.objective',
+        title: 'Objective',
+        text: 'Win the point-trick objective defined by the Bavarian Schlauch rules.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'schlauch.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play a point-trick game with regional drinking-game context. The source documents Schlauch as a standalone extinct Bavarian game that should be kept separate from other Tarock or Skat-family entries.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'schlauch.setup.players',
+        title: 'Players',
+        text: '3 or more players use the table arrangement described for Schlauch.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'schlauch.setup.deck',
+        title: 'Deck',
+        text: 'Bavarian or German-suited playing cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'schlauch.setup.equipment',
+        title: 'Equipment',
+        text: 'Bavarian or German-suited playing cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'schlauch.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Bavarian or German-suited playing cards and deal or lay out cards according to the documented Schlauch rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'schlauch.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'schlauch.score.description',
+        title: 'Scoring',
+        text: 'Tricks, card points, or contract success determine scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'schlauch.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Extinct Bavarian point-trick game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'schlauch.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Known in drinking-game contexts as Bier-Schlauch.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'schlauch.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Model from a specific rules source before adding scoring variants.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'schlauch.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'schlauch.rules.objective',
+          'schlauch.rules.gameplay',
+        ],
+      },
+      {
+        id: 'schlauch.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'schlauch.setup.players',
+          'schlauch.setup.deck',
+          'schlauch.setup.equipment',
+          'schlauch.setup.dealing',
+        ],
+      },
+      {
+        id: 'schlauch.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'schlauch.rules.key.1',
+          'schlauch.rules.key.2',
+          'schlauch.rules.key.3',
+        ],
+      },
+      {
+        id: 'schlauch.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'schlauch.score.description',
+          'schlauch.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'schlauch.setup.dealing',
+        'schlauch.rules.objective',
+      ],
+      play_card: [
+        'schlauch.rules.gameplay',
+      ],
+      discard: [
+        'schlauch.rules.gameplay',
+      ],
+      pass: [
+        'schlauch.rules.gameplay',
+      ],
+      bid: [
+        'schlauch.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Play Gnav with exact matador responses, fool side-rules, and token-elimination accounting. Stop swap loop immediately when Cuckoo appears.',
-    Player: 'Gnav round: check your hidden piece, decide whether to stand or swap left, and manage matador outcomes to avoid finishing lowest.',
+    LLM: 'Play starts left of dealer and proceeds clockwise. On turn, a player either stands or tries to swap with the left neighbor. A normal neighbor must swap, but top five matadors change this. Cuckoo stops further swapping and triggers immediate reveal. Dragon and Katt refuse the swap and force the attacker to pay a token. Hest and Hus pass the attacker onward so they must try the next player instead. When play reaches dealer, dealer may exchange with the undealt stock with the same matador consequences; when a pass reaches dealer, draw replacement pieces until a non-pass value appears. At round end all reveal. Lowest value pays one token to pool; ties for lowest each pay.',
+    Player: 'Play starts left of dealer and proceeds clockwise. On turn, a player either stands or tries to swap with the left neighbor. A normal neighbor must swap, but top five matadors change this. Cuckoo stops further swapping and triggers immediate reveal. Dragon and Katt refuse the swap and force the attacker to pay a token. Hest and Hus pass the attacker onward so they must try the next player instead. When play reaches dealer, dealer may exchange with the undealt stock with the same matador consequences; when a pass reaches dealer, draw replacement pieces until a non-pass value appears. At round end all reveal. Lowest value pays one token to pool; ties for lowest each pay.',
     objective: 'Avoid ending the round with the lowest piece and preserve your tokens while other players are eliminated.',
     gameplay: 'Play starts left of dealer and proceeds clockwise. On turn, a player either stands or tries to swap with the left neighbor. A normal neighbor must swap, but top five matadors change this. Cuckoo stops further swapping and triggers immediate reveal. Dragon and Katt refuse the swap and force the attacker to pay a token. Hest and Hus pass the attacker onward so they must try the next player instead. When play reaches dealer, dealer may exchange with the undealt stock with the same matador consequences; when a pass reaches dealer, draw replacement pieces until a non-pass value appears. At round end all reveal. Lowest value pays one token to pool; ties for lowest each pay.',
     keyRules: [
@@ -52,10 +52,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-20 player(s), 1 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before turn_loop.',
-      'Scoring check: At reveal, the lowest piece holder pays one token to the pool. Ties for lowest each pay. Fool side-rules can require additional payer(s). Expected outcome: NA.',
+      'Setup example: 1 card(s) per player.',
+      'Rule example: Avoid ending the round with the lowest piece and preserve your tokens while other players are eliminated.',
+      'Turn-flow example: Play starts left of dealer and proceeds clockwise. On turn, a player either stands or tries to swap with the left neighbor. A normal neighbor must swap, but top five matadors change this. Cuckoo stops further swapping and triggers immediate reveal. Dragon and Katt refuse the swap and force the attacker to pay a token. Hest and Hus pass the attacker onward so they must try the next player instead. When play reaches dealer, dealer may exchange with the undealt stock with the same matador consequences; when a pass reaches dealer, draw replacement pieces until a non-pass value appears. At round end all reveal. Lowest value pays one token to pool; ties for lowest each pay.',
+      'Scoring example: At reveal, the lowest piece holder pays one token to the pool. Ties for lowest each pay. Fool side-rules can require additional payer(s). Last player with at least one token remaining wins the session..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'gnav.rules.objective',
+        title: 'Objective',
+        text: 'Avoid ending the round with the lowest piece and preserve your tokens while other players are eliminated.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'gnav.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Play starts left of dealer and proceeds clockwise. On turn, a player either stands or tries to swap with the left neighbor. A normal neighbor must swap, but top five matadors change this. Cuckoo stops further swapping and triggers immediate reveal. Dragon and Katt refuse the swap and force the attacker to pay a token. Hest and Hus pass the attacker onward so they must try the next player instead. When play reaches dealer, dealer may exchange with the undealt stock with the same matador consequences; when a pass reaches dealer, draw replacement pieces until a non-pass value appears. At round end all reveal. Lowest value pays one token to pool; ties for lowest each pay.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'gnav.setup.players',
+        title: 'Players',
+        text: '2-20 players in clockwise order.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'gnav.setup.deck',
+        title: 'Deck',
+        text: '42 total pieces: two each of Gjok (cuckoo), Dragon, Katt, Hest, Hus, XII-XI-X-IX-VIII-VII-VI-V-IV-III-II-I, 0, Potte, Ugle, and Narr.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'gnav.setup.equipment',
+        title: 'Equipment',
+        text: 'Gnav card pack or wooden pawns, plus tokens or matches used as lives and a central pool.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'gnav.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer gives one hidden piece to each player; each player privately checks their own value.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'gnav.score.win-condition',
+        title: 'Win condition',
+        text: 'Last player with at least one token remaining wins the session.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'gnav.score.description',
+        title: 'Scoring',
+        text: 'At reveal, the lowest piece holder pays one token to the pool. Ties for lowest each pay. Fool side-rules can require additional payer(s).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'gnav.rules.key.1',
+        title: 'Key rule 1',
+        text: 'If dealt Narr (fool), you must signal it by knocking; at reveal both fool holder and next-lowest holder pay.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'gnav.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If two fools are in play, both fool holders pay and may sit out the next round.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'gnav.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Players who lose all tokens are eliminated; last remaining player wins the session.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'gnav.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'gnav.rules.objective',
+          'gnav.rules.gameplay',
+        ],
+      },
+      {
+        id: 'gnav.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'gnav.setup.players',
+          'gnav.setup.deck',
+          'gnav.setup.equipment',
+          'gnav.setup.dealing',
+        ],
+      },
+      {
+        id: 'gnav.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'gnav.rules.key.1',
+          'gnav.rules.key.2',
+          'gnav.rules.key.3',
+        ],
+      },
+      {
+        id: 'gnav.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'gnav.score.description',
+          'gnav.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'gnav.setup.dealing',
+        'gnav.rules.objective',
+      ],
+      deal: [
+        'gnav.rules.gameplay',
+      ],
+      reveal_hand: [
+        'gnav.rules.gameplay',
+      ],
+      award_pot: [
+        'gnav.rules.gameplay',
+      ],
+      stand: [
+        'gnav.rules.gameplay',
+      ],
+      swap_left: [
+        'gnav.rules.gameplay',
+      ],
+      swap_with_stock: [
+        'gnav.rules.gameplay',
+      ],
+      announce_fool: [
+        'gnav.rules.gameplay',
+      ],
+    },
   },
 }

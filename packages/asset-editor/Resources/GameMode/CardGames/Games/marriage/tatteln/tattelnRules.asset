@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kaiserspiel. Logic: Win the tricks, card points, or contract result required by the local form of the game.',
-    Player: 'Kaiserspiel is a traditional trick-taking card game using 40 or 48-card Swiss Kaiserspiel deck for 2, 4, or 6 players. It uses one chosen suit and belongs to the Karnöffel environment.',
+    LLM: 'Two players draw and play tricks with a 32-card pack. The game combines trick capture with marriage-like combinations and point scoring.',
+    Player: 'Two players draw and play tricks with a 32-card pack. The game combines trick capture with marriage-like combinations and point scoring.',
     objective: 'Score through tricks and combinations in a two-player trick-and-draw contest.',
     gameplay: 'Two players draw and play tricks with a 32-card pack. The game combines trick capture with marriage-like combinations and point scoring.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Tricks, card points, or contract success determine scoring. Expected outcome: 1.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Score through tricks and combinations in a two-player trick-and-draw contest.',
+      'Turn-flow example: Two players draw and play tricks with a 32-card pack. The game combines trick capture with marriage-like combinations and point scoring.',
+      'Scoring example: Tricks, card points, or contract success determine scoring. Win the tricks, card points, or contract result required by the local form of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tatteln.rules.objective',
+        title: 'Objective',
+        text: 'Score through tricks and combinations in a two-player trick-and-draw contest.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tatteln.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Two players draw and play tricks with a 32-card pack. The game combines trick capture with marriage-like combinations and point scoring.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tatteln.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Tatteln.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tatteln.setup.deck',
+        title: 'Deck',
+        text: '32-card French or German-suited pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tatteln.setup.equipment',
+        title: 'Equipment',
+        text: '32-card French or German-suited pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tatteln.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare 32-card French or German-suited pack and deal or lay out cards according to the documented Tatteln rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tatteln.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tatteln.score.description',
+        title: 'Scoring',
+        text: 'Tricks, card points, or contract success determine scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tatteln.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two-player historical trick-and-draw game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tatteln.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Uses a 32-card pack.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tatteln.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Related to Piquet, Mariage, and Klaberjass.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tatteln.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tatteln.rules.objective',
+          'tatteln.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tatteln.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tatteln.setup.players',
+          'tatteln.setup.deck',
+          'tatteln.setup.equipment',
+          'tatteln.setup.dealing',
+        ],
+      },
+      {
+        id: 'tatteln.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tatteln.rules.key.1',
+          'tatteln.rules.key.2',
+          'tatteln.rules.key.3',
+        ],
+      },
+      {
+        id: 'tatteln.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tatteln.score.description',
+          'tatteln.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tatteln.setup.dealing',
+        'tatteln.rules.objective',
+      ],
+      play_card: [
+        'tatteln.rules.gameplay',
+      ],
+      discard: [
+        'tatteln.rules.gameplay',
+      ],
+      pass: [
+        'tatteln.rules.gameplay',
+      ],
+      bid: [
+        'tatteln.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Twenty-Four. Logic: See rules.objective and rules.gameplay.',
-    Player: '24 is a mathematical card game: use four numbers (from four cards) and only +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· (and parentheses) to make exactly 24. All four numbers must be used once. First to call a correct solution wins the four cards (or they go to opponent); play until one player has no cards. Popular in China since at least the 1960s (Shanghai); also played in North America.',
+    LLM: 'Players use resources such as Manpower, Science, Production, and Credits to claim planets, place colonies, and produce points. Resources do not carry between turns, so timing and adaptation matter.',
+    Player: 'Players use resources such as Manpower, Science, Production, and Credits to claim planets, place colonies, and produce points. Resources do not carry between turns, so timing and adaptation matter.',
     objective: 'Score the most victory points from planets and tokens by the end of the game.',
     gameplay: 'Players use resources such as Manpower, Science, Production, and Credits to claim planets, place colonies, and produce points. Resources do not carry between turns, so timing and adaptation matter.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: None; win = other player has no cards. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score the most victory points from planets and tokens by the end of the game.',
+      'Turn-flow example: Players use resources such as Manpower, Science, Production, and Credits to claim planets, place colonies, and produce points. Resources do not carry between turns, so timing and adaptation matter.',
+      "Scoring example: None; win = other player has no cards. Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'take-the-galaxy.rules.objective',
+        title: 'Objective',
+        text: 'Score the most victory points from planets and tokens by the end of the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'take-the-galaxy.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players use resources such as Manpower, Science, Production, and Credits to claim planets, place colonies, and produce points. Resources do not carry between turns, so timing and adaptation matter.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'take-the-galaxy.setup.players',
+        title: 'Players',
+        text: '1-4 players use the table arrangement described for Take the Galaxy.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'take-the-galaxy.setup.deck',
+        title: 'Deck',
+        text: 'Identical player decks plus shared space deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'take-the-galaxy.setup.equipment',
+        title: 'Equipment',
+        text: 'Identical player decks plus shared space deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'take-the-galaxy.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Identical player decks plus shared space deck and deal or lay out cards according to the documented Take the Galaxy rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'take-the-galaxy.score.win-condition',
+        title: 'Win condition',
+        text: "Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'take-the-galaxy.score.description',
+        title: 'Scoring',
+        text: 'None; win = other player has no cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'take-the-galaxy.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Each player has an identical deck.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'take-the-galaxy.rules.key.2',
+        title: 'Key rule 2',
+        text: 'A shared space deck supplies planets and events.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'take-the-galaxy.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Resources are not stored between turns.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'take-the-galaxy.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'take-the-galaxy.rules.objective',
+          'take-the-galaxy.rules.gameplay',
+        ],
+      },
+      {
+        id: 'take-the-galaxy.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'take-the-galaxy.setup.players',
+          'take-the-galaxy.setup.deck',
+          'take-the-galaxy.setup.equipment',
+          'take-the-galaxy.setup.dealing',
+        ],
+      },
+      {
+        id: 'take-the-galaxy.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'take-the-galaxy.rules.key.1',
+          'take-the-galaxy.rules.key.2',
+          'take-the-galaxy.rules.key.3',
+        ],
+      },
+      {
+        id: 'take-the-galaxy.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'take-the-galaxy.score.description',
+          'take-the-galaxy.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'take-the-galaxy.setup.dealing',
+        'take-the-galaxy.rules.objective',
+      ],
+      play_card: [
+        'take-the-galaxy.rules.gameplay',
+      ],
+    },
   },
 }

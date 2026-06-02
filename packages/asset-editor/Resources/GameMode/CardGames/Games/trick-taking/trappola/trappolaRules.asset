@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kaiserspiel. Logic: Win the tricks, card points, or contract result required by the local form of the game.',
-    Player: 'Kaiserspiel is a traditional trick-taking card game using 40 or 48-card Swiss Kaiserspiel deck for 2, 4, or 6 players. It uses one chosen suit and belongs to the Karnöffel environment.',
+    LLM: 'Use the stripped Trappola pack or an adapted local deck. Players play tricks, following suit when required by the variant, and score for cards, last-trick elements, and variant-specific bonuses such as the later Hundertspiel target.',
+    Player: 'Use the stripped Trappola pack or an adapted local deck. Players play tricks, following suit when required by the variant, and score for cards, last-trick elements, and variant-specific bonuses such as the later Hundertspiel target.',
     objective: 'Win the target points through tricks and special scoring features of the Trappola pack and local variant.',
     gameplay: 'Use the stripped Trappola pack or an adapted local deck. Players play tricks, following suit when required by the variant, and score for cards, last-trick elements, and variant-specific bonuses such as the later Hundertspiel target.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Tricks, card points, or contract success determine scoring. Expected outcome: 1.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win the target points through tricks and special scoring features of the Trappola pack and local variant.',
+      'Turn-flow example: Use the stripped Trappola pack or an adapted local deck. Players play tricks, following suit when required by the variant, and score for cards, last-trick elements, and variant-specific bonuses such as the later Hundertspiel target.',
+      'Scoring example: Tricks, card points, or contract success determine scoring. Win the tricks, card points, or contract result required by the local form of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'trappola.rules.objective',
+        title: 'Objective',
+        text: 'Win the target points through tricks and special scoring features of the Trappola pack and local variant.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'trappola.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Use the stripped Trappola pack or an adapted local deck. Players play tricks, following suit when required by the variant, and score for cards, last-trick elements, and variant-specific bonuses such as the later Hundertspiel target.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'trappola.setup.players',
+        title: 'Players',
+        text: '2-4 players use the table arrangement described for Trappola.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'trappola.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated 36-card Italian-suited Trappola pack, or adapted 32-card pack in descendants',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'trappola.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated 36-card Italian-suited Trappola pack, or adapted 32-card pack in descendants, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'trappola.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated 36-card Italian-suited Trappola pack, or adapted 32-card pack in descendants and deal or lay out cards according to the documented Trappola rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'trappola.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'trappola.score.description',
+        title: 'Scoring',
+        text: 'Tricks, card points, or contract success determine scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'trappola.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The original game used a dedicated Italian-suited Trappola pack.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'trappola.rules.key.2',
+        title: 'Key rule 2',
+        text: 'It is an early trick-taking game with promoted aces.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'trappola.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Later descendants added partnerships, trumps, and bidding.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'trappola.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'trappola.rules.objective',
+          'trappola.rules.gameplay',
+        ],
+      },
+      {
+        id: 'trappola.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'trappola.setup.players',
+          'trappola.setup.deck',
+          'trappola.setup.equipment',
+          'trappola.setup.dealing',
+        ],
+      },
+      {
+        id: 'trappola.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'trappola.rules.key.1',
+          'trappola.rules.key.2',
+          'trappola.rules.key.3',
+        ],
+      },
+      {
+        id: 'trappola.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'trappola.score.description',
+          'trappola.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'trappola.setup.dealing',
+        'trappola.rules.objective',
+      ],
+      play_card: [
+        'trappola.rules.gameplay',
+      ],
+      discard: [
+        'trappola.rules.gameplay',
+      ],
+      pass: [
+        'trappola.rules.gameplay',
+      ],
+      bid: [
+        'trappola.rules.gameplay',
+      ],
+    },
   },
 }

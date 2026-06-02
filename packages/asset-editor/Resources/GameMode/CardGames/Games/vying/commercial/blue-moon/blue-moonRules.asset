@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: "Each player uses a faction deck led by a leader card. Players commit character and support cards to contests, respond to the opponent's strength, and decide when to continue or withdraw. Deck and faction identity drive the tactical arc.",
+    Player: "Each player uses a faction deck led by a leader card. Players commit character and support cards to contests, respond to the opponent's strength, and decide when to continue or withdraw. Deck and faction identity drive the tactical arc.",
     objective: 'Win over dragons or the scenario victory resource by outplaying the opponent in faction-based contests.',
     gameplay: "Each player uses a faction deck led by a leader card. Players commit character and support cards to contests, respond to the opponent's strength, and decide when to continue or withdraw. Deck and faction identity drive the tactical arc.",
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Win over dragons or the scenario victory resource by outplaying the opponent in faction-based contests.',
+      "Turn-flow example: Each player uses a faction deck led by a leader card. Players commit character and support cards to contests, respond to the opponent's strength, and decide when to continue or withdraw. Deck and faction identity drive the tactical arc.",
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'blue-moon.rules.objective',
+        title: 'Objective',
+        text: 'Win over dragons or the scenario victory resource by outplaying the opponent in faction-based contests.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'blue-moon.rules.gameplay',
+        title: 'Turn flow',
+        text: "Each player uses a faction deck led by a leader card. Players commit character and support cards to contests, respond to the opponent's strength, and decide when to continue or withdraw. Deck and faction identity drive the tactical arc.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'blue-moon.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Blue Moon.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'blue-moon.setup.deck',
+        title: 'Deck',
+        text: 'Commercial Blue Moon expandable card decks; 344-card product line with faction decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'blue-moon.setup.equipment',
+        title: 'Equipment',
+        text: 'Commercial Blue Moon expandable card decks; 344-card product line with faction decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'blue-moon.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Commercial Blue Moon expandable card decks; 344-card product line with faction decks and deal or lay out cards according to the documented Blue Moon rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'blue-moon.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'blue-moon.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'blue-moon.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two players duel with distinct faction decks.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'blue-moon.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The commercial card text and artwork must not be reproduced without rights.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'blue-moon.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Implementation should model generic duel lanes, hands, decks, discard zones, and contest strength before adding licensed card detail.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'blue-moon.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'blue-moon.rules.objective',
+          'blue-moon.rules.gameplay',
+        ],
+      },
+      {
+        id: 'blue-moon.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'blue-moon.setup.players',
+          'blue-moon.setup.deck',
+          'blue-moon.setup.equipment',
+          'blue-moon.setup.dealing',
+        ],
+      },
+      {
+        id: 'blue-moon.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'blue-moon.rules.key.1',
+          'blue-moon.rules.key.2',
+          'blue-moon.rules.key.3',
+        ],
+      },
+      {
+        id: 'blue-moon.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'blue-moon.score.description',
+          'blue-moon.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'blue-moon.setup.dealing',
+        'blue-moon.rules.objective',
+      ],
+      play_card: [
+        'blue-moon.rules.gameplay',
+      ],
+    },
   },
 }

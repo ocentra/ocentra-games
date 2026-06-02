@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Reversis. Trick avoidance. Hearts precursor.',
-    Player: 'Reversis: Hearts ancestor. Avoid hearts, â™ Q.',
+    LLM: '1. Deal. 2. Play tricks. 3. Penalty for hearts, â™ Q (or equivalent). 4. Lowest total penalty wins. Full rules: parlettgames.uk/histocs/reversis.html.',
+    Player: '1. Deal. 2. Play tricks. 3. Penalty for hearts, â™ Q (or equivalent). 4. Lowest total penalty wins. Full rules: parlettgames.uk/histocs/reversis.html.',
     objective: 'Avoid penalty cards (hearts, â™ Q typically). Lowest penalty score wins. See David Parlett for full rules.',
     gameplay: '1. Deal. 2. Play tricks. 3. Penalty for hearts, â™ Q (or equivalent). 4. Lowest total penalty wins. Full rules: parlettgames.uk/histocs/reversis.html.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: Penalty for hearts, â™ Q. Lowest wins. Expected outcome: Lowest penalty total..',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Avoid penalty cards (hearts, â™ Q typically). Lowest penalty score wins. See David Parlett for full rules.',
+      'Turn-flow example: 1. Deal. 2. Play tricks. 3. Penalty for hearts, â™ Q (or equivalent). 4. Lowest total penalty wins. Full rules: parlettgames.uk/histocs/reversis.html.',
+      'Scoring example: Penalty for hearts, â™ Q. Lowest wins. Lowest penalty total..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'reversis.rules.objective',
+        title: 'Objective',
+        text: 'Avoid penalty cards (hearts, â™ Q typically). Lowest penalty score wins. See David Parlett for full rules.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'reversis.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Deal. 2. Play tricks. 3. Penalty for hearts, â™ Q (or equivalent). 4. Lowest total penalty wins. Full rules: parlettgames.uk/histocs/reversis.html.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'reversis.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'reversis.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card French-suited pack; later rule sets use 48 cards with tens removed. Thirteen cards per player for four players. No trumps; cards rank A K Q J down to 2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'reversis.setup.equipment',
+        title: 'Equipment',
+        text: '52-card pack.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'reversis.setup.dealing',
+        title: 'Deal',
+        text: 'Standard (13 each).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'reversis.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest penalty total.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'reversis.score.description',
+        title: 'Scoring',
+        text: 'Penalty for hearts, â™ Q. Lowest wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'reversis.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trick avoidance. Ancestor of Hearts.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'reversis.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Penalty cards: hearts, â™ Q.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'reversis.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Lowest penalty wins.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'reversis.rules.key.4',
+        title: 'Key rule 4',
+        text: 'David Parlett for full rules.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'reversis.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'reversis.rules.objective',
+          'reversis.rules.gameplay',
+        ],
+      },
+      {
+        id: 'reversis.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'reversis.setup.players',
+          'reversis.setup.deck',
+          'reversis.setup.equipment',
+          'reversis.setup.dealing',
+        ],
+      },
+      {
+        id: 'reversis.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'reversis.rules.key.1',
+          'reversis.rules.key.2',
+          'reversis.rules.key.3',
+          'reversis.rules.key.4',
+        ],
+      },
+      {
+        id: 'reversis.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'reversis.score.description',
+          'reversis.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'reversis.setup.dealing',
+        'reversis.rules.objective',
+      ],
+      deal: [
+        'reversis.rules.gameplay',
+      ],
+      play_card: [
+        'reversis.rules.gameplay',
+      ],
+      lead: [
+        'reversis.rules.gameplay',
+      ],
+    },
   },
 }

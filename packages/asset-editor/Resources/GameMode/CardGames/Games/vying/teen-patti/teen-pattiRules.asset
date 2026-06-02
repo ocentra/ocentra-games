@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Teen Patti. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Teen Patti (तीन पत्ती), meaning "three cards" in Hindi, is a popular Indian vying game that combines elements of poker and bluffing. Also known as **Flash** or **Three Card Brag**, it is one of the most widely played card games in the Indian subcontinent. The game is traditionally played during festivals, especially Diwali, and has gained international recognition through online gaming platforms.',
+    LLM: '1. Ante/Boot Phase\nAll players place the agreed minimum stake (boot) into the pot\nThis ensures there is something to play for in each hand',
+    Player: '1. Ante/Boot Phase\nAll players place the agreed minimum stake (boot) into the pot\nThis ensures there is something to play for in each hand',
     objective: 'Win the pot by having the best three-card hand or by being the last player remaining after all others have folded.',
     gameplay: '1. Ante/Boot Phase\nAll players place the agreed minimum stake (boot) into the pot\nThis ensures there is something to play for in each hand',
     keyRules: [
@@ -55,10 +55,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-7 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Win the pot by having the best three-card hand or by being the last player remaining after all others have folded. Expected outcome: Win the pot by having the best three-card hand or by being the last player remaining after all others have folded..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the pot by having the best three-card hand or by being the last player remaining after all others have folded.',
+      'Turn-flow example: 1. Ante/Boot Phase\nAll players place the agreed minimum stake (boot) into the pot\nThis ensures there is something to play for in each hand',
+      'Scoring example: Win the pot by having the best three-card hand or by being the last player remaining after all others have folded. Win the pot by having the best three-card hand or by being the last player remaining after all others have folded..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'teen-patti.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the best three-card hand or by being the last player remaining after all others have folded.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'teen-patti.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Ante/Boot Phase\nAll players place the agreed minimum stake (boot) into the pot\nThis ensures there is something to play for in each hand',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'teen-patti.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 3\nMaximum Players: 6 (can accommodate up to 10 with variations)\nOptimal Players: 4-7\nPartnerships: No, every player plays individually',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'teen-patti.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'teen-patti.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nBetting chips or cash\nA flat surface for dealing and pot placement',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'teen-patti.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: 3 cards face-down\nDealing Pattern: Clockwise, one card at a time\nDealer: Deals to all players including themselves\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'teen-patti.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the pot by having the best three-card hand or by being the last player remaining after all others have folded.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'teen-patti.score.description',
+        title: 'Scoring',
+        text: 'Win the pot by having the best three-card hand or by being the last player remaining after all others have folded.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'teen-patti.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Blind Player: Has not looked at their cards',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'teen-patti.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must bet at least the current stake (minimum) or up to twice the current stake (maximum)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'teen-patti.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Can bet less than a seen player',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'teen-patti.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Seen Player: Has looked at their cards',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'teen-patti.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Must bet at least twice the current stake (minimum) or up to four times the current stake (maximum)',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'teen-patti.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Must bet double what a blind player bets',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'teen-patti.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'teen-patti.rules.objective',
+          'teen-patti.rules.gameplay',
+        ],
+      },
+      {
+        id: 'teen-patti.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'teen-patti.setup.players',
+          'teen-patti.setup.deck',
+          'teen-patti.setup.equipment',
+          'teen-patti.setup.dealing',
+        ],
+      },
+      {
+        id: 'teen-patti.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'teen-patti.rules.key.1',
+          'teen-patti.rules.key.2',
+          'teen-patti.rules.key.3',
+          'teen-patti.rules.key.4',
+          'teen-patti.rules.key.5',
+          'teen-patti.rules.key.6',
+        ],
+      },
+      {
+        id: 'teen-patti.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'teen-patti.score.description',
+          'teen-patti.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'teen-patti.setup.dealing',
+        'teen-patti.rules.objective',
+      ],
+      play_card: [
+        'teen-patti.rules.gameplay',
+      ],
+    },
   },
 }

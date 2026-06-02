@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Bouillotte. Type: Vying. Rules: 3 cards + 1 community. Hierarchy: Brelan Carré > Brelan Favori > Brelan > Suit Total. Table stakes (Cave) enforced.',
-    Player: 'The pot is 100 fiches. The retourné is the Ace of Hearts. You hold the Ace of Spades and Ace of Clubs. You have a Brelan Favori! Raise the bet to 50 and make them pay to see the cards.',
+    LLM: '1. **Ante**: Each player puts a fixed amount in the pot. 2. **Deal**: Players receive 3 cards and see the retourné. 3. **Vying**: Starting left of dealer, players bet, call, or fold. 4. **Showdown**: Best hand wins. Hand hierarchy: Brelan Carré (four of a kind using retourné), Brelan Favori (three of a kind including retourné), simple Brelan (three of a kind), then highest point-total in a suit.',
+    Player: '1. **Ante**: Each player puts a fixed amount in the pot. 2. **Deal**: Players receive 3 cards and see the retourné. 3. **Vying**: Starting left of dealer, players bet, call, or fold. 4. **Showdown**: Best hand wins. Hand hierarchy: Brelan Carré (four of a kind using retourné), Brelan Favori (three of a kind including retourné), simple Brelan (three of a kind), then highest point-total in a suit.',
     objective: 'Win the pot by holding the highest hand or by forcing all other players to fold during the vying rounds.',
     gameplay: '1. **Ante**: Each player puts a fixed amount in the pot. 2. **Deal**: Players receive 3 cards and see the retourné. 3. **Vying**: Starting left of dealer, players bet, call, or fold. 4. **Showdown**: Best hand wins. Hand hierarchy: Brelan Carré (four of a kind using retourné), Brelan Favori (three of a kind including retourné), simple Brelan (three of a kind), then highest point-total in a suit.',
     keyRules: [
@@ -52,10 +52,171 @@
       go_out: 'The round concludes automatically after the final showdown and pot distribution are completed.',
     },
     exampleHands: [
-      'Opening deal: 3-5 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; current_player may use ante before dealing.',
-      'Scoring check: Standard pot-based resolution. Expected outcome: Best hand at showdown or all opponents fold..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Win the pot by holding the highest hand or by forcing all other players to fold during the vying rounds.',
+      'Turn-flow example: 1. **Ante**: Each player puts a fixed amount in the pot. 2. **Deal**: Players receive 3 cards and see the retourné. 3. **Vying**: Starting left of dealer, players bet, call, or fold. 4. **Showdown**: Best hand wins. Hand hierarchy: Brelan Carré (four of a kind using retourné), Brelan Favori (three of a kind including retourné), simple Brelan (three of a kind), then highest point-total in a suit.',
+      'Scoring example: Standard pot-based resolution. Best hand at showdown or all opponents fold..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'bouillotte.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by holding the highest hand or by forcing all other players to fold during the vying rounds.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bouillotte.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Ante**: Each player puts a fixed amount in the pot. 2. **Deal**: Players receive 3 cards and see the retourné. 3. **Vying**: Starting left of dealer, players bet, call, or fold. 4. **Showdown**: Best hand wins. Hand hierarchy: Brelan Carré (four of a kind using retourné), Brelan Favori (three of a kind including retourné), simple Brelan (three of a kind), then highest point-total in a suit.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bouillotte.setup.players',
+        title: 'Players',
+        text: '4 players are standard (using 20 cards). 3 players remove Queens (16 cards). 5 players add Jacks (24 cards).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bouillotte.setup.deck',
+        title: 'Deck',
+        text: 'A stripped piquet pack: Ace, King, Queen, 9, 8 in each suit. Ranking: A-K-Q-9-8.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bouillotte.setup.equipment',
+        title: 'Equipment',
+        text: 'Stripped pack, gambling chips (the Cave).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bouillotte.setup.dealing',
+        title: 'Deal',
+        text: 'Players ante into the pot. Dealer deals 3 cards to each player and turns the next card face-up (the retourné).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bouillotte.score.win-condition',
+        title: 'Win condition',
+        text: 'Best hand at showdown or all opponents fold.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bouillotte.score.description',
+        title: 'Scoring',
+        text: 'Standard pot-based resolution.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bouillotte.rules.key.1',
+        title: 'Key rule 1',
+        text: "The 'Cave' rule: You cannot bet more than the chips you have on the table.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bouillotte.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If no Brelan is held, the player with the highest total value in a single suit wins.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bouillotte.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Aces are worth 11, face cards 10, others face value.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bouillotte.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bouillotte.rules.objective',
+          'bouillotte.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bouillotte.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bouillotte.setup.players',
+          'bouillotte.setup.deck',
+          'bouillotte.setup.equipment',
+          'bouillotte.setup.dealing',
+        ],
+      },
+      {
+        id: 'bouillotte.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bouillotte.rules.key.1',
+          'bouillotte.rules.key.2',
+          'bouillotte.rules.key.3',
+        ],
+      },
+      {
+        id: 'bouillotte.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bouillotte.score.description',
+          'bouillotte.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bouillotte.setup.dealing',
+        'bouillotte.rules.objective',
+      ],
+      ante: [
+        'bouillotte.rules.gameplay',
+      ],
+      fold: [
+        'bouillotte.rules.gameplay',
+      ],
+      check: [
+        'bouillotte.rules.gameplay',
+      ],
+      call: [
+        'bouillotte.rules.gameplay',
+      ],
+      bet: [
+        'bouillotte.rules.gameplay',
+      ],
+      raise: [
+        'bouillotte.rules.gameplay',
+      ],
+      award_pot: [
+        'bouillotte.rules.gameplay',
+      ],
+      deal_3_plus_turn: [
+        'bouillotte.rules.gameplay',
+      ],
+      evaluate_hand: [
+        'bouillotte.rules.gameplay',
+      ],
+    },
   },
 }

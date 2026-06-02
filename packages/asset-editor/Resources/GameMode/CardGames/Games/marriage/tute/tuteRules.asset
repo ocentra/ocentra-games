@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tute. Logic: See rules.objective and rules.gameplay.',
-    Player: "Tute is one of Spain's most popular card games, played with a 40-card Spanish deck. Named from Italian 'tutti'. Features A-3-K ranking, strict follow-suit/trump rules, and 'Cantes' (declaring K+Kt of same suit for bonus). Collecting all 4 Kings or 4 Knights = instant Tute win. 10 bonus for last trick.",
+    LLM: 'Follow suit. Must play higher if possible. Must trump if void in suit. Cantes: K+Kt of trump = 40 pts. K+Kt of other suit = 20 pts. Cantes only after winning first trick. Last trick = 10 bonus. 7 of trumps can swap with face-up trump card.',
+    Player: 'Follow suit. Must play higher if possible. Must trump if void in suit. Cantes: K+Kt of trump = 40 pts. K+Kt of other suit = 20 pts. Cantes only after winning first trick. Last trick = 10 bonus. 7 of trumps can swap with face-up trump card.',
     objective: 'Score 101+ points. Or declare Tute (4 Kings or 4 Knights).',
     gameplay: 'Follow suit. Must play higher if possible. Must trump if void in suit. Cantes: K+Kt of trump = 40 pts. K+Kt of other suit = 20 pts. Cantes only after winning first trick. Last trick = 10 bonus. 7 of trumps can swap with face-up trump card.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: A=11, 3=10, K=4, Kt=3, J=2. Cantes: 40/20. Last trick=10. Expected outcome: Score 101+ points. Or declare Tute (4 Kings or 4 Knights)..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score 101+ points. Or declare Tute (4 Kings or 4 Knights).',
+      'Turn-flow example: Follow suit. Must play higher if possible. Must trump if void in suit. Cantes: K+Kt of trump = 40 pts. K+Kt of other suit = 20 pts. Cantes only after winning first trick. Last trick = 10 bonus. 7 of trumps can swap with face-up trump card.',
+      'Scoring example: A=11, 3=10, K=4, Kt=3, J=2. Cantes: 40/20. Last trick=10. Score 101+ points. Or declare Tute (4 Kings or 4 Knights)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tute.rules.objective',
+        title: 'Objective',
+        text: 'Score 101+ points. Or declare Tute (4 Kings or 4 Knights).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tute.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Follow suit. Must play higher if possible. Must trump if void in suit. Cantes: K+Kt of trump = 40 pts. K+Kt of other suit = 20 pts. Cantes only after winning first trick. Last trick = 10 bonus. 7 of trumps can swap with face-up trump card.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tute.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tute.setup.deck',
+        title: 'Deck',
+        text: '40 Spanish cards. Rank: A-3-K-Kt-J-7-6-5-4-2. Values: A=11, 3=10, K=4, Kt=3, J=2. Total 120 pts.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tute.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tute.setup.dealing',
+        title: 'Deal',
+        text: '2p: 8 each +stock. 3p: 13 each. 4p: 10 each. Last card = trump.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tute.score.win-condition',
+        title: 'Win condition',
+        text: 'Score 101+ points. Or declare Tute (4 Kings or 4 Knights).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tute.score.description',
+        title: 'Scoring',
+        text: 'A=11, 3=10, K=4, Kt=3, J=2. Cantes: 40/20. Last trick=10.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tute.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit AND play higher',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tute.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must trump if void',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tute.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Cantes: K+Kt bonus',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tute.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Tute: 4 Kings or 4 Knights = instant win',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'tute.rules.key.5',
+        title: 'Key rule 5',
+        text: '7 of trumps swaps trump indicator',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tute.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tute.rules.objective',
+          'tute.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tute.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tute.setup.players',
+          'tute.setup.deck',
+          'tute.setup.equipment',
+          'tute.setup.dealing',
+        ],
+      },
+      {
+        id: 'tute.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tute.rules.key.1',
+          'tute.rules.key.2',
+          'tute.rules.key.3',
+          'tute.rules.key.4',
+          'tute.rules.key.5',
+        ],
+      },
+      {
+        id: 'tute.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tute.score.description',
+          'tute.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tute.setup.dealing',
+        'tute.rules.objective',
+      ],
+      play_card: [
+        'tute.rules.gameplay',
+      ],
+    },
   },
 }

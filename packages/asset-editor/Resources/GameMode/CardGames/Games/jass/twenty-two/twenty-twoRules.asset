@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Twenty-Two. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Twenty-Two (also known as 22) is a trick-taking card game where the winner of the last trick is penalised. Players try to avoid taking the final trick; the losing card is kept as penalty points (Aces 11, face cards 10, others face value). First player to reach 22 or more points is eliminated; last player remaining wins. Suits are irrelevant; cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2.',
+    LLM: "After the deal, each player in turn (dealer's left, clockwise) may discard face down and draw the same number from the undealt portion (or pass). Lead: any single card or set of same rank, but keep at least one card. Others must play the same number of cards: either equal or beat the highest play so far, or play their lowest cards. Trick is won by the highest play (or last of equal highest). Winner leads next trick. When everyone has one card left, all show; highest card loses and keeps it as their scoring card. Number of cards for next deal = value of that card (A=11, K/Q/J=10, others face value).",
+    Player: "After the deal, each player in turn (dealer's left, clockwise) may discard face down and draw the same number from the undealt portion (or pass). Lead: any single card or set of same rank, but keep at least one card. Others must play the same number of cards: either equal or beat the highest play so far, or play their lowest cards. Trick is won by the highest play (or last of equal highest). Winner leads next trick. When everyone has one card left, all show; highest card loses and keeps it as their scoring card. Number of cards for next deal = value of that card (A=11, K/Q/J=10, others face value).",
     objective: 'Avoid winning the last trick. The player who takes the final trick keeps that card as penalty points. Reach 22+ points and you are eliminated. Last player remaining wins.',
     gameplay: "After the deal, each player in turn (dealer's left, clockwise) may discard face down and draw the same number from the undealt portion (or pass). Lead: any single card or set of same rank, but keep at least one card. Others must play the same number of cards: either equal or beat the highest play so far, or play their lowest cards. Trick is won by the highest play (or last of equal highest). Winner leads next trick. When everyone has one card left, all show; highest card loses and keeps it as their scoring card. Number of cards for next deal = value of that card (A=11, K/Q/J=10, others face value).",
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Aces 11, pictures 10, other cards face value. Loser of each hand keeps their card face up; total is their score. 22+ points = eliminated (after dealing the next hand). If all remaining players eliminated in same hand, agree to treat all as winners or award to lowest total. Expected outcome: Avoid winning the last trick. The player who takes the final trick keeps that card as penalty points. Reach 22+ points and you are eliminated. Last player remaining wins..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Avoid winning the last trick. The player who takes the final trick keeps that card as penalty points. Reach 22+ points and you are eliminated. Last player remaining wins.',
+      "Turn-flow example: After the deal, each player in turn (dealer's left, clockwise) may discard face down and draw the same number from the undealt portion (or pass). Lead: any single card or set of same rank, but keep at least one card. Others must play the same number of cards: either equal or beat the highest play so far, or play their lowest cards. Trick is won by the highest play (or last of equal highest). Winner leads next trick. When everyone has one card left, all show; highest card loses and keeps it as their scoring card. Number of cards for next deal = value of that card (A=11, K/Q/J=10, others face value).",
+      'Scoring example: Aces 11, pictures 10, other cards face value. Loser of each hand keeps their card face up; total is their score. 22+ points = eliminated (after dealing the next hand). If all remaining players eliminated in same hand, agree to treat all as winners or award to lowest total. Avoid winning the last trick. The player who takes the final trick keeps that card as penalty points. Reach 22+ points and you are eliminated. Last player remaining wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'twenty-two.rules.objective',
+        title: 'Objective',
+        text: 'Avoid winning the last trick. The player who takes the final trick keeps that card as penalty points. Reach 22+ points and you are eliminated. Last player remaining wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'twenty-two.rules.gameplay',
+        title: 'Turn flow',
+        text: "After the deal, each player in turn (dealer's left, clockwise) may discard face down and draw the same number from the undealt portion (or pass). Lead: any single card or set of same rank, but keep at least one card. Others must play the same number of cards: either equal or beat the highest play so far, or play their lowest cards. Trick is won by the highest play (or last of equal highest). Winner leads next trick. When everyone has one card left, all show; highest card loses and keeps it as their scoring card. Number of cards for next deal = value of that card (A=11, K/Q/J=10, others face value).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'twenty-two.setup.players',
+        title: 'Players',
+        text: '2-6 (one 52-card pack). With more than six players, combine packs (one pack per four players).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'twenty-two.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card Anglo-American pack without jokers. Suits irrelevant; rank A (high) to 2 (low).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'twenty-two.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards; optional score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'twenty-two.setup.dealing',
+        title: 'Deal',
+        text: "First dealer: highest card draw (repeat if tie). First hand: seven cards each, one at a time, clockwise. Subsequently the loser of each hand deals; number of cards dealt = value of loser's scoring card from the hand just ended (e.g. queen = 10 cards each). If insufficient cards, deal equally until fewer cards left than players.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'twenty-two.score.win-condition',
+        title: 'Win condition',
+        text: 'Avoid winning the last trick. The player who takes the final trick keeps that card as penalty points. Reach 22+ points and you are eliminated. Last player remaining wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'twenty-two.score.description',
+        title: 'Scoring',
+        text: 'Aces 11, pictures 10, other cards face value. Loser of each hand keeps their card face up; total is their score. 22+ points = eliminated (after dealing the next hand). If all remaining players eliminated in same hand, agree to treat all as winners or award to lowest total.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'twenty-two.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Last trick is bad: winner keeps the card as penalty points',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'twenty-two.rules.key.2',
+        title: 'Key rule 2',
+        text: "Seven cards first deal; later deals = value of loser's card",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'twenty-two.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Discard and draw before play (optional)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'twenty-two.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Lead single or set of same rank; others match count, beat or play lowest',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'twenty-two.rules.key.5',
+        title: 'Key rule 5',
+        text: '22+ points = eliminated; last remaining wins',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'twenty-two.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'twenty-two.rules.objective',
+          'twenty-two.rules.gameplay',
+        ],
+      },
+      {
+        id: 'twenty-two.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'twenty-two.setup.players',
+          'twenty-two.setup.deck',
+          'twenty-two.setup.equipment',
+          'twenty-two.setup.dealing',
+        ],
+      },
+      {
+        id: 'twenty-two.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'twenty-two.rules.key.1',
+          'twenty-two.rules.key.2',
+          'twenty-two.rules.key.3',
+          'twenty-two.rules.key.4',
+          'twenty-two.rules.key.5',
+        ],
+      },
+      {
+        id: 'twenty-two.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'twenty-two.score.description',
+          'twenty-two.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'twenty-two.setup.dealing',
+        'twenty-two.rules.objective',
+      ],
+      play_card: [
+        'twenty-two.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Giog. Use Xiangqi-piece ranking and combination families, enforce same-count responses and type-based trick resolution, then score by captured pieces.',
-    Player: 'Giog: choose lead type carefully, announce three-piece type correctly, and plan around first/last trick marshal restrictions.',
+    LLM: "Priority-order first player leads to trick one; trick winner leads next. Leader plays one valid combination face down and others must play same number of pieces face down. After reveal, highest valid combination of the same type as the lead wins the trick and captures all played pieces. In base Giog, valid lead types are: single, identical pair, Giog noble triple family, Sam Mui (three soldiers/pawns), Si Mui (four soldiers/pawns), and Wu Mui (five soldiers/pawns). A general or marshal cannot be played in first or last trick ('beheading the cock'); violating this voids all captures by that player. For three-piece leads, leader must announce whether the type is Giog or Sam Mui, since only matching type can beat it.",
+    Player: "Priority-order first player leads to trick one; trick winner leads next. Leader plays one valid combination face down and others must play same number of pieces face down. After reveal, highest valid combination of the same type as the lead wins the trick and captures all played pieces. In base Giog, valid lead types are: single, identical pair, Giog noble triple family, Sam Mui (three soldiers/pawns), Si Mui (four soldiers/pawns), and Wu Mui (five soldiers/pawns). A general or marshal cannot be played in first or last trick ('beheading the cock'); violating this voids all captures by that player. For three-piece leads, leader must announce whether the type is Giog or Sam Mui, since only matching type can beat it.",
     objective: 'Capture more pieces in tricks than opponents by winning leads with stronger valid combinations of matching type.',
     gameplay: "Priority-order first player leads to trick one; trick winner leads next. Leader plays one valid combination face down and others must play same number of pieces face down. After reveal, highest valid combination of the same type as the lead wins the trick and captures all played pieces. In base Giog, valid lead types are: single, identical pair, Giog noble triple family, Sam Mui (three soldiers/pawns), Si Mui (four soldiers/pawns), and Wu Mui (five soldiers/pawns). A general or marshal cannot be played in first or last trick ('beheading the cock'); violating this voids all captures by that player. For three-piece leads, leader must announce whether the type is Giog or Sam Mui, since only matching type can beat it.",
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'Round ends when all pieces are played, not by a declared go-out event.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 8 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in distribution; dealer may use deal before trick_play.',
-      'Scoring check: Base Giog winner is player with the most captured pieces after all pieces are played. Expected outcome: Capture the highest number of pieces; ties for most are drawn/shared in the base rule..',
+      'Setup example: 8 card(s) per player.',
+      'Rule example: Capture more pieces in tricks than opponents by winning leads with stronger valid combinations of matching type.',
+      "Turn-flow example: Priority-order first player leads to trick one; trick winner leads next. Leader plays one valid combination face down and others must play same number of pieces face down. After reveal, highest valid combination of the same type as the lead wins the trick and captures all played pieces. In base Giog, valid lead types are: single, identical pair, Giog noble triple family, Sam Mui (three soldiers/pawns), Si Mui (four soldiers/pawns), and Wu Mui (five soldiers/pawns). A general or marshal cannot be played in first or last trick ('beheading the cock'); violating this voids all captures by that player. For three-piece leads, leader must announce whether the type is Giog or Sam Mui, since only matching type can beat it.",
+      'Scoring example: Base Giog winner is player with the most captured pieces after all pieces are played. Capture the highest number of pieces; ties for most are drawn/shared in the base rule..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'giog.rules.objective',
+        title: 'Objective',
+        text: 'Capture more pieces in tricks than opponents by winning leads with stronger valid combinations of matching type.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'giog.rules.gameplay',
+        title: 'Turn flow',
+        text: "Priority-order first player leads to trick one; trick winner leads next. Leader plays one valid combination face down and others must play same number of pieces face down. After reveal, highest valid combination of the same type as the lead wins the trick and captures all played pieces. In base Giog, valid lead types are: single, identical pair, Giog noble triple family, Sam Mui (three soldiers/pawns), Si Mui (four soldiers/pawns), and Wu Mui (five soldiers/pawns). A general or marshal cannot be played in first or last trick ('beheading the cock'); violating this voids all captures by that player. For three-piece leads, leader must announce whether the type is Giog or Sam Mui, since only matching type can beat it.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'giog.setup.players',
+        title: 'Players',
+        text: 'Base game is typically four players, with adapted procedures for three and two.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'giog.setup.deck',
+        title: 'Deck',
+        text: '32 Xiangqi pieces (16 red, 16 black) ranked from red general down to black pawn in base Giog.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'giog.setup.equipment',
+        title: 'Equipment',
+        text: 'Xiangqi pieces and optional racks for concealed hand management.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'giog.setup.dealing',
+        title: 'Deal',
+        text: 'Pieces are mixed face down into paired stacks. Players reveal selected bottom pieces to establish priority order, then draft stacks around the layout to form hands (8 pieces each in four-player game).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'giog.score.win-condition',
+        title: 'Win condition',
+        text: 'Capture the highest number of pieces; ties for most are drawn/shared in the base rule.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'giog.score.description',
+        title: 'Scoring',
+        text: 'Base Giog winner is player with the most captured pieces after all pieces are played.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'giog.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Other players may play any pieces of the required count, but only matching lead type can win.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'giog.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Leader has priority in ties; otherwise tie breaks by earlier established player-priority order.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'giog.rules.key.3',
+        title: 'Key rule 3',
+        text: 'General/marshal are forbidden in first and last trick, including as part of combinations.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'giog.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Hand ends when all pieces are played; player with most captured pieces wins in the base rule set.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'giog.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'giog.rules.objective',
+          'giog.rules.gameplay',
+        ],
+      },
+      {
+        id: 'giog.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'giog.setup.players',
+          'giog.setup.deck',
+          'giog.setup.equipment',
+          'giog.setup.dealing',
+        ],
+      },
+      {
+        id: 'giog.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'giog.rules.key.1',
+          'giog.rules.key.2',
+          'giog.rules.key.3',
+          'giog.rules.key.4',
+        ],
+      },
+      {
+        id: 'giog.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'giog.score.description',
+          'giog.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'giog.setup.dealing',
+        'giog.rules.objective',
+      ],
+      deal: [
+        'giog.rules.gameplay',
+      ],
+      declare: [
+        'giog.rules.gameplay',
+      ],
+      award_pot: [
+        'giog.rules.gameplay',
+      ],
+      play_card: [
+        'giog.rules.gameplay',
+      ],
+    },
   },
 }

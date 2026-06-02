@@ -11,7 +11,11 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Points from cards in tricks. Total 157 points per hand. 26-100 points = 1 stroke; over 100 = 2 strokes; under 26 = null (penalty).',
+      winCondition: 'First player to reach target strokes (typically 7 or 9) wins.',
+      targetScore: 7,
+      scoringDirection: 'high_wins',
+      cardValues: {
         '10': '10 points',
         'Trump Jack': '20 points',
         'Trump 9': '14 points',
@@ -21,13 +25,39 @@
         Jack: '2 points',
         Other: '0 points',
       },
+      sourceCardValues: {
+        raw: {
+          '10': '10 points',
+          'Trump Jack': '20 points',
+          'Trump 9': '14 points',
+          Ace: '11 points',
+          King: '4 points',
+          Queen: '3 points',
+          Jack: '2 points',
+          Other: '0 points',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],
     winCondition: 'First player to reach target strokes (typically 7 or 9) wins.',
     cardValues: {},
-    penalties: '{\n  "Null": "Penalty for scoring under 26 points"\n}',
+    penalties: '{"Null":"Penalty for scoring under 26 points"}',
     targetScore: 7,
     scoringDirection: 'high_wins',
     rankingAsset: {

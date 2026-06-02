@@ -113,6 +113,7 @@ export interface SelectedGameContentPlanTab {
   label: string;
   source: string;
   maxChunks: number;
+  tip: string;
 }
 
 export interface SelectedGameContentPlan {
@@ -214,12 +215,12 @@ export const DEFAULT_SELECTED_GAME_TAB_ORDER: SelectedGameTabId[] = [
 
 export const DEFAULT_SELECTED_GAME_CONTENT_PLAN: SelectedGameContentPlan = {
   tabs: [
-    { id: 'about', enabled: true, label: 'About', source: 'gameInfo', maxChunks: 6 },
-    { id: 'rules', enabled: true, label: 'Rules', source: 'rules', maxChunks: 6 },
-    { id: 'deck', enabled: true, label: 'Deck', source: 'deckModel,deck', maxChunks: 4 },
-    { id: 'ranking', enabled: true, label: 'Ranking', source: 'ranking,scoring', maxChunks: 4 },
-    { id: 'scoring', enabled: true, label: 'Scoring', source: 'scoring,validationFixtures', maxChunks: 5 },
-    { id: 'strategy', enabled: true, label: 'Strategy', source: 'strategy', maxChunks: 5 },
-    { id: 'systems', enabled: true, label: 'Systems', source: 'mechanics,actions,gameInfo', maxChunks: 5 },
+    { id: 'about', enabled: true, label: 'About', source: 'gameInfo', maxChunks: 6, tip: 'Start with the table goal, player count, and what creates pressure.' },
+    { id: 'rules', enabled: true, label: 'Rules', source: 'rules', maxChunks: 6, tip: 'Read setup and turn flow first, then use edge cases when a move feels ambiguous.' },
+    { id: 'deck', enabled: true, label: 'Deck', source: 'deckModel,deck', maxChunks: 4, tip: 'Deck configuration controls what can appear at the table before any strategy matters.' },
+    { id: 'ranking', enabled: true, label: 'Ranking', source: 'ranking,scoring', maxChunks: 4, tip: 'Ranking explains why one card is valuable, dangerous, or useful as a blocker.' },
+    { id: 'scoring', enabled: true, label: 'Scoring', source: 'scoring,validationFixtures', maxChunks: 5, tip: 'Check the formula and examples before deciding when a hand is ready.' },
+    { id: 'strategy', enabled: true, label: 'Strategy', source: 'strategy', maxChunks: 5, tip: 'Use public information to read intent without overcommitting to blockers.' },
+    { id: 'systems', enabled: true, label: 'Systems', source: 'mechanics,actions,gameInfo', maxChunks: 5, tip: 'These assets describe what the runtime can execute, validate, and explain.' },
   ],
 };

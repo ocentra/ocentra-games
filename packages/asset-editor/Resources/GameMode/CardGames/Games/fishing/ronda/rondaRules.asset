@@ -52,10 +52,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in announce; each_player_clockwise may use ronda, tringa before play.',
-      'Scoring check: Ronda, tringa, caida, mesa, card majority. Expected outcome: 41.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Capture cards; score ronda/tringa, caida, mesa. First to 41 wins.',
+      'Turn-flow example: 1. Before play: announce Ronda (pair) = 1 pt or Tringa (triplet) = 5 pts. Best wins all. 2. Play one card. If matches table card: capture pair + all higher in ascending sequence. If no match: trail. 3. Este/caida: capture last played = 1 pt. Third same rank = 5; fourth = 10. 4. Mesa: clear table = 1 pt.',
+      'Scoring example: Ronda, tringa, caida, mesa, card majority. 41 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'ronda.rules.objective',
+        title: 'Objective',
+        text: 'Capture cards; score ronda/tringa, caida, mesa. First to 41 wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'ronda.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Before play: announce Ronda (pair) = 1 pt or Tringa (triplet) = 5 pts. Best wins all. 2. Play one card. If matches table card: capture pair + all higher in ascending sequence. If no match: trail. 3. Este/caida: capture last played = 1 pt. Third same rank = 5; fourth = 10. 4. Mesa: clear table = 1 pt.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'ronda.setup.players',
+        title: 'Players',
+        text: '2-4 (4 in partnerships).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'ronda.setup.deck',
+        title: 'Deck',
+        text: '40 Spanish (clubs, cups, swords, coins; 1-7, 10-12). 10 adjacent to 7.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'ronda.setup.equipment',
+        title: 'Equipment',
+        text: '40-card pack. Chips.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'ronda.setup.dealing',
+        title: 'Deal',
+        text: '3 each; 4 face up on table. No pairs or 4-card sequence in layout. Deal 3 more when hands empty. Anticlockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'ronda.score.win-condition',
+        title: 'Win condition',
+        text: '41 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'ronda.score.description',
+        title: 'Scoring',
+        text: 'Ronda, tringa, caida, mesa, card majority.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'ronda.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Match = capture pair + ascending sequence.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'ronda.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Ronda 1 pt, Tringa 5. Este 1/5/10. Mesa 1.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'ronda.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Target 41. Must announce ronda/tringa.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'ronda.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'ronda.rules.objective',
+          'ronda.rules.gameplay',
+        ],
+      },
+      {
+        id: 'ronda.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'ronda.setup.players',
+          'ronda.setup.deck',
+          'ronda.setup.equipment',
+          'ronda.setup.dealing',
+        ],
+      },
+      {
+        id: 'ronda.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'ronda.rules.key.1',
+          'ronda.rules.key.2',
+          'ronda.rules.key.3',
+        ],
+      },
+      {
+        id: 'ronda.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'ronda.score.description',
+          'ronda.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'ronda.setup.dealing',
+        'ronda.rules.objective',
+      ],
+      ronda: [
+        'ronda.rules.gameplay',
+      ],
+      tringa: [
+        'ronda.rules.gameplay',
+      ],
+      capture: [
+        'ronda.rules.gameplay',
+      ],
+      trail: [
+        'ronda.rules.gameplay',
+      ],
+    },
   },
 }

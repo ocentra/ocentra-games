@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Sjavs. Logic: See rules.objective and rules.gameplay.',
-    Player: "Sjavs (pronounced 'Shows' or 'Shavs') is a popular card game in the Faroe Islands and parts of Denmark. It is a derivative of the German game Schafkopf, played with a stripped deck of 32 cards (standard Skat/Piquet deck). The game involves bidding, trump calling, and trick-taking, with a unique scoring system based on 'Rubbers' (first to reach 0 points from 24). It is highly strategic and social.",
+    LLM: "After the deal, dealer's left has first bid: each player states the length of their longest trump suit (five or more cards) or Pass; the longest length wins, and clubs beats another suit of the same length. The bid winner then announces trump. Dealer's left leads; play is clockwise. Players must follow suit when able and may trump or discard when void. The winner of each trick leads to the next. There are eight tricks; then each side counts card points in the tricks they won.",
+    Player: "After the deal, dealer's left has first bid: each player states the length of their longest trump suit (five or more cards) or Pass; the longest length wins, and clubs beats another suit of the same length. The bid winner then announces trump. Dealer's left leads; play is clockwise. Players must follow suit when able and may trump or discard when void. The winner of each trick leads to the next. There are eight tricks; then each side counts card points in the tricks they won.",
     objective: 'Win tricks worth points. Reduce score from 24 to 0.',
     gameplay: "After the deal, dealer's left has first bid: each player states the length of their longest trump suit (five or more cards) or Pass; the longest length wins, and clubs beats another suit of the same length. The bid winner then announces trump. Dealer's left leads; play is clockwise. Players must follow suit when able and may trump or discard when void. The winner of each trick leads to the next. There are eight tricks; then each side counts card points in the tricks they won.",
     keyRules: [
@@ -53,10 +53,168 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 8 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use perform_deal before bid.',
-      "Scoring check: Each deal: card points (A=11, 10=10, K=4, Q=3, J=2) in tricks determine game score. Rubber: start at 24, subtract; first side to reach 0 wins the rubber. Expected outcome: Win the rubber by reducing your side's score from 24 to 0 before the opponents..",
+      'Setup example: 8 card(s) per player.',
+      'Rule example: Win tricks worth points. Reduce score from 24 to 0.',
+      "Turn-flow example: After the deal, dealer's left has first bid: each player states the length of their longest trump suit (five or more cards) or Pass; the longest length wins, and clubs beats another suit of the same length. The bid winner then announces trump. Dealer's left leads; play is clockwise. Players must follow suit when able and may trump or discard when void. The winner of each trick leads to the next. There are eight tricks; then each side counts card points in the tricks they won.",
+      "Scoring example: Each deal: card points (A=11, 10=10, K=4, Q=3, J=2) in tricks determine game score. Rubber: start at 24, subtract; first side to reach 0 wins the rubber. Win the rubber by reducing your side's score from 24 to 0 before the opponents..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'sjavs.rules.objective',
+        title: 'Objective',
+        text: 'Win tricks worth points. Reduce score from 24 to 0.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'sjavs.rules.gameplay',
+        title: 'Turn flow',
+        text: "After the deal, dealer's left has first bid: each player states the length of their longest trump suit (five or more cards) or Pass; the longest length wins, and clubs beats another suit of the same length. The bid winner then announces trump. Dealer's left leads; play is clockwise. Players must follow suit when able and may trump or discard when void. The winner of each trick leads to the next. There are eight tricks; then each side counts card points in the tricks they won.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'sjavs.setup.players',
+        title: 'Players',
+        text: '4 (Partners sit opposite).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'sjavs.setup.deck',
+        title: 'Deck',
+        text: '32 cards: the 2s through 6s are removed from a standard 52-card pack. Six cards are permanent highest trumps (Club Q, Spade Q, Club J, Spade J, Heart J, Diamond J); remaining cards rank A, K, Q, 10, 9, 8, 7. Point values: A=11, 10=10, K=4, Q=3, J=2; 120 points in the pack.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'sjavs.setup.equipment',
+        title: 'Equipment',
+        text: '32 cards: the 2s through 6s are removed from a standard 52-card pack. Six cards are permanent highest trumps (Club Q, Spade Q, Club J, Spade J, Heart J, Diamond J); remaining cards rank A, K, Q, 10, 9, 8, 7. Point values: A=11, 10=10, K=4, Q=3, J=2; 120 points in the pack.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'sjavs.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 8 cards each (or 3-3-2).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'sjavs.score.win-condition',
+        title: 'Win condition',
+        text: "Win the rubber by reducing your side's score from 24 to 0 before the opponents.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'sjavs.score.description',
+        title: 'Scoring',
+        text: 'Each deal: card points (A=11, 10=10, K=4, Q=3, J=2) in tricks determine game score. Rubber: start at 24, subtract; first side to reach 0 wins the rubber.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'sjavs.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if able; may trump or discard when void.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'sjavs.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Six permanent trumps (Club Q, Spade Q, Club J, Spade J, Heart J, Diamond J) rank above trump-suit cards; then A, K, Q, 10, 9, 8, 7 in trump.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'sjavs.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Bidding: state length of longest 5+ trump suit or Pass; longest wins; same length clubs beats. Bid winner names trump.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'sjavs.rules.key.4',
+        title: 'Key rule 4',
+        text: '120 points per deal; rubber: count down from 24, first to 0 wins.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'sjavs.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'sjavs.rules.objective',
+          'sjavs.rules.gameplay',
+        ],
+      },
+      {
+        id: 'sjavs.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'sjavs.setup.players',
+          'sjavs.setup.deck',
+          'sjavs.setup.equipment',
+          'sjavs.setup.dealing',
+        ],
+      },
+      {
+        id: 'sjavs.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'sjavs.rules.key.1',
+          'sjavs.rules.key.2',
+          'sjavs.rules.key.3',
+          'sjavs.rules.key.4',
+        ],
+      },
+      {
+        id: 'sjavs.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'sjavs.score.description',
+          'sjavs.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'sjavs.setup.dealing',
+        'sjavs.rules.objective',
+      ],
+      play_card: [
+        'sjavs.rules.gameplay',
+      ],
+      pass: [
+        'sjavs.rules.gameplay',
+      ],
+      bid: [
+        'sjavs.rules.gameplay',
+      ],
+      perform_deal: [
+        'sjavs.rules.gameplay',
+      ],
+      name_trump_suit: [
+        'sjavs.rules.gameplay',
+      ],
+    },
   },
 }

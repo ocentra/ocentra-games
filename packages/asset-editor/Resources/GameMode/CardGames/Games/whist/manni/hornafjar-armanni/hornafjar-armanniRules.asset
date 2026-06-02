@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Hornafjarðarmanni (Icelandic Manni). 3-player trick-taking. Setup: 52-card deck, 16 cards per player, 4-card Manni. Bidding: Player left of dealer bids (Trump/No-Trump/Grand). Contract winner exchanges up to 7 cards with Manni. Play: 16 tricks, follow suit, highest trump/led suit wins. Scoring: 1 point per trick above 4. Target: 30-50 points.',
-    Player: 'Welcome to Hornafjarðarmanni, the pride of south-east Iceland. Bid your contract carefully—trump suit, No-Trump, or Grand. Then exchange cards with the face-down Manni to optimize your hand. Play 16 tricks and score points for each trick won above four. Regional tournaments have preserved this game for generations.',
+    LLM: "1. Lead: Player to dealer's left.\n2. Must follow suit. If unable, can play any card (including trump).\n3. Highest trump (or highest card of suit led) wins the trick.",
+    Player: "1. Lead: Player to dealer's left.\n2. Must follow suit. If unable, can play any card (including trump).\n3. Highest trump (or highest card of suit led) wins the trick.",
     objective: 'Score points by winning more than 4 tricks in a hand. Points are awarded for each trick over 4.',
     gameplay: "1. Lead: Player to dealer's left.\n2. Must follow suit. If unable, can play any card (including trump).\n3. Highest trump (or highest card of suit led) wins the trick.",
     keyRules: [
@@ -52,10 +52,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before contract_bidding.',
-      'Scoring check: Points awarded for winning tricks exceeding 4. Each additional trick above 4 equals one point. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Score points by winning more than 4 tricks in a hand. Points are awarded for each trick over 4.',
+      "Turn-flow example: 1. Lead: Player to dealer's left.\n2. Must follow suit. If unable, can play any card (including trump).\n3. Highest trump (or highest card of suit led) wins the trick.",
+      'Scoring example: Points awarded for winning tricks exceeding 4. Each additional trick above 4 equals one point. First player to reach 30-50 points (agreed beforehand) wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hornafjar-armanni.rules.objective',
+        title: 'Objective',
+        text: 'Score points by winning more than 4 tricks in a hand. Points are awarded for each trick over 4.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hornafjar-armanni.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Lead: Player to dealer's left.\n2. Must follow suit. If unable, can play any card (including trump).\n3. Highest trump (or highest card of suit led) wins the trick.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hornafjar-armanni.setup.players',
+        title: 'Players',
+        text: "Three players only. The player to dealer's left may exchange up to 7 cards with the Manni, then the player to dealer's right up to 5, then the dealer with the remainder; left of dealer leads to the first trick.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hornafjar-armanni.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Ranking: A (high) to 2 (low).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hornafjar-armanni.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. Ranking: A (high) to 2 (low).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hornafjar-armanni.setup.dealing',
+        title: 'Deal',
+        text: "Dealer deals 16 cards to each player (in batches of 4) and 4 cards face-down in the center to form the 'Manni'.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hornafjar-armanni.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach 30-50 points (agreed beforehand) wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hornafjar-armanni.score.description',
+        title: 'Scoring',
+        text: 'Points awarded for winning tricks exceeding 4. Each additional trick above 4 equals one point.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hornafjar-armanni.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Hornafjarðarmanni.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hornafjar-armanni.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: - 5 tricks: 1 point.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hornafjar-armanni.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Score points by winning more than 4 tricks in a hand.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hornafjar-armanni.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hornafjar-armanni.rules.objective',
+          'hornafjar-armanni.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hornafjar-armanni.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hornafjar-armanni.setup.players',
+          'hornafjar-armanni.setup.deck',
+          'hornafjar-armanni.setup.equipment',
+          'hornafjar-armanni.setup.dealing',
+        ],
+      },
+      {
+        id: 'hornafjar-armanni.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hornafjar-armanni.rules.key.1',
+          'hornafjar-armanni.rules.key.2',
+          'hornafjar-armanni.rules.key.3',
+        ],
+      },
+      {
+        id: 'hornafjar-armanni.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hornafjar-armanni.score.description',
+          'hornafjar-armanni.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hornafjar-armanni.setup.dealing',
+        'hornafjar-armanni.rules.objective',
+      ],
+      deal: [
+        'hornafjar-armanni.rules.gameplay',
+      ],
+      play_card: [
+        'hornafjar-armanni.rules.gameplay',
+      ],
+      pass: [
+        'hornafjar-armanni.rules.gameplay',
+      ],
+      resolve_round: [
+        'hornafjar-armanni.rules.gameplay',
+      ],
+      bid_contract: [
+        'hornafjar-armanni.rules.gameplay',
+      ],
+      exchange_cards: [
+        'hornafjar-armanni.rules.gameplay',
+      ],
+    },
   },
 }

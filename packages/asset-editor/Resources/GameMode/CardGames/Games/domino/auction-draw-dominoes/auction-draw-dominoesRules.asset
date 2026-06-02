@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Auction Draw Dominoes. Type: Match-and-Draw Gambling. Rules: Double-6 set. Draw cost: 1 chip. Special: Auction for last 2 tiles. Goal: Domino first to win the pool.',
-    Player: "Welcome to Auction Draw Dominoes! Match your tiles to the board or pay a chip to draw. If you're patient, you might win the final auction. Do you have enough chips to stay in the game?",
+    LLM: "1. **Matching**: On your turn, you must match one end of a tile in your hand to an open end on the board. 2. **Drawing**: If you cannot play, you must draw tiles from the boneyard one at a time. For each tile drawn, you must pay 1 chip into the pool. 3. **The Auction**: When the boneyard is reduced to exactly **two tiles**, play freezes. An auction begins for those two tiles. 4. **Bidding**: Every player has a chance to bid twice (or check) in clockwise order. The highest bidder takes BOTH tiles into their hand and adds their bid to the pool. 5. **Ending**: A player wins by playing their last tile. If no one can play and the boneyard is empty, the game is 'Blocked'.",
+    Player: "1. **Matching**: On your turn, you must match one end of a tile in your hand to an open end on the board. 2. **Drawing**: If you cannot play, you must draw tiles from the boneyard one at a time. For each tile drawn, you must pay 1 chip into the pool. 3. **The Auction**: When the boneyard is reduced to exactly **two tiles**, play freezes. An auction begins for those two tiles. 4. **Bidding**: Every player has a chance to bid twice (or check) in clockwise order. The highest bidder takes BOTH tiles into their hand and adds their bid to the pool. 5. **Ending**: A player wins by playing their last tile. If no one can play and the boneyard is empty, the game is 'Blocked'.",
     objective: "Be the first to 'Domino' (play all tiles) to win the chip pool. If the game is blocked, the player with the lowest total pips wins.",
     gameplay: "1. **Matching**: On your turn, you must match one end of a tile in your hand to an open end on the board. 2. **Drawing**: If you cannot play, you must draw tiles from the boneyard one at a time. For each tile drawn, you must pay 1 chip into the pool. 3. **The Auction**: When the boneyard is reduced to exactly **two tiles**, play freezes. An auction begins for those two tiles. 4. **Bidding**: Every player has a chance to bid twice (or check) in clockwise order. The highest bidder takes BOTH tiles into their hand and adds their bid to the pool. 5. **Ending**: A player wins by playing their last tile. If no one can play and the boneyard is empty, the game is 'Blocked'.",
     keyRules: [
@@ -52,10 +52,165 @@
       go_out: 'Round ends when a player dominoes or game is blocked.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; all_simultaneous may use place_initial_chip before deal.',
-      'Scoring check: Winner takes the entire pool accrued from the ante, the draw payments, and the auction bid. Expected outcome: Emptying your hand first or holding the lowest pips in a block..',
+      'Setup example: 0 card(s) per player.',
+      "Rule example: Be the first to 'Domino' (play all tiles) to win the chip pool. If the game is blocked, the player with the lowest total pips wins.",
+      "Turn-flow example: 1. **Matching**: On your turn, you must match one end of a tile in your hand to an open end on the board. 2. **Drawing**: If you cannot play, you must draw tiles from the boneyard one at a time. For each tile drawn, you must pay 1 chip into the pool. 3. **The Auction**: When the boneyard is reduced to exactly **two tiles**, play freezes. An auction begins for those two tiles. 4. **Bidding**: Every player has a chance to bid twice (or check) in clockwise order. The highest bidder takes BOTH tiles into their hand and adds their bid to the pool. 5. **Ending**: A player wins by playing their last tile. If no one can play and the boneyard is empty, the game is 'Blocked'.",
+      'Scoring example: Winner takes the entire pool accrued from the ante, the draw payments, and the auction bid. Emptying your hand first or holding the lowest pips in a block..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'auction-draw-dominoes.rules.objective',
+        title: 'Objective',
+        text: "Be the first to 'Domino' (play all tiles) to win the chip pool. If the game is blocked, the player with the lowest total pips wins.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'auction-draw-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Matching**: On your turn, you must match one end of a tile in your hand to an open end on the board. 2. **Drawing**: If you cannot play, you must draw tiles from the boneyard one at a time. For each tile drawn, you must pay 1 chip into the pool. 3. **The Auction**: When the boneyard is reduced to exactly **two tiles**, play freezes. An auction begins for those two tiles. 4. **Bidding**: Every player has a chance to bid twice (or check) in clockwise order. The highest bidder takes BOTH tiles into their hand and adds their bid to the pool. 5. **Ending**: A player wins by playing their last tile. If no one can play and the boneyard is empty, the game is 'Blocked'.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'auction-draw-dominoes.setup.players',
+        title: 'Players',
+        text: '2-4 players. Each starts with an equal stack of chips.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'auction-draw-dominoes.setup.deck',
+        title: 'Deck',
+        text: 'Standard Double-Six set (28 tiles, 0-0 to 6-6).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'auction-draw-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'Domino set, poker chips, table.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'auction-draw-dominoes.setup.dealing',
+        title: 'Deal',
+        text: "2-3 players: 7 tiles each. 4 players: 6 tiles each. Remaining tiles form the 'Boneyard'.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'auction-draw-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'Emptying your hand first or holding the lowest pips in a block.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'auction-draw-dominoes.score.description',
+        title: 'Scoring',
+        text: 'Winner takes the entire pool accrued from the ante, the draw payments, and the auction bid.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'auction-draw-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Bid Limit: You cannot bid more chips than you currently possess.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'auction-draw-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Blocked Win: In a blocked game, the player with the lowest pip total on their remaining tiles wins the pool.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'auction-draw-dominoes.rules.key.3',
+        title: 'Key rule 3',
+        text: "No Passing: You MUST play if you can. You MUST draw if you can't play and tiles are available.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'auction-draw-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'auction-draw-dominoes.rules.objective',
+          'auction-draw-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: 'auction-draw-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'auction-draw-dominoes.setup.players',
+          'auction-draw-dominoes.setup.deck',
+          'auction-draw-dominoes.setup.equipment',
+          'auction-draw-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: 'auction-draw-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'auction-draw-dominoes.rules.key.1',
+          'auction-draw-dominoes.rules.key.2',
+          'auction-draw-dominoes.rules.key.3',
+        ],
+      },
+      {
+        id: 'auction-draw-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'auction-draw-dominoes.score.description',
+          'auction-draw-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'auction-draw-dominoes.setup.dealing',
+        'auction-draw-dominoes.rules.objective',
+      ],
+      check: [
+        'auction-draw-dominoes.rules.gameplay',
+      ],
+      place_initial_chip: [
+        'auction-draw-dominoes.rules.gameplay',
+      ],
+      distribute_tiles: [
+        'auction-draw-dominoes.rules.gameplay',
+      ],
+      match_tile: [
+        'auction-draw-dominoes.rules.gameplay',
+      ],
+      draw_tile: [
+        'auction-draw-dominoes.rules.gameplay',
+      ],
+      bid_chips: [
+        'auction-draw-dominoes.rules.gameplay',
+      ],
+      assign_pool_to_winner: [
+        'auction-draw-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

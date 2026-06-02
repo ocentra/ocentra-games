@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 32-card Poker. Logic: See rules.objective and rules.gameplay.',
-    Player: '32-card Poker (French Poker) is draw poker using a 32-card stripped deck (7-A). 2-5 players. 5 cards each. Blinds, betting, draw up to 4, final betting, showdown. Key difference: Flush BEATS Full House (flushes are rarer). A can be low (A-7-8-9-10 straight valid). Suit ranking may break ties: ♥>♦>♣>♠.',
+    LLM: 'Blinds. Deal 5. Betting round. Draw up to 4 cards. Final betting. Showdown. Altered rankings: Flush > Full House (flushes rarer in 32-card deck). A can be low: A-7-8-9-10 = valid straight. Suit ranking may tiebreak.',
+    Player: 'Blinds. Deal 5. Betting round. Draw up to 4 cards. Final betting. Showdown. Altered rankings: Flush > Full House (flushes rarer in 32-card deck). A can be low: A-7-8-9-10 = valid straight. Suit ranking may tiebreak.',
     objective: 'Form the best five-card poker hand; the highest-ranked hand at showdown wins the pot. Hand order differs from standard poker: flush ranks above full house in the 32-card deck.',
     gameplay: 'Blinds. Deal 5. Betting round. Draw up to 4 cards. Final betting. Showdown. Altered rankings: Flush > Full House (flushes rarer in 32-card deck). A can be low: A-7-8-9-10 = valid straight. Suit ranking may tiebreak.',
     keyRules: [
@@ -54,10 +54,189 @@
       go_out: 'The hand ends at showdown after betting; there is no separate go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in opening_bet; active_players_clockwise may use fold, check, call, raise, bet before draw_phase.',
-      'Scoring check: Standard poker pot. Expected outcome: Best 5-card poker hand wins pot..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Form the best five-card poker hand; the highest-ranked hand at showdown wins the pot. Hand order differs from standard poker: flush ranks above full house in the 32-card deck.',
+      'Turn-flow example: Blinds. Deal 5. Betting round. Draw up to 4 cards. Final betting. Showdown. Altered rankings: Flush > Full House (flushes rarer in 32-card deck). A can be low: A-7-8-9-10 = valid straight. Suit ranking may tiebreak.',
+      'Scoring example: Standard poker pot. Best 5-card poker hand wins pot..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '32-card-poker.rules.objective',
+        title: 'Objective',
+        text: 'Form the best five-card poker hand; the highest-ranked hand at showdown wins the pot. Hand order differs from standard poker: flush ranks above full house in the 32-card deck.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '32-card-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Blinds. Deal 5. Betting round. Draw up to 4 cards. Final betting. Showdown. Altered rankings: Flush > Full House (flushes rarer in 32-card deck). A can be low: A-7-8-9-10 = valid straight. Suit ranking may tiebreak.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '32-card-poker.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '32-card-poker.setup.deck',
+        title: 'Deck',
+        text: '32 cards: 7-8-9-10-J-Q-K-A in each suit.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '32-card-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, chips',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '32-card-poker.setup.dealing',
+        title: 'Deal',
+        text: '5 each. Blinds.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '32-card-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Best 5-card poker hand wins pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '32-card-poker.score.description',
+        title: 'Scoring',
+        text: 'Standard poker pot.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '32-card-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: '32-card stripped deck (7-A)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '32-card-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Flush beats Full House',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '32-card-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Ace-low straights (A-7-8-9-10)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: '32-card-poker.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Suit ranking tiebreaker',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: '32-card-poker.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Draw up to 4 cards',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '32-card-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '32-card-poker.rules.objective',
+          '32-card-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: '32-card-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '32-card-poker.setup.players',
+          '32-card-poker.setup.deck',
+          '32-card-poker.setup.equipment',
+          '32-card-poker.setup.dealing',
+        ],
+      },
+      {
+        id: '32-card-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '32-card-poker.rules.key.1',
+          '32-card-poker.rules.key.2',
+          '32-card-poker.rules.key.3',
+          '32-card-poker.rules.key.4',
+          '32-card-poker.rules.key.5',
+        ],
+      },
+      {
+        id: '32-card-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '32-card-poker.score.description',
+          '32-card-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '32-card-poker.setup.dealing',
+        '32-card-poker.rules.objective',
+      ],
+      fold: [
+        '32-card-poker.rules.gameplay',
+      ],
+      check: [
+        '32-card-poker.rules.gameplay',
+      ],
+      call: [
+        '32-card-poker.rules.gameplay',
+      ],
+      bet: [
+        '32-card-poker.rules.gameplay',
+      ],
+      raise: [
+        '32-card-poker.rules.gameplay',
+      ],
+      reveal_hand: [
+        '32-card-poker.rules.gameplay',
+      ],
+      award_pot: [
+        '32-card-poker.rules.gameplay',
+      ],
+      draw: [
+        '32-card-poker.rules.gameplay',
+      ],
+      discard: [
+        '32-card-poker.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,7 +10,26 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Round-based point accumulation.',
+      winCondition: 'First player to 100 points wins the game.',
+      targetScore: 100,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        cardValues: 'Individual tiles do not carry fixed point values; scoring is based on the total pip count of tiles left in a player’s hand.',
+      },
+      splitRules: 'In case of a tie in a blocked game, the player with the lowest pip total wins. If pips are equal, the round is a draw.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

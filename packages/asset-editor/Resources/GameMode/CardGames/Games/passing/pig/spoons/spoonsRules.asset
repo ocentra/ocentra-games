@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Spoons. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Spoons (also known as Tongue or Pig) is a fast-paced shedding and elimination game played with a standard card deck and a set of spoons (one less than the number of players). The objective is to collect four of a kind (e.g., four 6s) and then grab a spoon. As soon as one spoon is taken, everyone else must grab a spoon. The person left without a spoon is eliminated or receives a letter (S-P-O-O-N).',
+    LLM: "Players pass one card face down to their left-hand neighbour at a time (and in the stock version the dealer draws from the stock while the player to dealer's right discards to a pile). Passing continues until someone collects four of a kind. That player takes a spoon from the center; as soon as one spoon is taken, all other players may grab a spoon. One fewer spoon than players, so one player loses the deal. Loser gets a letter (e.g. S-P-O-O-N) or is eliminated; remove one spoon per eliminated player.",
+    Player: "Players pass one card face down to their left-hand neighbour at a time (and in the stock version the dealer draws from the stock while the player to dealer's right discards to a pile). Passing continues until someone collects four of a kind. That player takes a spoon from the center; as soon as one spoon is taken, all other players may grab a spoon. One fewer spoon than players, so one player loses the deal. Loser gets a letter (e.g. S-P-O-O-N) or is eliminated; remove one spoon per eliminated player.",
     objective: 'Collect four cards of the same rank, then take a spoon. Do not be the last player without a spoon.',
     gameplay: "Players pass one card face down to their left-hand neighbour at a time (and in the stock version the dealer draws from the stock while the player to dealer's right discards to a pile). Passing continues until someone collects four of a kind. That player takes a spoon from the center; as soon as one spoon is taken, all other players may grab a spoon. One fewer spoon than players, so one player loses the deal. Loser gets a letter (e.g. S-P-O-O-N) or is eliminated; remove one spoon per eliminated player.",
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-13 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before pass.',
-      "Scoring check: Collect 4 of a kind. Don't be the last to grab a spoon. Expected outcome: Collect 4 of a kind. Don't be the last to grab a spoon..",
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Collect four cards of the same rank, then take a spoon. Do not be the last player without a spoon.',
+      "Turn-flow example: Players pass one card face down to their left-hand neighbour at a time (and in the stock version the dealer draws from the stock while the player to dealer's right discards to a pile). Passing continues until someone collects four of a kind. That player takes a spoon from the center; as soon as one spoon is taken, all other players may grab a spoon. One fewer spoon than players, so one player loses the deal. Loser gets a letter (e.g. S-P-O-O-N) or is eliminated; remove one spoon per eliminated player.",
+      "Scoring example: Collect 4 of a kind. Don't be the last to grab a spoon. Collect 4 of a kind. Don't be the last to grab a spoon..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'spoons.rules.objective',
+        title: 'Objective',
+        text: 'Collect four cards of the same rank, then take a spoon. Do not be the last player without a spoon.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'spoons.rules.gameplay',
+        title: 'Turn flow',
+        text: "Players pass one card face down to their left-hand neighbour at a time (and in the stock version the dealer draws from the stock while the player to dealer's right discards to a pile). Passing continues until someone collects four of a kind. That player takes a spoon from the center; as soon as one spoon is taken, all other players may grab a spoon. One fewer spoon than players, so one player loses the deal. Loser gets a letter (e.g. S-P-O-O-N) or is eliminated; remove one spoon per eliminated player.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'spoons.setup.players',
+        title: 'Players',
+        text: '2 to 13 (up to 13 with one 52-card pack; more with multiple packs).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'spoons.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack, or multiple packs for more than 12 players.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'spoons.setup.equipment',
+        title: 'Equipment',
+        text: 'One spoon fewer than the number of players, placed in the center where any player can reach.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'spoons.setup.dealing',
+        title: 'Deal',
+        text: "Four cards dealt to each player clockwise. Remainder forms the stock to dealer's right (stock version), or use four cards of one rank per player with no stock.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'spoons.score.win-condition',
+        title: 'Win condition',
+        text: "Collect 4 of a kind. Don't be the last to grab a spoon.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'spoons.score.description',
+        title: 'Scoring',
+        text: "Collect 4 of a kind. Don't be the last to grab a spoon.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'spoons.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Pass exactly one card at a time to the left; never hold more than four cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'spoons.rules.key.2',
+        title: 'Key rule 2',
+        text: 'First to collect four of a kind takes a spoon; then everyone may grab a spoon.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'spoons.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Last player without a spoon loses the deal.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'spoons.rules.key.4',
+        title: 'Key rule 4',
+        text: 'When stock is exhausted, shuffle the discard pile to form a new stock.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'spoons.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'spoons.rules.objective',
+          'spoons.rules.gameplay',
+        ],
+      },
+      {
+        id: 'spoons.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'spoons.setup.players',
+          'spoons.setup.deck',
+          'spoons.setup.equipment',
+          'spoons.setup.dealing',
+        ],
+      },
+      {
+        id: 'spoons.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'spoons.rules.key.1',
+          'spoons.rules.key.2',
+          'spoons.rules.key.3',
+          'spoons.rules.key.4',
+        ],
+      },
+      {
+        id: 'spoons.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'spoons.score.description',
+          'spoons.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'spoons.setup.dealing',
+        'spoons.rules.objective',
+      ],
+      deal: [
+        'spoons.rules.gameplay',
+      ],
+      draw: [
+        'spoons.rules.gameplay',
+      ],
+      pass: [
+        'spoons.rules.gameplay',
+      ],
+      grab_spoon: [
+        'spoons.rules.gameplay',
+      ],
+    },
   },
 }

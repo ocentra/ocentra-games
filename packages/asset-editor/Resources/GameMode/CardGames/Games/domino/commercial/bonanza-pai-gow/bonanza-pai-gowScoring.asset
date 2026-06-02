@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Standard Pai Gow tile rankings determine hand strength. Bonus and Tie bets pay according to fixed paytables.',
+      winCondition: "Beat banker's high and low hands (main bet). Hit paytable thresholds (side bets).",
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: 'No fixed target score; play by game rules.',
+        cardValues: 'Bonanza Pai Gow uses Pai Gow hand rankings and fixed bet paytables rather than per-tile point values, so no separate cardValues table is needed.',
+      },
+      splitRules: 'Push on main bet when one hand wins and one loses.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

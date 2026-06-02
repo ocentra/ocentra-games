@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Apples to Apples. Logic: Win enough green cards by submitting the noun card the judge prefers for each prompt.',
-    Player: 'Apples to Apples is a commercial party card game where players submit noun cards to match an adjective prompt and a rotating judge chooses the best fit.',
+    LLM: 'The judge reveals an adjective, all other players submit a red noun card face down, and the judge picks the funniest or best match. The winning submitter keeps the prompt as a point.',
+    Player: 'The judge reveals an adjective, all other players submit a red noun card face down, and the judge picks the funniest or best match. The winning submitter keeps the prompt as a point.',
     objective: 'Win enough green cards by submitting the noun card the judge prefers for each prompt.',
     gameplay: 'The judge reveals an adjective, all other players submit a red noun card face down, and the judge picks the funniest or best match. The winning submitter keeps the prompt as a point.',
     keyRules: [
@@ -53,10 +53,159 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 4-10 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: Each won green card is one point; first to the agreed total wins. Expected outcome: 4.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win enough green cards by submitting the noun card the judge prefers for each prompt.',
+      'Turn-flow example: The judge reveals an adjective, all other players submit a red noun card face down, and the judge picks the funniest or best match. The winning submitter keeps the prompt as a point.',
+      'Scoring example: Each won green card is one point; first to the agreed total wins. Win enough green cards by submitting the noun card the judge prefers for each prompt..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'apples-to-apples.rules.objective',
+        title: 'Objective',
+        text: 'Win enough green cards by submitting the noun card the judge prefers for each prompt.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'apples-to-apples.rules.gameplay',
+        title: 'Turn flow',
+        text: 'The judge reveals an adjective, all other players submit a red noun card face down, and the judge picks the funniest or best match. The winning submitter keeps the prompt as a point.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'apples-to-apples.setup.players',
+        title: 'Players',
+        text: 'Four or more players sit with one rotating judge each round.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'apples-to-apples.setup.deck',
+        title: 'Deck',
+        text: 'Use the dedicated red apple and green apple decks.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'apples-to-apples.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated red noun cards and green adjective cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'apples-to-apples.setup.dealing',
+        title: 'Deal',
+        text: 'Deal red cards to players; the judge reveals a green prompt card each round.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'apples-to-apples.score.win-condition',
+        title: 'Win condition',
+        text: 'Win enough green cards by submitting the noun card the judge prefers for each prompt.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'apples-to-apples.score.description',
+        title: 'Scoring',
+        text: 'Each won green card is one point; first to the agreed total wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'apples-to-apples.rules.key.1',
+        title: 'Key rule 1',
+        text: 'One player judges each round.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'apples-to-apples.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players submit red cards secretly.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'apples-to-apples.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The judge chooses the best match subjectively.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'apples-to-apples.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Collected green cards are points.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'apples-to-apples.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'apples-to-apples.rules.objective',
+          'apples-to-apples.rules.gameplay',
+        ],
+      },
+      {
+        id: 'apples-to-apples.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'apples-to-apples.setup.players',
+          'apples-to-apples.setup.deck',
+          'apples-to-apples.setup.equipment',
+          'apples-to-apples.setup.dealing',
+        ],
+      },
+      {
+        id: 'apples-to-apples.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'apples-to-apples.rules.key.1',
+          'apples-to-apples.rules.key.2',
+          'apples-to-apples.rules.key.3',
+          'apples-to-apples.rules.key.4',
+        ],
+      },
+      {
+        id: 'apples-to-apples.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'apples-to-apples.score.description',
+          'apples-to-apples.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'apples-to-apples.setup.dealing',
+        'apples-to-apples.rules.objective',
+      ],
+      play_card: [
+        'apples-to-apples.rules.gameplay',
+      ],
+      flip_top_card: [
+        'apples-to-apples.rules.gameplay',
+      ],
+    },
   },
 }

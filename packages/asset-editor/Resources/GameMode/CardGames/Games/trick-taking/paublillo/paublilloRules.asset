@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Paublillo. Colombian. 40-card Spanish. 3 cards, 2-of-3 tricks. 12 stones.',
-    Player: 'Paublillo: 3 cards, 3 tricks. Win 2. Monja and paublillo are special trumps. 12 points.',
+    LLM: 'Trump suit designated per deal. Trump ranking differs from plain suits. 4 of trumps = monja, 3 of trumps = paublillo (special names). Three tricks; need 2 to win the deal. Betting. Score with 12 stones (10 + 2 distinct).',
+    Player: 'Trump suit designated per deal. Trump ranking differs from plain suits. 4 of trumps = monja, 3 of trumps = paublillo (special names). Three tricks; need 2 to win the deal. Betting. Score with 12 stones (10 + 2 distinct).',
     objective: 'First team to 12 points. Each deal: 3-card hands, win at least 2 of 3 tricks.',
     gameplay: 'Trump suit designated per deal. Trump ranking differs from plain suits. 4 of trumps = monja, 3 of trumps = paublillo (special names). Three tricks; need 2 to win the deal. Betting. Score with 12 stones (10 + 2 distinct).',
     keyRules: [
@@ -54,10 +54,171 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before bid.',
-      'Scoring check: 12 stones. Two stones distinct. First to 12 wins. Expected outcome: 12.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: First team to 12 points. Each deal: 3-card hands, win at least 2 of 3 tricks.',
+      'Turn-flow example: Trump suit designated per deal. Trump ranking differs from plain suits. 4 of trumps = monja, 3 of trumps = paublillo (special names). Three tricks; need 2 to win the deal. Betting. Score with 12 stones (10 + 2 distinct).',
+      'Scoring example: 12 stones. Two stones distinct. First to 12 wins. First team to 12 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'paublillo.rules.objective',
+        title: 'Objective',
+        text: 'First team to 12 points. Each deal: 3-card hands, win at least 2 of 3 tricks.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'paublillo.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Trump suit designated per deal. Trump ranking differs from plain suits. 4 of trumps = monja, 3 of trumps = paublillo (special names). Three tricks; need 2 to win the deal. Betting. Score with 12 stones (10 + 2 distinct).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'paublillo.setup.players',
+        title: 'Players',
+        text: '2, 4, 6, or 8. Best 6. Teams of equal size; each player between two opponents.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'paublillo.setup.deck',
+        title: 'Deck',
+        text: '40-card Spanish: swords, batons, cups, coins. Ranks: Rey(12), Caballo(11), Sota(10), 7-2, As(1).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'paublillo.setup.equipment',
+        title: 'Equipment',
+        text: '40-card pack, 12 stones (2 distinct) for scoring.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'paublillo.setup.dealing',
+        title: 'Deal',
+        text: 'Deal and play anticlockwise. One suit = trump per deal.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'paublillo.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to 12 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'paublillo.score.description',
+        title: 'Scoring',
+        text: '12 stones. Two stones distinct. First to 12 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'paublillo.rules.key.1',
+        title: 'Key rule 1',
+        text: '40-card Spanish deck.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'paublillo.rules.key.2',
+        title: 'Key rule 2',
+        text: '3 cards each; 3 tricks per deal.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'paublillo.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Win 2 of 3 tricks.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'paublillo.rules.key.4',
+        title: 'Key rule 4',
+        text: '4â™  trump = monja, 3â™  trump = paublillo.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'paublillo.rules.key.5',
+        title: 'Key rule 5',
+        text: '12 points (stones) to win.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'paublillo.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'paublillo.rules.objective',
+          'paublillo.rules.gameplay',
+        ],
+      },
+      {
+        id: 'paublillo.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'paublillo.setup.players',
+          'paublillo.setup.deck',
+          'paublillo.setup.equipment',
+          'paublillo.setup.dealing',
+        ],
+      },
+      {
+        id: 'paublillo.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'paublillo.rules.key.1',
+          'paublillo.rules.key.2',
+          'paublillo.rules.key.3',
+          'paublillo.rules.key.4',
+          'paublillo.rules.key.5',
+        ],
+      },
+      {
+        id: 'paublillo.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'paublillo.score.description',
+          'paublillo.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'paublillo.setup.dealing',
+        'paublillo.rules.objective',
+      ],
+      deal: [
+        'paublillo.rules.gameplay',
+      ],
+      play_card: [
+        'paublillo.rules.gameplay',
+      ],
+      bid: [
+        'paublillo.rules.gameplay',
+      ],
+    },
   },
 }

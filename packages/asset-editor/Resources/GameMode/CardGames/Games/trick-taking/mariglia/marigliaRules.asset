@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Card points: 7=5, A=4, K=3, J=2, Q=1; 6-2=0. Each trick won adds 1 point. Team with more than 35 card points scores the difference as game points. First team to reach agreed target (commonly 35 or 45) wins the game. Expected outcome: 35.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Be the first team to reach the target score (35 or 45 game points).',
+      "Turn-flow example: Player to dealer's right leads to first trick. Each trick has four cards. Won by highest card of led suit, or highest trump if any trumps played.",
+      'Scoring example: Card points: 7=5, A=4, K=3, J=2, Q=1; 6-2=0. Each trick won adds 1 point. Team with more than 35 card points scores the difference as game points. First team to reach agreed target (commonly 35 or 45) wins the game. First team to reach or exceed the agreed target score (35 or 45 game points) wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'mariglia.rules.objective',
+        title: 'Objective',
+        text: 'Be the first team to reach the target score (35 or 45 game points).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mariglia.rules.gameplay',
+        title: 'Turn flow',
+        text: "Player to dealer's right leads to first trick. Each trick has four cards. Won by highest card of led suit, or highest trump if any trumps played.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mariglia.setup.players',
+        title: 'Players',
+        text: '4 players in two fixed partnerships, partners sitting opposite each other. Deal and play are anticlockwise.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mariglia.setup.deck',
+        title: 'Deck',
+        text: '40-card Italian deck of the French-suited Genoese pattern. Ranking: 7 (Mariglia) > Ace > King > Jack > Queen > 6 > 5 > 4 > 3 > 2. Note: Jack ranks higher than Queen (as in Portugal and Southern Italy).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mariglia.setup.equipment',
+        title: 'Equipment',
+        text: '40-card Italian deck of the French-suited Genoese pattern. Ranking: 7 (Mariglia) > Ace > King > Jack > Queen > 6 > 5 > 4 > 3 > 2. Note: Jack ranks higher than Queen (as in Portugal and Southern Italy).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mariglia.setup.dealing',
+        title: 'Deal',
+        text: "First dealer chosen by drawing cards (lowest deals). Turn to deal passes to the right. Dealer shuffles, player to left cuts (minimum 5 cards each portion). Deal anticlockwise in packets of 5 cards (two rounds), 10 cards each. Bottom card (dealer's last card) indicates trumps (il trionfo) and is placed face up.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mariglia.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to reach or exceed the agreed target score (35 or 45 game points) wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mariglia.score.description',
+        title: 'Scoring',
+        text: 'Card points: 7=5, A=4, K=3, J=2, Q=1; 6-2=0. Each trick won adds 1 point. Team with more than 35 card points scores the difference as game points. First team to reach agreed target (commonly 35 or 45) wins the game.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mariglia.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow suit if able; if void and opponent is winning the trick, must trump and beat if possible.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'mariglia.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Ten tricks per hand; winner of each trick leads to the next. Card points: 7=5, A=4, K=3, J=2, Q=1; each trick adds 1 point.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'mariglia.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Team with more than 35 card points scores the difference as game points. First team to reach agreed target (35 or 45) wins the game.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'mariglia.rules.key.4',
+        title: 'Key rule 4',
+        text: "Trump is determined by the dealer's bottom card (il trionfo); dealer's team scores it immediately if it is a counting card.",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mariglia.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mariglia.rules.objective',
+          'mariglia.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mariglia.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mariglia.setup.players',
+          'mariglia.setup.deck',
+          'mariglia.setup.equipment',
+          'mariglia.setup.dealing',
+        ],
+      },
+      {
+        id: 'mariglia.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mariglia.rules.key.1',
+          'mariglia.rules.key.2',
+          'mariglia.rules.key.3',
+          'mariglia.rules.key.4',
+        ],
+      },
+      {
+        id: 'mariglia.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mariglia.score.description',
+          'mariglia.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mariglia.setup.dealing',
+        'mariglia.rules.objective',
+      ],
+      play_card: [
+        'mariglia.rules.gameplay',
+      ],
+    },
   },
 }

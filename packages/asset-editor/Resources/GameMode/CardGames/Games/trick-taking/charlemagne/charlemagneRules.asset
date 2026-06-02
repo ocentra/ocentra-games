@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Bid and make your contract (tricks) with partner. Trump: Jokers (or trump 9 in US) highest; Big Jack (trump J), Little Jack (same-colour J), then Aâ€“7. Follow suit; win tricks.',
+      'Turn-flow example: Bidding round; highest bidder names trump and may use kitty. Trick play: follow suit; Jokers and bowers (Jacks) as in Euchre. Making contract scores; failing loses. First side to target score wins.',
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'charlemagne.rules.objective',
+        title: 'Objective',
+        text: 'Bid and make your contract (tricks) with partner. Trump: Jokers (or trump 9 in US) highest; Big Jack (trump J), Little Jack (same-colour J), then Aâ€“7. Follow suit; win tricks.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'charlemagne.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Bidding round; highest bidder names trump and may use kitty. Trick play: follow suit; Jokers and bowers (Jacks) as in Euchre. Making contract scores; failing loses. First side to target score wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'charlemagne.setup.players',
+        title: 'Players',
+        text: '4 players, two against two, partners opposite. Deal and play clockwise.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'charlemagne.setup.deck',
+        title: 'Deck',
+        text: '34-card pack: Aâ€“7 in all suits, plus two distinguishable Jokers (Canadian). US: no Jokers, trump 9 is top trump.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'charlemagne.setup.equipment',
+        title: 'Equipment',
+        text: '34-card pack + 2 Jokers (or 32-card no Jokers); score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'charlemagne.setup.dealing',
+        title: 'Deal',
+        text: '8 cards each; dealer places 2 cards face down as kitty. Single round of bidding (left of dealer first, dealer last); bids must increase.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'charlemagne.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'charlemagne.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'charlemagne.rules.key.1',
+        title: 'Key rule 1',
+        text: '4p partnership; 8 cards each; 2-card kitty',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'charlemagne.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Trump: Jokers (or 9) then Big/Little Jack then Aâ€“7',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'charlemagne.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Single round of increasing bids; bidder names trump',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'charlemagne.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'charlemagne.rules.objective',
+          'charlemagne.rules.gameplay',
+        ],
+      },
+      {
+        id: 'charlemagne.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'charlemagne.setup.players',
+          'charlemagne.setup.deck',
+          'charlemagne.setup.equipment',
+          'charlemagne.setup.dealing',
+        ],
+      },
+      {
+        id: 'charlemagne.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'charlemagne.rules.key.1',
+          'charlemagne.rules.key.2',
+          'charlemagne.rules.key.3',
+        ],
+      },
+      {
+        id: 'charlemagne.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'charlemagne.score.description',
+          'charlemagne.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'charlemagne.setup.dealing',
+        'charlemagne.rules.objective',
+      ],
+      play_card: [
+        'charlemagne.rules.gameplay',
+      ],
+    },
   },
 }

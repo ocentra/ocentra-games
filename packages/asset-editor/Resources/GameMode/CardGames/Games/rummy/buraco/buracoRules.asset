@@ -56,10 +56,183 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: At the end of each hand both teams total the point values of their melded cards, subtract the values of cards left in hand, and apply bonuses and penalties for different types of canastras, going out, and unused mortos. Expected outcome: 3000.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the first team to reach target score (typically 2000-3000 points) by melding sequences, creating canastas (7+ card sequences), and going out. Score points from melded cards plus bonuses.',
+      'Turn-flow example: Players draw and discard, melding sequences of 3+ consecutive cards of same suit. Wild cards (jokers/twos) can substitute. First player to empty hand takes a morto (11-card extra hand). Team can go out after taking morto and having at least one canastra. Play ends when team goes out or cards exhausted.',
+      'Scoring example: At the end of each hand both teams total the point values of their melded cards, subtract the values of cards left in hand, and apply bonuses and penalties for different types of canastras, going out, and unused mortos. Teams accumulate scores over multiple hands; when a team reaches or passes the target (normally 3000 points), the team with the higher total score wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'buraco.rules.objective',
+        title: 'Objective',
+        text: 'Be the first team to reach target score (typically 2000-3000 points) by melding sequences, creating canastas (7+ card sequences), and going out. Score points from melded cards plus bonuses.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'buraco.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players draw and discard, melding sequences of 3+ consecutive cards of same suit. Wild cards (jokers/twos) can substitute. First player to empty hand takes a morto (11-card extra hand). Team can go out after taking morto and having at least one canastra. Play ends when team goes out or cards exhausted.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'buraco.setup.players',
+        title: 'Players',
+        text: '4 players in two fixed partnerships',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'buraco.setup.deck',
+        title: 'Deck',
+        text: '104-108 cards: two standard 52-card decks plus 0-4 jokers depending on variant',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'buraco.setup.equipment',
+        title: 'Equipment',
+        text: 'Double deck with jokers, score sheet, table space for melds',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'buraco.setup.dealing',
+        title: 'Deal',
+        text: 'Two 11-card mortos (extra hands) set aside. Each player receives 11 cards. Remaining cards form draw pile. Brazilian: 108 cards with 4 jokers; Italian: 104 cards no jokers; twos often wild.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'buraco.score.win-condition',
+        title: 'Win condition',
+        text: 'Teams accumulate scores over multiple hands; when a team reaches or passes the target (normally 3000 points), the team with the higher total score wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'buraco.score.description',
+        title: 'Scoring',
+        text: 'At the end of each hand both teams total the point values of their melded cards, subtract the values of cards left in hand, and apply bonuses and penalties for different types of canastras, going out, and unused mortos.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'buraco.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two 11-card mortos set aside for first players out',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'buraco.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Melds are sequences of 3+ consecutive cards of same suit',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'buraco.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Canastra = sequence of 7+ cards',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'buraco.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Clean canastra (no wilds) scores more than dirty',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'buraco.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Must have taken morto and have canastra to go out',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'buraco.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Target typically 2000-3000 points',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'buraco.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Vulnerability rule: half target score needs minimum opening meld',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'buraco.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'buraco.rules.objective',
+          'buraco.rules.gameplay',
+        ],
+      },
+      {
+        id: 'buraco.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'buraco.setup.players',
+          'buraco.setup.deck',
+          'buraco.setup.equipment',
+          'buraco.setup.dealing',
+        ],
+      },
+      {
+        id: 'buraco.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'buraco.rules.key.1',
+          'buraco.rules.key.2',
+          'buraco.rules.key.3',
+          'buraco.rules.key.4',
+          'buraco.rules.key.5',
+          'buraco.rules.key.6',
+          'buraco.rules.key.7',
+        ],
+      },
+      {
+        id: 'buraco.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'buraco.score.description',
+          'buraco.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'buraco.setup.dealing',
+        'buraco.rules.objective',
+      ],
+      play_card: [
+        'buraco.rules.gameplay',
+      ],
+    },
   },
 }

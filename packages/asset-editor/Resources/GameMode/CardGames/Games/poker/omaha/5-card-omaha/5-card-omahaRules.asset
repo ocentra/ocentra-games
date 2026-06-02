@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 5 Card Omaha. Logic: See rules.objective and rules.gameplay.',
-    Player: '5 Card Omaha: five hole cards each, five community cards. Use exactly two hole and three board for best five-card hand. Pot Limit or No Limit. 2-9 players.',
+    LLM: 'Preflop betting; flop (3); turn (1); river (1). Betting after each. Must use exactly two of your five hole cards and three community cards. Pot Limit or No Limit.',
+    Player: 'Preflop betting; flop (3); turn (1); river (1). Betting after each. Must use exactly two of your five hole cards and three community cards. Pot Limit or No Limit.',
     objective: 'Make the best five-card hand using exactly two hole cards and three board cards. Win the pot at showdown.',
     gameplay: 'Preflop betting; flop (3); turn (1); river (1). Betting after each. Must use exactly two of your five hole cards and three community cards. Pot Limit or No Limit.',
     keyRules: [
@@ -53,10 +53,180 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-9 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in preflop_bet; each_player_clockwise may use fold, check, call, bet, raise before flop_deal.',
-      'Scoring check: Pot to best hand at showdown. Expected outcome: Make the best five-card hand using exactly two hole cards and three board cards. Win the pot at showdown..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Make the best five-card hand using exactly two hole cards and three board cards. Win the pot at showdown.',
+      'Turn-flow example: Preflop betting; flop (3); turn (1); river (1). Betting after each. Must use exactly two of your five hole cards and three community cards. Pot Limit or No Limit.',
+      'Scoring example: Pot to best hand at showdown. Make the best five-card hand using exactly two hole cards and three board cards. Win the pot at showdown..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '5-card-omaha.rules.objective',
+        title: 'Objective',
+        text: 'Make the best five-card hand using exactly two hole cards and three board cards. Win the pot at showdown.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '5-card-omaha.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Preflop betting; flop (3); turn (1); river (1). Betting after each. Must use exactly two of your five hole cards and three community cards. Pot Limit or No Limit.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '5-card-omaha.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '5-card-omaha.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '5-card-omaha.setup.equipment',
+        title: 'Equipment',
+        text: '52-card deck, chips',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '5-card-omaha.setup.dealing',
+        title: 'Deal',
+        text: 'Five hole cards each; five community cards (flop, turn, river).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '5-card-omaha.score.win-condition',
+        title: 'Win condition',
+        text: 'Make the best five-card hand using exactly two hole cards and three board cards. Win the pot at showdown.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '5-card-omaha.score.description',
+        title: 'Scoring',
+        text: 'Pot to best hand at showdown.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '5-card-omaha.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Five hole cards; five community cards',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '5-card-omaha.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Use exactly two hole and three board',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '5-card-omaha.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Standard poker hand ranking',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: '5-card-omaha.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Pot Limit or No Limit',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '5-card-omaha.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '5-card-omaha.rules.objective',
+          '5-card-omaha.rules.gameplay',
+        ],
+      },
+      {
+        id: '5-card-omaha.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '5-card-omaha.setup.players',
+          '5-card-omaha.setup.deck',
+          '5-card-omaha.setup.equipment',
+          '5-card-omaha.setup.dealing',
+        ],
+      },
+      {
+        id: '5-card-omaha.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '5-card-omaha.rules.key.1',
+          '5-card-omaha.rules.key.2',
+          '5-card-omaha.rules.key.3',
+          '5-card-omaha.rules.key.4',
+        ],
+      },
+      {
+        id: '5-card-omaha.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '5-card-omaha.score.description',
+          '5-card-omaha.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '5-card-omaha.setup.dealing',
+        '5-card-omaha.rules.objective',
+      ],
+      fold: [
+        '5-card-omaha.rules.gameplay',
+      ],
+      check: [
+        '5-card-omaha.rules.gameplay',
+      ],
+      call: [
+        '5-card-omaha.rules.gameplay',
+      ],
+      bet: [
+        '5-card-omaha.rules.gameplay',
+      ],
+      raise: [
+        '5-card-omaha.rules.gameplay',
+      ],
+      reveal_hand: [
+        '5-card-omaha.rules.gameplay',
+      ],
+      deal_flop: [
+        '5-card-omaha.rules.gameplay',
+      ],
+      deal_turn: [
+        '5-card-omaha.rules.gameplay',
+      ],
+      deal_river: [
+        '5-card-omaha.rules.gameplay',
+      ],
+    },
   },
 }

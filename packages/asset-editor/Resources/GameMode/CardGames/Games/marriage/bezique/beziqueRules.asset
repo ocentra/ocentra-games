@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Bezique. Phase: 1. Rules: A>10>K. Melds allowed after trick win. Bezique = Q(S) + J(D). Double Bezique = 2xQ(S) + 2xJ(D).',
-    Player: "You just won a trick with the Ace of Trumps. You have a Queen of Spades on the table from a previous Marriage declaration, and a Jack of Diamonds in your hand. Declare 'Bezique' now! Place the Jack next to the Queen for 40 points.",
+    LLM: 'Phase 1 (The Draw): 1. Non-dealer leads. 2. You do NOT need to follow suit. 3. Winner of trick captures cards. 4. Winner *declares one meld* (places face up on table) if possible. 5. Both draw back up to 8 cards. Phase 2 (The End): When the stock is empty, players pick up their melded cards. Rules change: Must follow suit, must win trick if possible.',
+    Player: 'Phase 1 (The Draw): 1. Non-dealer leads. 2. You do NOT need to follow suit. 3. Winner of trick captures cards. 4. Winner *declares one meld* (places face up on table) if possible. 5. Both draw back up to 8 cards. Phase 2 (The End): When the stock is empty, players pick up their melded cards. Rules change: Must follow suit, must win trick if possible.',
     objective: "First to reach 1000 points via Melds and Trick 'Brisques' (Aces and Tens).",
     gameplay: 'Phase 1 (The Draw): 1. Non-dealer leads. 2. You do NOT need to follow suit. 3. Winner of trick captures cards. 4. Winner *declares one meld* (places face up on table) if possible. 5. Both draw back up to 8 cards. Phase 2 (The End): When the stock is empty, players pick up their melded cards. Rules change: Must follow suit, must win trick if possible.',
     keyRules: [
@@ -52,10 +52,174 @@
       go_out: 'The game terminates only after the talon is exhausted and the final eight tricks are played.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 8 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in dealing; system may use deal_8_each before trick_draw_phase.',
-      'Scoring check: Points are scored immediately upon declaration. Expected outcome: 1000.',
+      'Setup example: 8 card(s) per player.',
+      "Rule example: First to reach 1000 points via Melds and Trick 'Brisques' (Aces and Tens).",
+      'Turn-flow example: Phase 1 (The Draw): 1. Non-dealer leads. 2. You do NOT need to follow suit. 3. Winner of trick captures cards. 4. Winner *declares one meld* (places face up on table) if possible. 5. Both draw back up to 8 cards. Phase 2 (The End): When the stock is empty, players pick up their melded cards. Rules change: Must follow suit, must win trick if possible.',
+      'Scoring example: Points are scored immediately upon declaration. First player to reach 1000 total points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'bezique.rules.objective',
+        title: 'Objective',
+        text: "First to reach 1000 points via Melds and Trick 'Brisques' (Aces and Tens).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bezique.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Phase 1 (The Draw): 1. Non-dealer leads. 2. You do NOT need to follow suit. 3. Winner of trick captures cards. 4. Winner *declares one meld* (places face up on table) if possible. 5. Both draw back up to 8 cards. Phase 2 (The End): When the stock is empty, players pick up their melded cards. Rules change: Must follow suit, must win trick if possible.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bezique.setup.players',
+        title: 'Players',
+        text: 'Two players only. The standard two-handed game is played head-to-head; players cut for deal with the highest card having preference (rank order A, 10, K, Q, J, 9, 8, 7). No partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bezique.setup.deck',
+        title: 'Deck',
+        text: '64 cards. Take two 52-card decks, remove all 2s, 3s, 4s, 5s, and 6s. Combine remaining. Start with 8 cards each.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bezique.setup.equipment',
+        title: 'Equipment',
+        text: 'Bezique markers (scoring dials or pegs).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bezique.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 8 cards to each player (3-2-3). Turn the next card for Trump. Place the remaining deck (Talon) face down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bezique.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach 1000 total points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bezique.score.description',
+        title: 'Scoring',
+        text: 'Points are scored immediately upon declaration.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bezique.rules.key.1',
+        title: 'Key rule 1',
+        text: 'You can only declare a meld AFTER winning a trick.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bezique.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Cards used in a meld remain on the table but can be played to subsequent tricks (breaking the meld).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bezique.rules.key.3',
+        title: 'Key rule 3',
+        text: 'A card can be used in multiple different melds but not the same meld twice without re-melding.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bezique.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bezique.rules.objective',
+          'bezique.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bezique.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bezique.setup.players',
+          'bezique.setup.deck',
+          'bezique.setup.equipment',
+          'bezique.setup.dealing',
+        ],
+      },
+      {
+        id: 'bezique.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bezique.rules.key.1',
+          'bezique.rules.key.2',
+          'bezique.rules.key.3',
+        ],
+      },
+      {
+        id: 'bezique.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bezique.score.description',
+          'bezique.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bezique.setup.dealing',
+        'bezique.rules.objective',
+      ],
+      declare: [
+        'bezique.rules.gameplay',
+      ],
+      play_card: [
+        'bezique.rules.gameplay',
+      ],
+      draw: [
+        'bezique.rules.gameplay',
+      ],
+      meld: [
+        'bezique.rules.gameplay',
+      ],
+      deal_8_each: [
+        'bezique.rules.gameplay',
+      ],
+      declare_meld: [
+        'bezique.rules.gameplay',
+      ],
+      swap_7: [
+        'bezique.rules.gameplay',
+      ],
+      draw_card: [
+        'bezique.rules.gameplay',
+      ],
+      play_card_strict: [
+        'bezique.rules.gameplay',
+      ],
+      calculate_total_score: [
+        'bezique.rules.gameplay',
+      ],
+    },
   },
 }

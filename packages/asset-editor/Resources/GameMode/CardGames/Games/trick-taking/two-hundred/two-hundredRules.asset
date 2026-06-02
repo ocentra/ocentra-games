@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Two Hundred. Logic: See rules.objective and rules.gameplay.',
-    Player: '200 (Deux Cents) is a point-trick partnership card game from Canada, especially popular in New Brunswick. Four players use a 36-card deck (2s, 3s, 4s, 6s removed). Teams bid in increments of 5 (50-100); highest bidder names trump and must make their bid. First team to 200 points wins.',
+    LLM: 'Bidding (50-100 in 5s); highest bidder declares trump and leads. Follow suit; highest trump or led-suit card wins trick. Aces 10 pts, 10s 10 pts, 5s 5 pts (100 pts per deal).',
+    Player: 'Bidding (50-100 in 5s); highest bidder declares trump and leads. Follow suit; highest trump or led-suit card wins trick. Aces 10 pts, 10s 10 pts, 5s 5 pts (100 pts per deal).',
     objective: 'First partnership to reach 200 points wins. Bid for the right to name trump; make your bid to score, or lose the amount.',
     gameplay: 'Bidding (50-100 in 5s); highest bidder declares trump and leads. Follow suit; highest trump or led-suit card wins trick. Aces 10 pts, 10s 10 pts, 5s 5 pts (100 pts per deal).',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: 100 points per deal (Aces and 10s = 10 each, 5s = 5). Bidderâ€™s side scores if they make bid, else loses bid amount. First team to 200 (or 300/500 in some areas) wins. Expected outcome: First partnership to reach 200 points wins. Bid for the right to name trump; make your bid to score, or lose the amount..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: First partnership to reach 200 points wins. Bid for the right to name trump; make your bid to score, or lose the amount.',
+      'Turn-flow example: Bidding (50-100 in 5s); highest bidder declares trump and leads. Follow suit; highest trump or led-suit card wins trick. Aces 10 pts, 10s 10 pts, 5s 5 pts (100 pts per deal).',
+      'Scoring example: 100 points per deal (Aces and 10s = 10 each, 5s = 5). Bidderâ€™s side scores if they make bid, else loses bid amount. First team to 200 (or 300/500 in some areas) wins. First partnership to reach 200 points wins. Bid for the right to name trump; make your bid to score, or lose the amount..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'two-hundred.rules.objective',
+        title: 'Objective',
+        text: 'First partnership to reach 200 points wins. Bid for the right to name trump; make your bid to score, or lose the amount.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'two-hundred.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Bidding (50-100 in 5s); highest bidder declares trump and leads. Follow suit; highest trump or led-suit card wins trick. Aces 10 pts, 10s 10 pts, 5s 5 pts (100 pts per deal).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'two-hundred.setup.players',
+        title: 'Players',
+        text: '4 (partnerships, partners opposite)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'two-hundred.setup.deck',
+        title: 'Deck',
+        text: '36 cards (A, K, Q, J, 10, 9, 8, 7, 5 per suitâ€”remove 2s, 3s, 4s, 6s)',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'two-hundred.setup.equipment',
+        title: 'Equipment',
+        text: '36-card deck, score sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'two-hundred.setup.dealing',
+        title: 'Deal',
+        text: 'All cards dealt (9 each); bidding then play.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'two-hundred.score.win-condition',
+        title: 'Win condition',
+        text: 'First partnership to reach 200 points wins. Bid for the right to name trump; make your bid to score, or lose the amount.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'two-hundred.score.description',
+        title: 'Scoring',
+        text: '100 points per deal (Aces and 10s = 10 each, 5s = 5). Bidderâ€™s side scores if they make bid, else loses bid amount. First team to 200 (or 300/500 in some areas) wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'two-hundred.rules.key.1',
+        title: 'Key rule 1',
+        text: '36-card pack',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'two-hundred.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Bid 50-100',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'two-hundred.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Make bid to score it; fail and lose that amount',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'two-hundred.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Target 200 (or 300/500 in some areas)',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'two-hundred.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'two-hundred.rules.objective',
+          'two-hundred.rules.gameplay',
+        ],
+      },
+      {
+        id: 'two-hundred.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'two-hundred.setup.players',
+          'two-hundred.setup.deck',
+          'two-hundred.setup.equipment',
+          'two-hundred.setup.dealing',
+        ],
+      },
+      {
+        id: 'two-hundred.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'two-hundred.rules.key.1',
+          'two-hundred.rules.key.2',
+          'two-hundred.rules.key.3',
+          'two-hundred.rules.key.4',
+        ],
+      },
+      {
+        id: 'two-hundred.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'two-hundred.score.description',
+          'two-hundred.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'two-hundred.setup.dealing',
+        'two-hundred.rules.objective',
+      ],
+      play_card: [
+        'two-hundred.rules.gameplay',
+      ],
+    },
   },
 }

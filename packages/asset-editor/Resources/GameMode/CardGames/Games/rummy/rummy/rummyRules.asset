@@ -11,7 +11,7 @@
   },
   data: {
     LLM: "1. **Draw**: Start your turn by taking one card from the stock or the top of the discard pile. 2. **Meld** (optional): Lay one or more valid combinations face upâ€”sets (3â€“4 of a rank) or runs (3+ consecutive in suit). 3. **Lay off** (optional): Add cards to your own or others' melds. 4. **Discard**: End your turn by placing one card face-up on the discard pile. If you drew from the discard, you cannot discard that same card to leave the pile unchanged. 5. **Going out**: First to meld, lay off, or discard away all cards wins the hand. Play stops immediately.",
-    Player: "Draw one from the stock or discard. Meld sets (3â€“4 of a kind) or runs (3+ in suit). Lay off on any meld. Discard one to end your turn. First to get rid of all cards wins. Others count what's leftâ€”face cards 10, aces 1, numbers at face value.",
+    Player: "1. **Draw**: Start your turn by taking one card from the stock or the top of the discard pile. 2. **Meld** (optional): Lay one or more valid combinations face upâ€”sets (3â€“4 of a rank) or runs (3+ consecutive in suit). 3. **Lay off** (optional): Add cards to your own or others' melds. 4. **Discard**: End your turn by placing one card face-up on the discard pile. If you drew from the discard, you cannot discard that same card to leave the pile unchanged. 5. **Going out**: First to meld, lay off, or discard away all cards wins the hand. Play stops immediately.",
     objective: 'Dispose of all cards in your hand by melding, laying off, and discarding. Go out first; others count deadwood (unmelded cards) as penalty points.',
     gameplay: "1. **Draw**: Start your turn by taking one card from the stock or the top of the discard pile. 2. **Meld** (optional): Lay one or more valid combinations face upâ€”sets (3â€“4 of a rank) or runs (3+ consecutive in suit). 3. **Lay off** (optional): Add cards to your own or others' melds. 4. **Discard**: End your turn by placing one card face-up on the discard pile. If you drew from the discard, you cannot discard that same card to leave the pile unchanged. 5. **Going out**: First to meld, lay off, or discard away all cards wins the hand. Play stops immediately.",
     keyRules: [
@@ -54,10 +54,183 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      "Scoring check: When a player goes out, others sum the point value of cards left in hand. Number cards = face value. Aces = 1. Face cards (J,Q,K) = 10. Total is added to the winner's score. Game continues until target score or agreed deals. Expected outcome: First to reach the agreed target score wins the game. Each hand: winner scores the sum of opponents' deadwood..",
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Dispose of all cards in your hand by melding, laying off, and discarding. Go out first; others count deadwood (unmelded cards) as penalty points.',
+      "Turn-flow example: 1. **Draw**: Start your turn by taking one card from the stock or the top of the discard pile. 2. **Meld** (optional): Lay one or more valid combinations face upâ€”sets (3â€“4 of a rank) or runs (3+ consecutive in suit). 3. **Lay off** (optional): Add cards to your own or others' melds. 4. **Discard**: End your turn by placing one card face-up on the discard pile. If you drew from the discard, you cannot discard that same card to leave the pile unchanged. 5. **Going out**: First to meld, lay off, or discard away all cards wins the hand. Play stops immediately.",
+      "Scoring example: When a player goes out, others sum the point value of cards left in hand. Number cards = face value. Aces = 1. Face cards (J,Q,K) = 10. Total is added to the winner's score. Game continues until target score or agreed deals. First to reach the agreed target score wins the game. Each hand: winner scores the sum of opponents' deadwood..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'rummy.rules.objective',
+        title: 'Objective',
+        text: 'Dispose of all cards in your hand by melding, laying off, and discarding. Go out first; others count deadwood (unmelded cards) as penalty points.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'rummy.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Draw**: Start your turn by taking one card from the stock or the top of the discard pile. 2. **Meld** (optional): Lay one or more valid combinations face upâ€”sets (3â€“4 of a rank) or runs (3+ consecutive in suit). 3. **Lay off** (optional): Add cards to your own or others' melds. 4. **Discard**: End your turn by placing one card face-up on the discard pile. If you drew from the discard, you cannot discard that same card to leave the pile unchanged. 5. **Going out**: First to meld, lay off, or discard away all cards wins the hand. Play stops immediately.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'rummy.setup.players',
+        title: 'Players',
+        text: '2â€“6 (optimal 2â€“4). Deal alternates (2 players) or rotates clockwise.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'rummy.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Cards rank A low to K high.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'rummy.setup.equipment',
+        title: 'Equipment',
+        text: 'Deck, flat surface. Agree target score or number of deals before play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'rummy.setup.dealing',
+        title: 'Deal',
+        text: '1. Deal 10 (2 players), 7 (3â€“4), or 6 (5â€“6) cards each, one at a time. 2. Remaining cards form the stock. 3. One card turned face-up starts the discard pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'rummy.score.win-condition',
+        title: 'Win condition',
+        text: "First to reach the agreed target score wins the game. Each hand: winner scores the sum of opponents' deadwood.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'rummy.score.description',
+        title: 'Scoring',
+        text: "When a player goes out, others sum the point value of cards left in hand. Number cards = face value. Aces = 1. Face cards (J,Q,K) = 10. Total is added to the winner's score. Game continues until target score or agreed deals.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'rummy.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Melds: Sets = 3â€“4 of same rank. Runs = 3+ consecutive same suit (A-2-3 valid; Q-K-A usually not unless house rule).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'rummy.rules.key.2',
+        title: 'Key rule 2',
+        text: 'One meld per turn (unless house rule allows multiple).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'rummy.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Lay off is optional; can add to any meld on the table.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'rummy.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Cannot discard the same card you just took from the discard pile if that would leave the pile unchanged.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'rummy.rules.key.5',
+        title: 'Key rule 5',
+        text: "When stock runs out and next player doesn't want the discard, discard pile is turned over (unshuffled) as new stock.",
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'rummy.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'rummy.rules.objective',
+          'rummy.rules.gameplay',
+        ],
+      },
+      {
+        id: 'rummy.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'rummy.setup.players',
+          'rummy.setup.deck',
+          'rummy.setup.equipment',
+          'rummy.setup.dealing',
+        ],
+      },
+      {
+        id: 'rummy.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'rummy.rules.key.1',
+          'rummy.rules.key.2',
+          'rummy.rules.key.3',
+          'rummy.rules.key.4',
+          'rummy.rules.key.5',
+        ],
+      },
+      {
+        id: 'rummy.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'rummy.score.description',
+          'rummy.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'rummy.setup.dealing',
+        'rummy.rules.objective',
+      ],
+      deal: [
+        'rummy.rules.gameplay',
+      ],
+      draw: [
+        'rummy.rules.gameplay',
+      ],
+      discard: [
+        'rummy.rules.gameplay',
+      ],
+      meld: [
+        'rummy.rules.gameplay',
+      ],
+      lay_off: [
+        'rummy.rules.gameplay',
+      ],
+      count_deadwood: [
+        'rummy.rules.gameplay',
+      ],
+      add_to_winner: [
+        'rummy.rules.gameplay',
+      ],
+    },
   },
 }

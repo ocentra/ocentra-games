@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Badugi. Type: Triple Draw Lowball. Rules: 4-card hands. Maximize unique suits/ranks. 4-card 'Badugi' > 3-card hand. Tie-breaker: Low high-card. 3 draw rounds.",
-    Player: "Welcome to Badugi! You have 4 cards. Your goal is to have four cards with NO matching suits and NO matching ranks. If you have two Hearts, one of them doesn't count! Ace is low. You have three draws to find your perfect A-2-3-4. Are you ready?",
+    LLM: '1. **First Betting Round**: Following the blinds. 2. **First Draw**: Players discard any number of cards (0-4) and receive replacements. 3. **Second Betting Round**. 4. **Second Draw**. 5. **Third Betting Round**. 6. **Third Draw**. 7. **Final Betting Round**. 8. **Showdown**.',
+    Player: '1. **First Betting Round**: Following the blinds. 2. **First Draw**: Players discard any number of cards (0-4) and receive replacements. 3. **Second Betting Round**. 4. **Second Draw**. 5. **Third Betting Round**. 6. **Third Draw**. 7. **Final Betting Round**. 8. **Showdown**.',
     objective: "Capture the pot by holding the lowest qualifying hand at showdown. A 4-card 'Badugi' (all different suits/ranks) is the highest tier of hand.",
     gameplay: '1. **First Betting Round**: Following the blinds. 2. **First Draw**: Players discard any number of cards (0-4) and receive replacements. 3. **Second Betting Round**. 4. **Second Draw**. 5. **Third Betting Round**. 6. **Third Draw**. 7. **Final Betting Round**. 8. **Showdown**.',
     keyRules: [
@@ -52,10 +52,180 @@
       go_out: 'Hand ends at showdown; there is no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in blinds; current_player may use post_blind before deal.',
-      'Scoring check: Pot-based betting. No point-scoring. Expected outcome: Lowest hand at showdown or all other players fold..',
+      'Setup example: 4 card(s) per player.',
+      "Rule example: Capture the pot by holding the lowest qualifying hand at showdown. A 4-card 'Badugi' (all different suits/ranks) is the highest tier of hand.",
+      'Turn-flow example: 1. **First Betting Round**: Following the blinds. 2. **First Draw**: Players discard any number of cards (0-4) and receive replacements. 3. **Second Betting Round**. 4. **Second Draw**. 5. **Third Betting Round**. 6. **Third Draw**. 7. **Final Betting Round**. 8. **Showdown**.',
+      'Scoring example: Pot-based betting. No point-scoring. Lowest hand at showdown or all other players fold..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'badugi.rules.objective',
+        title: 'Objective',
+        text: "Capture the pot by holding the lowest qualifying hand at showdown. A 4-card 'Badugi' (all different suits/ranks) is the highest tier of hand.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'badugi.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **First Betting Round**: Following the blinds. 2. **First Draw**: Players discard any number of cards (0-4) and receive replacements. 3. **Second Betting Round**. 4. **Second Draw**. 5. **Third Betting Round**. 6. **Third Draw**. 7. **Final Betting Round**. 8. **Showdown**.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'badugi.setup.players',
+        title: 'Players',
+        text: '2-8 players. Typically played with a dealer button and small/big blinds.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'badugi.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52 cards. Aces are always LOW.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'badugi.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, poker chips, dealer button.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'badugi.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 4 cards face down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'badugi.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest hand at showdown or all other players fold.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'badugi.score.description',
+        title: 'Scoring',
+        text: 'Pot-based betting. No point-scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'badugi.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No Suits Rank: All suits are of equal value for winning purposes.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'badugi.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Aces Low: The Ace is the best (lowest) card.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'badugi.rules.key.3',
+        title: 'Key rule 3',
+        text: "The 'Nuts': The best hand is A-2-3-4 of four different suits.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'badugi.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'badugi.rules.objective',
+          'badugi.rules.gameplay',
+        ],
+      },
+      {
+        id: 'badugi.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'badugi.setup.players',
+          'badugi.setup.deck',
+          'badugi.setup.equipment',
+          'badugi.setup.dealing',
+        ],
+      },
+      {
+        id: 'badugi.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'badugi.rules.key.1',
+          'badugi.rules.key.2',
+          'badugi.rules.key.3',
+        ],
+      },
+      {
+        id: 'badugi.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'badugi.score.description',
+          'badugi.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'badugi.setup.dealing',
+        'badugi.rules.objective',
+      ],
+      fold: [
+        'badugi.rules.gameplay',
+      ],
+      check: [
+        'badugi.rules.gameplay',
+      ],
+      call: [
+        'badugi.rules.gameplay',
+      ],
+      bet: [
+        'badugi.rules.gameplay',
+      ],
+      raise: [
+        'badugi.rules.gameplay',
+      ],
+      award_pot: [
+        'badugi.rules.gameplay',
+      ],
+      discard: [
+        'badugi.rules.gameplay',
+      ],
+      post_blind: [
+        'badugi.rules.gameplay',
+      ],
+      deal_hole_cards: [
+        'badugi.rules.gameplay',
+      ],
+      discard_and_draw: [
+        'badugi.rules.gameplay',
+      ],
+      stand_pat: [
+        'badugi.rules.gameplay',
+      ],
+      evaluate_badugi_hands: [
+        'badugi.rules.gameplay',
+      ],
+    },
   },
 }

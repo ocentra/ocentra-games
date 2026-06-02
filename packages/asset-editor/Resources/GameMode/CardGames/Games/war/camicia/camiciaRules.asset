@@ -58,10 +58,204 @@
       go_out: 'No go-out; game ends when one player has no cards left.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: No points; game ends when one player runs out of cards (that player loses). Expected outcome: Opponent runs out of cards; you win by still having cards..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win all the cards. The player who runs out of cards loses.',
+      'Turn-flow example: Players alternate turning the top card of their packet face up onto a central pile. Normal cards (non-attack): no action, play passes to opponent. Attack cards (A, 2, 3): opponent must play 1, 2, or 3 cards respectively. If all response cards are normal, attacker takes the entire pile and places it face down under their packet. If opponent plays an attack card during response, the original attack is cancelled and the new attack takes effect (the previous attacker must now respond). Continue until one player runs out of cards.',
+      'Scoring example: No points; game ends when one player runs out of cards (that player loses). Opponent runs out of cards; you win by still having cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'camicia.rules.objective',
+        title: 'Objective',
+        text: 'Win all the cards. The player who runs out of cards loses.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'camicia.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players alternate turning the top card of their packet face up onto a central pile. Normal cards (non-attack): no action, play passes to opponent. Attack cards (A, 2, 3): opponent must play 1, 2, or 3 cards respectively. If all response cards are normal, attacker takes the entire pile and places it face down under their packet. If opponent plays an attack card during response, the original attack is cancelled and the new attack takes effect (the previous attacker must now respond). Continue until one player runs out of cards.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'camicia.setup.players',
+        title: 'Players',
+        text: 'Camicia is played by exactly two players. Each player receives an equal share of the deck face down (20 cards each with a 40-card Italian deck, or 26 each with 52 cards). Players keep their cards in a packet and do not look at them; they take turns turning the top card face up onto the table.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'camicia.setup.deck',
+        title: 'Deck',
+        text: '40-card Italian deck (suits: swords, batons, cups, coins) or 52-card standard deck. Suits are ignored. Attack cards: Aces, 2s, 3s. Normal cards: 4-10, J, Q, K (or 4-7, J, Q, K in 40-card deck).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'camicia.setup.equipment',
+        title: 'Equipment',
+        text: '40 or 52-card deck',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'camicia.setup.dealing',
+        title: 'Deal',
+        text: 'All cards dealt face down to the two players, 20 cards each (if 40-card deck) or 26 cards each (if 52-card deck). Players do not look at their cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'camicia.score.win-condition',
+        title: 'Win condition',
+        text: 'Opponent runs out of cards; you win by still having cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'camicia.score.description',
+        title: 'Scoring',
+        text: 'No points; game ends when one player runs out of cards (that player loses).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'camicia.rules.key.1',
+        title: 'Key rule 1',
+        text: '2 players, 40 or 52 cards dealt evenly',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'camicia.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Attack cards: Aces (1 card), 2s (2 cards), 3s (3 cards)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'camicia.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Normal cards: All others',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'camicia.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Turn cards face up to central pile alternately',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'camicia.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Attack forces opponent to play 1-3 cards',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'camicia.rules.key.6',
+        title: 'Key rule 6',
+        text: 'If defender plays attack card, new attack supersedes old',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'camicia.rules.key.7',
+        title: 'Key rule 7',
+        text: 'If defender plays all normal cards, attacker wins pile',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+      {
+        id: 'camicia.rules.key.8',
+        title: 'Key rule 8',
+        text: "Won cards go face down under winner's packet",
+        sourceFields: [
+          'rules.keyRules.7',
+        ],
+      },
+      {
+        id: 'camicia.rules.key.9',
+        title: 'Key rule 9',
+        text: 'First player out of cards loses',
+        sourceFields: [
+          'rules.keyRules.8',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'camicia.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'camicia.rules.objective',
+          'camicia.rules.gameplay',
+        ],
+      },
+      {
+        id: 'camicia.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'camicia.setup.players',
+          'camicia.setup.deck',
+          'camicia.setup.equipment',
+          'camicia.setup.dealing',
+        ],
+      },
+      {
+        id: 'camicia.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'camicia.rules.key.1',
+          'camicia.rules.key.2',
+          'camicia.rules.key.3',
+          'camicia.rules.key.4',
+          'camicia.rules.key.5',
+          'camicia.rules.key.6',
+          'camicia.rules.key.7',
+          'camicia.rules.key.8',
+          'camicia.rules.key.9',
+        ],
+      },
+      {
+        id: 'camicia.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'camicia.score.description',
+          'camicia.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'camicia.setup.dealing',
+        'camicia.rules.objective',
+      ],
+      deal: [
+        'camicia.rules.gameplay',
+      ],
+      play_card: [
+        'camicia.rules.gameplay',
+      ],
+    },
   },
 }

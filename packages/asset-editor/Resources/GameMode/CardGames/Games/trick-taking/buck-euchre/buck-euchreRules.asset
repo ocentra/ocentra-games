@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Buck Euchre. 32-card Euchre deck. 4-6 players. Individual (no partnerships). Trump: Bowers (Right=J-trump, Left=J-same-color). Maker needs 3/5 tricks. Euchre = -2pts.',
-    Player: 'The up-card is King of Hearts. You hold Right Bower (Jâ™¥), Left Bower (Jâ™¦), Ace of Hearts, Queen of Hearts, and 9 of Spades. Order it up! You have Right Bower, Left Bower, Ace of trump + another trump = near-certain March (all 5 tricks).',
+    LLM: 'Whoever orders up is the Maker and plays alone. Others try to prevent them from making their contract. Maker must win 3 of 5 tricks to succeed.',
+    Player: 'Whoever orders up is the Maker and plays alone. Others try to prevent them from making their contract. Maker must win 3 of 5 tricks to succeed.',
     objective: 'Score points by successfully making your trick bid, or lose points for failing.',
     gameplay: 'Whoever orders up is the Maker and plays alone. Others try to prevent them from making their contract. Maker must win 3 of 5 tricks to succeed.',
     keyRules: [
@@ -52,10 +52,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal_5_turn_kitty before trump_selection.',
-      'Scoring check: Points for making/missing contract. Expected outcome: 10.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score points by successfully making your trick bid, or lose points for failing.',
+      'Turn-flow example: Whoever orders up is the Maker and plays alone. Others try to prevent them from making their contract. Maker must win 3 of 5 tricks to succeed.',
+      'Scoring example: Points for making/missing contract. First to agreed target (e.g., 10 points)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'buck-euchre.rules.objective',
+        title: 'Objective',
+        text: 'Score points by successfully making your trick bid, or lose points for failing.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'buck-euchre.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Whoever orders up is the Maker and plays alone. Others try to prevent them from making their contract. Maker must win 3 of 5 tricks to succeed.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'buck-euchre.setup.players',
+        title: 'Players',
+        text: 'Four players, each for themselves; some groups extend to 5-6 players by adding extra low cards as described in Dirty Clubs variants.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'buck-euchre.setup.deck',
+        title: 'Deck',
+        text: '24 cards (A, K, Q, J, 10, 9 of each French suit) for the core four-player Buck Euchre game; groups that add players can extend the pack with extra low cards such as eights and sevens.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'buck-euchre.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards. Score tokens or paper.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'buck-euchre.setup.dealing',
+        title: 'Deal',
+        text: '5 cards each. Remaining cards form a kitty; top card turned face-up to propose trump.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'buck-euchre.score.win-condition',
+        title: 'Win condition',
+        text: 'First to agreed target (e.g., 10 points).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'buck-euchre.score.description',
+        title: 'Scoring',
+        text: 'Points for making/missing contract.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'buck-euchre.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Jacks of trump (Right Bower) and Jacks matching trump color (Left Bower) are the two highest trump cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'buck-euchre.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Maker plays aloneâ€”no partners.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'buck-euchre.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Euchred = lose 2 points, regardless of how many tricks were taken.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'buck-euchre.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'buck-euchre.rules.objective',
+          'buck-euchre.rules.gameplay',
+        ],
+      },
+      {
+        id: 'buck-euchre.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'buck-euchre.setup.players',
+          'buck-euchre.setup.deck',
+          'buck-euchre.setup.equipment',
+          'buck-euchre.setup.dealing',
+        ],
+      },
+      {
+        id: 'buck-euchre.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'buck-euchre.rules.key.1',
+          'buck-euchre.rules.key.2',
+          'buck-euchre.rules.key.3',
+        ],
+      },
+      {
+        id: 'buck-euchre.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'buck-euchre.score.description',
+          'buck-euchre.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'buck-euchre.setup.dealing',
+        'buck-euchre.rules.objective',
+      ],
+      play_card: [
+        'buck-euchre.rules.gameplay',
+      ],
+      pass: [
+        'buck-euchre.rules.gameplay',
+      ],
+      deal_5_turn_kitty: [
+        'buck-euchre.rules.gameplay',
+      ],
+      order_up: [
+        'buck-euchre.rules.gameplay',
+      ],
+      name_suit: [
+        'buck-euchre.rules.gameplay',
+      ],
+    },
   },
 }

@@ -56,10 +56,183 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Penalty points called busche accumulate from deal to deal. Card points in tricks are converted into busche based on how many points each player has and whether anyone took no points or the most points. Expected outcome: NA.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Take at least one point but avoid taking the most points. Players who take no points or the most points score penalty points called busche.',
+      "Turn-flow example: No trumps. Player to dealer's right leads first. Any card may be led; others must follow suit if possible. Highest card of led suit wins trick; winner leads to next. It is illegal to lead coins in the first trick. The Pita (Ace of Coins) cannot be discarded in the first trick if unable to follow suit.",
+      'Scoring example: Penalty points called busche accumulate from deal to deal. Card points in tricks are converted into busche based on how many points each player has and whether anyone took no points or the most points. Over several deals, the player with the lowest total busche wins the match; players taking no points or the most card points in a deal gain busche according to the Busca schedule..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'busca.rules.objective',
+        title: 'Objective',
+        text: 'Take at least one point but avoid taking the most points. Players who take no points or the most points score penalty points called busche.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'busca.rules.gameplay',
+        title: 'Turn flow',
+        text: "No trumps. Player to dealer's right leads first. Any card may be led; others must follow suit if possible. Highest card of led suit wins trick; winner leads to next. It is illegal to lead coins in the first trick. The Pita (Ace of Coins) cannot be discarded in the first trick if unable to follow suit.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'busca.setup.players',
+        title: 'Players',
+        text: '4 players, each playing for themselves',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'busca.setup.deck',
+        title: 'Deck',
+        text: '40-card pack: Italian suits (swords, batons, cups, coins) or Milanese/French suits (spades, clubs, hearts, diamonds). Cards rank: 3 (high), 2, Ace, King, Horse/Queen, Jack/Fante, 7, 6, 5, 4 (low).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'busca.setup.equipment',
+        title: 'Equipment',
+        text: '40-card Italian or Milanese pack, score sheet for tracking busche',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'busca.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 10 cards to each player (anticlockwise). Turn to deal passes to the right after each hand.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'busca.score.win-condition',
+        title: 'Win condition',
+        text: 'Over several deals, the player with the lowest total busche wins the match; players taking no points or the most card points in a deal gain busche according to the Busca schedule.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'busca.score.description',
+        title: 'Scoring',
+        text: 'Penalty points called busche accumulate from deal to deal. Card points in tricks are converted into busche based on how many points each player has and whether anyone took no points or the most points.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'busca.rules.key.1',
+        title: 'Key rule 1',
+        text: '40-card Italian or Milanese pack',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'busca.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Card rank: 3-2-A-K-Horse-Jack-7-6-5-4',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'busca.rules.key.3',
+        title: 'Key rule 3',
+        text: 'No trumps; must follow suit',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'busca.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Cannot lead coins on first trick',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'busca.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Pita (Ace of Coins) cannot be discarded first trick if void',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'busca.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Goal: take â‰¥1 point but not most points',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'busca.rules.key.7',
+        title: 'Key rule 7',
+        text: "Penalties called 'busche' for taking 0 or most points",
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'busca.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'busca.rules.objective',
+          'busca.rules.gameplay',
+        ],
+      },
+      {
+        id: 'busca.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'busca.setup.players',
+          'busca.setup.deck',
+          'busca.setup.equipment',
+          'busca.setup.dealing',
+        ],
+      },
+      {
+        id: 'busca.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'busca.rules.key.1',
+          'busca.rules.key.2',
+          'busca.rules.key.3',
+          'busca.rules.key.4',
+          'busca.rules.key.5',
+          'busca.rules.key.6',
+          'busca.rules.key.7',
+        ],
+      },
+      {
+        id: 'busca.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'busca.score.description',
+          'busca.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'busca.setup.dealing',
+        'busca.rules.objective',
+      ],
+      play_card: [
+        'busca.rules.gameplay',
+      ],
+    },
   },
 }

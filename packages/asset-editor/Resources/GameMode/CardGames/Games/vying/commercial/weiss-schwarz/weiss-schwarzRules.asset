@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players build decks from licensed sets and play characters, events, and climax cards. The game’s core rules are proprietary and the card pool is strongly IP-driven.',
+    Player: 'Players build decks from licensed sets and play characters, events, and climax cards. The game’s core rules are proprietary and the card pool is strongly IP-driven.',
     objective: 'Use a constructed deck to defeat the opponent under the official level, climax, and damage rules.',
     gameplay: 'Players build decks from licensed sets and play characters, events, and climax cards. The game’s core rules are proprietary and the card pool is strongly IP-driven.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Use a constructed deck to defeat the opponent under the official level, climax, and damage rules.',
+      'Turn-flow example: Players build decks from licensed sets and play characters, events, and climax cards. The game’s core rules are proprietary and the card pool is strongly IP-driven.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'weiss-schwarz.rules.objective',
+        title: 'Objective',
+        text: 'Use a constructed deck to defeat the opponent under the official level, climax, and damage rules.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'weiss-schwarz.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players build decks from licensed sets and play characters, events, and climax cards. The game’s core rules are proprietary and the card pool is strongly IP-driven.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'weiss-schwarz.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Weiss Schwarz.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'weiss-schwarz.setup.deck',
+        title: 'Deck',
+        text: 'Constructed Weiss Schwarz decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'weiss-schwarz.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed Weiss Schwarz decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'weiss-schwarz.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Constructed Weiss Schwarz decks and deal or lay out cards according to the documented Weiss Schwarz rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'weiss-schwarz.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'weiss-schwarz.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'weiss-schwarz.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Japanese collectible card game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'weiss-schwarz.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Expansions use many licensed properties.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'weiss-schwarz.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Protected card text, art, and character IP require rights.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'weiss-schwarz.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'weiss-schwarz.rules.objective',
+          'weiss-schwarz.rules.gameplay',
+        ],
+      },
+      {
+        id: 'weiss-schwarz.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'weiss-schwarz.setup.players',
+          'weiss-schwarz.setup.deck',
+          'weiss-schwarz.setup.equipment',
+          'weiss-schwarz.setup.dealing',
+        ],
+      },
+      {
+        id: 'weiss-schwarz.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'weiss-schwarz.rules.key.1',
+          'weiss-schwarz.rules.key.2',
+          'weiss-schwarz.rules.key.3',
+        ],
+      },
+      {
+        id: 'weiss-schwarz.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'weiss-schwarz.score.description',
+          'weiss-schwarz.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'weiss-schwarz.setup.dealing',
+        'weiss-schwarz.rules.objective',
+      ],
+      play_card: [
+        'weiss-schwarz.rules.gameplay',
+      ],
+    },
   },
 }

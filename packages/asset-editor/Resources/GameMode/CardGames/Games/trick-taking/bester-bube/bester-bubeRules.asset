@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Bester Bube. Logic: Win the required tricks or card points while controlling the key jack cards.',
-    Player: 'Bester Bube is a German trick-taking game whose title points to the best jack as a decisive card in the trump hierarchy.',
+    LLM: 'Each player contributes one card to a trick. Players follow suit when possible, trump when useful or required, and compare the led suit and trump hierarchy to determine the winner.',
+    Player: 'Each player contributes one card to a trick. Players follow suit when possible, trump when useful or required, and compare the led suit and trump hierarchy to determine the winner.',
     objective: 'Win the required tricks or card points while controlling the key jack cards.',
     gameplay: 'Each player contributes one card to a trick. Players follow suit when possible, trump when useful or required, and compare the led suit and trump hierarchy to determine the winner.',
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-5 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Captured tricks or points determine the hand result. Expected outcome: Win the required tricks or card points while controlling the key jack cards..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win the required tricks or card points while controlling the key jack cards.',
+      'Turn-flow example: Each player contributes one card to a trick. Players follow suit when possible, trump when useful or required, and compare the led suit and trump hierarchy to determine the winner.',
+      'Scoring example: Captured tricks or points determine the hand result. Win the required tricks or card points while controlling the key jack cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'bester-bube.rules.objective',
+        title: 'Objective',
+        text: 'Win the required tricks or card points while controlling the key jack cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bester-bube.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Each player contributes one card to a trick. Players follow suit when possible, trump when useful or required, and compare the led suit and trump hierarchy to determine the winner.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bester-bube.setup.players',
+        title: 'Players',
+        text: '3-5 players use the table arrangement described for Bester Bube.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bester-bube.setup.deck',
+        title: 'Deck',
+        text: 'German or French-suited regional pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bester-bube.setup.equipment',
+        title: 'Equipment',
+        text: 'German or French-suited regional pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bester-bube.setup.dealing',
+        title: 'Deal',
+        text: 'Deal the regional pack among the players, then establish the hand objective and trump structure before play.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bester-bube.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the required tricks or card points while controlling the key jack cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bester-bube.score.description',
+        title: 'Scoring',
+        text: 'Captured tricks or points determine the hand result.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bester-bube.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Regional trick-taking pack.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bester-bube.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Jack or bower cards are strategically central.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bester-bube.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Follow suit where possible.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'bester-bube.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Hand score depends on captured tricks or points.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bester-bube.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bester-bube.rules.objective',
+          'bester-bube.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bester-bube.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bester-bube.setup.players',
+          'bester-bube.setup.deck',
+          'bester-bube.setup.equipment',
+          'bester-bube.setup.dealing',
+        ],
+      },
+      {
+        id: 'bester-bube.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bester-bube.rules.key.1',
+          'bester-bube.rules.key.2',
+          'bester-bube.rules.key.3',
+          'bester-bube.rules.key.4',
+        ],
+      },
+      {
+        id: 'bester-bube.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bester-bube.score.description',
+          'bester-bube.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bester-bube.setup.dealing',
+        'bester-bube.rules.objective',
+      ],
+      play_card: [
+        'bester-bube.rules.gameplay',
+      ],
+      discard: [
+        'bester-bube.rules.gameplay',
+      ],
+      pass: [
+        'bester-bube.rules.gameplay',
+      ],
+      bid: [
+        'bester-bube.rules.gameplay',
+      ],
+    },
   },
 }

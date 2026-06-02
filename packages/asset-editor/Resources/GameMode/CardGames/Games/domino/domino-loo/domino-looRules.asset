@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Domino Loo. 2-4 players, double-six dominoes (28 tiles). Deal 5 each, turn up 1 for trumps (higher end = trump suit). Can swap for The Miss widow hand or drop out. Dealer may swap one tile for turn-up. 5 tricks. Must follow suit; must trump if void. Each trick = 1/5 of pool. Zero tricks = 'Looed' (penalty = pool amount).",
-    Player: "Welcome to Domino Loo! I'll deal you 5 tiles and turn up one to set trumps. You can keep your hand, swap for The Miss (a mystery widow hand), or drop out. Win tricks to earn pool sharesâ€”but win zero tricks and you're 'Looed', paying a penalty! Follow suit if you can, trump if you can't. Dealer gets to swap for the turn-up trump tile.",
+    LLM: "1. **Trumps**: The higher end of the turn-up tile is the trump suit. 2. **The Miss (Widow)**: In 3-4 player games, an extra hand of 5 tiles is dealt. Players can swap their hand for 'The Miss' or drop out. 3. **Dealer's Swap**: If the dealer keeps their hand, they can swap one tile for the turn-up trump tile. 4. **Trick Play**: Lead any tile. Must follow suit (if lead is a 5-2, the suit is 5). If unable to follow, must play a trump if held.",
+    Player: "1. **Trumps**: The higher end of the turn-up tile is the trump suit. 2. **The Miss (Widow)**: In 3-4 player games, an extra hand of 5 tiles is dealt. Players can swap their hand for 'The Miss' or drop out. 3. **Dealer's Swap**: If the dealer keeps their hand, they can swap one tile for the turn-up trump tile. 4. **Trick Play**: Lead any tile. Must follow suit (if lead is a 5-2, the suit is 5). If unable to follow, must play a trump if held.",
     objective: "Win as many tricks as possible to take a share of the pool. Avoid being 'Looed' (taking zero tricks).",
     gameplay: "1. **Trumps**: The higher end of the turn-up tile is the trump suit. 2. **The Miss (Widow)**: In 3-4 player games, an extra hand of 5 tiles is dealt. Players can swap their hand for 'The Miss' or drop out. 3. **Dealer's Swap**: If the dealer keeps their hand, they can swap one tile for the turn-up trump tile. 4. **Trick Play**: Lead any tile. Must follow suit (if lead is a 5-2, the suit is 5). If unable to follow, must play a trump if held.",
     keyRules: [
@@ -54,10 +54,177 @@
       go_out: 'Hand ends after fixed trick count, not go-out.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before miss_option.',
-      'Scoring check: Each trick earns a share of the pool; taking zero tricks triggers Loo penalty. Expected outcome: NA.',
+      'Setup example: 5 card(s) per player.',
+      "Rule example: Win as many tricks as possible to take a share of the pool. Avoid being 'Looed' (taking zero tricks).",
+      "Turn-flow example: 1. **Trumps**: The higher end of the turn-up tile is the trump suit. 2. **The Miss (Widow)**: In 3-4 player games, an extra hand of 5 tiles is dealt. Players can swap their hand for 'The Miss' or drop out. 3. **Dealer's Swap**: If the dealer keeps their hand, they can swap one tile for the turn-up trump tile. 4. **Trick Play**: Lead any tile. Must follow suit (if lead is a 5-2, the suit is 5). If unable to follow, must play a trump if held.",
+      'Scoring example: Each trick earns a share of the pool; taking zero tricks triggers Loo penalty. Best net gain over agreed session length wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'domino-loo.rules.objective',
+        title: 'Objective',
+        text: "Win as many tricks as possible to take a share of the pool. Avoid being 'Looed' (taking zero tricks).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'domino-loo.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Trumps**: The higher end of the turn-up tile is the trump suit. 2. **The Miss (Widow)**: In 3-4 player games, an extra hand of 5 tiles is dealt. Players can swap their hand for 'The Miss' or drop out. 3. **Dealer's Swap**: If the dealer keeps their hand, they can swap one tile for the turn-up trump tile. 4. **Trick Play**: Lead any tile. Must follow suit (if lead is a 5-2, the suit is 5). If unable to follow, must play a trump if held.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'domino-loo.setup.players',
+        title: 'Players',
+        text: '2, 3, or 4 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'domino-loo.setup.deck',
+        title: 'Deck',
+        text: '28 standard double-six dominoes.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'domino-loo.setup.equipment',
+        title: 'Equipment',
+        text: 'Dominoes and gaming chips for the pool.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'domino-loo.setup.dealing',
+        title: 'Deal',
+        text: "Each player receives 5 tiles. A 'turn-up' tile is flipped from the boneyard to determine trumps.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'domino-loo.score.win-condition',
+        title: 'Win condition',
+        text: 'Best net gain over agreed session length wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'domino-loo.score.description',
+        title: 'Scoring',
+        text: 'Each trick earns a share of the pool; taking zero tricks triggers Loo penalty.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'domino-loo.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Suit of a tile is determined by its ends. A 5-2 belongs to suit 5 and suit 2.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'domino-loo.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Trumps always beat non-trump suits.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'domino-loo.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Only the first/second players to opt in can take the Miss.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'domino-loo.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Each trick won earns 1/5 of the pool.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'domino-loo.rules.key.5',
+        title: 'Key rule 5',
+        text: "Player who takes no tricks is 'Looed' and must pay penalty equal to original pool amount.",
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'domino-loo.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'domino-loo.rules.objective',
+          'domino-loo.rules.gameplay',
+        ],
+      },
+      {
+        id: 'domino-loo.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'domino-loo.setup.players',
+          'domino-loo.setup.deck',
+          'domino-loo.setup.equipment',
+          'domino-loo.setup.dealing',
+        ],
+      },
+      {
+        id: 'domino-loo.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'domino-loo.rules.key.1',
+          'domino-loo.rules.key.2',
+          'domino-loo.rules.key.3',
+          'domino-loo.rules.key.4',
+          'domino-loo.rules.key.5',
+        ],
+      },
+      {
+        id: 'domino-loo.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'domino-loo.score.description',
+          'domino-loo.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'domino-loo.setup.dealing',
+        'domino-loo.rules.objective',
+      ],
+      deal: [
+        'domino-loo.rules.gameplay',
+      ],
+      award_pot: [
+        'domino-loo.rules.gameplay',
+      ],
+      play_card: [
+        'domino-loo.rules.gameplay',
+      ],
+      draw: [
+        'domino-loo.rules.gameplay',
+      ],
+      pass: [
+        'domino-loo.rules.gameplay',
+      ],
+    },
   },
 }

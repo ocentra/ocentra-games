@@ -10,7 +10,26 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: "After each tile is set, sum the pips on all open ends of the layout; if the total is a multiple of 5 (5, 10, 15, 20...), the player scores that total divided by 5. An exposed double counts both its pips until tiles have been played on both sides of it. At end of hand, each player's remaining pips are rounded to the nearest multiple of 5, divided by 5, and subtracted from their score. First to 61 points wins.",
+      winCondition: 'First player or partnership to reach 61 points wins. Tie: play further hands until one leads.',
+      targetScore: 61,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        cardValues: 'Scoring uses layout pip totals (multiples of 5) and hand penalties; no per-tile point values.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

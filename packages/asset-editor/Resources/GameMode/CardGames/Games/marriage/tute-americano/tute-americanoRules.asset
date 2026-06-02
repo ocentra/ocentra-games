@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tute americano. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Tute americano: Tute variant with American deck (52 cards) or 40-card strip. Same point-trick and Cantes logic; variant rules.',
+    LLM: 'Same as Tute corriente except: eight cards each; turn one for trump, rest to stock. Non-dealer leads. While stock has cards: if trump is led you must play a trump (need not overtake); if non-trump led you may play any card. When stock is exhausted: follow suit, beat led card if possible, trump if void. After winning a trick you may sing one 40 or 20 (king-horse of same suit). Winner of trick draws first from stock, then opponent. First to 121+ wins.',
+    Player: 'Same as Tute corriente except: eight cards each; turn one for trump, rest to stock. Non-dealer leads. While stock has cards: if trump is led you must play a trump (need not overtake); if non-trump led you may play any card. When stock is exhausted: follow suit, beat led card if possible, trump if void. After winning a trick you may sing one 40 or 20 (king-horse of same suit). Winner of trick draws first from stock, then opponent. First to 121+ wins.',
     objective: 'First to 121 or more points from tricks, last trick (10), and singing (20/40). No tute (four kings or horses) declaration.',
     gameplay: 'Same as Tute corriente except: eight cards each; turn one for trump, rest to stock. Non-dealer leads. While stock has cards: if trump is led you must play a trump (need not overtake); if non-trump led you may play any card. When stock is exhausted: follow suit, beat led card if possible, trump if void. After winning a trick you may sing one 40 or 20 (king-horse of same suit). Winner of trick draws first from stock, then opponent. First to 121+ wins.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 8 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: As Tute Expected outcome: 121.',
+      'Setup example: 8 card(s) per player.',
+      'Rule example: First to 121 or more points from tricks, last trick (10), and singing (20/40). No tute (four kings or horses) declaration.',
+      'Turn-flow example: Same as Tute corriente except: eight cards each; turn one for trump, rest to stock. Non-dealer leads. While stock has cards: if trump is led you must play a trump (need not overtake); if non-trump led you may play any card. When stock is exhausted: follow suit, beat led card if possible, trump if void. After winning a trick you may sing one 40 or 20 (king-horse of same suit). Winner of trick draws first from stock, then opponent. First to 121+ wins.',
+      'Scoring example: As Tute First to 121 or more points from card points in tricks, last trick (10), and cantes (20/40)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tute-americano.rules.objective',
+        title: 'Objective',
+        text: 'First to 121 or more points from tricks, last trick (10), and singing (20/40). No tute (four kings or horses) declaration.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tute-americano.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Same as Tute corriente except: eight cards each; turn one for trump, rest to stock. Non-dealer leads. While stock has cards: if trump is led you must play a trump (need not overtake); if non-trump led you may play any card. When stock is exhausted: follow suit, beat led card if possible, trump if void. After winning a trick you may sing one 40 or 20 (king-horse of same suit). Winner of trick draws first from stock, then opponent. First to 121+ wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tute-americano.setup.players',
+        title: 'Players',
+        text: 'Two players only; no partnerships. Non-dealer leads first; turn to deal alternates.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tute-americano.setup.deck',
+        title: 'Deck',
+        text: '40-card pack (Spanish or French stripped).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tute-americano.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tute-americano.setup.dealing',
+        title: 'Deal',
+        text: 'Eight cards each, one at a time; turn one face up for trump; rest form stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tute-americano.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 121 or more points from card points in tricks, last trick (10), and cantes (20/40).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tute-americano.score.description',
+        title: 'Scoring',
+        text: 'As Tute',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tute-americano.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Eight cards each; 121 to win',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tute-americano.rules.key.2',
+        title: 'Key rule 2',
+        text: 'No tute declaration',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tute-americano.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trump lead must play trump in first part',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tute-americano.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Cantes (20/40) after winning trick',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tute-americano.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tute-americano.rules.objective',
+          'tute-americano.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tute-americano.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tute-americano.setup.players',
+          'tute-americano.setup.deck',
+          'tute-americano.setup.equipment',
+          'tute-americano.setup.dealing',
+        ],
+      },
+      {
+        id: 'tute-americano.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tute-americano.rules.key.1',
+          'tute-americano.rules.key.2',
+          'tute-americano.rules.key.3',
+          'tute-americano.rules.key.4',
+        ],
+      },
+      {
+        id: 'tute-americano.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tute-americano.score.description',
+          'tute-americano.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tute-americano.setup.dealing',
+        'tute-americano.rules.objective',
+      ],
+      play_card: [
+        'tute-americano.rules.gameplay',
+      ],
+    },
   },
 }

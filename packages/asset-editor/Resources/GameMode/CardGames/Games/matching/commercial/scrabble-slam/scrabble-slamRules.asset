@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Fan Tan (Sevens). Logic: See rules.objective and rules.gameplay.',
-    Player: "Fan Tan, also widely known as 'Sevens', 'Domino', or 'Parliament', is a classic layout-based card game where the objective is to be the first to get rid of all your cards. Players build upon a central layout of cards, starting with the Sevens and expanding outward to the Ace and Two in each suit. It is a game of both luck and light strategy, as players can choose to hold back key 'blocking' cards to prevent opponents from playing.",
+    LLM: 'Four card piles show the current word. Players play letter cards onto one pile at a time to create a new valid four-letter word, racing to use cards before opponents.',
+    Player: 'Four card piles show the current word. Players play letter cards onto one pile at a time to create a new valid four-letter word, racing to use cards before opponents.',
     objective: 'Play letter cards quickly by changing the current four-letter word into another valid word.',
     gameplay: 'Four card piles show the current word. Players play letter cards onto one pile at a time to create a new valid four-letter word, racing to use cards before opponents.',
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'First to empty hand wins automatically.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play_round.',
-      'Scoring check: Be the first player to shed all cards from your hand. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Play letter cards quickly by changing the current four-letter word into another valid word.',
+      'Turn-flow example: Four card piles show the current word. Players play letter cards onto one pile at a time to create a new valid four-letter word, racing to use cards before opponents.',
+      'Scoring example: Be the first player to shed all cards from your hand. Be the first player to shed all cards from your hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'scrabble-slam.rules.objective',
+        title: 'Objective',
+        text: 'Play letter cards quickly by changing the current four-letter word into another valid word.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'scrabble-slam.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Four card piles show the current word. Players play letter cards onto one pile at a time to create a new valid four-letter word, racing to use cards before opponents.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'scrabble-slam.setup.players',
+        title: 'Players',
+        text: '2-4 players use the table arrangement described for Scrabble Slam.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'scrabble-slam.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Scrabble Slam letter card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'scrabble-slam.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Scrabble Slam letter card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'scrabble-slam.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Scrabble Slam letter card deck and deal or lay out cards according to the documented Scrabble Slam rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'scrabble-slam.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to shed all cards from your hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'scrabble-slam.score.description',
+        title: 'Scoring',
+        text: 'Be the first player to shed all cards from your hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'scrabble-slam.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Only one letter is changed with each played card.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'scrabble-slam.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The resulting four-letter word must be valid.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'scrabble-slam.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Cards are played as a fast word-changing race.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'scrabble-slam.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'scrabble-slam.rules.objective',
+          'scrabble-slam.rules.gameplay',
+        ],
+      },
+      {
+        id: 'scrabble-slam.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'scrabble-slam.setup.players',
+          'scrabble-slam.setup.deck',
+          'scrabble-slam.setup.equipment',
+          'scrabble-slam.setup.dealing',
+        ],
+      },
+      {
+        id: 'scrabble-slam.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'scrabble-slam.rules.key.1',
+          'scrabble-slam.rules.key.2',
+          'scrabble-slam.rules.key.3',
+        ],
+      },
+      {
+        id: 'scrabble-slam.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'scrabble-slam.score.description',
+          'scrabble-slam.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'scrabble-slam.setup.dealing',
+        'scrabble-slam.rules.objective',
+      ],
+      deal: [
+        'scrabble-slam.rules.gameplay',
+      ],
+      play_card: [
+        'scrabble-slam.rules.gameplay',
+      ],
+      pass: [
+        'scrabble-slam.rules.gameplay',
+      ],
+    },
   },
 }

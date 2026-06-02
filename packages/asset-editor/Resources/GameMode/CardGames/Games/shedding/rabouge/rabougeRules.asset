@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Crazy Eights. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Crazy Eights is a popular shedding card game, especially beloved by children. The objective is simple: be the first player to discard all your cards. Players take turns playing cards to a central discard pile, matching either the rank or suit of the top card. The eponymous "crazy" 8s are wild cards that can be played on anything and allow the player to change the suit.',
+    LLM: 'Players play cards from hand to a central pile according to the allowed sequence and pile rules. The game resembles an easier multiplayer relative of Russian Bank style patience.',
+    Player: 'Players play cards from hand to a central pile according to the allowed sequence and pile rules. The game resembles an easier multiplayer relative of Russian Bank style patience.',
     objective: 'Discard all cards to the central pile before the other players.',
     gameplay: 'Players play cards from hand to a central pile according to the allowed sequence and pile rules. The game resembles an easier multiplayer relative of Russian Bank style patience.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Be the first player to discard all cards from your hand. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Discard all cards to the central pile before the other players.',
+      'Turn-flow example: Players play cards from hand to a central pile according to the allowed sequence and pile rules. The game resembles an easier multiplayer relative of Russian Bank style patience.',
+      'Scoring example: Be the first player to discard all cards from your hand. Be the first player to discard all cards from your hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'rabouge.rules.objective',
+        title: 'Objective',
+        text: 'Discard all cards to the central pile before the other players.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'rabouge.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play cards from hand to a central pile according to the allowed sequence and pile rules. The game resembles an easier multiplayer relative of Russian Bank style patience.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'rabouge.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Rabouge.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'rabouge.setup.deck',
+        title: 'Deck',
+        text: 'French-suited playing cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'rabouge.setup.equipment',
+        title: 'Equipment',
+        text: 'French-suited playing cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'rabouge.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare French-suited playing cards and deal or lay out cards according to the documented Rabouge rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'rabouge.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'rabouge.score.description',
+        title: 'Scoring',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'rabouge.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Any number of players may participate.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'rabouge.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The central pile is the main place where cards are shed.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'rabouge.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The first player to get rid of all cards wins.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'rabouge.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'rabouge.rules.objective',
+          'rabouge.rules.gameplay',
+        ],
+      },
+      {
+        id: 'rabouge.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'rabouge.setup.players',
+          'rabouge.setup.deck',
+          'rabouge.setup.equipment',
+          'rabouge.setup.dealing',
+        ],
+      },
+      {
+        id: 'rabouge.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'rabouge.rules.key.1',
+          'rabouge.rules.key.2',
+          'rabouge.rules.key.3',
+        ],
+      },
+      {
+        id: 'rabouge.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'rabouge.score.description',
+          'rabouge.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'rabouge.setup.dealing',
+        'rabouge.rules.objective',
+      ],
+      play_card: [
+        'rabouge.rules.gameplay',
+      ],
+    },
   },
 }

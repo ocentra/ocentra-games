@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Turnover Bridge. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Turnover Bridge is a 2-player trick game (more related to Whist than Bridge). 52-card deck, 26 each. Layout: 12 face-down in row + 12 face-up on top + 2 secret hole cards. Spades permanently trump. Play face-up cards or hole cards. When face-up played, turn over card beneath. Win 14+ of 26 tricks. Information warfare: visible cards vs hidden cards.',
+    LLM: 'Play any face-up card or hole card. Follow suit. Trump with spades if void. When face-up card played, turn over card beneath (now available). 2 hole cards kept secret. Highest trump or highest led suit wins trick.',
+    Player: 'Play any face-up card or hole card. Follow suit. Trump with spades if void. When face-up card played, turn over card beneath (now available). 2 hole cards kept secret. Highest trump or highest led suit wins trick.',
     objective: 'Win 14 or more of the 26 tricks. Spades are permanent trump. Players use a 12+12+2 layout (12 face-down, 12 face-up on top, 2 hole cards); when a face-up card is played, the card beneath is turned over and becomes available.',
     gameplay: 'Play any face-up card or hole card. Follow suit. Trump with spades if void. When face-up card played, turn over card beneath (now available). 2 hole cards kept secret. Highest trump or highest led suit wins trick.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 14 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: 14+ tricks wins. Variants: fixed stake or play to 100pts (1pt/trick). Expected outcome: Win 14+ of 26 tricks..',
+      'Setup example: 14 card(s) per player.',
+      'Rule example: Win 14 or more of the 26 tricks. Spades are permanent trump. Players use a 12+12+2 layout (12 face-down, 12 face-up on top, 2 hole cards); when a face-up card is played, the card beneath is turned over and becomes available.',
+      'Turn-flow example: Play any face-up card or hole card. Follow suit. Trump with spades if void. When face-up card played, turn over card beneath (now available). 2 hole cards kept secret. Highest trump or highest led suit wins trick.',
+      'Scoring example: 14+ tricks wins. Variants: fixed stake or play to 100pts (1pt/trick). Win 14+ of 26 tricks..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'turnover-bridge.rules.objective',
+        title: 'Objective',
+        text: 'Win 14 or more of the 26 tricks. Spades are permanent trump. Players use a 12+12+2 layout (12 face-down, 12 face-up on top, 2 hole cards); when a face-up card is played, the card beneath is turned over and becomes available.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'turnover-bridge.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Play any face-up card or hole card. Follow suit. Trump with spades if void. When face-up card played, turn over card beneath (now available). 2 hole cards kept secret. Highest trump or highest led suit wins trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'turnover-bridge.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'turnover-bridge.setup.deck',
+        title: 'Deck',
+        text: '52 cards. 26 each. Spades = permanent trump.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'turnover-bridge.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'turnover-bridge.setup.dealing',
+        title: 'Deal',
+        text: '12 face-down in row + 12 face-up on top + 2 hidden hole cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'turnover-bridge.score.win-condition',
+        title: 'Win condition',
+        text: 'Win 14+ of 26 tricks.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'turnover-bridge.score.description',
+        title: 'Scoring',
+        text: '14+ tricks wins. Variants: fixed stake or play to 100pts (1pt/trick).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'turnover-bridge.rules.key.1',
+        title: 'Key rule 1',
+        text: '12+12+2 card layout',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'turnover-bridge.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Spades always trump',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'turnover-bridge.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Face-up/face-down reveal mechanic',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'turnover-bridge.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Hidden hole cards',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'turnover-bridge.rules.key.5',
+        title: 'Key rule 5',
+        text: '14 tricks to win',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'turnover-bridge.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'turnover-bridge.rules.objective',
+          'turnover-bridge.rules.gameplay',
+        ],
+      },
+      {
+        id: 'turnover-bridge.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'turnover-bridge.setup.players',
+          'turnover-bridge.setup.deck',
+          'turnover-bridge.setup.equipment',
+          'turnover-bridge.setup.dealing',
+        ],
+      },
+      {
+        id: 'turnover-bridge.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'turnover-bridge.rules.key.1',
+          'turnover-bridge.rules.key.2',
+          'turnover-bridge.rules.key.3',
+          'turnover-bridge.rules.key.4',
+          'turnover-bridge.rules.key.5',
+        ],
+      },
+      {
+        id: 'turnover-bridge.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'turnover-bridge.score.description',
+          'turnover-bridge.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'turnover-bridge.setup.dealing',
+        'turnover-bridge.rules.objective',
+      ],
+      play_card: [
+        'turnover-bridge.rules.gameplay',
+      ],
+    },
   },
 }

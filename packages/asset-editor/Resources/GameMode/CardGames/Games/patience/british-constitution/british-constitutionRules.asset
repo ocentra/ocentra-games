@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: British Constitution. Logic: Build all cards to the foundations within the movement restrictions.',
-    Player: 'British Constitution is an English two-pack patience game with strong restrictions on moving cards through the tableau toward foundations.',
+    LLM: 'Cards move through the tableau in a governed order before reaching foundations, so each move must preserve future access.',
+    Player: 'Cards move through the tableau in a governed order before reaching foundations, so each move must preserve future access.',
     objective: 'Build all cards to the foundations within the movement restrictions.',
     gameplay: 'Cards move through the tableau in a governed order before reaching foundations, so each move must preserve future access.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: The game is won when all eligible cards reach the foundations. Expected outcome: Build all cards to the foundations within the movement restrictions..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Build all cards to the foundations within the movement restrictions.',
+      'Turn-flow example: Cards move through the tableau in a governed order before reaching foundations, so each move must preserve future access.',
+      'Scoring example: The game is won when all eligible cards reach the foundations. Build all cards to the foundations within the movement restrictions..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'british-constitution.rules.objective',
+        title: 'Objective',
+        text: 'Build all cards to the foundations within the movement restrictions.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'british-constitution.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Cards move through the tableau in a governed order before reaching foundations, so each move must preserve future access.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'british-constitution.setup.players',
+        title: 'Players',
+        text: '1 players use the table arrangement described for British Constitution.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'british-constitution.setup.deck',
+        title: 'Deck',
+        text: 'Two standard 52-card decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'british-constitution.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard 52-card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'british-constitution.setup.dealing',
+        title: 'Deal',
+        text: 'Remove kings, queens, and aces at setup according to the layout, discard the kings and queens, and use aces as foundation bases.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'british-constitution.score.win-condition',
+        title: 'Win condition',
+        text: 'Build all cards to the foundations within the movement restrictions.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'british-constitution.score.description',
+        title: 'Scoring',
+        text: 'The game is won when all eligible cards reach the foundations.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'british-constitution.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two packs are used.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'british-constitution.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Kings and queens are removed at setup.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'british-constitution.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Aces form the foundation bases.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'british-constitution.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Movement between tableau levels is restricted.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'british-constitution.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'british-constitution.rules.objective',
+          'british-constitution.rules.gameplay',
+        ],
+      },
+      {
+        id: 'british-constitution.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'british-constitution.setup.players',
+          'british-constitution.setup.deck',
+          'british-constitution.setup.equipment',
+          'british-constitution.setup.dealing',
+        ],
+      },
+      {
+        id: 'british-constitution.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'british-constitution.rules.key.1',
+          'british-constitution.rules.key.2',
+          'british-constitution.rules.key.3',
+          'british-constitution.rules.key.4',
+        ],
+      },
+      {
+        id: 'british-constitution.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'british-constitution.score.description',
+          'british-constitution.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'british-constitution.setup.dealing',
+        'british-constitution.rules.objective',
+      ],
+      deal: [
+        'british-constitution.rules.gameplay',
+      ],
+      play_card: [
+        'british-constitution.rules.gameplay',
+      ],
+      draw: [
+        'british-constitution.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Fan Tan (Sevens). Logic: See rules.objective and rules.gameplay.',
-    Player: "Fan Tan, also widely known as 'Sevens', 'Domino', or 'Parliament', is a classic layout-based card game where the objective is to be the first to get rid of all your cards. Players build upon a central layout of cards, starting with the Sevens and expanding outward to the Ace and Two in each suit. It is a game of both luck and light strategy, as players can choose to hold back key 'blocking' cards to prevent opponents from playing.",
+    LLM: 'Players simultaneously trade face-down sets of matching quantity, calling out how many cards they are offering. Trades are accepted by another player offering the same number. A player who completes a full commodity set calls the corner and scores the hand.',
+    Player: 'Players simultaneously trade face-down sets of matching quantity, calling out how many cards they are offering. Trades are accepted by another player offering the same number. A player who completes a full commodity set calls the corner and scores the hand.',
     objective: 'Corner the market by collecting all cards of one commodity before the other players do.',
     gameplay: 'Players simultaneously trade face-down sets of matching quantity, calling out how many cards they are offering. Trades are accepted by another player offering the same number. A player who completes a full commodity set calls the corner and scores the hand.',
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'First to empty hand wins automatically.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play_round.',
-      'Scoring check: Be the first player to shed all cards from your hand. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Corner the market by collecting all cards of one commodity before the other players do.',
+      'Turn-flow example: Players simultaneously trade face-down sets of matching quantity, calling out how many cards they are offering. Trades are accepted by another player offering the same number. A player who completes a full commodity set calls the corner and scores the hand.',
+      'Scoring example: Be the first player to shed all cards from your hand. Be the first player to shed all cards from your hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pit.rules.objective',
+        title: 'Objective',
+        text: 'Corner the market by collecting all cards of one commodity before the other players do.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pit.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players simultaneously trade face-down sets of matching quantity, calling out how many cards they are offering. Trades are accepted by another player offering the same number. A player who completes a full commodity set calls the corner and scores the hand.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pit.setup.players',
+        title: 'Players',
+        text: '3-8 players use the table arrangement described for Pit.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pit.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Pit commodity deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pit.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Pit commodity deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pit.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Pit commodity deck and deal or lay out cards according to the documented Pit rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pit.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to shed all cards from your hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pit.score.description',
+        title: 'Scoring',
+        text: 'Be the first player to shed all cards from your hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pit.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trades are simultaneous and must exchange equal numbers of cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pit.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players may not reveal the exact commodities being traded during the exchange.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pit.rules.key.3',
+        title: 'Key rule 3',
+        text: 'A complete commodity set wins the hand; editions with Bull and Bear cards add bonus and penalty cards.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pit.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pit.rules.objective',
+          'pit.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pit.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pit.setup.players',
+          'pit.setup.deck',
+          'pit.setup.equipment',
+          'pit.setup.dealing',
+        ],
+      },
+      {
+        id: 'pit.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pit.rules.key.1',
+          'pit.rules.key.2',
+          'pit.rules.key.3',
+        ],
+      },
+      {
+        id: 'pit.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pit.score.description',
+          'pit.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pit.setup.dealing',
+        'pit.rules.objective',
+      ],
+      deal: [
+        'pit.rules.gameplay',
+      ],
+      play_card: [
+        'pit.rules.gameplay',
+      ],
+      pass: [
+        'pit.rules.gameplay',
+      ],
+    },
   },
 }

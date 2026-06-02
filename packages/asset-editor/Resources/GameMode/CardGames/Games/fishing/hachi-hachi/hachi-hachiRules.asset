@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Hachi-Hachi (八八). Logic: See rules.objective and rules.gameplay.',
-    Player: "Hachi-Hachi (八八, '88') is the most representative Japanese Hanafuda fishing game. The name refers to the par score of 88 points (one-third of the 264 total points in the deck). Played by 3-6 players with a bidding phase to determine the three active players each round. Features complex scoring with teyaku (initial hand combinations) and deki-yaku (combinations formed during play). Players can stop early if they form valuable combinations.",
+    LLM: "1. Bidding Phase (if more than 3 players): Players bid to determine the 3 active players for the round. Non-active players sit out but may still earn from teyaku. 2. Dealing: Deal cards to the 3 active players. Place cards face-up in the center (the 'field'). 3. Playing Phase: Players take turns playing a card from hand to capture matching cards from the field. A card matches if it's from the same month/suit. After playing from hand, flip the top card from the deck. If it matches a field card, capture it. Captured cards go into the player's scoring pile. 4. Scoring: Total card points = 264 (par = 88 per player). Teyaku (Initial Hand Combinations): Declared before play for immediate payment. Deki-Yaku (Play Combinations): Formed during play. Player can stop early to claim payment. Final score = (Your points - 88). Positive = win, Negative = loss.",
+    Player: "1. Bidding Phase (if more than 3 players): Players bid to determine the 3 active players for the round. Non-active players sit out but may still earn from teyaku. 2. Dealing: Deal cards to the 3 active players. Place cards face-up in the center (the 'field'). 3. Playing Phase: Players take turns playing a card from hand to capture matching cards from the field. A card matches if it's from the same month/suit. After playing from hand, flip the top card from the deck. If it matches a field card, capture it. Captured cards go into the player's scoring pile. 4. Scoring: Total card points = 264 (par = 88 per player). Teyaku (Initial Hand Combinations): Declared before play for immediate payment. Deki-Yaku (Play Combinations): Formed during play. Player can stop early to claim payment. Final score = (Your points - 88). Positive = win, Negative = loss.",
     objective: 'Score as close to 88 points as possible (the par score). Players pay/receive based on deviation from 88. Alternatively, form valuable yaku combinations to stop play early and claim payment.',
     gameplay: "1. Bidding Phase (if more than 3 players): Players bid to determine the 3 active players for the round. Non-active players sit out but may still earn from teyaku. 2. Dealing: Deal cards to the 3 active players. Place cards face-up in the center (the 'field'). 3. Playing Phase: Players take turns playing a card from hand to capture matching cards from the field. A card matches if it's from the same month/suit. After playing from hand, flip the top card from the deck. If it matches a field card, capture it. Captured cards go into the player's scoring pile. 4. Scoring: Total card points = 264 (par = 88 per player). Teyaku (Initial Hand Combinations): Declared before play for immediate payment. Deki-Yaku (Play Combinations): Formed during play. Player can stop early to claim payment. Final score = (Your points - 88). Positive = win, Negative = loss.",
     keyRules: [
@@ -54,10 +54,180 @@
       go_out: 'No go-out action; round ends when all cards played or player stops.',
     },
     exampleHands: [
-      'Opening deal: 3-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in bidding; each_player_clockwise may use bid before deal.',
-      'Scoring check: Score as close to 88 points as possible (the par score). Players pay/receive based on deviation from 88. Alternatively, form valuable yaku combinations to stop play early and claim payment. Expected outcome: 88.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score as close to 88 points as possible (the par score). Players pay/receive based on deviation from 88. Alternatively, form valuable yaku combinations to stop play early and claim payment.',
+      "Turn-flow example: 1. Bidding Phase (if more than 3 players): Players bid to determine the 3 active players for the round. Non-active players sit out but may still earn from teyaku. 2. Dealing: Deal cards to the 3 active players. Place cards face-up in the center (the 'field'). 3. Playing Phase: Players take turns playing a card from hand to capture matching cards from the field. A card matches if it's from the same month/suit. After playing from hand, flip the top card from the deck. If it matches a field card, capture it. Captured cards go into the player's scoring pile. 4. Scoring: Total card points = 264 (par = 88 per player). Teyaku (Initial Hand Combinations): Declared before play for immediate payment. Deki-Yaku (Play Combinations): Formed during play. Player can stop early to claim payment. Final score = (Your points - 88). Positive = win, Negative = loss.",
+      'Scoring example: Score as close to 88 points as possible (the par score). Players pay/receive based on deviation from 88. Alternatively, form valuable yaku combinations to stop play early and claim payment. Score closest to 88 points after all cards are played, or form valuable yaku to stop early and claim payment..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hachi-hachi.rules.objective',
+        title: 'Objective',
+        text: 'Score as close to 88 points as possible (the par score). Players pay/receive based on deviation from 88. Alternatively, form valuable yaku combinations to stop play early and claim payment.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hachi-hachi.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Bidding Phase (if more than 3 players): Players bid to determine the 3 active players for the round. Non-active players sit out but may still earn from teyaku. 2. Dealing: Deal cards to the 3 active players. Place cards face-up in the center (the 'field'). 3. Playing Phase: Players take turns playing a card from hand to capture matching cards from the field. A card matches if it's from the same month/suit. After playing from hand, flip the top card from the deck. If it matches a field card, capture it. Captured cards go into the player's scoring pile. 4. Scoring: Total card points = 264 (par = 88 per player). Teyaku (Initial Hand Combinations): Declared before play for immediate payment. Deki-Yaku (Play Combinations): Formed during play. Player can stop early to claim payment. Final score = (Your points - 88). Positive = win, Negative = loss.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hachi-hachi.setup.players',
+        title: 'Players',
+        text: '3-6 players. Only 3 play actively each round; others sit out after bidding.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hachi-hachi.setup.deck',
+        title: 'Deck',
+        text: '48-card Hanafuda deck (12 suits/months, 4 cards each).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hachi-hachi.setup.equipment',
+        title: 'Equipment',
+        text: "Two denominations of chips: 'Kan' and 'Mon' (1 Kan = 12 Mon typically).",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hachi-hachi.setup.dealing',
+        title: 'Deal',
+        text: "Deal cards to the 3 active players. Place cards face-up in the center (the 'field').",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hachi-hachi.score.win-condition',
+        title: 'Win condition',
+        text: 'Score closest to 88 points after all cards are played, or form valuable yaku to stop early and claim payment.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hachi-hachi.score.description',
+        title: 'Scoring',
+        text: 'Score as close to 88 points as possible (the par score). Players pay/receive based on deviation from 88. Alternatively, form valuable yaku combinations to stop play early and claim payment.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hachi-hachi.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The par score of 88 is key—aim to exceed it, not just maximize points.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hachi-hachi.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Teyaku are initial hand combinations declared before play for immediate payment.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hachi-hachi.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Deki-yaku are combinations formed during play; players can stop early to claim payment.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'hachi-hachi.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Cards match by month/suit (same month cards capture each other).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'hachi-hachi.rules.key.5',
+        title: 'Key rule 5',
+        text: 'After playing from hand, flip top card from deck—if it matches field card, capture it.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hachi-hachi.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hachi-hachi.rules.objective',
+          'hachi-hachi.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hachi-hachi.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hachi-hachi.setup.players',
+          'hachi-hachi.setup.deck',
+          'hachi-hachi.setup.equipment',
+          'hachi-hachi.setup.dealing',
+        ],
+      },
+      {
+        id: 'hachi-hachi.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hachi-hachi.rules.key.1',
+          'hachi-hachi.rules.key.2',
+          'hachi-hachi.rules.key.3',
+          'hachi-hachi.rules.key.4',
+          'hachi-hachi.rules.key.5',
+        ],
+      },
+      {
+        id: 'hachi-hachi.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hachi-hachi.score.description',
+          'hachi-hachi.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hachi-hachi.setup.dealing',
+        'hachi-hachi.rules.objective',
+      ],
+      deal: [
+        'hachi-hachi.rules.gameplay',
+      ],
+      reveal_market: [
+        'hachi-hachi.rules.gameplay',
+      ],
+      declare: [
+        'hachi-hachi.rules.gameplay',
+      ],
+      award_pot: [
+        'hachi-hachi.rules.gameplay',
+      ],
+      play_card: [
+        'hachi-hachi.rules.gameplay',
+      ],
+      bid: [
+        'hachi-hachi.rules.gameplay',
+      ],
+    },
   },
 }

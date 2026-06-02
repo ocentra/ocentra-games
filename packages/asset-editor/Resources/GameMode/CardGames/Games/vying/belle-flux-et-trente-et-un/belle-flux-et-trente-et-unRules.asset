@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Belle Flux et Trente et Un. Logic: Win pots by holding or claiming the best result in the three component contests.',
-    Player: 'Belle, Flux et Trente-et-Un is a historical French-German gambling game combining three scoring contests: belle, flux, and thirty-one.',
+    LLM: 'Players compare hands for the named combinations. Betting and claiming decide who contests each part, and the best qualifying hand wins the associated stake.',
+    Player: 'Players compare hands for the named combinations. Betting and claiming decide who contests each part, and the best qualifying hand wins the associated stake.',
     objective: 'Win pots by holding or claiming the best result in the three component contests.',
     gameplay: 'Players compare hands for the named combinations. Betting and claiming decide who contests each part, and the best qualifying hand wins the associated stake.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Stakes are won separately for the belle, flux, and thirty-one components. Expected outcome: Win pots by holding or claiming the best result in the three component contests..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Win pots by holding or claiming the best result in the three component contests.',
+      'Turn-flow example: Players compare hands for the named combinations. Betting and claiming decide who contests each part, and the best qualifying hand wins the associated stake.',
+      'Scoring example: Stakes are won separately for the belle, flux, and thirty-one components. Win pots by holding or claiming the best result in the three component contests..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'belle-flux-et-trente-et-un.rules.objective',
+        title: 'Objective',
+        text: 'Win pots by holding or claiming the best result in the three component contests.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'belle-flux-et-trente-et-un.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players compare hands for the named combinations. Betting and claiming decide who contests each part, and the best qualifying hand wins the associated stake.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'belle-flux-et-trente-et-un.setup.players',
+        title: 'Players',
+        text: '2-8 players use the table arrangement described for Belle Flux et Trente et Un.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'belle-flux-et-trente-et-un.setup.deck',
+        title: 'Deck',
+        text: 'French-suited pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'belle-flux-et-trente-et-un.setup.equipment',
+        title: 'Equipment',
+        text: 'French-suited pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'belle-flux-et-trente-et-un.setup.dealing',
+        title: 'Deal',
+        text: 'Deal hands for the three contests, then resolve the best belle, flush, and thirty-one claims against the stakes.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'belle-flux-et-trente-et-un.score.win-condition',
+        title: 'Win condition',
+        text: 'Win pots by holding or claiming the best result in the three component contests.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'belle-flux-et-trente-et-un.score.description',
+        title: 'Scoring',
+        text: 'Stakes are won separately for the belle, flux, and thirty-one components.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'belle-flux-et-trente-et-un.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Three linked contests are resolved.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'belle-flux-et-trente-et-un.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Belle rewards a high or special card claim.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'belle-flux-et-trente-et-un.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Flux rewards a flush-type holding.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'belle-flux-et-trente-et-un.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Trente-et-un rewards a hand nearest or equal to thirty-one.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'belle-flux-et-trente-et-un.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Stakes are divided by contest outcomes.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'belle-flux-et-trente-et-un.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'belle-flux-et-trente-et-un.rules.objective',
+          'belle-flux-et-trente-et-un.rules.gameplay',
+        ],
+      },
+      {
+        id: 'belle-flux-et-trente-et-un.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'belle-flux-et-trente-et-un.setup.players',
+          'belle-flux-et-trente-et-un.setup.deck',
+          'belle-flux-et-trente-et-un.setup.equipment',
+          'belle-flux-et-trente-et-un.setup.dealing',
+        ],
+      },
+      {
+        id: 'belle-flux-et-trente-et-un.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'belle-flux-et-trente-et-un.rules.key.1',
+          'belle-flux-et-trente-et-un.rules.key.2',
+          'belle-flux-et-trente-et-un.rules.key.3',
+          'belle-flux-et-trente-et-un.rules.key.4',
+          'belle-flux-et-trente-et-un.rules.key.5',
+        ],
+      },
+      {
+        id: 'belle-flux-et-trente-et-un.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'belle-flux-et-trente-et-un.score.description',
+          'belle-flux-et-trente-et-un.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'belle-flux-et-trente-et-un.setup.dealing',
+        'belle-flux-et-trente-et-un.rules.objective',
+      ],
+      play_card: [
+        'belle-flux-et-trente-et-un.rules.gameplay',
+      ],
+    },
   },
 }

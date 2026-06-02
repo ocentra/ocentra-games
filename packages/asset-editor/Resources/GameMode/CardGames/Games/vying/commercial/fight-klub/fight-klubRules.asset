@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Fight Klub. Logic: Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
-    Player: 'Fight Klub is a commercial collectible or trading card battle game using constructed decks, proprietary card text, and direct player conflict.',
+    LLM: 'Players take turns playing cards from hand, paying costs or meeting requirements, attacking or contesting opposing cards, and resolving printed effects from the proprietary deck.',
+    Player: 'Players take turns playing cards from hand, paying costs or meeting requirements, attacking or contesting opposing cards, and resolving printed effects from the proprietary deck.',
     objective: 'Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
     gameplay: 'Players take turns playing cards from hand, paying costs or meeting requirements, attacking or contesting opposing cards, and resolving printed effects from the proprietary deck.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario victory condition determines the winner. Expected outcome: Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
+      'Turn-flow example: Players take turns playing cards from hand, paying costs or meeting requirements, attacking or contesting opposing cards, and resolving printed effects from the proprietary deck.',
+      'Scoring example: The published duel or scenario victory condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'fight-klub.rules.objective',
+        title: 'Objective',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'fight-klub.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players take turns playing cards from hand, paying costs or meeting requirements, attacking or contesting opposing cards, and resolving printed effects from the proprietary deck.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'fight-klub.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Fight Klub.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'fight-klub.setup.deck',
+        title: 'Deck',
+        text: 'Constructed Fight Klub decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'fight-klub.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed Fight Klub decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'fight-klub.setup.dealing',
+        title: 'Deal',
+        text: 'Each player brings a constructed deck or product-defined deck, draws an opening hand, and prepares any starting character, resource, or play area required by the rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'fight-klub.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'fight-klub.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario victory condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'fight-klub.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Uses proprietary commercial cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'fight-klub.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Constructed or product-defined decks.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'fight-klub.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Card text defines powers and restrictions.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'fight-klub.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Players contest directly through attacks, challenges, or objectives.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'fight-klub.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Published victory condition ends the game.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'fight-klub.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'fight-klub.rules.objective',
+          'fight-klub.rules.gameplay',
+        ],
+      },
+      {
+        id: 'fight-klub.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'fight-klub.setup.players',
+          'fight-klub.setup.deck',
+          'fight-klub.setup.equipment',
+          'fight-klub.setup.dealing',
+        ],
+      },
+      {
+        id: 'fight-klub.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'fight-klub.rules.key.1',
+          'fight-klub.rules.key.2',
+          'fight-klub.rules.key.3',
+          'fight-klub.rules.key.4',
+          'fight-klub.rules.key.5',
+        ],
+      },
+      {
+        id: 'fight-klub.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'fight-klub.score.description',
+          'fight-klub.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'fight-klub.setup.dealing',
+        'fight-klub.rules.objective',
+      ],
+      play_card: [
+        'fight-klub.rules.gameplay',
+      ],
+    },
   },
 }

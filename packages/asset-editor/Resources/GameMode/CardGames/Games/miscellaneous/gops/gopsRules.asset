@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: GOPS. Objective: Win the most points by capturing the highest-value prize cards (Diamonds).',
-    Player: 'GOPS: play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: '1. Reveal: The top card of the Diamond (Prize) pile is turned face-up.\n2. Bid: Both players choose one card from their hand and place it face-down.\n3. Showdown: Both bid cards are revealed simultaneously.\n4. Award: The player with the higher bidding card wins the Diamond card and adds its value to their score.\n5. Discard: Both bidding cards are discarded regardless of who won.',
+    Player: '1. Reveal: The top card of the Diamond (Prize) pile is turned face-up.\n2. Bid: Both players choose one card from their hand and place it face-down.\n3. Showdown: Both bid cards are revealed simultaneously.\n4. Award: The player with the higher bidding card wins the Diamond card and adds its value to their score.\n5. Discard: Both bidding cards are discarded regardless of who won.',
     objective: 'Win the most points by capturing the highest-value prize cards (Diamonds).',
     gameplay: '1. Reveal: The top card of the Diamond (Prize) pile is turned face-up.\n2. Bid: Both players choose one card from their hand and place it face-down.\n3. Showdown: Both bid cards are revealed simultaneously.\n4. Award: The player with the higher bidding card wins the Diamond card and adds its value to their score.\n5. Discard: Both bidding cards are discarded regardless of who won.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: When both players run out of bid cards the play ends. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win the most points by capturing the highest-value prize cards (Diamonds).',
+      'Turn-flow example: 1. Reveal: The top card of the Diamond (Prize) pile is turned face-up.\n2. Bid: Both players choose one card from their hand and place it face-down.\n3. Showdown: Both bid cards are revealed simultaneously.\n4. Award: The player with the higher bidding card wins the Diamond card and adds its value to their score.\n5. Discard: Both bidding cards are discarded regardless of who won.',
+      'Scoring example: When both players run out of bid cards the play ends. When both players run out of bid cards the play ends..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'gops.rules.objective',
+        title: 'Objective',
+        text: 'Win the most points by capturing the highest-value prize cards (Diamonds).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'gops.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Reveal: The top card of the Diamond (Prize) pile is turned face-up.\n2. Bid: Both players choose one card from their hand and place it face-down.\n3. Showdown: Both bid cards are revealed simultaneously.\n4. Award: The player with the higher bidding card wins the Diamond card and adds its value to their score.\n5. Discard: Both bidding cards are discarded regardless of who won.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'gops.setup.players',
+        title: 'Players',
+        text: '2 players (Standard).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'gops.setup.deck',
+        title: 'Deck',
+        text: 'A standard 52ndcard deck is divided into its four suits.\n- Player 1: Takes all Clubs.\n- Player 2: Takes all Spades.\n- Prize Pile: The Diamonds are shuffled and placed face-down.\n- (Hearts are removed from a 2ndplayer game).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'gops.setup.equipment',
+        title: 'Equipment',
+        text: 'A standard 52ndcard deck is divided into its four suits.\n- Player 1: Takes all Clubs.\n- Player 2: Takes all Spades.\n- Prize Pile: The Diamonds are shuffled and placed face-down.\n- (Hearts are removed from a 2ndplayer game).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'gops.setup.dealing',
+        title: 'Deal',
+        text: 'The basic game is for two players, using three suits from a standard 52-card pack.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'gops.score.win-condition',
+        title: 'Win condition',
+        text: 'When both players run out of bid cards the play ends.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'gops.score.description',
+        title: 'Scoring',
+        text: 'When both players run out of bid cards the play ends.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'gops.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Symmetry: Because both players have the same cards, the only difference is the order in which they play them.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'gops.rules.key.2',
+        title: 'Key rule 2',
+        text: 'No Re-use: Once you play your King, it is gone. If you waste your King on a 1ndpoint Ace, you have lost a massive strategic asset.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'gops.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Win the most points by capturing the highest-value prize cards (Diamonds).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'gops.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'gops.rules.objective',
+          'gops.rules.gameplay',
+        ],
+      },
+      {
+        id: 'gops.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'gops.setup.players',
+          'gops.setup.deck',
+          'gops.setup.equipment',
+          'gops.setup.dealing',
+        ],
+      },
+      {
+        id: 'gops.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'gops.rules.key.1',
+          'gops.rules.key.2',
+          'gops.rules.key.3',
+        ],
+      },
+      {
+        id: 'gops.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'gops.score.description',
+          'gops.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'gops.setup.dealing',
+        'gops.rules.objective',
+      ],
+      play_card: [
+        'gops.rules.gameplay',
+      ],
+    },
   },
 }

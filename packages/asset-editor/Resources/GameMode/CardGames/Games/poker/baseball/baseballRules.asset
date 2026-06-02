@@ -52,10 +52,171 @@
       go_out: 'The deal terminates only after the final betting round and the subsequent showdown have been completed.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before betting.',
-      'Scoring check: Standard poker hand ranking. Pot goes to best five-card hand at showdown. Expected outcome: Best five-card hand wins the pot..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Win the pot with the best 5-card hand using 3s and 9s as wild cards.',
+      'Turn-flow example: 7-card stud: two down, four up, one down. 3s and 9s wild; 4s grant extra card; face-up 3 requires match pot or fold. Best five-card hand wins pot.',
+      'Scoring example: Standard poker hand ranking. Pot goes to best five-card hand at showdown. Best five-card hand wins the pot..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'baseball.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot with the best 5-card hand using 3s and 9s as wild cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'baseball.rules.gameplay',
+        title: 'Turn flow',
+        text: '7-card stud: two down, four up, one down. 3s and 9s wild; 4s grant extra card; face-up 3 requires match pot or fold. Best five-card hand wins pot.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'baseball.setup.players',
+        title: 'Players',
+        text: 'Two to six players. Because face-up fours grant extra cards, more than six players risks running out of deck; the game is therefore capped at six.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'baseball.setup.deck',
+        title: 'Deck',
+        text: '52-card standard deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'baseball.setup.equipment',
+        title: 'Equipment',
+        text: 'Chips and cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'baseball.setup.dealing',
+        title: 'Deal',
+        text: '7-card stud style (2 down, 4 up, 1 down).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'baseball.score.win-condition',
+        title: 'Win condition',
+        text: 'Best five-card hand wins the pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'baseball.score.description',
+        title: 'Scoring',
+        text: 'Standard poker hand ranking. Pot goes to best five-card hand at showdown.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'baseball.rules.key.1',
+        title: 'Key rule 1',
+        text: '3s and 9s are Wild.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'baseball.rules.key.2',
+        title: 'Key rule 2',
+        text: 'A 4 dealt face up grants the player an extra card immediately.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'baseball.rules.key.3',
+        title: 'Key rule 3',
+        text: 'A 3 dealt face up requires the player to match the current pot or fold.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'baseball.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'baseball.rules.objective',
+          'baseball.rules.gameplay',
+        ],
+      },
+      {
+        id: 'baseball.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'baseball.setup.players',
+          'baseball.setup.deck',
+          'baseball.setup.equipment',
+          'baseball.setup.dealing',
+        ],
+      },
+      {
+        id: 'baseball.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'baseball.rules.key.1',
+          'baseball.rules.key.2',
+          'baseball.rules.key.3',
+        ],
+      },
+      {
+        id: 'baseball.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'baseball.score.description',
+          'baseball.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'baseball.setup.dealing',
+        'baseball.rules.objective',
+      ],
+      ante: [
+        'baseball.rules.gameplay',
+      ],
+      deal: [
+        'baseball.rules.gameplay',
+      ],
+      fold: [
+        'baseball.rules.gameplay',
+      ],
+      check: [
+        'baseball.rules.gameplay',
+      ],
+      call: [
+        'baseball.rules.gameplay',
+      ],
+      bet: [
+        'baseball.rules.gameplay',
+      ],
+      raise: [
+        'baseball.rules.gameplay',
+      ],
+      reveal_hand: [
+        'baseball.rules.gameplay',
+      ],
+      award_pot: [
+        'baseball.rules.gameplay',
+      ],
+    },
   },
 }

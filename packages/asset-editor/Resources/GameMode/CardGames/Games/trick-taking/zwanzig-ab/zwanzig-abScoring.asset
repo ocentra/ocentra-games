@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Trick = -1pt. All 5 = -5pts. 0 tricks = +5pts. Hearts = double.',
+      winCondition: 'First to reduce score from 20 to 0.',
+      targetScore: null,
+      scoringDirection: 'low_wins',
+      cardValues: {},
+      nullReasons: {
+        cardValues: 'Scoring is by tricks won and penalties, not by card point values.',
+        targetScore: 'Players start at 20 and subtract to 0; the goal is zero, not a positive target.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

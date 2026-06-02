@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: All Fours (Lancashire). Type: Partnership Point-trick. Players: 4. Rule: No turn-up; Pitcher leads = trump. Low point = won by trick-winner of lowest trump. Order: High-Low-Jack-Game. Target: 11.',
-    Player: "Welcome to Lancashire All Fours. There is no turn-up trump: the first lead sets trump suit. Remember this version's key twist: Low goes to the team that wins the trick containing the lowest trump.",
+    LLM: "1. **The Pitch**: The player to the dealer's left (the Pitcher) leads any card. The suit of this card immediately becomes trumps for the hand. 2. **Trick Play**: Follow suit if possible. You may trump instead of following suit, even if you hold a card of the led suit. 3. **The 'Low' Hunt**: Unlike other variants, the 'Low' point is awarded to the team that WINS the trick containing the lowest trump card that was dealt in that hand. 4. **Scoring Order**: Points are counted and pegged in the following order: High, Low, Jack, Game.",
+    Player: "1. **The Pitch**: The player to the dealer's left (the Pitcher) leads any card. The suit of this card immediately becomes trumps for the hand. 2. **Trick Play**: Follow suit if possible. You may trump instead of following suit, even if you hold a card of the led suit. 3. **The 'Low' Hunt**: Unlike other variants, the 'Low' point is awarded to the team that WINS the trick containing the lowest trump card that was dealt in that hand. 4. **Scoring Order**: Points are counted and pegged in the following order: High, Low, Jack, Game.",
     objective: 'First partnership to 11 points by scoring High, Low (taken), Jack, and Game.',
     gameplay: "1. **The Pitch**: The player to the dealer's left (the Pitcher) leads any card. The suit of this card immediately becomes trumps for the hand. 2. **Trick Play**: Follow suit if possible. You may trump instead of following suit, even if you hold a card of the led suit. 3. **The 'Low' Hunt**: Unlike other variants, the 'Low' point is awarded to the team that WINS the trick containing the lowest trump card that was dealt in that hand. 4. **Scoring Order**: Points are counted and pegged in the following order: High, Low, Jack, Game.",
     keyRules: [
@@ -54,10 +54,171 @@
       go_out: 'Hand ends when all tricks are played.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before pitch.',
-      'Scoring check: Pegging points immediately at the end of the hand. Expected outcome: 11.',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: First partnership to 11 points by scoring High, Low (taken), Jack, and Game.',
+      "Turn-flow example: 1. **The Pitch**: The player to the dealer's left (the Pitcher) leads any card. The suit of this card immediately becomes trumps for the hand. 2. **Trick Play**: Follow suit if possible. You may trump instead of following suit, even if you hold a card of the led suit. 3. **The 'Low' Hunt**: Unlike other variants, the 'Low' point is awarded to the team that WINS the trick containing the lowest trump card that was dealt in that hand. 4. **Scoring Order**: Points are counted and pegged in the following order: High, Low, Jack, Game.",
+      'Scoring example: Pegging points immediately at the end of the hand. First team to reach 11 points wins. The scoring order (H-L-J-G) is critical if both teams cross the 11-point threshold in the same deal..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'all-fours-lancashire.rules.objective',
+        title: 'Objective',
+        text: 'First partnership to 11 points by scoring High, Low (taken), Jack, and Game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'all-fours-lancashire.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **The Pitch**: The player to the dealer's left (the Pitcher) leads any card. The suit of this card immediately becomes trumps for the hand. 2. **Trick Play**: Follow suit if possible. You may trump instead of following suit, even if you hold a card of the led suit. 3. **The 'Low' Hunt**: Unlike other variants, the 'Low' point is awarded to the team that WINS the trick containing the lowest trump card that was dealt in that hand. 4. **Scoring Order**: Points are counted and pegged in the following order: High, Low, Jack, Game.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'all-fours-lancashire.setup.players',
+        title: 'Players',
+        text: '4 players in two fixed partnerships (North-South vs East-West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'all-fours-lancashire.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Ace is high.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'all-fours-lancashire.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, All Fours pegging board (traditionally to 11 points).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'all-fours-lancashire.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 6 cards in batches of 2 or 3. No card is turned up for trumps.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'all-fours-lancashire.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to reach 11 points wins. The scoring order (H-L-J-G) is critical if both teams cross the 11-point threshold in the same deal.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'all-fours-lancashire.score.description',
+        title: 'Scoring',
+        text: 'Pegging points immediately at the end of the hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'all-fours-lancashire.rules.key.1',
+        title: 'Key rule 1',
+        text: 'High (1 pt): Awarded to the team of the player dealt the highest trump.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'all-fours-lancashire.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Low (1 pt): Awarded to the team that WINS the trick containing the lowest trump card dealt.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'all-fours-lancashire.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Jack (1 pt): Awarded to the team that WINS the trick containing the Jack of trumps.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'all-fours-lancashire.rules.key.4',
+        title: 'Key rule 4',
+        text: "Game (1 pt): Awarded to the team with the most 'pips' in their captured tricks (Ace=4, King=3, Queen=2, Jack=1, 10=10).",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'all-fours-lancashire.rules.key.5',
+        title: 'Key rule 5',
+        text: "Pitcher's partner must not look at their cards until the first card (The Pitch) is led.",
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'all-fours-lancashire.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'all-fours-lancashire.rules.objective',
+          'all-fours-lancashire.rules.gameplay',
+        ],
+      },
+      {
+        id: 'all-fours-lancashire.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'all-fours-lancashire.setup.players',
+          'all-fours-lancashire.setup.deck',
+          'all-fours-lancashire.setup.equipment',
+          'all-fours-lancashire.setup.dealing',
+        ],
+      },
+      {
+        id: 'all-fours-lancashire.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'all-fours-lancashire.rules.key.1',
+          'all-fours-lancashire.rules.key.2',
+          'all-fours-lancashire.rules.key.3',
+          'all-fours-lancashire.rules.key.4',
+          'all-fours-lancashire.rules.key.5',
+        ],
+      },
+      {
+        id: 'all-fours-lancashire.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'all-fours-lancashire.score.description',
+          'all-fours-lancashire.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'all-fours-lancashire.setup.dealing',
+        'all-fours-lancashire.rules.objective',
+      ],
+      deal: [
+        'all-fours-lancashire.rules.gameplay',
+      ],
+      award_pot: [
+        'all-fours-lancashire.rules.gameplay',
+      ],
+      play_card: [
+        'all-fours-lancashire.rules.gameplay',
+      ],
+    },
   },
 }

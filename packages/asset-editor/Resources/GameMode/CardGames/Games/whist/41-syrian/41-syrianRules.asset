@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 41 Syrian. Logic: See rules.objective and rules.gameplay.',
-    Player: '41 Syrian also known as 400 or Arba3meyeh. Four-player partnership trick-taking. 52 cards, Hearts permanent trump. 13 cards each, counter-clockwise. Bid tricks minimum 1; total bids at least 11 or redeal. Bids 1-6 score face value, 7+ double. Fail is negative. Win when one partner reaches 41 and the other positive.',
+    LLM: "Hearts is permanent trump. Each player bids once (minimum 1 trick); the sum of all bid values must be at least 11 or hands are thrown in and the next player deals. Player to dealer's right leads; play is anticlockwise. Follow suit if possible; otherwise play any card. Highest trump or highest card of the suit led wins the trick. Bids 1–6 score face value if made, 7+ score double; failing scores minus the bid value.",
+    Player: "Hearts is permanent trump. Each player bids once (minimum 1 trick); the sum of all bid values must be at least 11 or hands are thrown in and the next player deals. Player to dealer's right leads; play is anticlockwise. Follow suit if possible; otherwise play any card. Highest trump or highest card of the suit led wins the trick. Bids 1–6 score face value if made, 7+ score double; failing scores minus the bid value.",
     objective: "The partnership wins when one partner's score reaches or exceeds 41 points and the other partner's score is positive. If both partnerships reach this in the same deal, the one with the higher total wins.",
     gameplay: "Hearts is permanent trump. Each player bids once (minimum 1 trick); the sum of all bid values must be at least 11 or hands are thrown in and the next player deals. Player to dealer's right leads; play is anticlockwise. Follow suit if possible; otherwise play any card. Highest trump or highest card of the suit led wins the trick. Bids 1–6 score face value if made, 7+ score double; failing scores minus the bid value.",
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Make bid scores; miss negative. Expected outcome: One partner 41 points, other positive..',
+      'Setup example: 13 card(s) per player.',
+      "Rule example: The partnership wins when one partner's score reaches or exceeds 41 points and the other partner's score is positive. If both partnerships reach this in the same deal, the one with the higher total wins.",
+      "Turn-flow example: Hearts is permanent trump. Each player bids once (minimum 1 trick); the sum of all bid values must be at least 11 or hands are thrown in and the next player deals. Player to dealer's right leads; play is anticlockwise. Follow suit if possible; otherwise play any card. Highest trump or highest card of the suit led wins the trick. Bids 1–6 score face value if made, 7+ score double; failing scores minus the bid value.",
+      'Scoring example: Make bid scores; miss negative. One partner 41 points, other positive..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '41-syrian.rules.objective',
+        title: 'Objective',
+        text: "The partnership wins when one partner's score reaches or exceeds 41 points and the other partner's score is positive. If both partnerships reach this in the same deal, the one with the higher total wins.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '41-syrian.rules.gameplay',
+        title: 'Turn flow',
+        text: "Hearts is permanent trump. Each player bids once (minimum 1 trick); the sum of all bid values must be at least 11 or hands are thrown in and the next player deals. Player to dealer's right leads; play is anticlockwise. Follow suit if possible; otherwise play any card. Highest trump or highest card of the suit led wins the trick. Bids 1–6 score face value if made, 7+ score double; failing scores minus the bid value.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '41-syrian.setup.players',
+        title: 'Players',
+        text: 'Four players in two fixed partnerships; partners sit as in Bridge (North-South versus East-West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '41-syrian.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack, ranking A-K-Q-J-10 down to 2; Hearts is the permanent trump suit.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '41-syrian.setup.equipment',
+        title: 'Equipment',
+        text: 'Deck, score sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '41-syrian.setup.dealing',
+        title: 'Deal',
+        text: '13 cards each, dealt anticlockwise in batches of 1-2-2-2-2-2-2; dealer rotates anticlockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '41-syrian.score.win-condition',
+        title: 'Win condition',
+        text: 'One partner 41 points, other positive.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '41-syrian.score.description',
+        title: 'Scoring',
+        text: 'Make bid scores; miss negative.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '41-syrian.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Hearts trump',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '41-syrian.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Bids total 11+',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '41-syrian.rules.key.3',
+        title: 'Key rule 3',
+        text: '41 and partner positive',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '41-syrian.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '41-syrian.rules.objective',
+          '41-syrian.rules.gameplay',
+        ],
+      },
+      {
+        id: '41-syrian.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '41-syrian.setup.players',
+          '41-syrian.setup.deck',
+          '41-syrian.setup.equipment',
+          '41-syrian.setup.dealing',
+        ],
+      },
+      {
+        id: '41-syrian.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '41-syrian.rules.key.1',
+          '41-syrian.rules.key.2',
+          '41-syrian.rules.key.3',
+        ],
+      },
+      {
+        id: '41-syrian.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '41-syrian.score.description',
+          '41-syrian.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '41-syrian.setup.dealing',
+        '41-syrian.rules.objective',
+      ],
+      play_card: [
+        '41-syrian.rules.gameplay',
+      ],
+    },
   },
 }

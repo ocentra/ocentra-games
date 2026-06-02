@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Crazy Eights. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Crazy Eights is a popular shedding card game, especially beloved by children. The objective is simple: be the first player to discard all your cards. Players take turns playing cards to a central discard pile, matching either the rank or suit of the top card. The eponymous "crazy" 8s are wild cards that can be played on anything and allow the player to change the suit.',
+    LLM: 'Players lead to tricks and must follow suit if able. The highest card of the led suit wins the trick and discards it. A player unable to follow suit must pick up all cards already played to the current trick, then leads the next trick.',
+    Player: 'Players lead to tricks and must follow suit if able. The highest card of the led suit wins the trick and discards it. A player unable to follow suit must pick up all cards already played to the current trick, then leads the next trick.',
     objective: 'Empty your hand before the other players by following suit when possible and avoiding situations where you must pick up the current trick.',
     gameplay: 'Players lead to tricks and must follow suit if able. The highest card of the led suit wins the trick and discards it. A player unable to follow suit must pick up all cards already played to the current trick, then leads the next trick.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Be the first player to discard all cards from your hand. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Empty your hand before the other players by following suit when possible and avoiding situations where you must pick up the current trick.',
+      'Turn-flow example: Players lead to tricks and must follow suit if able. The highest card of the led suit wins the trick and discards it. A player unable to follow suit must pick up all cards already played to the current trick, then leads the next trick.',
+      'Scoring example: Be the first player to discard all cards from your hand. Be the first player to discard all cards from your hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'enfle.rules.objective',
+        title: 'Objective',
+        text: 'Empty your hand before the other players by following suit when possible and avoiding situations where you must pick up the current trick.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'enfle.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players lead to tricks and must follow suit if able. The highest card of the led suit wins the trick and discards it. A player unable to follow suit must pick up all cards already played to the current trick, then leads the next trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'enfle.setup.players',
+        title: 'Players',
+        text: '3-8 players use the table arrangement described for Enflé.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'enfle.setup.deck',
+        title: 'Deck',
+        text: '32-card French-suited pack, or 52 cards with larger groups',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'enfle.setup.equipment',
+        title: 'Equipment',
+        text: '32-card French-suited pack, or 52 cards with larger groups, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'enfle.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare 32-card French-suited pack, or 52 cards with larger groups and deal or lay out cards according to the documented Enflé rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'enfle.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'enfle.score.description',
+        title: 'Scoring',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'enfle.rules.key.1',
+        title: 'Key rule 1',
+        text: 'There are no trumps.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'enfle.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Following suit is mandatory when possible.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'enfle.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Failure to follow suit forces the player to pick up the whole current trick.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'enfle.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'enfle.rules.objective',
+          'enfle.rules.gameplay',
+        ],
+      },
+      {
+        id: 'enfle.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'enfle.setup.players',
+          'enfle.setup.deck',
+          'enfle.setup.equipment',
+          'enfle.setup.dealing',
+        ],
+      },
+      {
+        id: 'enfle.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'enfle.rules.key.1',
+          'enfle.rules.key.2',
+          'enfle.rules.key.3',
+        ],
+      },
+      {
+        id: 'enfle.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'enfle.score.description',
+          'enfle.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'enfle.setup.dealing',
+        'enfle.rules.objective',
+      ],
+      play_card: [
+        'enfle.rules.gameplay',
+      ],
+    },
   },
 }

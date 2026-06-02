@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Troccas. Logic: See rules.objective and rules.gameplay.',
-    Player: "Troccas is a traditional Swiss Tarot game played in the Romansh-speaking Surselva region of Grisons. It uses a 78-card Swiss 1JJ Tarot deck with Italian suits. Notable for the 'King and Jack Rule' (King demands Jack surrender) and coded signals (Tschintschar). Partnership play for 4.",
+    LLM: 'Follow suit. Must trump if void. Fool excuses from following. King and Jack Rule: When King is first played in a suit, winner demands the Jack of that suit. Counterclockwise play.',
+    Player: 'Follow suit. Must trump if void. Fool excuses from following. King and Jack Rule: When King is first played in a suit, winner demands the Jack of that suit. Counterclockwise play.',
     objective: 'Score more card points than opponent team (target 36 to break even).',
     gameplay: 'Follow suit. Must trump if void. Fool excuses from following. King and Jack Rule: When King is first played in a suit, winner demands the Jack of that suit. Counterclockwise play.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Group-of-4 counting. 72 points total. Score game points based on margin above/below 36. Expected outcome: Score more card points than opponent team (target 36 to break even)..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score more card points than opponent team (target 36 to break even).',
+      'Turn-flow example: Follow suit. Must trump if void. Fool excuses from following. King and Jack Rule: When King is first played in a suit, winner demands the Jack of that suit. Counterclockwise play.',
+      'Scoring example: Group-of-4 counting. 72 points total. Score game points based on margin above/below 36. Score more card points than opponent team (target 36 to break even)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'troccas.rules.objective',
+        title: 'Objective',
+        text: 'Score more card points than opponent team (target 36 to break even).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'troccas.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Follow suit. Must trump if void. Fool excuses from following. King and Jack Rule: When King is first played in a suit, winner demands the Jack of that suit. Counterclockwise play.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'troccas.setup.players',
+        title: 'Players',
+        text: '4 (partnerships)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'troccas.setup.deck',
+        title: 'Deck',
+        text: '78 cards: 4 suits x 14 + 21 trumps + Fool. Points: K/Bagat/TrXXI/Fool=5, Q=4, Cav=3, J=2, others=1. Count in groups of 4, subtract 3. Total 72.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'troccas.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'troccas.setup.dealing',
+        title: 'Deal',
+        text: '19 each (dealer gets 21, discards 2). Last card face up.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'troccas.score.win-condition',
+        title: 'Win condition',
+        text: 'Score more card points than opponent team (target 36 to break even).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'troccas.score.description',
+        title: 'Scoring',
+        text: 'Group-of-4 counting. 72 points total. Score game points based on margin above/below 36.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'troccas.rules.key.1',
+        title: 'Key rule 1',
+        text: 'King and Jack Rule (unique)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'troccas.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Fool as excuse card',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'troccas.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Coded signals (Tschintschar)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'troccas.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Dealer discards 2 from 21-card hand',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'troccas.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'troccas.rules.objective',
+          'troccas.rules.gameplay',
+        ],
+      },
+      {
+        id: 'troccas.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'troccas.setup.players',
+          'troccas.setup.deck',
+          'troccas.setup.equipment',
+          'troccas.setup.dealing',
+        ],
+      },
+      {
+        id: 'troccas.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'troccas.rules.key.1',
+          'troccas.rules.key.2',
+          'troccas.rules.key.3',
+          'troccas.rules.key.4',
+        ],
+      },
+      {
+        id: 'troccas.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'troccas.score.description',
+          'troccas.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'troccas.setup.dealing',
+        'troccas.rules.objective',
+      ],
+      play_card: [
+        'troccas.rules.gameplay',
+      ],
+    },
   },
 }

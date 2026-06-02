@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Sì Sè Pái. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Sì Sè Pái (Four Color Cards or Si Se Pai) is a Chinese card game similar to Rummy or Mahjong. It uses a deck of 112 cards divided into 4 colors (Red, Green, Yellow, White), featuring Chinese Chess pieces (General, Advisor, Elephant, etc.). The goal is to meld cards into sets (Commanders/Generals can be melded singly, Pairs, Triplets/Pongs, Quads/Kongs) to reach an odd number of points (usually 21 cards total).',
+    LLM: 'Each turn a player draws one card from the stock or the top of the discard pile, may lay down melds (single General, pairs, triplets/Pongs, quads/Kongs), then discards one card. The first to go out (Hu) by melding all cards with an odd point total wins the hand. Point system uses piece values; Generals score high.',
+    Player: 'Each turn a player draws one card from the stock or the top of the discard pile, may lay down melds (single General, pairs, triplets/Pongs, quads/Kongs), then discards one card. The first to go out (Hu) by melding all cards with an odd point total wins the hand. Point system uses piece values; Generals score high.',
     objective: 'Go out (Hu) by melding all of your cards into valid sets (single General, pairs, Pongs, Kongs) so that your total point value is an odd number; the first player to do so wins the hand.',
     gameplay: 'Each turn a player draws one card from the stock or the top of the discard pile, may lay down melds (single General, pairs, triplets/Pongs, quads/Kongs), then discards one card. The first to go out (Hu) by melding all cards with an odd point total wins the hand. Point system uses piece values; Generals score high.',
     keyRules: [
@@ -52,10 +52,162 @@
       go_out: 'When hand is fully melded and point total is odd.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 20 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before turn_loop.',
-      'Scoring check: Go Out (Hu) by melding all cards. Expected outcome: Go Out (Hu) by melding all cards..',
+      'Setup example: 20 card(s) per player.',
+      'Rule example: Go out (Hu) by melding all of your cards into valid sets (single General, pairs, Pongs, Kongs) so that your total point value is an odd number; the first player to do so wins the hand.',
+      'Turn-flow example: Each turn a player draws one card from the stock or the top of the discard pile, may lay down melds (single General, pairs, triplets/Pongs, quads/Kongs), then discards one card. The first to go out (Hu) by melding all cards with an odd point total wins the hand. Point system uses piece values; Generals score high.',
+      'Scoring example: Go Out (Hu) by melding all cards. Go Out (Hu) by melding all cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'si-se-pai.rules.objective',
+        title: 'Objective',
+        text: 'Go out (Hu) by melding all of your cards into valid sets (single General, pairs, Pongs, Kongs) so that your total point value is an odd number; the first player to do so wins the hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'si-se-pai.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Each turn a player draws one card from the stock or the top of the discard pile, may lay down melds (single General, pairs, triplets/Pongs, quads/Kongs), then discards one card. The first to go out (Hu) by melding all cards with an odd point total wins the hand. Point system uses piece values; Generals score high.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'si-se-pai.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'si-se-pai.setup.deck',
+        title: 'Deck',
+        text: '112 cards: four color suits (green, white, yellow, red), 28 cards per suit, each with the seven Xiangqi piece ranks and four copies per card; some sets include optional jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'si-se-pai.setup.equipment',
+        title: 'Equipment',
+        text: '112 cards: four color suits (green, white, yellow, red), 28 cards per suit, each with the seven Xiangqi piece ranks and four copies per card; some sets include optional jokers.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'si-se-pai.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 20 cards to non-dealers, 21 to dealer.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'si-se-pai.score.win-condition',
+        title: 'Win condition',
+        text: 'Go Out (Hu) by melding all cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'si-se-pai.score.description',
+        title: 'Scoring',
+        text: 'Go Out (Hu) by melding all cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'si-se-pai.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Draw one from stock or top discard, then optionally meld, then discard one.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'si-se-pai.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Melds: single General, pairs, triplets (Pongs), quads (Kongs).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'si-se-pai.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Go out (Hu) when all cards are melded and total points are odd (e.g. 21).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'si-se-pai.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'si-se-pai.rules.objective',
+          'si-se-pai.rules.gameplay',
+        ],
+      },
+      {
+        id: 'si-se-pai.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'si-se-pai.setup.players',
+          'si-se-pai.setup.deck',
+          'si-se-pai.setup.equipment',
+          'si-se-pai.setup.dealing',
+        ],
+      },
+      {
+        id: 'si-se-pai.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'si-se-pai.rules.key.1',
+          'si-se-pai.rules.key.2',
+          'si-se-pai.rules.key.3',
+        ],
+      },
+      {
+        id: 'si-se-pai.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'si-se-pai.score.description',
+          'si-se-pai.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'si-se-pai.setup.dealing',
+        'si-se-pai.rules.objective',
+      ],
+      deal: [
+        'si-se-pai.rules.gameplay',
+      ],
+      award_pot: [
+        'si-se-pai.rules.gameplay',
+      ],
+      draw: [
+        'si-se-pai.rules.gameplay',
+      ],
+      discard: [
+        'si-se-pai.rules.gameplay',
+      ],
+      meld: [
+        'si-se-pai.rules.gameplay',
+      ],
+      go_out: [
+        'si-se-pai.rules.gameplay',
+      ],
+    },
   },
 }

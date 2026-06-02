@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Truc. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Truc is a 15th-century bluffing trick-taking game from France and Spain. Players get 3 cards and try to win 2 of 3 tricks. NO TRUMP and NO suit obligation â€” highest card wins regardless of suit (7 is highest in French version). Equal cards spoil the trick. Major bluffing component: players can propose to raise stakes at any point.',
+    LLM: 'No trump. No suit obligation. Highest card wins (ANY suit). Equal-rank cards = spoilt trick. Players can propose raising stakes at any time. Opponent accepts or concedes.',
+    Player: 'No trump. No suit obligation. Highest card wins (ANY suit). Equal-rank cards = spoilt trick. Players can propose raising stakes at any time. Opponent accepts or concedes.',
     objective: 'Win two of the three tricks in each hand. The first player or partnership to reach 12 points wins the game.',
     gameplay: 'No trump. No suit obligation. Highest card wins (ANY suit). Equal-rank cards = spoilt trick. Players can propose raising stakes at any time. Opponent accepts or concedes.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Win hand = 1 pt. Raised stakes increase value. Game to 12. Expected outcome: Win 2 of 3 tricks. First to 12 points wins game..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Win two of the three tricks in each hand. The first player or partnership to reach 12 points wins the game.',
+      'Turn-flow example: No trump. No suit obligation. Highest card wins (ANY suit). Equal-rank cards = spoilt trick. Players can propose raising stakes at any time. Opponent accepts or concedes.',
+      'Scoring example: Win hand = 1 pt. Raised stakes increase value. Game to 12. Win 2 of 3 tricks. First to 12 points wins game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'truc.rules.objective',
+        title: 'Objective',
+        text: 'Win two of the three tricks in each hand. The first player or partnership to reach 12 points wins the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'truc.rules.gameplay',
+        title: 'Turn flow',
+        text: 'No trump. No suit obligation. Highest card wins (ANY suit). Equal-rank cards = spoilt trick. Players can propose raising stakes at any time. Opponent accepts or concedes.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'truc.setup.players',
+        title: 'Players',
+        text: '2 or 4 (partnerships)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'truc.setup.deck',
+        title: 'Deck',
+        text: 'French: 32 cards (Piquet). Rank: 7-8-A-K-Q-J-10-9. Spanish: 22 cards. Rank: Aâ™ -Aâ™£-7â™ -7â™¦-3s-7s-6s-5s-4s.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'truc.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'truc.setup.dealing',
+        title: 'Deal',
+        text: "Three cards each, one at a time, starting with the player to dealer's right. If the player to dealer's left taps the deck instead of cutting, dealer may deal one card each when neither team has more than 10 points.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'truc.score.win-condition',
+        title: 'Win condition',
+        text: 'Win 2 of 3 tricks. First to 12 points wins game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'truc.score.description',
+        title: 'Scoring',
+        text: 'Win hand = 1 pt. Raised stakes increase value. Game to 12.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'truc.rules.key.1',
+        title: 'Key rule 1',
+        text: '7 is highest card (French)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'truc.rules.key.2',
+        title: 'Key rule 2',
+        text: 'No trump, no suit obligation',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'truc.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Spoilt tricks when equal cards',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'truc.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Bluff/raise at any time',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'truc.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'truc.rules.objective',
+          'truc.rules.gameplay',
+        ],
+      },
+      {
+        id: 'truc.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'truc.setup.players',
+          'truc.setup.deck',
+          'truc.setup.equipment',
+          'truc.setup.dealing',
+        ],
+      },
+      {
+        id: 'truc.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'truc.rules.key.1',
+          'truc.rules.key.2',
+          'truc.rules.key.3',
+          'truc.rules.key.4',
+        ],
+      },
+      {
+        id: 'truc.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'truc.score.description',
+          'truc.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'truc.setup.dealing',
+        'truc.rules.objective',
+      ],
+      play_card: [
+        'truc.rules.gameplay',
+      ],
+    },
   },
 }

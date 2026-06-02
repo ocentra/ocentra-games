@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Penneech. 2p. Per-trick trump. Peneech 7â™¦. 61 target.',
-    Player: 'Penneech: 2p, 7 each. Trump from stock each trick. 7â™¦=Peneech. 61 wins.',
+    LLM: '1. Turn top of stock = trump for first trick. 2. Non-dealer leads. 3. Follow suit; higher wins (or trump). 4. Winner scores any scoring trump in trick. 5. Turn next stock card = trump for next trick. 6. Repeat. 7. No A or face = throw in, redeal. 8. 7â™¦ beats all diamonds when diamonds trump.',
+    Player: '1. Turn top of stock = trump for first trick. 2. Non-dealer leads. 3. Follow suit; higher wins (or trump). 4. Winner scores any scoring trump in trick. 5. Turn next stock card = trump for next trick. 6. Repeat. 7. No A or face = throw in, redeal. 8. 7â™¦ beats all diamonds when diamonds trump.',
     objective: 'First to 61. Score for A(5), K(4), Q(3), J(2) of trump; 7â™¦=7 when diamonds trump.',
     gameplay: '1. Turn top of stock = trump for first trick. 2. Non-dealer leads. 3. Follow suit; higher wins (or trump). 4. Winner scores any scoring trump in trick. 5. Turn next stock card = trump for next trick. 6. Repeat. 7. No A or face = throw in, redeal. 8. 7â™¦ beats all diamonds when diamonds trump.',
     keyRules: [
@@ -54,10 +54,171 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before trick.',
-      'Scoring check: A=5, K=4, Q=3, J=2, 7â™¦=7 (when diamonds trump). 61 wins. Expected outcome: 61.',
+      'Setup example: 7 card(s) per player.',
+      'Rule example: First to 61. Score for A(5), K(4), Q(3), J(2) of trump; 7â™¦=7 when diamonds trump.',
+      'Turn-flow example: 1. Turn top of stock = trump for first trick. 2. Non-dealer leads. 3. Follow suit; higher wins (or trump). 4. Winner scores any scoring trump in trick. 5. Turn next stock card = trump for next trick. 6. Repeat. 7. No A or face = throw in, redeal. 8. 7â™¦ beats all diamonds when diamonds trump.',
+      'Scoring example: A=5, K=4, Q=3, J=2, 7â™¦=7 (when diamonds trump). 61 wins. First to 61..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'penneech.rules.objective',
+        title: 'Objective',
+        text: 'First to 61. Score for A(5), K(4), Q(3), J(2) of trump; 7â™¦=7 when diamonds trump.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'penneech.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Turn top of stock = trump for first trick. 2. Non-dealer leads. 3. Follow suit; higher wins (or trump). 4. Winner scores any scoring trump in trick. 5. Turn next stock card = trump for next trick. 6. Repeat. 7. No A or face = throw in, redeal. 8. 7â™¦ beats all diamonds when diamonds trump.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'penneech.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'penneech.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52. Diamonds: 7 ranks above Ace when diamonds trump.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'penneech.setup.equipment',
+        title: 'Equipment',
+        text: '52 cards. Cribbage board for scoring.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'penneech.setup.dealing',
+        title: 'Deal',
+        text: '7 each. Remainder = stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'penneech.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 61.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'penneech.score.description',
+        title: 'Scoring',
+        text: 'A=5, K=4, Q=3, J=2, 7â™¦=7 (when diamonds trump). 61 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'penneech.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trump changes every trick (from stock).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'penneech.rules.key.2',
+        title: 'Key rule 2',
+        text: '7â™¦ (Peneech) = highest when diamonds trump; scores 7.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'penneech.rules.key.3',
+        title: 'Key rule 3',
+        text: 'A/K/Q/J trumps: 5/4/3/2.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'penneech.rules.key.4',
+        title: 'Key rule 4',
+        text: '61 to win. Cribbage board.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'penneech.rules.key.5',
+        title: 'Key rule 5',
+        text: 'No Ace, no face = redeal.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'penneech.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'penneech.rules.objective',
+          'penneech.rules.gameplay',
+        ],
+      },
+      {
+        id: 'penneech.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'penneech.setup.players',
+          'penneech.setup.deck',
+          'penneech.setup.equipment',
+          'penneech.setup.dealing',
+        ],
+      },
+      {
+        id: 'penneech.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'penneech.rules.key.1',
+          'penneech.rules.key.2',
+          'penneech.rules.key.3',
+          'penneech.rules.key.4',
+          'penneech.rules.key.5',
+        ],
+      },
+      {
+        id: 'penneech.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'penneech.score.description',
+          'penneech.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'penneech.setup.dealing',
+        'penneech.rules.objective',
+      ],
+      deal: [
+        'penneech.rules.gameplay',
+      ],
+      play_card: [
+        'penneech.rules.gameplay',
+      ],
+      lead: [
+        'penneech.rules.gameplay',
+      ],
+    },
   },
 }

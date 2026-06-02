@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tres y Dos. Logic: See rules.objective and rules.gameplay.',
-    Player: "Tres y Dos (Three and Two) is a simple Rummy-style game from the Dominican Republic, Cuba, and Puerto Rico. Players draw and discard to form a 'Full House' â€” three cards of one rank plus two cards of another rank. First to complete this hand wins.",
+    LLM: '1. Draw (Stock or Discard). 2. Discard. Cannot return same card taken from discard. First to complete wins.',
+    Player: '1. Draw (Stock or Discard). 2. Discard. Cannot return same card taken from discard. First to complete wins.',
     objective: "Form a 'Tres y Dos' (Full House: 3 of a kind + 2 of a kind).",
     gameplay: '1. Draw (Stock or Discard). 2. Discard. Cannot return same card taken from discard. First to complete wins.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Legal when hand is a Full House; ends the game.',
     },
     exampleHands: [
-      'Opening deal: 2-7 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in draw; each_player_clockwise may use draw before discard.',
-      "Scoring check: No scoring. First to complete wins the round. Expected outcome: Form a 'Tres y Dos' (Full House: 3 of a kind + 2 of a kind)..",
+      'Setup example: 5 card(s) per player.',
+      "Rule example: Form a 'Tres y Dos' (Full House: 3 of a kind + 2 of a kind).",
+      'Turn-flow example: 1. Draw (Stock or Discard). 2. Discard. Cannot return same card taken from discard. First to complete wins.',
+      "Scoring example: No scoring. First to complete wins the round. Form a 'Tres y Dos' (Full House: 3 of a kind + 2 of a kind)..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tres-y-dos.rules.objective',
+        title: 'Objective',
+        text: "Form a 'Tres y Dos' (Full House: 3 of a kind + 2 of a kind).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tres-y-dos.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Draw (Stock or Discard). 2. Discard. Cannot return same card taken from discard. First to complete wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tres-y-dos.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tres-y-dos.setup.deck',
+        title: 'Deck',
+        text: "Standard 52-card deck. Suits don't matter.",
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tres-y-dos.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tres-y-dos.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 5 cards each. Stock + Discard pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tres-y-dos.score.win-condition',
+        title: 'Win condition',
+        text: "Form a 'Tres y Dos' (Full House: 3 of a kind + 2 of a kind).",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tres-y-dos.score.description',
+        title: 'Scoring',
+        text: 'No scoring. First to complete wins the round.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tres-y-dos.rules.key.1',
+        title: 'Key rule 1',
+        text: '5-card hand',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tres-y-dos.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Full House wins',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tres-y-dos.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Suits irrelevant',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tres-y-dos.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tres-y-dos.rules.objective',
+          'tres-y-dos.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tres-y-dos.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tres-y-dos.setup.players',
+          'tres-y-dos.setup.deck',
+          'tres-y-dos.setup.equipment',
+          'tres-y-dos.setup.dealing',
+        ],
+      },
+      {
+        id: 'tres-y-dos.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tres-y-dos.rules.key.1',
+          'tres-y-dos.rules.key.2',
+          'tres-y-dos.rules.key.3',
+        ],
+      },
+      {
+        id: 'tres-y-dos.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tres-y-dos.score.description',
+          'tres-y-dos.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tres-y-dos.setup.dealing',
+        'tres-y-dos.rules.objective',
+      ],
+      play_card: [
+        'tres-y-dos.rules.gameplay',
+      ],
+      draw: [
+        'tres-y-dos.rules.gameplay',
+      ],
+      discard: [
+        'tres-y-dos.rules.gameplay',
+      ],
+      go_out: [
+        'tres-y-dos.rules.gameplay',
+      ],
+    },
   },
 }

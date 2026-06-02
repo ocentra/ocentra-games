@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kalookie (British). Type: Rummy. Deck: 106 cards (2x52+2 Jokers). Hand: 13 cards. Opening: 40/51 point minimum. Melds: Sets (3-4 same rank) and Runs (3+ consecutive). Jokers wild (stealable). Goal: Empty hand first, minimize penalty points.',
-    Player: 'Welcome to Kalookie, the British rummy classic! You need 51 points to openâ€”can you get there with Aces and Face cards? Watch for Jokers on the tableâ€”you can steal them by replacing with the natural card!',
+    LLM: "1. **Opening Requirement**: The first meld(s) played to the table must total **40 or 51 points** (depending on house rules). Once 'open', you can meld any value.\n2. **Melds**: Sets (Groups) of 3-4 cards of same rank, or Runs (Sequences) of 3+ consecutive cards of same suit.\n3. **Joker Rules**: Wild cards can replace any card. Can be 'stolen' by replacing with the natural card.\n4. **Scoring**: Numbered cards (2-10) = Face value. Face cards (J, Q, K) = 10. Ace = 11. Joker = 15 points (or 25 as penalty).",
+    Player: "1. **Opening Requirement**: The first meld(s) played to the table must total **40 or 51 points** (depending on house rules). Once 'open', you can meld any value.\n2. **Melds**: Sets (Groups) of 3-4 cards of same rank, or Runs (Sequences) of 3+ consecutive cards of same suit.\n3. **Joker Rules**: Wild cards can replace any card. Can be 'stolen' by replacing with the natural card.\n4. **Scoring**: Numbered cards (2-10) = Face value. Face cards (J, Q, K) = 10. Ace = 11. Joker = 15 points (or 25 as penalty).",
     objective: "Be the first to meld all cards in hand ('Going Kalooki').",
     gameplay: "1. **Opening Requirement**: The first meld(s) played to the table must total **40 or 51 points** (depending on house rules). Once 'open', you can meld any value.\n2. **Melds**: Sets (Groups) of 3-4 cards of same rank, or Runs (Sequences) of 3+ consecutive cards of same suit.\n3. **Joker Rules**: Wild cards can replace any card. Can be 'stolen' by replacing with the natural card.\n4. **Scoring**: Numbered cards (2-10) = Face value. Face cards (J, Q, K) = 10. Ace = 11. Joker = 15 points (or 25 as penalty).",
     keyRules: [
@@ -55,10 +55,195 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal_cards before turn_play.',
-      'Scoring check: Winner scores 0. Losers score the total points of cards left in their hand. Expected outcome: NA.',
+      'Setup example: 13 card(s) per player.',
+      "Rule example: Be the first to meld all cards in hand ('Going Kalooki').",
+      "Turn-flow example: 1. **Opening Requirement**: The first meld(s) played to the table must total **40 or 51 points** (depending on house rules). Once 'open', you can meld any value.\n2. **Melds**: Sets (Groups) of 3-4 cards of same rank, or Runs (Sequences) of 3+ consecutive cards of same suit.\n3. **Joker Rules**: Wild cards can replace any card. Can be 'stolen' by replacing with the natural card.\n4. **Scoring**: Numbered cards (2-10) = Face value. Face cards (J, Q, K) = 10. Ace = 11. Joker = 15 points (or 25 as penalty).",
+      'Scoring example: Winner scores 0. Losers score the total points of cards left in their hand. First player to meld all cards in hand wins the hand. Game typically played to elimination at 150+ penalty points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'kalookie-british.rules.objective',
+        title: 'Objective',
+        text: "Be the first to meld all cards in hand ('Going Kalooki').",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kalookie-british.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Opening Requirement**: The first meld(s) played to the table must total **40 or 51 points** (depending on house rules). Once 'open', you can meld any value.\n2. **Melds**: Sets (Groups) of 3-4 cards of same rank, or Runs (Sequences) of 3+ consecutive cards of same suit.\n3. **Joker Rules**: Wild cards can replace any card. Can be 'stolen' by replacing with the natural card.\n4. **Scoring**: Numbered cards (2-10) = Face value. Face cards (J, Q, K) = 10. Ace = 11. Joker = 15 points (or 25 as penalty).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kalookie-british.setup.players',
+        title: 'Players',
+        text: '2 to 4 players is optimal.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kalookie-british.setup.deck',
+        title: 'Deck',
+        text: '106 cards (2 standard decks + 2 Jokers).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kalookie-british.setup.equipment',
+        title: 'Equipment',
+        text: '106 cards, score sheet, chips for stakes (optional)',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kalookie-british.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 13 cards to each player. One card is turned up to start the discard pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kalookie-british.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to meld all cards in hand wins the hand. Game typically played to elimination at 150+ penalty points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kalookie-british.score.description',
+        title: 'Scoring',
+        text: 'Winner scores 0. Losers score the total points of cards left in their hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kalookie-british.rules.key.1',
+        title: 'Key rule 1',
+        text: 'First meld must total 40 or 51 points',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kalookie-british.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Sets: 3-4 cards of same rank (duplicates allowed from different decks)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kalookie-british.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Runs: 3+ consecutive cards of same suit',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kalookie-british.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Jokers are wild and can be stolen by replacing with natural card',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'kalookie-british.rules.key.5',
+        title: 'Key rule 5',
+        text: "After opening, can 'tack' (add) cards to any existing meld",
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'kalookie-british.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Winner scores 0; losers score points for cards remaining in hand',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kalookie-british.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kalookie-british.rules.objective',
+          'kalookie-british.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kalookie-british.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kalookie-british.setup.players',
+          'kalookie-british.setup.deck',
+          'kalookie-british.setup.equipment',
+          'kalookie-british.setup.dealing',
+        ],
+      },
+      {
+        id: 'kalookie-british.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kalookie-british.rules.key.1',
+          'kalookie-british.rules.key.2',
+          'kalookie-british.rules.key.3',
+          'kalookie-british.rules.key.4',
+          'kalookie-british.rules.key.5',
+          'kalookie-british.rules.key.6',
+        ],
+      },
+      {
+        id: 'kalookie-british.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kalookie-british.score.description',
+          'kalookie-british.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kalookie-british.setup.dealing',
+        'kalookie-british.rules.objective',
+      ],
+      deal: [
+        'kalookie-british.rules.gameplay',
+      ],
+      play_card: [
+        'kalookie-british.rules.gameplay',
+      ],
+      draw: [
+        'kalookie-british.rules.gameplay',
+      ],
+      discard: [
+        'kalookie-british.rules.gameplay',
+      ],
+      meld: [
+        'kalookie-british.rules.gameplay',
+      ],
+      deal_cards: [
+        'kalookie-british.rules.gameplay',
+      ],
+      tack: [
+        'kalookie-british.rules.gameplay',
+      ],
+      calculate_penalties: [
+        'kalookie-british.rules.gameplay',
+      ],
+    },
   },
 }

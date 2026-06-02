@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Iron Cross Poker. 2-10 players, 52-card deck. Deal: 2 hole cards each. Community: 5 cards in cross pattern (3 vertical, 3 horizontal, shared center). Betting rounds after hole cards and after each reveal. Showdown: Best 5-card hand using one path (vertical OR horizontal) + 2 hole cards. Standard poker rankings.',
-    Player: 'Iron Cross Poker: Each player gets 2 hole cards. Five community cards are arranged in a cross. You must use either the vertical column (3 cards) + your 2 hole cards OR the horizontal row (3 cards) + your 2 hole cards. The center card counts for both paths. Best 5-card poker hand wins.',
+    LLM: '1. Betting begins after the hole cards are dealt. 2. The outer cards of the cross are revealed one by one, with a betting round after each. 3. The middle card (shared by both paths) is revealed last for the final betting round. 4. Hand Construction: You can use the vertical column (3 cards) + your 2 hole cards OR the horizontal row (3 cards) + your 2 hole cards. You cannot mix cards from both lines.',
+    Player: '1. Betting begins after the hole cards are dealt. 2. The outer cards of the cross are revealed one by one, with a betting round after each. 3. The middle card (shared by both paths) is revealed last for the final betting round. 4. Hand Construction: You can use the vertical column (3 cards) + your 2 hole cards OR the horizontal row (3 cards) + your 2 hole cards. You cannot mix cards from both lines.',
     objective: "Form the best five-card poker hand using your two hole cards and exactly one 'path' of three community cards from the cross.",
     gameplay: '1. Betting begins after the hole cards are dealt. 2. The outer cards of the cross are revealed one by one, with a betting round after each. 3. The middle card (shared by both paths) is revealed last for the final betting round. 4. Hand Construction: You can use the vertical column (3 cards) + your 2 hole cards OR the horizontal row (3 cards) + your 2 hole cards. You cannot mix cards from both lines.',
     keyRules: [
@@ -53,10 +53,180 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 2 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before betting_1.',
-      "Scoring check: Standard poker hand rankings. Best 5-card hand using one path (vertical or horizontal) plus 2 hole cards wins the pot. Expected outcome: Form the best five-card poker hand using your two hole cards and exactly one 'path' of three community cards from the cross..",
+      'Setup example: 2 card(s) per player.',
+      "Rule example: Form the best five-card poker hand using your two hole cards and exactly one 'path' of three community cards from the cross.",
+      'Turn-flow example: 1. Betting begins after the hole cards are dealt. 2. The outer cards of the cross are revealed one by one, with a betting round after each. 3. The middle card (shared by both paths) is revealed last for the final betting round. 4. Hand Construction: You can use the vertical column (3 cards) + your 2 hole cards OR the horizontal row (3 cards) + your 2 hole cards. You cannot mix cards from both lines.',
+      "Scoring example: Standard poker hand rankings. Best 5-card hand using one path (vertical or horizontal) plus 2 hole cards wins the pot. Form the best five-card poker hand using your two hole cards and exactly one 'path' of three community cards from the cross..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'iron-cross.rules.objective',
+        title: 'Objective',
+        text: "Form the best five-card poker hand using your two hole cards and exactly one 'path' of three community cards from the cross.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'iron-cross.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Betting begins after the hole cards are dealt. 2. The outer cards of the cross are revealed one by one, with a betting round after each. 3. The middle card (shared by both paths) is revealed last for the final betting round. 4. Hand Construction: You can use the vertical column (3 cards) + your 2 hole cards OR the horizontal row (3 cards) + your 2 hole cards. You cannot mix cards from both lines.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'iron-cross.setup.players',
+        title: 'Players',
+        text: '4 to 8 players is optimal.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'iron-cross.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'iron-cross.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, poker chips.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'iron-cross.setup.dealing',
+        title: 'Deal',
+        text: 'Deal two hole cards face-down to each player. Arrange 5 community cards face-down in a cross (three horizontal, three vertical, sharing a middle card).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'iron-cross.score.win-condition',
+        title: 'Win condition',
+        text: "Form the best five-card poker hand using your two hole cards and exactly one 'path' of three community cards from the cross.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'iron-cross.score.description',
+        title: 'Scoring',
+        text: 'Standard poker hand rankings. Best 5-card hand using one path (vertical or horizontal) plus 2 hole cards wins the pot.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'iron-cross.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must use exactly one path (vertical OR horizontal) plus your 2 hole cards',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'iron-cross.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Cannot mix cards from both lines',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'iron-cross.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The center card is shared by both paths',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'iron-cross.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Standard poker hand rankings apply',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'iron-cross.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'iron-cross.rules.objective',
+          'iron-cross.rules.gameplay',
+        ],
+      },
+      {
+        id: 'iron-cross.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'iron-cross.setup.players',
+          'iron-cross.setup.deck',
+          'iron-cross.setup.equipment',
+          'iron-cross.setup.dealing',
+        ],
+      },
+      {
+        id: 'iron-cross.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'iron-cross.rules.key.1',
+          'iron-cross.rules.key.2',
+          'iron-cross.rules.key.3',
+          'iron-cross.rules.key.4',
+        ],
+      },
+      {
+        id: 'iron-cross.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'iron-cross.score.description',
+          'iron-cross.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'iron-cross.setup.dealing',
+        'iron-cross.rules.objective',
+      ],
+      deal: [
+        'iron-cross.rules.gameplay',
+      ],
+      reveal_market: [
+        'iron-cross.rules.gameplay',
+      ],
+      fold: [
+        'iron-cross.rules.gameplay',
+      ],
+      check: [
+        'iron-cross.rules.gameplay',
+      ],
+      call: [
+        'iron-cross.rules.gameplay',
+      ],
+      bet: [
+        'iron-cross.rules.gameplay',
+      ],
+      raise: [
+        'iron-cross.rules.gameplay',
+      ],
+      reveal_hand: [
+        'iron-cross.rules.gameplay',
+      ],
+      award_pot: [
+        'iron-cross.rules.gameplay',
+      ],
+    },
   },
 }

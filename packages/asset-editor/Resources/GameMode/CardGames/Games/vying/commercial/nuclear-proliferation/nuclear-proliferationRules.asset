@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Nuclear Proliferation. Logic: Use the deck to eliminate opponents or be the last player surviving.',
-    Player: 'Nuclear Proliferation is a commercial satirical card game where players use cards to try to eliminate each other.',
+    LLM: 'Players draw and play weapons, events, and defensive cards to escalate conflict and knock opponents out.',
+    Player: 'Players draw and play weapons, events, and defensive cards to escalate conflict and knock opponents out.',
     objective: 'Use the deck to eliminate opponents or be the last player surviving.',
     gameplay: 'Players draw and play weapons, events, and defensive cards to escalate conflict and knock opponents out.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Published scoring or victory conditions determine the winner. Expected outcome: Use the deck to eliminate opponents or be the last player surviving..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Use the deck to eliminate opponents or be the last player surviving.',
+      'Turn-flow example: Players draw and play weapons, events, and defensive cards to escalate conflict and knock opponents out.',
+      'Scoring example: Published scoring or victory conditions determine the winner. Use the deck to eliminate opponents or be the last player surviving..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'nuclear-proliferation.rules.objective',
+        title: 'Objective',
+        text: 'Use the deck to eliminate opponents or be the last player surviving.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'nuclear-proliferation.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players draw and play weapons, events, and defensive cards to escalate conflict and knock opponents out.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'nuclear-proliferation.setup.players',
+        title: 'Players',
+        text: '2-6 players use the table arrangement described for Nuclear Proliferation.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'nuclear-proliferation.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Nuclear Proliferation card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'nuclear-proliferation.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Nuclear Proliferation card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'nuclear-proliferation.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare the dedicated Nuclear Proliferation cards and any shared table, score, or resource areas from the published rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'nuclear-proliferation.score.win-condition',
+        title: 'Win condition',
+        text: 'Use the deck to eliminate opponents or be the last player surviving.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'nuclear-proliferation.score.description',
+        title: 'Scoring',
+        text: 'Published scoring or victory conditions determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'nuclear-proliferation.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dedicated commercial deck.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'nuclear-proliferation.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Two to six players.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'nuclear-proliferation.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Satirical nuclear-war theme.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'nuclear-proliferation.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Cards eliminate or protect players.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'nuclear-proliferation.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Last survivor wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'nuclear-proliferation.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'nuclear-proliferation.rules.objective',
+          'nuclear-proliferation.rules.gameplay',
+        ],
+      },
+      {
+        id: 'nuclear-proliferation.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'nuclear-proliferation.setup.players',
+          'nuclear-proliferation.setup.deck',
+          'nuclear-proliferation.setup.equipment',
+          'nuclear-proliferation.setup.dealing',
+        ],
+      },
+      {
+        id: 'nuclear-proliferation.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'nuclear-proliferation.rules.key.1',
+          'nuclear-proliferation.rules.key.2',
+          'nuclear-proliferation.rules.key.3',
+          'nuclear-proliferation.rules.key.4',
+          'nuclear-proliferation.rules.key.5',
+        ],
+      },
+      {
+        id: 'nuclear-proliferation.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'nuclear-proliferation.score.description',
+          'nuclear-proliferation.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'nuclear-proliferation.setup.dealing',
+        'nuclear-proliferation.rules.objective',
+      ],
+      play_card: [
+        'nuclear-proliferation.rules.gameplay',
+      ],
+    },
   },
 }

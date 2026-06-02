@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Nijū-kyū (Japanese 29). Logic: See rules.objective and rules.gameplay.',
-    Player: "Nijū-kyū (Twenty-Nine) is a tactical Japanese card game focused on cumulative addition and card capture. Played with a standard deck, the objective is to be the player who plays a card that brings the total on the table exactly to twenty-nine. The player who hits the target 'sweeps' the table and collects the cards as scoring points. It is a game of subtraction-logic, card counting, and opportunistic 'sniping' of the target total.",
+    LLM: '1. Players take turns playing one card face-up to the table.\n2. The total sum of point values is announced.\n3. **Hitting 29**: If your card makes the total exactly 29, you win all cards on the table and keep them in your score pile.\n4. **Passing**: If you only have cards that would push the total OVER 29, you must pass your turn.\n5. **Reset**: After a sweep (hitting 29), the next player starts a new pile from zero.',
+    Player: '1. Players take turns playing one card face-up to the table.\n2. The total sum of point values is announced.\n3. **Hitting 29**: If your card makes the total exactly 29, you win all cards on the table and keep them in your score pile.\n4. **Passing**: If you only have cards that would push the total OVER 29, you must pass your turn.\n5. **Reset**: After a sweep (hitting 29), the next player starts a new pile from zero.',
     objective: 'Capture the most cards by hitting the cumulative total of 29.',
     gameplay: '1. Players take turns playing one card face-up to the table.\n2. The total sum of point values is announced.\n3. **Hitting 29**: If your card makes the total exactly 29, you win all cards on the table and keep them in your score pile.\n4. **Passing**: If you only have cards that would push the total OVER 29, you must pass your turn.\n5. **Reset**: After a sweep (hitting 29), the next player starts a new pile from zero.',
     keyRules: [
@@ -53,10 +53,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card, pass before round end.',
-      'Scoring check: Capture the most cards by hitting the cumulative total of 29. Expected outcome: Capture the most cards by hitting the cumulative total of 29..',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Capture the most cards by hitting the cumulative total of 29.',
+      'Turn-flow example: 1. Players take turns playing one card face-up to the table.\n2. The total sum of point values is announced.\n3. **Hitting 29**: If your card makes the total exactly 29, you win all cards on the table and keep them in your score pile.\n4. **Passing**: If you only have cards that would push the total OVER 29, you must pass your turn.\n5. **Reset**: After a sweep (hitting 29), the next player starts a new pile from zero.',
+      'Scoring example: Capture the most cards by hitting the cumulative total of 29. Capture the most cards by hitting the cumulative total of 29..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'niju-kyu-29.rules.objective',
+        title: 'Objective',
+        text: 'Capture the most cards by hitting the cumulative total of 29.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'niju-kyu-29.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Players take turns playing one card face-up to the table.\n2. The total sum of point values is announced.\n3. **Hitting 29**: If your card makes the total exactly 29, you win all cards on the table and keep them in your score pile.\n4. **Passing**: If you only have cards that would push the total OVER 29, you must pass your turn.\n5. **Reset**: After a sweep (hitting 29), the next player starts a new pile from zero.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'niju-kyu-29.setup.players',
+        title: 'Players',
+        text: '3 or 4 players (individuals).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'niju-kyu-29.setup.deck',
+        title: 'Deck',
+        text: '52 cards. Ranks: 2-10 (Value), A/J/Q/K (1 point each).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'niju-kyu-29.setup.equipment',
+        title: 'Equipment',
+        text: '52 cards. Ranks: 2-10 (Value), A/J/Q/K (1 point each).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'niju-kyu-29.setup.dealing',
+        title: 'Deal',
+        text: 'All cards are dealt out equally to the players.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'niju-kyu-29.score.win-condition',
+        title: 'Win condition',
+        text: 'Capture the most cards by hitting the cumulative total of 29.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'niju-kyu-29.score.description',
+        title: 'Scoring',
+        text: 'Capture the most cards by hitting the cumulative total of 29.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'niju-kyu-29.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Card values: 2-10 equal face value; A, J, Q, K count as 1 point each.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'niju-kyu-29.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Playing a card that makes the running total exactly 29 sweeps all table cards to your score pile.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'niju-kyu-29.rules.key.3',
+        title: 'Key rule 3',
+        text: 'If you have no card that can be played without exceeding 29, you must pass.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'niju-kyu-29.rules.key.4',
+        title: 'Key rule 4',
+        text: 'After a sweep, the next player starts a new pile from zero.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'niju-kyu-29.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'niju-kyu-29.rules.objective',
+          'niju-kyu-29.rules.gameplay',
+        ],
+      },
+      {
+        id: 'niju-kyu-29.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'niju-kyu-29.setup.players',
+          'niju-kyu-29.setup.deck',
+          'niju-kyu-29.setup.equipment',
+          'niju-kyu-29.setup.dealing',
+        ],
+      },
+      {
+        id: 'niju-kyu-29.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'niju-kyu-29.rules.key.1',
+          'niju-kyu-29.rules.key.2',
+          'niju-kyu-29.rules.key.3',
+          'niju-kyu-29.rules.key.4',
+        ],
+      },
+      {
+        id: 'niju-kyu-29.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'niju-kyu-29.score.description',
+          'niju-kyu-29.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'niju-kyu-29.setup.dealing',
+        'niju-kyu-29.rules.objective',
+      ],
+      play_card: [
+        'niju-kyu-29.rules.gameplay',
+      ],
+      pass: [
+        'niju-kyu-29.rules.gameplay',
+      ],
+    },
   },
 }

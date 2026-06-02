@@ -55,10 +55,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: 61.',
+      'Setup example: 4 card(s) per player.',
+      "Rule example: Capture at least 31 points (in a single round) or 61 points (if scores are combined) to win. Avoid getting zero points ('The Goat').",
+      'Turn-flow example: 1. **Multiple Lead**: You can lead one card, two of a suit, or three of a suit.\n2. **Response**: Subsequent players MUST play the same number of cards.\n3. **Trumping**: Any card in a lead can be beaten by a higher card of the same suit or a Trump card.\n4. **Capturing**: To win the trick, a player must beat ALL cards led with individual higher cards.\n5. **Drawing**: After a trick, everyone draws from stock back to 4 cards.',
+      'Scoring example: Points or match rules. Capture at least 31 points in a single round or 61 points combined. The player with zero points is the Goat (loser)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'kozel.rules.objective',
+        title: 'Objective',
+        text: "Capture at least 31 points (in a single round) or 61 points (if scores are combined) to win. Avoid getting zero points ('The Goat').",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kozel.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Multiple Lead**: You can lead one card, two of a suit, or three of a suit.\n2. **Response**: Subsequent players MUST play the same number of cards.\n3. **Trumping**: Any card in a lead can be beaten by a higher card of the same suit or a Trump card.\n4. **Capturing**: To win the trick, a player must beat ALL cards led with individual higher cards.\n5. **Drawing**: After a trick, everyone draws from stock back to 4 cards.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kozel.setup.players',
+        title: 'Players',
+        text: 'Optimal with 2 or 4 (in partnerships).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kozel.setup.deck',
+        title: 'Deck',
+        text: '36 cards. Rank: Ace (11), Ten (10), King (4), Queen (3), Jack (2). 9s, 8s, 7s, 6s = 0 points.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kozel.setup.equipment',
+        title: 'Equipment',
+        text: '36 cards. Rank: Ace (11), Ten (10), King (4), Queen (3), Jack (2). 9s, 8s, 7s, 6s = 0 points.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kozel.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 4 cards (some variants 3). The remaining cards form the stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kozel.score.win-condition',
+        title: 'Win condition',
+        text: 'Capture at least 31 points in a single round or 61 points combined. The player with zero points is the Goat (loser).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kozel.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kozel.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Lead one to four cards of the same suit.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kozel.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Followers must play the same number of cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kozel.rules.key.3',
+        title: 'Key rule 3',
+        text: 'No obligation to follow suit; beat with higher card of same suit or any trump.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kozel.rules.key.4',
+        title: 'Key rule 4',
+        text: 'To win a trick, beat every led card with a higher card.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'kozel.rules.key.5',
+        title: 'Key rule 5',
+        text: 'After each trick, players draw from stock to refill to four cards.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'kozel.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Declarations (Bura, Moskva, Molodka) may seize the lead.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kozel.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kozel.rules.objective',
+          'kozel.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kozel.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kozel.setup.players',
+          'kozel.setup.deck',
+          'kozel.setup.equipment',
+          'kozel.setup.dealing',
+        ],
+      },
+      {
+        id: 'kozel.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kozel.rules.key.1',
+          'kozel.rules.key.2',
+          'kozel.rules.key.3',
+          'kozel.rules.key.4',
+          'kozel.rules.key.5',
+          'kozel.rules.key.6',
+        ],
+      },
+      {
+        id: 'kozel.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kozel.score.description',
+          'kozel.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kozel.setup.dealing',
+        'kozel.rules.objective',
+      ],
+      play_card: [
+        'kozel.rules.gameplay',
+      ],
+    },
   },
 }

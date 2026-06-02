@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: A Game of Thrones The Card Game. Logic: Accumulate the required power total or otherwise satisfy the editions victory condition.',
-    Player: 'A Game of Thrones The Card Game is a commercial customizable card game of political conflict, deck construction, plot selection, and challenges between Westeros factions.',
+    LLM: 'Each round players reveal plots, marshal characters and locations, initiate military, intrigue, and power challenges, and resolve claim and dominance. Card text and faction economy drive the tactical choices.',
+    Player: 'Each round players reveal plots, marshal characters and locations, initiate military, intrigue, and power challenges, and resolve claim and dominance. Card text and faction economy drive the tactical choices.',
     objective: 'Accumulate the required power total or otherwise satisfy the editions victory condition.',
     gameplay: 'Each round players reveal plots, marshal characters and locations, initiate military, intrigue, and power challenges, and resolve claim and dominance. Card text and faction economy drive the tactical choices.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: A player wins by reaching the required power total or by an edition-specific alternate condition. Expected outcome: 15.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Accumulate the required power total or otherwise satisfy the editions victory condition.',
+      'Turn-flow example: Each round players reveal plots, marshal characters and locations, initiate military, intrigue, and power challenges, and resolve claim and dominance. Card text and faction economy drive the tactical choices.',
+      'Scoring example: A player wins by reaching the required power total or by an edition-specific alternate condition. Accumulate the required power total or otherwise satisfy the editions victory condition..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'a-game-of-thrones-card-game.rules.objective',
+        title: 'Objective',
+        text: 'Accumulate the required power total or otherwise satisfy the editions victory condition.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'a-game-of-thrones-card-game.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Each round players reveal plots, marshal characters and locations, initiate military, intrigue, and power challenges, and resolve claim and dominance. Card text and faction economy drive the tactical choices.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'a-game-of-thrones-card-game.setup.players',
+        title: 'Players',
+        text: 'Players bring constructed faction decks and plot decks.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'a-game-of-thrones-card-game.setup.deck',
+        title: 'Deck',
+        text: 'Use legal commercial decks, faction cards, agendas, and plot cards.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'a-game-of-thrones-card-game.setup.equipment',
+        title: 'Equipment',
+        text: 'Commercial customizable decks, faction cards, agendas, and plot cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'a-game-of-thrones-card-game.setup.dealing',
+        title: 'Deal',
+        text: 'Set faction materials, shuffle draw decks, prepare plot decks, and draw opening hands according to edition rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'a-game-of-thrones-card-game.score.win-condition',
+        title: 'Win condition',
+        text: 'Accumulate the required power total or otherwise satisfy the editions victory condition.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'a-game-of-thrones-card-game.score.description',
+        title: 'Scoring',
+        text: 'A player wins by reaching the required power total or by an edition-specific alternate condition.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'a-game-of-thrones-card-game.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Players use constructed faction decks.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'a-game-of-thrones-card-game.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Plot selection shapes each round.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'a-game-of-thrones-card-game.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Challenges are divided into military, intrigue, and power.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'a-game-of-thrones-card-game.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Power total is the usual victory path.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'a-game-of-thrones-card-game.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'a-game-of-thrones-card-game.rules.objective',
+          'a-game-of-thrones-card-game.rules.gameplay',
+        ],
+      },
+      {
+        id: 'a-game-of-thrones-card-game.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'a-game-of-thrones-card-game.setup.players',
+          'a-game-of-thrones-card-game.setup.deck',
+          'a-game-of-thrones-card-game.setup.equipment',
+          'a-game-of-thrones-card-game.setup.dealing',
+        ],
+      },
+      {
+        id: 'a-game-of-thrones-card-game.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'a-game-of-thrones-card-game.rules.key.1',
+          'a-game-of-thrones-card-game.rules.key.2',
+          'a-game-of-thrones-card-game.rules.key.3',
+          'a-game-of-thrones-card-game.rules.key.4',
+        ],
+      },
+      {
+        id: 'a-game-of-thrones-card-game.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'a-game-of-thrones-card-game.score.description',
+          'a-game-of-thrones-card-game.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'a-game-of-thrones-card-game.setup.dealing',
+        'a-game-of-thrones-card-game.rules.objective',
+      ],
+      play_card: [
+        'a-game-of-thrones-card-game.rules.gameplay',
+      ],
+    },
   },
 }

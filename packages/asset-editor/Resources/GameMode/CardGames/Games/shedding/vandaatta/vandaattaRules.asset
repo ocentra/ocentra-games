@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: VÃ¤ndÃ¥tta. Logic: See rules.objective and rules.gameplay.',
-    Player: "VÃ¤ndÃ¥tta is a popular Swedish shedding game similar to UNO/Crazy Eights using a standard deck. 2-5 players, 7 cards each. Match by suit or rank. 8s are wild (choose new suit). Aces force all players to draw 1. Must say 'Lappen!' with 1 card left or draw 3 penalty. Cannot go out on 8 or A.",
+    LLM: "Match suit or rank. 8=wild (choose suit). A=all draw 1, then play same suit. Can play multiple same-rank cards. Draw up to 3 if can't play. Say 'Lappen!' at 1 card or draw 3. Can't end on 8 or A.",
+    Player: "Match suit or rank. 8=wild (choose suit). A=all draw 1, then play same suit. Can play multiple same-rank cards. Draw up to 3 if can't play. Say 'Lappen!' at 1 card or draw 3. Can't end on 8 or A.",
     objective: 'Be the first to shed all cards. When played for points, lowest penalty total after an agreed number of deals wins.',
     gameplay: "Match suit or rank. 8=wild (choose suit). A=all draw 1, then play same suit. Can play multiple same-rank cards. Draw up to 3 if can't play. Say 'Lappen!' at 1 card or draw 3. Can't end on 8 or A.",
     keyRules: [
@@ -54,10 +54,177 @@
       go_out: "Available when a player has no cards left in hand and has called 'Lappen!'.",
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: 8=10-50pts, A=5-15pts, Face=10pts, Others=face value. Lowest total wins over rounds. Expected outcome: 150.',
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Be the first to shed all cards. When played for points, lowest penalty total after an agreed number of deals wins.',
+      "Turn-flow example: Match suit or rank. 8=wild (choose suit). A=all draw 1, then play same suit. Can play multiple same-rank cards. Draw up to 3 if can't play. Say 'Lappen!' at 1 card or draw 3. Can't end on 8 or A.",
+      'Scoring example: 8=10-50pts, A=5-15pts, Face=10pts, Others=face value. Lowest total wins over rounds. Shed all cards first..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'vandaatta.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to shed all cards. When played for points, lowest penalty total after an agreed number of deals wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'vandaatta.rules.gameplay',
+        title: 'Turn flow',
+        text: "Match suit or rank. 8=wild (choose suit). A=all draw 1, then play same suit. Can play multiple same-rank cards. Draw up to 3 if can't play. Say 'Lappen!' at 1 card or draw 3. Can't end on 8 or A.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'vandaatta.setup.players',
+        title: 'Players',
+        text: '2-5 (6+ use 2 decks)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'vandaatta.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack; two decks shuffled together if more than five players.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'vandaatta.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'vandaatta.setup.dealing',
+        title: 'Deal',
+        text: '7 each. Rest = draw pile. Top card starts play pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'vandaatta.score.win-condition',
+        title: 'Win condition',
+        text: 'Shed all cards first.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'vandaatta.score.description',
+        title: 'Scoring',
+        text: '8=10-50pts, A=5-15pts, Face=10pts, Others=face value. Lowest total wins over rounds.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'vandaatta.rules.key.1',
+        title: 'Key rule 1',
+        text: '8 = wild card',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'vandaatta.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Ace = all draw 1',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'vandaatta.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Lappen! call required',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'vandaatta.rules.key.4',
+        title: 'Key rule 4',
+        text: "Can't end on 8 or A",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'vandaatta.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Multiple same-rank plays',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'vandaatta.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'vandaatta.rules.objective',
+          'vandaatta.rules.gameplay',
+        ],
+      },
+      {
+        id: 'vandaatta.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'vandaatta.setup.players',
+          'vandaatta.setup.deck',
+          'vandaatta.setup.equipment',
+          'vandaatta.setup.dealing',
+        ],
+      },
+      {
+        id: 'vandaatta.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'vandaatta.rules.key.1',
+          'vandaatta.rules.key.2',
+          'vandaatta.rules.key.3',
+          'vandaatta.rules.key.4',
+          'vandaatta.rules.key.5',
+        ],
+      },
+      {
+        id: 'vandaatta.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'vandaatta.score.description',
+          'vandaatta.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'vandaatta.setup.dealing',
+        'vandaatta.rules.objective',
+      ],
+      deal: [
+        'vandaatta.rules.gameplay',
+      ],
+      play_card: [
+        'vandaatta.rules.gameplay',
+      ],
+      draw: [
+        'vandaatta.rules.gameplay',
+      ],
+      go_out: [
+        'vandaatta.rules.gameplay',
+      ],
+      finish_game: [
+        'vandaatta.rules.gameplay',
+      ],
+    },
   },
 }

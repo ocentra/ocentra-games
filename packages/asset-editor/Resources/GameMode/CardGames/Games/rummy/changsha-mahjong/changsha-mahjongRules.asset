@@ -52,10 +52,156 @@
       go_out: 'Hand must satisfy structure and scoring rules.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use draw, discard, meld, go_out before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Complete a legal winning hand and satisfy the active Changsha scoring profile.',
+      "Turn-flow example: Players draw one tile and discard one tile in turn. Discards may be claimed for legal melds under claim priority rules. A hand wins on self-draw or discard claim when the hand structure and the profile's scoring validity are satisfied.",
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'changsha-mahjong.rules.objective',
+        title: 'Objective',
+        text: 'Complete a legal winning hand and satisfy the active Changsha scoring profile.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'changsha-mahjong.rules.gameplay',
+        title: 'Turn flow',
+        text: "Players draw one tile and discard one tile in turn. Discards may be claimed for legal melds under claim priority rules. A hand wins on self-draw or discard claim when the hand structure and the profile's scoring validity are satisfied.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'changsha-mahjong.setup.players',
+        title: 'Players',
+        text: '4 players seated by wind position.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'changsha-mahjong.setup.deck',
+        title: 'Deck',
+        text: 'Standard Mahjong set with suited tiles, honor tiles, and bonus tiles according to table profile.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'changsha-mahjong.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard Mahjong set with suited tiles, honor tiles, and bonus tiles according to table profile.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'changsha-mahjong.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 13 tiles; dealer receives 14 and discards first.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'changsha-mahjong.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'changsha-mahjong.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'changsha-mahjong.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Normal turn rhythm is draw then discard.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'changsha-mahjong.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Claim legality and priority govern Chow, Pung, and Kong interruptions.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'changsha-mahjong.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning requires valid hand structure and accepted profile scoring.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'changsha-mahjong.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'changsha-mahjong.rules.objective',
+          'changsha-mahjong.rules.gameplay',
+        ],
+      },
+      {
+        id: 'changsha-mahjong.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'changsha-mahjong.setup.players',
+          'changsha-mahjong.setup.deck',
+          'changsha-mahjong.setup.equipment',
+          'changsha-mahjong.setup.dealing',
+        ],
+      },
+      {
+        id: 'changsha-mahjong.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'changsha-mahjong.rules.key.1',
+          'changsha-mahjong.rules.key.2',
+          'changsha-mahjong.rules.key.3',
+        ],
+      },
+      {
+        id: 'changsha-mahjong.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'changsha-mahjong.score.description',
+          'changsha-mahjong.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'changsha-mahjong.setup.dealing',
+        'changsha-mahjong.rules.objective',
+      ],
+      draw: [
+        'changsha-mahjong.rules.gameplay',
+      ],
+      discard: [
+        'changsha-mahjong.rules.gameplay',
+      ],
+      meld: [
+        'changsha-mahjong.rules.gameplay',
+      ],
+      go_out: [
+        'changsha-mahjong.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Zhào Péngyou. Logic: See rules.objective and rules.gameplay.',
-    Player: "Zhào Péngyou ('Finding Friends') is a Chinese multi-player trick-taking game. 5-12 players. Multiple decks + jokers. Trump maker 'calls' specific cards — holders become secret partners (kankei). Point cards: 5=5pts, 10/K=10pts (100 total). Teams level up through ranks. First to Ace level wins.",
+    LLM: 'Trump maker calls specific cards = secret partners. Follow suit. Trump if void. Lead singles/pairs/tractors. 5=5pts, 10/K=10pts. Last trick = double points. Win enough points to level up.',
+    Player: 'Trump maker calls specific cards = secret partners. Follow suit. Trump if void. Lead singles/pairs/tractors. 5=5pts, 10/K=10pts. Last trick = double points. Win enough points to level up.',
     objective: 'Level up through ranks. First team to Ace level wins.',
     gameplay: 'Trump maker calls specific cards = secret partners. Follow suit. Trump if void. Lead singles/pairs/tractors. 5=5pts, 10/K=10pts. Last trick = double points. Win enough points to level up.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 5-12 player(s), 17 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_counterclockwise may use play_card before round end.',
-      'Scoring check: 5=5pts, 10=10pts, K=10pts. 100 total per hand. Last trick doubles. Expected outcome: Level up through ranks. First team to Ace level wins..',
+      'Setup example: 17 card(s) per player.',
+      'Rule example: Level up through ranks. First team to Ace level wins.',
+      'Turn-flow example: Trump maker calls specific cards = secret partners. Follow suit. Trump if void. Lead singles/pairs/tractors. 5=5pts, 10/K=10pts. Last trick = double points. Win enough points to level up.',
+      'Scoring example: 5=5pts, 10=10pts, K=10pts. 100 total per hand. Last trick doubles. Level up through ranks. First team to Ace level wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'zhao-pengyou.rules.objective',
+        title: 'Objective',
+        text: 'Level up through ranks. First team to Ace level wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'zhao-pengyou.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Trump maker calls specific cards = secret partners. Follow suit. Trump if void. Lead singles/pairs/tractors. 5=5pts, 10/K=10pts. Last trick = double points. Win enough points to level up.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'zhao-pengyou.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'zhao-pengyou.setup.deck',
+        title: 'Deck',
+        text: 'Multiple decks with jokers. 54 cards per deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'zhao-pengyou.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'zhao-pengyou.setup.dealing',
+        title: 'Deal',
+        text: 'All cards dealt evenly.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'zhao-pengyou.score.win-condition',
+        title: 'Win condition',
+        text: 'Level up through ranks. First team to Ace level wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'zhao-pengyou.score.description',
+        title: 'Scoring',
+        text: '5=5pts, 10=10pts, K=10pts. 100 total per hand. Last trick doubles.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'zhao-pengyou.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Call cards for secret partners',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'zhao-pengyou.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Level-up system (2→A)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'zhao-pengyou.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Tractor combinations',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'zhao-pengyou.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Last trick doubles points',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'zhao-pengyou.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Multiple decks',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'zhao-pengyou.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'zhao-pengyou.rules.objective',
+          'zhao-pengyou.rules.gameplay',
+        ],
+      },
+      {
+        id: 'zhao-pengyou.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'zhao-pengyou.setup.players',
+          'zhao-pengyou.setup.deck',
+          'zhao-pengyou.setup.equipment',
+          'zhao-pengyou.setup.dealing',
+        ],
+      },
+      {
+        id: 'zhao-pengyou.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'zhao-pengyou.rules.key.1',
+          'zhao-pengyou.rules.key.2',
+          'zhao-pengyou.rules.key.3',
+          'zhao-pengyou.rules.key.4',
+          'zhao-pengyou.rules.key.5',
+        ],
+      },
+      {
+        id: 'zhao-pengyou.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'zhao-pengyou.score.description',
+          'zhao-pengyou.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'zhao-pengyou.setup.dealing',
+        'zhao-pengyou.rules.objective',
+      ],
+      play_card: [
+        'zhao-pengyou.rules.gameplay',
+      ],
+    },
   },
 }

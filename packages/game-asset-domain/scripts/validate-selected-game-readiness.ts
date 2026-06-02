@@ -24,6 +24,9 @@ const __dirname = path.dirname(__filename);
 const RESOURCES_ROOT = path.resolve(__dirname, '../../asset-editor/Resources');
 const GAMES_ROOT = path.resolve(RESOURCES_ROOT, 'GameMode/CardGames/Games');
 const PLACEHOLDER_RESOURCE_ROOT = path.resolve(RESOURCES_ROOT, 'AppAssets/PlaceHolders');
+const CARD_PLACEHOLDER_IMAGE_PATHS = [
+  path.resolve(RESOURCES_ROOT, 'GameMode/CardGames/Images/standard/Backcard.png'),
+];
 const failOnWarnings = process.argv.includes('--fail-on-warning') || process.argv.includes('--strict');
 const IMAGE_EXTENSIONS = new Set(['.gif', '.jpg', '.jpeg', '.png', '.webp']);
 const PUBLIC_RELEASE_STATUSES = new Set(['Available', 'ComingSoon']);
@@ -33,12 +36,11 @@ const REQUIRED_LINKED_MODEL_KEYS = ['deckModel', 'actionSet', 'validationFixture
 const NON_BLOCKING_WARNING_CODES = new Set([
   'visual-art-needs-final',
   'placeholder-image-used',
-  'deck-card-image-missing',
-  'deck-card-image-unknown',
   'deck-card-image-placeholder',
   'deck-too-small-for-initial-deal',
   'game-info-incomplete-flag',
   'game-info-not-complete',
+  'move-validity-needs-source-review',
 ]);
 
 function findAssetFiles(dir: string, fileList: string[] = []): string[] {
@@ -150,9 +152,12 @@ const assetsByGuid = new Map<string, AssetEnvelope>();
 const assetPathByGuid = new Map<string, string>();
 const imageHashes = new Set(findResourceFiles(RESOURCES_ROOT, IMAGE_EXTENSIONS).map(sha256File));
 const placeholderImageHashes = new Set(
-  fs.existsSync(PLACEHOLDER_RESOURCE_ROOT)
-    ? findResourceFiles(PLACEHOLDER_RESOURCE_ROOT, IMAGE_EXTENSIONS).map(sha256File)
-    : [],
+  [
+    ...(fs.existsSync(PLACEHOLDER_RESOURCE_ROOT)
+      ? findResourceFiles(PLACEHOLDER_RESOURCE_ROOT, IMAGE_EXTENSIONS).map(sha256File)
+      : []),
+    ...CARD_PLACEHOLDER_IMAGE_PATHS.filter((filePath) => fs.existsSync(filePath)).map(sha256File),
+  ],
 );
 
 for (const filePath of assetFiles) {
@@ -698,6 +703,7 @@ const reports = gameModeFiles.map((gameModePath) => {
   const mechanics = loadAssetFromRef(gameModeData.mechanicsAsset);
   const deck = loadAssetFromRef(gameModeData.deckAsset);
   const images = loadAssetFromRef(gameModeData.carouselImagesAsset);
+  const layout = loadAssetFromRef(gameModeData.selectedGameLayoutAsset);
   const ranking = loadAssetFromRef(gameModeData.rankingAsset)
     ?? loadAssetFromRef(dataOf(scoring).rankingAsset)
     ?? loadAssetFromRef(dataOf(scoring).cardRankingAsset);
@@ -712,6 +718,7 @@ const reports = gameModeFiles.map((gameModePath) => {
 
   const loadedBundle = {
     gameMode,
+    layout,
     gameInfo,
     rules,
     scoring,
@@ -736,6 +743,7 @@ const reports = gameModeFiles.map((gameModePath) => {
     actions,
     validationFixtures,
     images,
+    layout,
   }, {
     label: gameMode.system?.displayName ?? gameTreePath,
   });

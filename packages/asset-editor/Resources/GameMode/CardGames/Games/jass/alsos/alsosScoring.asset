@@ -10,7 +10,31 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Total points come from card values, melds, and figures.',
+      winCondition: "The declarer wins only if their total points exceed the points of BOTH opponents. If either opponent beats or ties the declarer, the declarer 'goes down'.",
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {
+        Last_trick_bonus: '10',
+        Vannak_set_of_four: '80',
+        Trump_suit_total_points: '62',
+        Each_non_trump_suit_total_points: '30',
+      },
+      nullReasons: {
+        targetScore: 'Session game with no fixed target; play continues with cumulative scoring.',
+      },
+      splitRules: "Melds only score for the side with the 'High' meld (longest sequence).",
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],
@@ -21,7 +45,7 @@
       Trump_suit_total_points: 62,
       Each_non_trump_suit_total_points: 30,
     },
-    penalties: '{\n  "Going Down": "If the declarer loses, the opponents score all the declarer\'s points as a penalty."\n}',
+    penalties: '{"Going Down":"If the declarer loses, the opponents score all the declarer\'s points as a penalty."}',
     targetScore: null,
     scoringDirection: 'high_wins',
     rankingAsset: {

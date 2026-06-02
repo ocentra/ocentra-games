@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Daifugō. Japanese climbing game. Card order: 3→2→Joker (high). Play singles/pairs/triples/sequences higher than previous same-type combo. Four-of-a-kind = Revolution (inverts). First empty wins.',
-    Player: "You hold: 3, 3, 5, 7, 7, 2, Joker. It's your lead—you can play the pair of 3s (weak but empties low cards), the pair of 7s (stronger), or the single Joker (nuclear option, wastes it). Best play: pair of 3s early—conserve 7s and Joker for responses to opponents' high pairs later.",
+    LLM: 'The player holding 3♦ (or 3♠ in some variants) leads first. On each turn, a player may:\n- Play a combination STRICTLY HIGHER than the previous combination of the SAME TYPE (single, pair, triple, sequence of 3+).\n- Or pass.\nThe played combination must match the current type (if singles are out, you must play singles). The round continues until all but one player passes; then the last player to play leads a new combination.',
+    Player: 'The player holding 3♦ (or 3♠ in some variants) leads first. On each turn, a player may:\n- Play a combination STRICTLY HIGHER than the previous combination of the SAME TYPE (single, pair, triple, sequence of 3+).\n- Or pass.\nThe played combination must match the current type (if singles are out, you must play singles). The round continues until all but one player passes; then the last player to play leads a new combination.',
     objective: 'Be first to shed all cards (Daifugō = 1st place). Avoid being last (Daihinmin = last place).',
     gameplay: 'The player holding 3♦ (or 3♠ in some variants) leads first. On each turn, a player may:\n- Play a combination STRICTLY HIGHER than the previous combination of the SAME TYPE (single, pair, triple, sequence of 3+).\n- Or pass.\nThe played combination must match the current type (if singles are out, you must play singles). The round continues until all but one player passes; then the last player to play leads a new combination.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'End-state is determined by empty hand order, not a go-out action call.',
     },
     exampleHands: [
-      'Opening deal: 3-6 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in exchange; current_player may use give_cards, receive_cards before play_loop.',
-      'Scoring check: Ranking system (1st to last) determines next round exchanges. Expected outcome: 10.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Be first to shed all cards (Daifugō = 1st place). Avoid being last (Daihinmin = last place).',
+      'Turn-flow example: The player holding 3♦ (or 3♠ in some variants) leads first. On each turn, a player may:\n- Play a combination STRICTLY HIGHER than the previous combination of the SAME TYPE (single, pair, triple, sequence of 3+).\n- Or pass.\nThe played combination must match the current type (if singles are out, you must play singles). The round continues until all but one player passes; then the last player to play leads a new combination.',
+      'Scoring example: Ranking system (1st to last) determines next round exchanges. First to shed all cards = Daifugō (1st place)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'daifugo.rules.objective',
+        title: 'Objective',
+        text: 'Be first to shed all cards (Daifugō = 1st place). Avoid being last (Daihinmin = last place).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'daifugo.rules.gameplay',
+        title: 'Turn flow',
+        text: 'The player holding 3♦ (or 3♠ in some variants) leads first. On each turn, a player may:\n- Play a combination STRICTLY HIGHER than the previous combination of the SAME TYPE (single, pair, triple, sequence of 3+).\n- Or pass.\nThe played combination must match the current type (if singles are out, you must play singles). The round continues until all but one player passes; then the last player to play leads a new combination.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'daifugo.setup.players',
+        title: 'Players',
+        text: 'Three to six players are typical; the game is usually played by 3 to 6, and up to 8 can take part (often with a single 53-card pack in Japan). With five or more players the full title hierarchy applies (Dai Fugō, Fugō, heimin, Hinmin, Dai Hinmin); with three or four only Fugō (winner) and Hinmin (loser) are used.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'daifugo.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52 cards + optional Jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'daifugo.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'daifugo.setup.dealing',
+        title: 'Deal',
+        text: 'Deal entire deck evenly. Players with extra cards start at a slight disadvantage.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'daifugo.score.win-condition',
+        title: 'Win condition',
+        text: 'First to shed all cards = Daifugō (1st place).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'daifugo.score.description',
+        title: 'Scoring',
+        text: 'Ranking system (1st to last) determines next round exchanges.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'daifugo.rules.key.1',
+        title: 'Key rule 1',
+        text: 'You MUST match the current play type (singles vs. pairs vs. sequences).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'daifugo.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Revolution (four-of-a-kind) inverts rank order for rest of round.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'daifugo.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Daifugō-Daihinmin card exchange is the defining social mechanic.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'daifugo.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'daifugo.rules.objective',
+          'daifugo.rules.gameplay',
+        ],
+      },
+      {
+        id: 'daifugo.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'daifugo.setup.players',
+          'daifugo.setup.deck',
+          'daifugo.setup.equipment',
+          'daifugo.setup.dealing',
+        ],
+      },
+      {
+        id: 'daifugo.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'daifugo.rules.key.1',
+          'daifugo.rules.key.2',
+          'daifugo.rules.key.3',
+        ],
+      },
+      {
+        id: 'daifugo.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'daifugo.score.description',
+          'daifugo.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'daifugo.setup.dealing',
+        'daifugo.rules.objective',
+      ],
+      pass: [
+        'daifugo.rules.gameplay',
+      ],
+      give_cards: [
+        'daifugo.rules.gameplay',
+      ],
+      receive_cards: [
+        'daifugo.rules.gameplay',
+      ],
+      play_combo: [
+        'daifugo.rules.gameplay',
+      ],
+    },
   },
 }

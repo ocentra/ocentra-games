@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kani (Gonin-Kan). Type: Hidden Partnership Trick-taking. Deck: 50 cards. Hand: 10 cards. Partnership: Joker holder + Ace of trumps = Kankei. Trumps rotate: â™£â†’â™¦â†’â™¥â†’â™ . Joker: strongest but banned from first/last trick. Scoring: A-K-Q-J = 1pt each (16 total). Kankei wins with 9+ points. Play: Counter-clockwise, must follow suit.',
-    Player: 'Welcome to Kani! You have 10 cards. The trumps rotate each round. Watch for the Joker and the Ace of trumpsâ€”those players are secret partners! Can you figure out who to trust?',
+    LLM: "1. **Partnership**: The player with the **Joker** and the player with the **Ace of Trumps** form the 'Kankei' team. The other three players are the 'Mukankei' team. 2. **The Joker**: The Joker is the strongest card but cannot be played to the first or last trick of a round. 3. **Play**: Counter-clockwise. Must follow suit. If unable, play any card. Highest trump wins; if no trump, highest card of led suit wins.",
+    Player: "1. **Partnership**: The player with the **Joker** and the player with the **Ace of Trumps** form the 'Kankei' team. The other three players are the 'Mukankei' team. 2. **The Joker**: The Joker is the strongest card but cannot be played to the first or last trick of a round. 3. **Play**: Counter-clockwise. Must follow suit. If unable, play any card. Highest trump wins; if no trump, highest card of led suit wins.",
     objective: "Capture 'Point Cards' (A, K, Q, J of each suit). There are 16 points total in the deck.",
     gameplay: "1. **Partnership**: The player with the **Joker** and the player with the **Ace of Trumps** form the 'Kankei' team. The other three players are the 'Mukankei' team. 2. **The Joker**: The Joker is the strongest card but cannot be played to the first or last trick of a round. 3. **Play**: Counter-clockwise. Must follow suit. If unable, play any card. Highest trump wins; if no trump, highest card of led suit wins.",
     keyRules: [
@@ -57,10 +57,207 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 5-6 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_cards before partnership_reveal.',
-      'Scoring check: Points are awarded based on scoring cards captured in tricks. Only Aces, Kings, Queens, and Jacks count (1 point each, 16 total). Expected outcome: The Kankei team needs 9+ points to win the deal. Game typically played to a target match score..',
+      'Setup example: 10 card(s) per player.',
+      "Rule example: Capture 'Point Cards' (A, K, Q, J of each suit). There are 16 points total in the deck.",
+      "Turn-flow example: 1. **Partnership**: The player with the **Joker** and the player with the **Ace of Trumps** form the 'Kankei' team. The other three players are the 'Mukankei' team. 2. **The Joker**: The Joker is the strongest card but cannot be played to the first or last trick of a round. 3. **Play**: Counter-clockwise. Must follow suit. If unable, play any card. Highest trump wins; if no trump, highest card of led suit wins.",
+      'Scoring example: Points are awarded based on scoring cards captured in tricks. Only Aces, Kings, Queens, and Jacks count (1 point each, 16 total). The Kankei team needs 9+ points to win the deal. Game typically played to a target match score..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'kani.rules.objective',
+        title: 'Objective',
+        text: "Capture 'Point Cards' (A, K, Q, J of each suit). There are 16 points total in the deck.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kani.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Partnership**: The player with the **Joker** and the player with the **Ace of Trumps** form the 'Kankei' team. The other three players are the 'Mukankei' team. 2. **The Joker**: The Joker is the strongest card but cannot be played to the first or last trick of a round. 3. **Play**: Counter-clockwise. Must follow suit. If unable, play any card. Highest trump wins; if no trump, highest card of led suit wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kani.setup.players',
+        title: 'Players',
+        text: '5 active players. (In 6-player games, the dealer sits out).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kani.setup.deck',
+        title: 'Deck',
+        text: '50 cards (A, K, Q, J, 10, 9, 8, 7, 6, 5, 4, 3, 2, but remove 2H, 2D, 2C) + 1 Joker.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kani.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard cards, score sheet, chips for scoring.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kani.setup.dealing',
+        title: 'Deal',
+        text: 'Counter-clockwise. Each player receives 10 cards. Trumps (Yaku) rotate: Clubs -> Diamonds -> Hearts -> Spades.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kani.score.win-condition',
+        title: 'Win condition',
+        text: 'The Kankei team needs 9+ points to win the deal. Game typically played to a target match score.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kani.score.description',
+        title: 'Scoring',
+        text: 'Points are awarded based on scoring cards captured in tricks. Only Aces, Kings, Queens, and Jacks count (1 point each, 16 total).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kani.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Secret partnership: Joker holder + Ace of trumps = Kankei team',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kani.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Rotating trumps: â™£â†’â™¦â†’â™¥â†’â™  (repeating)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kani.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Joker restrictions: Cannot be played in first or last trick',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kani.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Joker strength: Beats all cards including trumps when played',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'kani.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Card values: A-K-Q-J = 1 point each (16 total points in deck)',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'kani.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Follow suit: Must follow led suit if possible; can play any card if void',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'kani.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Exchange: The Joker/Ace pair can trade one card to optimize their hands before play begins',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+      {
+        id: 'kani.rules.key.8',
+        title: 'Key rule 8',
+        text: "Kankei wins with 9+ points; capturing all 16 is 'Gyaku Juuroku' (Reverse 16) worth triple",
+        sourceFields: [
+          'rules.keyRules.7',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kani.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kani.rules.objective',
+          'kani.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kani.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kani.setup.players',
+          'kani.setup.deck',
+          'kani.setup.equipment',
+          'kani.setup.dealing',
+        ],
+      },
+      {
+        id: 'kani.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kani.rules.key.1',
+          'kani.rules.key.2',
+          'kani.rules.key.3',
+          'kani.rules.key.4',
+          'kani.rules.key.5',
+          'kani.rules.key.6',
+          'kani.rules.key.7',
+          'kani.rules.key.8',
+        ],
+      },
+      {
+        id: 'kani.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kani.score.description',
+          'kani.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kani.setup.dealing',
+        'kani.rules.objective',
+      ],
+      deal: [
+        'kani.rules.gameplay',
+      ],
+      play_card: [
+        'kani.rules.gameplay',
+      ],
+      deal_cards: [
+        'kani.rules.gameplay',
+      ],
+      identify_kankei: [
+        'kani.rules.gameplay',
+      ],
+      count_points: [
+        'kani.rules.gameplay',
+      ],
+      award_win: [
+        'kani.rules.gameplay',
+      ],
+    },
   },
 }

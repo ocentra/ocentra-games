@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Shlla'at. Logic: See rules.objective and rules.gameplay.",
-    Player: "Shlla'at is a Sudanese fishing card game in which players capture cards from the table and from opponents' capture piles. A turn continues with a new draw after each capture until no capture is made. The Arabic name means 'uprooted'.",
+    LLM: "Each player is dealt four cards; four cards are dealt face up to the centre as the pool; the rest form the stock. On your turn, draw one from the stock (when it has cards), then play one card. A normal card captures any available cards of the same rank from the pool or the top set of any opponent's capture pile. A Joker captures all cards of any one rank you choose; an Ace does the same unless the set is protected by a Joker. If you capture, draw again and play again until you play a card that captures nothing; then your turn ends. When the stock is empty, each player plays only one card per turn. The last player to have made a capture takes any remaining table cards. At end of hand, add the point value of your capture pile to your score; first to reach the agreed target (e.g. 500) wins.",
+    Player: "Each player is dealt four cards; four cards are dealt face up to the centre as the pool; the rest form the stock. On your turn, draw one from the stock (when it has cards), then play one card. A normal card captures any available cards of the same rank from the pool or the top set of any opponent's capture pile. A Joker captures all cards of any one rank you choose; an Ace does the same unless the set is protected by a Joker. If you capture, draw again and play again until you play a card that captures nothing; then your turn ends. When the stock is empty, each player plays only one card per turn. The last player to have made a capture takes any remaining table cards. At end of hand, add the point value of your capture pile to your score; first to reach the agreed target (e.g. 500) wins.",
     objective: "Capture cards from the table pool and from opponents' capture piles by matching rank (or with Joker/Ace for special capture). Score points for captured cards; first to reach the agreed target score wins.",
     gameplay: "Each player is dealt four cards; four cards are dealt face up to the centre as the pool; the rest form the stock. On your turn, draw one from the stock (when it has cards), then play one card. A normal card captures any available cards of the same rank from the pool or the top set of any opponent's capture pile. A Joker captures all cards of any one rank you choose; an Ace does the same unless the set is protected by a Joker. If you capture, draw again and play again until you play a card that captures nothing; then your turn ends. When the stock is empty, each player plays only one card per turn. The last player to have made a capture takes any remaining table cards. At end of hand, add the point value of your capture pile to your score; first to reach the agreed target (e.g. 500) wins.",
     keyRules: [
@@ -52,10 +52,150 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use draw, play_card before round end.',
-      'Scoring check: Points based on cards captured or objectives completed\nGame ends when target reached\n-- Expected outcome: Be the first player to achieve the winning condition through strategic play of cards..',
+      'Setup example: 4 card(s) per player.',
+      "Rule example: Capture cards from the table pool and from opponents' capture piles by matching rank (or with Joker/Ace for special capture). Score points for captured cards; first to reach the agreed target score wins.",
+      "Turn-flow example: Each player is dealt four cards; four cards are dealt face up to the centre as the pool; the rest form the stock. On your turn, draw one from the stock (when it has cards), then play one card. A normal card captures any available cards of the same rank from the pool or the top set of any opponent's capture pile. A Joker captures all cards of any one rank you choose; an Ace does the same unless the set is protected by a Joker. If you capture, draw again and play again until you play a card that captures nothing; then your turn ends. When the stock is empty, each player plays only one card per turn. The last player to have made a capture takes any remaining table cards. At end of hand, add the point value of your capture pile to your score; first to reach the agreed target (e.g. 500) wins.",
+      'Scoring example: Points based on cards captured or objectives completed\nGame ends when target reached\n-- Be the first player to achieve the winning condition through strategic play of cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'shlla-at.rules.objective',
+        title: 'Objective',
+        text: "Capture cards from the table pool and from opponents' capture piles by matching rank (or with Joker/Ace for special capture). Score points for captured cards; first to reach the agreed target score wins.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'shlla-at.rules.gameplay',
+        title: 'Turn flow',
+        text: "Each player is dealt four cards; four cards are dealt face up to the centre as the pool; the rest form the stock. On your turn, draw one from the stock (when it has cards), then play one card. A normal card captures any available cards of the same rank from the pool or the top set of any opponent's capture pile. A Joker captures all cards of any one rank you choose; an Ace does the same unless the set is protected by a Joker. If you capture, draw again and play again until you play a card that captures nothing; then your turn ends. When the stock is empty, each player plays only one card per turn. The last player to have made a capture takes any remaining table cards. At end of hand, add the point value of your capture pile to your score; first to reach the agreed target (e.g. 500) wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'shlla-at.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'shlla-at.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'shlla-at.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'shlla-at.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'shlla-at.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to achieve the winning condition through strategic play of cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'shlla-at.score.description',
+        title: 'Scoring',
+        text: 'Points based on cards captured or objectives completed\nGame ends when target reached\n--',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'shlla-at.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow game-specific card play rules',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'shlla-at.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Score according to game objectives',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'shlla-at.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Win by achieving game goal',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'shlla-at.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'shlla-at.rules.objective',
+          'shlla-at.rules.gameplay',
+        ],
+      },
+      {
+        id: 'shlla-at.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'shlla-at.setup.players',
+          'shlla-at.setup.deck',
+          'shlla-at.setup.equipment',
+          'shlla-at.setup.dealing',
+        ],
+      },
+      {
+        id: 'shlla-at.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'shlla-at.rules.key.1',
+          'shlla-at.rules.key.2',
+          'shlla-at.rules.key.3',
+        ],
+      },
+      {
+        id: 'shlla-at.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'shlla-at.score.description',
+          'shlla-at.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'shlla-at.setup.dealing',
+        'shlla-at.rules.objective',
+      ],
+      play_card: [
+        'shlla-at.rules.gameplay',
+      ],
+      draw: [
+        'shlla-at.rules.gameplay',
+      ],
+    },
   },
 }

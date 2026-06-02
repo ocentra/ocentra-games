@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Double Exposure Blackjack. Logic: Beat the dealer without exceeding twenty-one while accounting for the dealer hand being fully visible.',
-    Player: 'Double Exposure Blackjack is a blackjack variant where both dealer cards are dealt face-up, offset by rule changes that preserve the house edge.',
+    LLM: 'Players choose hit, stand, double, or split actions with complete knowledge of the dealer total; compensating rules reduce payouts or favour dealer ties.',
+    Player: 'Players choose hit, stand, double, or split actions with complete knowledge of the dealer total; compensating rules reduce payouts or favour dealer ties.',
     objective: 'Beat the dealer without exceeding twenty-one while accounting for the dealer hand being fully visible.',
     gameplay: 'Players choose hit, stand, double, or split actions with complete knowledge of the dealer total; compensating rules reduce payouts or favour dealer ties.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-7 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Each wager resolves against the dealer under the variant blackjack payout table. Expected outcome: Beat the dealer without exceeding twenty-one while accounting for the dealer hand being fully visible..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Beat the dealer without exceeding twenty-one while accounting for the dealer hand being fully visible.',
+      'Turn-flow example: Players choose hit, stand, double, or split actions with complete knowledge of the dealer total; compensating rules reduce payouts or favour dealer ties.',
+      'Scoring example: Each wager resolves against the dealer under the variant blackjack payout table. Beat the dealer without exceeding twenty-one while accounting for the dealer hand being fully visible..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'double-exposure-blackjack.rules.objective',
+        title: 'Objective',
+        text: 'Beat the dealer without exceeding twenty-one while accounting for the dealer hand being fully visible.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'double-exposure-blackjack.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players choose hit, stand, double, or split actions with complete knowledge of the dealer total; compensating rules reduce payouts or favour dealer ties.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'double-exposure-blackjack.setup.players',
+        title: 'Players',
+        text: '1-7 against dealer players use the table arrangement described for Double Exposure Blackjack.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'double-exposure-blackjack.setup.deck',
+        title: 'Deck',
+        text: 'Multiple standard 52-card decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'double-exposure-blackjack.setup.equipment',
+        title: 'Equipment',
+        text: 'Multiple standard 52-card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'double-exposure-blackjack.setup.dealing',
+        title: 'Deal',
+        text: 'Deal two exposed dealer cards and two player cards to each betting position.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'double-exposure-blackjack.score.win-condition',
+        title: 'Win condition',
+        text: 'Beat the dealer without exceeding twenty-one while accounting for the dealer hand being fully visible.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'double-exposure-blackjack.score.description',
+        title: 'Scoring',
+        text: 'Each wager resolves against the dealer under the variant blackjack payout table.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'double-exposure-blackjack.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Both dealer cards are face-up.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'double-exposure-blackjack.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Player naturals usually pay even money.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'double-exposure-blackjack.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Dealer wins ties in many rule sets except natural blackjack.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'double-exposure-blackjack.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Standard blackjack bust and total rules still apply.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'double-exposure-blackjack.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'double-exposure-blackjack.rules.objective',
+          'double-exposure-blackjack.rules.gameplay',
+        ],
+      },
+      {
+        id: 'double-exposure-blackjack.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'double-exposure-blackjack.setup.players',
+          'double-exposure-blackjack.setup.deck',
+          'double-exposure-blackjack.setup.equipment',
+          'double-exposure-blackjack.setup.dealing',
+        ],
+      },
+      {
+        id: 'double-exposure-blackjack.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'double-exposure-blackjack.rules.key.1',
+          'double-exposure-blackjack.rules.key.2',
+          'double-exposure-blackjack.rules.key.3',
+          'double-exposure-blackjack.rules.key.4',
+        ],
+      },
+      {
+        id: 'double-exposure-blackjack.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'double-exposure-blackjack.score.description',
+          'double-exposure-blackjack.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'double-exposure-blackjack.setup.dealing',
+        'double-exposure-blackjack.rules.objective',
+      ],
+      play_card: [
+        'double-exposure-blackjack.rules.gameplay',
+      ],
+    },
   },
 }

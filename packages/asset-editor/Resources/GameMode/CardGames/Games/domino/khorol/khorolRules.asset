@@ -52,10 +52,147 @@
       go_out: 'Hand-end resolution is profile logic, not a discrete player action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Follow the active khorol table profile to complete legal placements and achieve the best scoring outcome.',
+      'Turn-flow example: Players place or resolve tiles according to the chosen khorol profile. The base model captures a shared turn loop and tile-family identity while profile rules determine exact opening, placement constraints, and hand-end scoring.',
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'khorol.rules.objective',
+        title: 'Objective',
+        text: 'Follow the active khorol table profile to complete legal placements and achieve the best scoring outcome.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'khorol.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players place or resolve tiles according to the chosen khorol profile. The base model captures a shared turn loop and tile-family identity while profile rules determine exact opening, placement constraints, and hand-end scoring.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'khorol.setup.players',
+        title: 'Players',
+        text: '2 to 4 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'khorol.setup.deck',
+        title: 'Deck',
+        text: 'One Khorol 60 tile set.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'khorol.setup.equipment',
+        title: 'Equipment',
+        text: 'Khorol tiles and score tracking if the table profile uses cumulative scoring.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'khorol.setup.dealing',
+        title: 'Deal',
+        text: 'Tiles are distributed according to the active khorol table profile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'khorol.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'khorol.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'khorol.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Tile legality follows khorol-profile constraints, not western domino assumptions.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'khorol.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Turn flow is profile-driven with legal placements on shared table state.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'khorol.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Hand-end and scoring depend on the selected khorol profile.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'khorol.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'khorol.rules.objective',
+          'khorol.rules.gameplay',
+        ],
+      },
+      {
+        id: 'khorol.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'khorol.setup.players',
+          'khorol.setup.deck',
+          'khorol.setup.equipment',
+          'khorol.setup.dealing',
+        ],
+      },
+      {
+        id: 'khorol.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'khorol.rules.key.1',
+          'khorol.rules.key.2',
+          'khorol.rules.key.3',
+        ],
+      },
+      {
+        id: 'khorol.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'khorol.score.description',
+          'khorol.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'khorol.setup.dealing',
+        'khorol.rules.objective',
+      ],
+      play_card: [
+        'khorol.rules.gameplay',
+      ],
+    },
   },
 }

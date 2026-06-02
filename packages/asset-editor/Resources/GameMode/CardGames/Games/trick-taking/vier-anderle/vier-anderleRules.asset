@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Vier-Anderle. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Vier-Anderle (Strassenwart) is a German Tarock gambling game from the Black Forest. 2-13 players (best 5-8). Uses 38-card Cego pack (tarocks only). 4 cards each. Win at least 1 trick or pay penalty equal to pot. When pot has money: players opt in/out; each trick wins Â¼ of pot; no tricks = pay pot amount.',
+    LLM: 'Follow suit. Must trump if void. Must head trick. Type 1 (empty pot): all play, win trick or pay pot value. Type 2 (pot has money): dealer adds 4 stakes, players opt in/out, each trick = Â¼ pot, no tricks = pay pot amount.',
+    Player: 'Follow suit. Must trump if void. Must head trick. Type 1 (empty pot): all play, win trick or pay pot value. Type 2 (pot has money): dealer adds 4 stakes, players opt in/out, each trick = Â¼ pot, no tricks = pay pot amount.',
     objective: 'Win at least one trick to avoid paying into the pot. When the pot has money, players may opt in or out; each trick won earns a quarter of the pot, and players who took part but won no tricks pay the full pot amount.',
     gameplay: 'Follow suit. Must trump if void. Must head trick. Type 1 (empty pot): all play, win trick or pay pot value. Type 2 (pot has money): dealer adds 4 stakes, players opt in/out, each trick = Â¼ pot, no tricks = pay pot amount.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: Each trick = Â¼ pot (when pot active). No tricks = penalty. Expected outcome: Win at least 1 trick to avoid paying penalty..',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Win at least one trick to avoid paying into the pot. When the pot has money, players may opt in or out; each trick won earns a quarter of the pot, and players who took part but won no tricks pay the full pot amount.',
+      'Turn-flow example: Follow suit. Must trump if void. Must head trick. Type 1 (empty pot): all play, win trick or pay pot value. Type 2 (pot has money): dealer adds 4 stakes, players opt in/out, each trick = Â¼ pot, no tricks = pay pot amount.',
+      'Scoring example: Each trick = Â¼ pot (when pot active). No tricks = penalty. Win at least 1 trick to avoid paying penalty..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'vier-anderle.rules.objective',
+        title: 'Objective',
+        text: 'Win at least one trick to avoid paying into the pot. When the pot has money, players may opt in or out; each trick won earns a quarter of the pot, and players who took part but won no tricks pay the full pot amount.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'vier-anderle.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Follow suit. Must trump if void. Must head trick. Type 1 (empty pot): all play, win trick or pay pot value. Type 2 (pot has money): dealer adds 4 stakes, players opt in/out, each trick = Â¼ pot, no tricks = pay pot amount.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'vier-anderle.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'vier-anderle.setup.deck',
+        title: 'Deck',
+        text: '38-card Cego pack. 22 tarocks (GstieÃŸ=highest to 1). Suits: Black K-Q-Kt-J, Red K-Q-Kt-J.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'vier-anderle.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, stakes',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'vier-anderle.setup.dealing',
+        title: 'Deal',
+        text: "The cards are dealt clockwise, with each player receiving four cards. Vorhand (the player on the dealer's left) leads to the first trick; the winner of each trick leads to the next.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'vier-anderle.score.win-condition',
+        title: 'Win condition',
+        text: 'Win at least 1 trick to avoid paying penalty.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'vier-anderle.score.description',
+        title: 'Scoring',
+        text: 'Each trick = Â¼ pot (when pot active). No tricks = penalty.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'vier-anderle.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two hand types based on pot',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'vier-anderle.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must head trick',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'vier-anderle.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Opt in/out when pot has money',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'vier-anderle.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Each trick = Â¼ pot',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'vier-anderle.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'vier-anderle.rules.objective',
+          'vier-anderle.rules.gameplay',
+        ],
+      },
+      {
+        id: 'vier-anderle.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'vier-anderle.setup.players',
+          'vier-anderle.setup.deck',
+          'vier-anderle.setup.equipment',
+          'vier-anderle.setup.dealing',
+        ],
+      },
+      {
+        id: 'vier-anderle.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'vier-anderle.rules.key.1',
+          'vier-anderle.rules.key.2',
+          'vier-anderle.rules.key.3',
+          'vier-anderle.rules.key.4',
+        ],
+      },
+      {
+        id: 'vier-anderle.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'vier-anderle.score.description',
+          'vier-anderle.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'vier-anderle.setup.dealing',
+        'vier-anderle.rules.objective',
+      ],
+      deal: [
+        'vier-anderle.rules.gameplay',
+      ],
+      play_card: [
+        'vier-anderle.rules.gameplay',
+      ],
+      finalize_round: [
+        'vier-anderle.rules.gameplay',
+      ],
+    },
   },
 }

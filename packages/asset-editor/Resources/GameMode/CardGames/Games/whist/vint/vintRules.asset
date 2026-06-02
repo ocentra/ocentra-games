@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Vint. Logic: See rules.objective and rules.gameplay.',
-    Player: "Vint ('Screw') is a Russian partnership trick-taking game that influenced Contract Bridge's development. 4 players in 2 teams. 52-card deck. 13 each. Bidding (1-7 tricks over 6) with suit/NT denominations. NO dummy — all play own hands. Both sides score below-the-line for tricks won. First to 500 wins.",
+    LLM: 'Bidding: 1-7 (tricks over 6). Denominations: ♠<♣<♦<♥<NT. 3 consecutive passes end auction. Declarer plays against defenders. NO dummy. Follow suit. Both sides score below-the-line for tricks. Honors, slams, undertricks scored above-the-line.',
+    Player: 'Bidding: 1-7 (tricks over 6). Denominations: ♠<♣<♦<♥<NT. 3 consecutive passes end auction. Declarer plays against defenders. NO dummy. Follow suit. Both sides score below-the-line for tricks. Honors, slams, undertricks scored above-the-line.',
     objective: 'Score points by winning tricks and making contracts; first partnership to reach 500 points below the line wins the game.',
     gameplay: 'Bidding: 1-7 (tricks over 6). Denominations: ♠<♣<♦<♥<NT. 3 consecutive passes end auction. Declarer plays against defenders. NO dummy. Follow suit. Both sides score below-the-line for tricks. Honors, slams, undertricks scored above-the-line.',
     keyRules: [
@@ -54,10 +54,180 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before bidding.',
-      'Scoring check: Below line: tricks × contract value. Above line: honors, slams, penalties. Both sides score for tricks. First to 500. Expected outcome: 500.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Score points by winning tricks and making contracts; first partnership to reach 500 points below the line wins the game.',
+      'Turn-flow example: Bidding: 1-7 (tricks over 6). Denominations: ♠<♣<♦<♥<NT. 3 consecutive passes end auction. Declarer plays against defenders. NO dummy. Follow suit. Both sides score below-the-line for tricks. Honors, slams, undertricks scored above-the-line.',
+      'Scoring example: Below line: tricks × contract value. Above line: honors, slams, penalties. Both sides score for tricks. First to 500. First team to 500 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'vint.rules.objective',
+        title: 'Objective',
+        text: 'Score points by winning tricks and making contracts; first partnership to reach 500 points below the line wins the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'vint.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Bidding: 1-7 (tricks over 6). Denominations: ♠<♣<♦<♥<NT. 3 consecutive passes end auction. Declarer plays against defenders. NO dummy. Follow suit. Both sides score below-the-line for tricks. Honors, slams, undertricks scored above-the-line.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'vint.setup.players',
+        title: 'Players',
+        text: '4 (2 fixed teams)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'vint.setup.deck',
+        title: 'Deck',
+        text: '52 cards. A high.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'vint.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, scoring pad',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'vint.setup.dealing',
+        title: 'Deal',
+        text: 'The cards are shuffled and cut; 13 cards are dealt to each player, one at a time face down, clockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'vint.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to 500 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'vint.score.description',
+        title: 'Scoring',
+        text: 'Below line: tricks × contract value. Above line: honors, slams, penalties. Both sides score for tricks. First to 500.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'vint.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No dummy',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'vint.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Both sides score below-the-line',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'vint.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Bidding escalation (screw)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'vint.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Honors bonuses',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'vint.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Slam bonuses',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'vint.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'vint.rules.objective',
+          'vint.rules.gameplay',
+        ],
+      },
+      {
+        id: 'vint.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'vint.setup.players',
+          'vint.setup.deck',
+          'vint.setup.equipment',
+          'vint.setup.dealing',
+        ],
+      },
+      {
+        id: 'vint.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'vint.rules.key.1',
+          'vint.rules.key.2',
+          'vint.rules.key.3',
+          'vint.rules.key.4',
+          'vint.rules.key.5',
+        ],
+      },
+      {
+        id: 'vint.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'vint.score.description',
+          'vint.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'vint.setup.dealing',
+        'vint.rules.objective',
+      ],
+      deal: [
+        'vint.rules.gameplay',
+      ],
+      play_card: [
+        'vint.rules.gameplay',
+      ],
+      pass: [
+        'vint.rules.gameplay',
+      ],
+      bid: [
+        'vint.rules.gameplay',
+      ],
+      apply_scoring: [
+        'vint.rules.gameplay',
+      ],
+      end_game: [
+        'vint.rules.gameplay',
+      ],
+    },
   },
 }

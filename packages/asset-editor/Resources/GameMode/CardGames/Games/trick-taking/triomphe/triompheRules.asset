@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kaiserspiel. Logic: Win the tricks, card points, or contract result required by the local form of the game.',
-    Player: 'Kaiserspiel is a traditional trick-taking card game using 40 or 48-card Swiss Kaiserspiel deck for 2, 4, or 6 players. It uses one chosen suit and belongs to the Karnöffel environment.',
+    LLM: 'A trump suit is selected for the hand and players compete in tricks. The game represents the ordinary-card trump tradition distinct from tarot trionfi decks.',
+    Player: 'A trump suit is selected for the hand and players compete in tricks. The game represents the ordinary-card trump tradition distinct from tarot trionfi decks.',
     objective: 'Win tricks using the randomly selected trump suit under early triumph-game rules.',
     gameplay: 'A trump suit is selected for the hand and players compete in tricks. The game represents the ordinary-card trump tradition distinct from tarot trionfi decks.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Tricks, card points, or contract success determine scoring. Expected outcome: 1.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win tricks using the randomly selected trump suit under early triumph-game rules.',
+      'Turn-flow example: A trump suit is selected for the hand and players compete in tricks. The game represents the ordinary-card trump tradition distinct from tarot trionfi decks.',
+      'Scoring example: Tricks, card points, or contract success determine scoring. Win the tricks, card points, or contract result required by the local form of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'triomphe.rules.objective',
+        title: 'Objective',
+        text: 'Win tricks using the randomly selected trump suit under early triumph-game rules.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'triomphe.rules.gameplay',
+        title: 'Turn flow',
+        text: 'A trump suit is selected for the hand and players compete in tricks. The game represents the ordinary-card trump tradition distinct from tarot trionfi decks.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'triomphe.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Triomphe.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'triomphe.setup.deck',
+        title: 'Deck',
+        text: 'Historical suited playing cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'triomphe.setup.equipment',
+        title: 'Equipment',
+        text: 'Historical suited playing cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'triomphe.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Historical suited playing cards and deal or lay out cards according to the documented Triomphe rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'triomphe.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'triomphe.score.description',
+        title: 'Scoring',
+        text: 'Tricks, card points, or contract success determine scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'triomphe.rules.key.1',
+        title: 'Key rule 1',
+        text: 'One suit acts as trump for the hand.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'triomphe.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The game dates to the late fifteenth or early sixteenth century.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'triomphe.rules.key.3',
+        title: 'Key rule 3',
+        text: 'It is an ancestor of many later trick-taking games.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'triomphe.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'triomphe.rules.objective',
+          'triomphe.rules.gameplay',
+        ],
+      },
+      {
+        id: 'triomphe.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'triomphe.setup.players',
+          'triomphe.setup.deck',
+          'triomphe.setup.equipment',
+          'triomphe.setup.dealing',
+        ],
+      },
+      {
+        id: 'triomphe.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'triomphe.rules.key.1',
+          'triomphe.rules.key.2',
+          'triomphe.rules.key.3',
+        ],
+      },
+      {
+        id: 'triomphe.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'triomphe.score.description',
+          'triomphe.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'triomphe.setup.dealing',
+        'triomphe.rules.objective',
+      ],
+      play_card: [
+        'triomphe.rules.gameplay',
+      ],
+      discard: [
+        'triomphe.rules.gameplay',
+      ],
+      pass: [
+        'triomphe.rules.gameplay',
+      ],
+      bid: [
+        'triomphe.rules.gameplay',
+      ],
+    },
   },
 }

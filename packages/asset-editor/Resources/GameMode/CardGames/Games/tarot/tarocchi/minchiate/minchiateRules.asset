@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Minchiate. Objective: Score points by capturing valuable cards, declaring 'versicole' (combinations), and winning the last trick.",
-    Player: 'Minchiate: play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: 'Play is counter-clockwise. Must follow suit if possible. If unable, must play a trump if possible. Highest trump wins, or highest card of led suit. The Fool can be played to any trick and is retained by the player.',
+    Player: 'Play is counter-clockwise. Must follow suit if possible. If unable, must play a trump if possible. Highest trump wins, or highest card of led suit. The Fool can be played to any trick and is retained by the player.',
     objective: "Score points by capturing valuable cards, declaring 'versicole' (combinations), and winning the last trick.",
     gameplay: 'Play is counter-clockwise. Must follow suit if possible. If unable, must play a trump if possible. Highest trump wins, or highest card of led suit. The Fool can be played to any trick and is retained by the player.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Complex scoring system involving card values, versicole declarations, and bonuses. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      "Rule example: Score points by capturing valuable cards, declaring 'versicole' (combinations), and winning the last trick.",
+      'Turn-flow example: Play is counter-clockwise. Must follow suit if possible. If unable, must play a trump if possible. Highest trump wins, or highest card of led suit. The Fool can be played to any trick and is retained by the player.',
+      'Scoring example: Complex scoring system involving card values, versicole declarations, and bonuses. Higher total score after all scoring categories..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'minchiate.rules.objective',
+        title: 'Objective',
+        text: "Score points by capturing valuable cards, declaring 'versicole' (combinations), and winning the last trick.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'minchiate.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Play is counter-clockwise. Must follow suit if possible. If unable, must play a trump if possible. Highest trump wins, or highest card of led suit. The Fool can be played to any trick and is retained by the player.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'minchiate.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships, partners sitting opposite each other.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'minchiate.setup.deck',
+        title: 'Deck',
+        text: '97-card Minchiate deck: 40 trumps (numbered 1-40), four suits of 14 cards each (Cups, Coins, Swords, Batons), and the Fool (Matto). The top 5 trumps (Arie) are unnumbered: Trumpets (40), World (39), Sun (38), Moon (37), Star (36).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'minchiate.setup.equipment',
+        title: 'Equipment',
+        text: 'Minchiate deck (reproduction), score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'minchiate.setup.dealing',
+        title: 'Deal',
+        text: "21 cards to each player in batches. The remaining 13 cards form the 'Fola' (talon).",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'minchiate.score.win-condition',
+        title: 'Win condition',
+        text: 'Higher total score after all scoring categories.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'minchiate.score.description',
+        title: 'Scoring',
+        text: 'Complex scoring system involving card values, versicole declarations, and bonuses.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'minchiate.rules.key.1',
+        title: 'Key rule 1',
+        text: '40 trumps with special ranking (Arie are highest)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'minchiate.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Fola exchange before play',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'minchiate.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Versicole declarations score points',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'minchiate.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Must follow suit, must trump if void',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'minchiate.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Fool can be played to any trick',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'minchiate.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'minchiate.rules.objective',
+          'minchiate.rules.gameplay',
+        ],
+      },
+      {
+        id: 'minchiate.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'minchiate.setup.players',
+          'minchiate.setup.deck',
+          'minchiate.setup.equipment',
+          'minchiate.setup.dealing',
+        ],
+      },
+      {
+        id: 'minchiate.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'minchiate.rules.key.1',
+          'minchiate.rules.key.2',
+          'minchiate.rules.key.3',
+          'minchiate.rules.key.4',
+          'minchiate.rules.key.5',
+        ],
+      },
+      {
+        id: 'minchiate.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'minchiate.score.description',
+          'minchiate.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'minchiate.setup.dealing',
+        'minchiate.rules.objective',
+      ],
+      play_card: [
+        'minchiate.rules.gameplay',
+      ],
+    },
   },
 }

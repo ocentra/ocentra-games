@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Joker (Exit Game). Objective: Be the first to get rid of all your cards.',
-    Player: 'Joker (Exit Game): play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: "1. **Discarding Pairs**: At the start, all players discard any identical pairs from their hand (e.g., two 8s).\n2. **Drawing**: Starting with the dealer's left, a player draws one card FROM the hand of the player to their right.\n3. If they form a pair with the drawn card, they discard it. If not, they keep it.\n4. **The Joker**: If you draw the Joker, you must keep it until an opponent draws it from YOU.",
+    Player: "1. **Discarding Pairs**: At the start, all players discard any identical pairs from their hand (e.g., two 8s).\n2. **Drawing**: Starting with the dealer's left, a player draws one card FROM the hand of the player to their right.\n3. If they form a pair with the drawn card, they discard it. If not, they keep it.\n4. **The Joker**: If you draw the Joker, you must keep it until an opponent draws it from YOU.",
     objective: 'Be the first to get rid of all your cards. You cannot exit if you hold the Joker.',
     gameplay: "1. **Discarding Pairs**: At the start, all players discard any identical pairs from their hand (e.g., two 8s).\n2. **Drawing**: Starting with the dealer's left, a player draws one card FROM the hand of the player to their right.\n3. If they form a pair with the drawn card, they discard it. If not, they keep it.\n4. **The Joker**: If you draw the Joker, you must keep it until an opponent draws it from YOU.",
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Scoring in Joker (Exit Game) is resolved as follows: Scoring follows the game-specific point or pot rules. Expected outcome: 1.',
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Be the first to get rid of all your cards. You cannot exit if you hold the Joker.',
+      "Turn-flow example: 1. **Discarding Pairs**: At the start, all players discard any identical pairs from their hand (e.g., two 8s).\n2. **Drawing**: Starting with the dealer's left, a player draws one card FROM the hand of the player to their right.\n3. If they form a pair with the drawn card, they discard it. If not, they keep it.\n4. **The Joker**: If you draw the Joker, you must keep it until an opponent draws it from YOU.",
+      'Scoring example: Scoring in Joker (Exit Game) is resolved as follows: Scoring follows the game-specific point or pot rules. Be the first to get rid of all your cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'joker.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to get rid of all your cards. You cannot exit if you hold the Joker.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'joker.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Discarding Pairs**: At the start, all players discard any identical pairs from their hand (e.g., two 8s).\n2. **Drawing**: Starting with the dealer's left, a player draws one card FROM the hand of the player to their right.\n3. If they form a pair with the drawn card, they discard it. If not, they keep it.\n4. **The Joker**: If you draw the Joker, you must keep it until an opponent draws it from YOU.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'joker.setup.players',
+        title: 'Players',
+        text: '4-5 is optimal.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'joker.setup.deck',
+        title: 'Deck',
+        text: '52 cards + 1 Joker.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'joker.setup.equipment',
+        title: 'Equipment',
+        text: '52 cards + 1 Joker.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'joker.setup.dealing',
+        title: 'Deal',
+        text: 'Deal all cards face-down to the players. Some may have one more card than others.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'joker.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first to get rid of all your cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'joker.score.description',
+        title: 'Scoring',
+        text: 'Scoring in Joker (Exit Game) is resolved as follows: Scoring follows the game-specific point or pot rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'joker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Joker (Exit Game).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'joker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: Scoring summary: Scoring follows the game-specific point or pot rules.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'joker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Be the first to get rid of all your cards.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'joker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'joker.rules.objective',
+          'joker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'joker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'joker.setup.players',
+          'joker.setup.deck',
+          'joker.setup.equipment',
+          'joker.setup.dealing',
+        ],
+      },
+      {
+        id: 'joker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'joker.rules.key.1',
+          'joker.rules.key.2',
+          'joker.rules.key.3',
+        ],
+      },
+      {
+        id: 'joker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'joker.score.description',
+          'joker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'joker.setup.dealing',
+        'joker.rules.objective',
+      ],
+      deal: [
+        'joker.rules.gameplay',
+      ],
+      play_card: [
+        'joker.rules.gameplay',
+      ],
+      draw: [
+        'joker.rules.gameplay',
+      ],
+      pass: [
+        'joker.rules.gameplay',
+      ],
+    },
   },
 }

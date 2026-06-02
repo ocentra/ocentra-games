@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Call of Cthulhu The Card Game. Logic: Win enough story cards by committing characters and resolving icon struggles.',
-    Player: 'Call of Cthulhu The Card Game is a commercial card game of story contests and horror-themed faction decks.',
+    LLM: 'Players resource cards, play characters and support cards, commit to stories, resolve struggles, and claim stories through success tokens.',
+    Player: 'Players resource cards, play characters and support cards, commit to stories, resolve struggles, and claim stories through success tokens.',
     objective: 'Win enough story cards by committing characters and resolving icon struggles.',
     gameplay: 'Players resource cards, play characters and support cards, commit to stories, resolve struggles, and claim stories through success tokens.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The duel is won by claiming the required number of story cards. Expected outcome: 3.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Win enough story cards by committing characters and resolving icon struggles.',
+      'Turn-flow example: Players resource cards, play characters and support cards, commit to stories, resolve struggles, and claim stories through success tokens.',
+      'Scoring example: The duel is won by claiming the required number of story cards. Win enough story cards by committing characters and resolving icon struggles..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'call-of-cthulhu-the-card-game.rules.objective',
+        title: 'Objective',
+        text: 'Win enough story cards by committing characters and resolving icon struggles.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'call-of-cthulhu-the-card-game.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players resource cards, play characters and support cards, commit to stories, resolve struggles, and claim stories through success tokens.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'call-of-cthulhu-the-card-game.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Call of Cthulhu The Card Game.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'call-of-cthulhu-the-card-game.setup.deck',
+        title: 'Deck',
+        text: 'Constructed Call of Cthulhu card game decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'call-of-cthulhu-the-card-game.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed Call of Cthulhu card game decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'call-of-cthulhu-the-card-game.setup.dealing',
+        title: 'Deal',
+        text: 'Each player brings a constructed deck and begins with story cards and a starting hand.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'call-of-cthulhu-the-card-game.score.win-condition',
+        title: 'Win condition',
+        text: 'Win enough story cards by committing characters and resolving icon struggles.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'call-of-cthulhu-the-card-game.score.description',
+        title: 'Scoring',
+        text: 'The duel is won by claiming the required number of story cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'call-of-cthulhu-the-card-game.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Constructed-deck duel.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'call-of-cthulhu-the-card-game.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Stories are central objectives.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'call-of-cthulhu-the-card-game.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Characters commit to story contests.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'call-of-cthulhu-the-card-game.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Icon struggles and skill decide success.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'call-of-cthulhu-the-card-game.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Winning stories wins the game.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'call-of-cthulhu-the-card-game.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'call-of-cthulhu-the-card-game.rules.objective',
+          'call-of-cthulhu-the-card-game.rules.gameplay',
+        ],
+      },
+      {
+        id: 'call-of-cthulhu-the-card-game.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'call-of-cthulhu-the-card-game.setup.players',
+          'call-of-cthulhu-the-card-game.setup.deck',
+          'call-of-cthulhu-the-card-game.setup.equipment',
+          'call-of-cthulhu-the-card-game.setup.dealing',
+        ],
+      },
+      {
+        id: 'call-of-cthulhu-the-card-game.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'call-of-cthulhu-the-card-game.rules.key.1',
+          'call-of-cthulhu-the-card-game.rules.key.2',
+          'call-of-cthulhu-the-card-game.rules.key.3',
+          'call-of-cthulhu-the-card-game.rules.key.4',
+          'call-of-cthulhu-the-card-game.rules.key.5',
+        ],
+      },
+      {
+        id: 'call-of-cthulhu-the-card-game.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'call-of-cthulhu-the-card-game.score.description',
+          'call-of-cthulhu-the-card-game.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'call-of-cthulhu-the-card-game.setup.dealing',
+        'call-of-cthulhu-the-card-game.rules.objective',
+      ],
+      play_card: [
+        'call-of-cthulhu-the-card-game.rules.gameplay',
+      ],
+    },
   },
 }

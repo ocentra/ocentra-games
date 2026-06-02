@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Twenty-Four. Logic: See rules.objective and rules.gameplay.',
-    Player: '24 is a mathematical card game: use four numbers (from four cards) and only +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· (and parentheses) to make exactly 24. All four numbers must be used once. First to call a correct solution wins the four cards (or they go to opponent); play until one player has no cards. Popular in China since at least the 1960s (Shanghai); also played in North America.',
+    LLM: 'Players stake counters on the five board compartments, receive hands, and play cards in ordered sequences when possible. Cards matching board compartments claim their counters, and players who go out collect payments from opponents for unplayed cards.',
+    Player: 'Players stake counters on the five board compartments, receive hands, and play cards in ordered sequences when possible. Cards matching board compartments claim their counters, and players who go out collect payments from opponents for unplayed cards.',
     objective: 'Play out cards in sequence while collecting counters from board compartments, especially the yellow dwarf seven of diamonds.',
     gameplay: 'Players stake counters on the five board compartments, receive hands, and play cards in ordered sequences when possible. Cards matching board compartments claim their counters, and players who go out collect payments from opponents for unplayed cards.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: None; win = other player has no cards. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Play out cards in sequence while collecting counters from board compartments, especially the yellow dwarf seven of diamonds.',
+      'Turn-flow example: Players stake counters on the five board compartments, receive hands, and play cards in ordered sequences when possible. Cards matching board compartments claim their counters, and players who go out collect payments from opponents for unplayed cards.',
+      "Scoring example: None; win = other player has no cards. Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'nain-jaune.rules.objective',
+        title: 'Objective',
+        text: 'Play out cards in sequence while collecting counters from board compartments, especially the yellow dwarf seven of diamonds.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'nain-jaune.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players stake counters on the five board compartments, receive hands, and play cards in ordered sequences when possible. Cards matching board compartments claim their counters, and players who go out collect payments from opponents for unplayed cards.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'nain-jaune.setup.players',
+        title: 'Players',
+        text: '3-8 players use the table arrangement described for Nain Jaune.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'nain-jaune.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck plus five-compartment Nain Jaune board and counters',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'nain-jaune.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck plus five-compartment Nain Jaune board and counters, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'nain-jaune.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Standard 52-card deck plus five-compartment Nain Jaune board and counters and deal or lay out cards according to the documented Nain Jaune rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'nain-jaune.score.win-condition',
+        title: 'Win condition',
+        text: "Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'nain-jaune.score.description',
+        title: 'Scoring',
+        text: 'None; win = other player has no cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'nain-jaune.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The board has five scoring compartments.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'nain-jaune.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The seven of diamonds is the Yellow Dwarf and a key scoring card.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'nain-jaune.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The game combines stops-family sequence play with counter accumulation.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'nain-jaune.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'nain-jaune.rules.objective',
+          'nain-jaune.rules.gameplay',
+        ],
+      },
+      {
+        id: 'nain-jaune.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'nain-jaune.setup.players',
+          'nain-jaune.setup.deck',
+          'nain-jaune.setup.equipment',
+          'nain-jaune.setup.dealing',
+        ],
+      },
+      {
+        id: 'nain-jaune.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'nain-jaune.rules.key.1',
+          'nain-jaune.rules.key.2',
+          'nain-jaune.rules.key.3',
+        ],
+      },
+      {
+        id: 'nain-jaune.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'nain-jaune.score.description',
+          'nain-jaune.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'nain-jaune.setup.dealing',
+        'nain-jaune.rules.objective',
+      ],
+      play_card: [
+        'nain-jaune.rules.gameplay',
+      ],
+    },
   },
 }

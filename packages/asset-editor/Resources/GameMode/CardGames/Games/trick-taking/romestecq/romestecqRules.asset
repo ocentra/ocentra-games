@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kaiserspiel. Logic: Win the tricks, card points, or contract result required by the local form of the game.',
-    Player: 'Kaiserspiel is a traditional trick-taking card game using 40 or 48-card Swiss Kaiserspiel deck for 2, 4, or 6 players. It uses one chosen suit and belongs to the Karnöffel environment.',
+    LLM: 'Players play individually or in teams depending on player count. The historical descriptions combine trick play with scoring combinations, and modern reconstruction should follow a specific source edition.',
+    Player: 'Players play individually or in teams depending on player count. The historical descriptions combine trick play with scoring combinations, and modern reconstruction should follow a specific source edition.',
     objective: 'Win through the historical trick-and-combination objectives described for the team format.',
     gameplay: 'Players play individually or in teams depending on player count. The historical descriptions combine trick play with scoring combinations, and modern reconstruction should follow a specific source edition.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Tricks, card points, or contract success determine scoring. Expected outcome: 1.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win through the historical trick-and-combination objectives described for the team format.',
+      'Turn-flow example: Players play individually or in teams depending on player count. The historical descriptions combine trick play with scoring combinations, and modern reconstruction should follow a specific source edition.',
+      'Scoring example: Tricks, card points, or contract success determine scoring. Win the tricks, card points, or contract result required by the local form of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'romestecq.rules.objective',
+        title: 'Objective',
+        text: 'Win through the historical trick-and-combination objectives described for the team format.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'romestecq.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play individually or in teams depending on player count. The historical descriptions combine trick play with scoring combinations, and modern reconstruction should follow a specific source edition.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'romestecq.setup.players',
+        title: 'Players',
+        text: '2, 4, or 6 players use the table arrangement described for Romestecq.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'romestecq.setup.deck',
+        title: 'Deck',
+        text: 'Historical French-suited cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'romestecq.setup.equipment',
+        title: 'Equipment',
+        text: 'Historical French-suited cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'romestecq.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Historical French-suited cards and deal or lay out cards according to the documented Romestecq rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'romestecq.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'romestecq.score.description',
+        title: 'Scoring',
+        text: 'Tricks, card points, or contract success determine scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'romestecq.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Playable by two, four, or six players.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'romestecq.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Team play is used at four or six players.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'romestecq.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Rules are historically difficult; keep source edition references separate when modeling.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'romestecq.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'romestecq.rules.objective',
+          'romestecq.rules.gameplay',
+        ],
+      },
+      {
+        id: 'romestecq.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'romestecq.setup.players',
+          'romestecq.setup.deck',
+          'romestecq.setup.equipment',
+          'romestecq.setup.dealing',
+        ],
+      },
+      {
+        id: 'romestecq.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'romestecq.rules.key.1',
+          'romestecq.rules.key.2',
+          'romestecq.rules.key.3',
+        ],
+      },
+      {
+        id: 'romestecq.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'romestecq.score.description',
+          'romestecq.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'romestecq.setup.dealing',
+        'romestecq.rules.objective',
+      ],
+      play_card: [
+        'romestecq.rules.gameplay',
+      ],
+      discard: [
+        'romestecq.rules.gameplay',
+      ],
+      pass: [
+        'romestecq.rules.gameplay',
+      ],
+      bid: [
+        'romestecq.rules.gameplay',
+      ],
+    },
   },
 }

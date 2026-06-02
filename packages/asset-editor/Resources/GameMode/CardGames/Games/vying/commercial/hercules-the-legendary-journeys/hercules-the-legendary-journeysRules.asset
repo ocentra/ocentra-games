@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Hercules The Legendary Journeys. Logic: Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
-    Player: 'Hercules The Legendary Journeys is a commercial collectible or trading card battle game using constructed decks, proprietary card text, and direct player conflict.',
+    LLM: 'Players take turns playing cards from hand, paying costs or meeting requirements, attacking or contesting opposing cards, and resolving printed effects from the proprietary deck.',
+    Player: 'Players take turns playing cards from hand, paying costs or meeting requirements, attacking or contesting opposing cards, and resolving printed effects from the proprietary deck.',
     objective: 'Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
     gameplay: 'Players take turns playing cards from hand, paying costs or meeting requirements, attacking or contesting opposing cards, and resolving printed effects from the proprietary deck.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario victory condition determines the winner. Expected outcome: Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
+      'Turn-flow example: Players take turns playing cards from hand, paying costs or meeting requirements, attacking or contesting opposing cards, and resolving printed effects from the proprietary deck.',
+      'Scoring example: The published duel or scenario victory condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hercules-the-legendary-journeys.rules.objective',
+        title: 'Objective',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hercules-the-legendary-journeys.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players take turns playing cards from hand, paying costs or meeting requirements, attacking or contesting opposing cards, and resolving printed effects from the proprietary deck.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hercules-the-legendary-journeys.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Hercules The Legendary Journeys.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hercules-the-legendary-journeys.setup.deck',
+        title: 'Deck',
+        text: 'Constructed Hercules The Legendary Journeys decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hercules-the-legendary-journeys.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed Hercules The Legendary Journeys decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hercules-the-legendary-journeys.setup.dealing',
+        title: 'Deal',
+        text: 'Each player brings a constructed deck or product-defined deck, draws an opening hand, and prepares any starting character, resource, or play area required by the rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hercules-the-legendary-journeys.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hercules-the-legendary-journeys.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario victory condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hercules-the-legendary-journeys.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Uses proprietary commercial cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hercules-the-legendary-journeys.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Constructed or product-defined decks.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hercules-the-legendary-journeys.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Card text defines powers and restrictions.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'hercules-the-legendary-journeys.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Players contest directly through attacks, challenges, or objectives.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'hercules-the-legendary-journeys.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Published victory condition ends the game.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hercules-the-legendary-journeys.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hercules-the-legendary-journeys.rules.objective',
+          'hercules-the-legendary-journeys.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hercules-the-legendary-journeys.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hercules-the-legendary-journeys.setup.players',
+          'hercules-the-legendary-journeys.setup.deck',
+          'hercules-the-legendary-journeys.setup.equipment',
+          'hercules-the-legendary-journeys.setup.dealing',
+        ],
+      },
+      {
+        id: 'hercules-the-legendary-journeys.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hercules-the-legendary-journeys.rules.key.1',
+          'hercules-the-legendary-journeys.rules.key.2',
+          'hercules-the-legendary-journeys.rules.key.3',
+          'hercules-the-legendary-journeys.rules.key.4',
+          'hercules-the-legendary-journeys.rules.key.5',
+        ],
+      },
+      {
+        id: 'hercules-the-legendary-journeys.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hercules-the-legendary-journeys.score.description',
+          'hercules-the-legendary-journeys.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hercules-the-legendary-journeys.setup.dealing',
+        'hercules-the-legendary-journeys.rules.objective',
+      ],
+      play_card: [
+        'hercules-the-legendary-journeys.rules.gameplay',
+      ],
+    },
   },
 }

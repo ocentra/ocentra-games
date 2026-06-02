@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Doctor Who The Card Game. Logic: Score best by protecting your own locations while causing threats to damage opponents locations.',
-    Player: 'Doctor Who The Card Game is a commercial card game where players use Doctor Who themed cards to defend locations and send threats at opponents.',
+    LLM: 'Players assign defenders to protect their locations, send enemies toward opponents, and use special cards to alter conflicts and scoring.',
+    Player: 'Players assign defenders to protect their locations, send enemies toward opponents, and use special cards to alter conflicts and scoring.',
     objective: 'Score best by protecting your own locations while causing threats to damage opponents locations.',
     gameplay: 'Players assign defenders to protect their locations, send enemies toward opponents, and use special cards to alter conflicts and scoring.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Published location and threat scoring determines final winner. Expected outcome: Score best by protecting your own locations while causing threats to damage opponents locations..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Score best by protecting your own locations while causing threats to damage opponents locations.',
+      'Turn-flow example: Players assign defenders to protect their locations, send enemies toward opponents, and use special cards to alter conflicts and scoring.',
+      'Scoring example: Published location and threat scoring determines final winner. Score best by protecting your own locations while causing threats to damage opponents locations..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'doctor-who-the-card-game.rules.objective',
+        title: 'Objective',
+        text: 'Score best by protecting your own locations while causing threats to damage opponents locations.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'doctor-who-the-card-game.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players assign defenders to protect their locations, send enemies toward opponents, and use special cards to alter conflicts and scoring.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'doctor-who-the-card-game.setup.players',
+        title: 'Players',
+        text: '2-4 players use the table arrangement described for Doctor Who The Card Game.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'doctor-who-the-card-game.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Doctor Who card game deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'doctor-who-the-card-game.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Doctor Who card game deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'doctor-who-the-card-game.setup.dealing',
+        title: 'Deal',
+        text: 'Deal location, defender, enemy, and support cards from the dedicated deck according to the player count.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'doctor-who-the-card-game.score.win-condition',
+        title: 'Win condition',
+        text: 'Score best by protecting your own locations while causing threats to damage opponents locations.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'doctor-who-the-card-game.score.description',
+        title: 'Scoring',
+        text: 'Published location and threat scoring determines final winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'doctor-who-the-card-game.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dedicated licensed deck.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'doctor-who-the-card-game.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players defend their own locations.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'doctor-who-the-card-game.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Enemies may be sent against opponents.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'doctor-who-the-card-game.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Card effects change conflicts.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'doctor-who-the-card-game.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Final location or threat scoring decides the winner.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'doctor-who-the-card-game.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'doctor-who-the-card-game.rules.objective',
+          'doctor-who-the-card-game.rules.gameplay',
+        ],
+      },
+      {
+        id: 'doctor-who-the-card-game.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'doctor-who-the-card-game.setup.players',
+          'doctor-who-the-card-game.setup.deck',
+          'doctor-who-the-card-game.setup.equipment',
+          'doctor-who-the-card-game.setup.dealing',
+        ],
+      },
+      {
+        id: 'doctor-who-the-card-game.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'doctor-who-the-card-game.rules.key.1',
+          'doctor-who-the-card-game.rules.key.2',
+          'doctor-who-the-card-game.rules.key.3',
+          'doctor-who-the-card-game.rules.key.4',
+          'doctor-who-the-card-game.rules.key.5',
+        ],
+      },
+      {
+        id: 'doctor-who-the-card-game.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'doctor-who-the-card-game.score.description',
+          'doctor-who-the-card-game.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'doctor-who-the-card-game.setup.dealing',
+        'doctor-who-the-card-game.rules.objective',
+      ],
+      play_card: [
+        'doctor-who-the-card-game.rules.gameplay',
+      ],
+    },
   },
 }

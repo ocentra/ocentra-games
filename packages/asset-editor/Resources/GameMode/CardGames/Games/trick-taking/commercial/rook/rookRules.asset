@@ -10,7 +10,7 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Rook. Logic: See rules.',
+    LLM: "Four in fixed partnerships. Deal 10 each, 5 to nest. Bid from 100 in multiples of 5 (left of dealer first); three passes leave the fourth as high bidder; if first three pass, dealer must bid 100. Bidder picks up nest, discards five face-down (no point cards), names trump. Left of bidder leads; follow color; Rook is highest trump. Highest trump wins trick, else highest of led color. Bidder's team makes bid scores their points, else subtracts bid; other team always scores its points. Game to 500.",
     Player: "Four in fixed partnerships. Deal 10 each, 5 to nest. Bid from 100 in multiples of 5 (left of dealer first); three passes leave the fourth as high bidder; if first three pass, dealer must bid 100. Bidder picks up nest, discards five face-down (no point cards), names trump. Left of bidder leads; follow color; Rook is highest trump. Highest trump wins trick, else highest of led color. Bidder's team makes bid scores their points, else subtracts bid; other team always scores its points. Game to 500.",
     objective: 'As the bidding team, take at least the number of card points you bid; as the opposing team, score the points you take. First team to reach 500 or more points wins.',
     gameplay: "Four in fixed partnerships. Deal 10 each, 5 to nest. Bid from 100 in multiples of 5 (left of dealer first); three passes leave the fourth as high bidder; if first three pass, dealer must bid 100. Bidder picks up nest, discards five face-down (no point cards), names trump. Left of bidder leads; follow color; Rook is highest trump. Highest trump wins trick, else highest of led color. Bidder's team makes bid scores their points, else subtracts bid; other team always scores its points. Game to 500.",
@@ -50,10 +50,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before bidding.',
-      "Scoring check: Card points: 1=15, 14=10, 10=10, 5=5, Rook=20 (180 per deal). Bidder's team scores its points if they make the bid, else subtracts the bid; other team always scores its points. First team to 500 wins. Expected outcome: 500.",
+      'Setup example: 10 card(s) per player.',
+      'Rule example: As the bidding team, take at least the number of card points you bid; as the opposing team, score the points you take. First team to reach 500 or more points wins.',
+      "Turn-flow example: Four in fixed partnerships. Deal 10 each, 5 to nest. Bid from 100 in multiples of 5 (left of dealer first); three passes leave the fourth as high bidder; if first three pass, dealer must bid 100. Bidder picks up nest, discards five face-down (no point cards), names trump. Left of bidder leads; follow color; Rook is highest trump. Highest trump wins trick, else highest of led color. Bidder's team makes bid scores their points, else subtracts bid; other team always scores its points. Game to 500.",
+      "Scoring example: Card points: 1=15, 14=10, 10=10, 5=5, Rook=20 (180 per deal). Bidder's team scores its points if they make the bid, else subtracts the bid; other team always scores its points. First team to 500 wins. First team to 500 or more; higher score wins..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'rook.rules.objective',
+        title: 'Objective',
+        text: 'As the bidding team, take at least the number of card points you bid; as the opposing team, score the points you take. First team to reach 500 or more points wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'rook.rules.gameplay',
+        title: 'Turn flow',
+        text: "Four in fixed partnerships. Deal 10 each, 5 to nest. Bid from 100 in multiples of 5 (left of dealer first); three passes leave the fourth as high bidder; if first three pass, dealer must bid 100. Bidder picks up nest, discards five face-down (no point cards), names trump. Left of bidder leads; follow color; Rook is highest trump. Highest trump wins trick, else highest of led color. Bidder's team makes bid scores their points, else subtracts bid; other team always scores its points. Game to 500.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'rook.setup.players',
+        title: 'Players',
+        text: 'Four players in fixed partnerships, partners opposite.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'rook.setup.deck',
+        title: 'Deck',
+        text: 'Rook deck: four suits (colors) 1–14 each plus Rook bird card. Common variant removes 2s, 3s, 4s for 45 cards.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'rook.setup.equipment',
+        title: 'Equipment',
+        text: 'Rook deck',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'rook.setup.dealing',
+        title: 'Deal',
+        text: 'Ten cards each, one at a time; five cards to the nest. Dealer adds one card to the nest after each of the first five rounds of the deal.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'rook.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to 500 or more; higher score wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'rook.score.description',
+        title: 'Scoring',
+        text: "Card points: 1=15, 14=10, 10=10, 5=5, Rook=20 (180 per deal). Bidder's team scores its points if they make the bid, else subtracts the bid; other team always scores its points. First team to 500 wins.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'rook.rules.key.1',
+        title: 'Key rule 1',
+        text: '10 each, 5 to nest. Min bid 100, multiples of 5. Bidder takes nest, discards 5 (no point cards), names trump. Follow color; Rook highest trump. 180 points per deal. First to 500 wins.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'rook.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'rook.rules.objective',
+          'rook.rules.gameplay',
+        ],
+      },
+      {
+        id: 'rook.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'rook.setup.players',
+          'rook.setup.deck',
+          'rook.setup.equipment',
+          'rook.setup.dealing',
+        ],
+      },
+      {
+        id: 'rook.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'rook.rules.key.1',
+        ],
+      },
+      {
+        id: 'rook.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'rook.score.description',
+          'rook.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'rook.setup.dealing',
+        'rook.rules.objective',
+      ],
+      deal: [
+        'rook.rules.gameplay',
+      ],
+      play_card: [
+        'rook.rules.gameplay',
+      ],
+      discard: [
+        'rook.rules.gameplay',
+      ],
+      pass: [
+        'rook.rules.gameplay',
+      ],
+      bid: [
+        'rook.rules.gameplay',
+      ],
+      take_nest: [
+        'rook.rules.gameplay',
+      ],
+      name_trump: [
+        'rook.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Madrasso. Type: Partnership trick-taking. Target: 777 points. Deck: 40-card Italian. Rules: Follow suit, must overtake, trump if void. Card values: Ace=11, 3=10, King=4, Knight=3, Jack=2. Last trick=10 points. Can exchange 7 of trumps for indicator.',
-    Player: 'Welcome to Madrasso. Partner with your teammate to reach 777 points before your opponents. Watch for the trump indicatorâ€”you may be able to exchange your 7 for a better card. Remember: follow suit, overtake when possible, and track those valuable Aces and 3s!',
+    LLM: '1. Must follow suit if possible. 2. If void, you can play a trump or discard any card. 3. The highest card of the led suit wins, unless a trump is played (Highest trump wins). 4. Winner of trick leads next.',
+    Player: '1. Must follow suit if possible. 2. If void, you can play a trump or discard any card. 3. The highest card of the led suit wins, unless a trump is played (Highest trump wins). 4. Winner of trick leads next.',
     objective: 'Win the game by being the first partnership to reach 777 points over at least 10 deals (battute), counting points from tricks and the 10-point bonus for the last trick; or win immediately by taking all 10 tricks in one deal (cappotto).',
     gameplay: '1. Must follow suit if possible. 2. If void, you can play a trump or discard any card. 3. The highest card of the led suit wins, unless a trump is played (Highest trump wins). 4. Winner of trick leads next.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in trump_exchange; current_player may use play_card before play.',
-      'Scoring check: Points from captured cards: Ace=11, 3=10, King=4, Knight=3, Jack=2, others=0. Last trick=10 points. Total 130 per round. Expected outcome: 777.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win the game by being the first partnership to reach 777 points over at least 10 deals (battute), counting points from tricks and the 10-point bonus for the last trick; or win immediately by taking all 10 tricks in one deal (cappotto).',
+      'Turn-flow example: 1. Must follow suit if possible. 2. If void, you can play a trump or discard any card. 3. The highest card of the led suit wins, unless a trump is played (Highest trump wins). 4. Winner of trick leads next.',
+      'Scoring example: Points from captured cards: Ace=11, 3=10, King=4, Knight=3, Jack=2, others=0. Last trick=10 points. Total 130 per round. First team to reach 777 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'madrasso.rules.objective',
+        title: 'Objective',
+        text: 'Win the game by being the first partnership to reach 777 points over at least 10 deals (battute), counting points from tricks and the 10-point bonus for the last trick; or win immediately by taking all 10 tricks in one deal (cappotto).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'madrasso.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Must follow suit if possible. 2. If void, you can play a trump or discard any card. 3. The highest card of the led suit wins, unless a trump is played (Highest trump wins). 4. Winner of trick leads next.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'madrasso.setup.players',
+        title: 'Players',
+        text: '4 players in two partnerships (North-South vs East-West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'madrasso.setup.deck',
+        title: 'Deck',
+        text: '40 cards: Ace (11), 3 (10), King (4), Knight (3), Jack (2), and 7-6-5-4-2 (0). Total points = 120 + 10 for last trick.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'madrasso.setup.equipment',
+        title: 'Equipment',
+        text: '40-card Italian deck, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'madrasso.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 10 cards. The 21st card is turned face-up as the Trump Indicator.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'madrasso.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to reach 777 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'madrasso.score.description',
+        title: 'Scoring',
+        text: 'Points from captured cards: Ace=11, 3=10, King=4, Knight=3, Jack=2, others=0. Last trick=10 points. Total 130 per round.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'madrasso.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if possible',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'madrasso.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must try to win the trick if possible (Overtake)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'madrasso.rules.key.3',
+        title: 'Key rule 3',
+        text: 'If unable to follow suit, must play a trump card if available',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'madrasso.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Winner of the trick leads the next',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'madrasso.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'madrasso.rules.objective',
+          'madrasso.rules.gameplay',
+        ],
+      },
+      {
+        id: 'madrasso.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'madrasso.setup.players',
+          'madrasso.setup.deck',
+          'madrasso.setup.equipment',
+          'madrasso.setup.dealing',
+        ],
+      },
+      {
+        id: 'madrasso.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'madrasso.rules.key.1',
+          'madrasso.rules.key.2',
+          'madrasso.rules.key.3',
+          'madrasso.rules.key.4',
+        ],
+      },
+      {
+        id: 'madrasso.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'madrasso.score.description',
+          'madrasso.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'madrasso.setup.dealing',
+        'madrasso.rules.objective',
+      ],
+      play_card: [
+        'madrasso.rules.gameplay',
+      ],
+    },
   },
 }

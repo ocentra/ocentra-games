@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Poch. German. Pay suit, Pochen, Stops. Board with 9 pools.',
-    Player: 'Poch: 3 stages. Pay suit pools. Pochen (pair/triple/quartet). Stops. 32 cards.',
+    LLM: '1. Stage 1: Claim pools for pay-suit cards. 2. Stage 2: Bet (Pochen); best pair/triple/quartet wins. 3. Stage 3: Winner of Pochen (or left of dealer if all pass) leads; play next higher in suit; stop when no one has next card; last player leads again. First out wins.',
+    Player: '1. Stage 1: Claim pools for pay-suit cards. 2. Stage 2: Bet (Pochen); best pair/triple/quartet wins. 3. Stage 3: Winner of Pochen (or left of dealer if all pass) leads; play next higher in suit; stop when no one has next card; last player leads again. First out wins.',
     objective: 'Win chips. Stage 1: Hold A/K/Q/J/10 of pay suit â†’ take pool. Marriage (K+Q), Sequence (7-8-9) of pay suit. Stage 2: Pochenâ€”bet on best pair/triple/quartet. Stage 3: Stopsâ€”play cards in ascending sequence; first out wins centre + 1 per card from others.',
     gameplay: '1. Stage 1: Claim pools for pay-suit cards. 2. Stage 2: Bet (Pochen); best pair/triple/quartet wins. 3. Stage 3: Winner of Pochen (or left of dealer if all pass) leads; play next higher in suit; stop when no one has next card; last player leads again. First out wins.',
     keyRules: [
@@ -53,10 +53,168 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in stake; each_player_clockwise may use stake before stage1.',
-      'Scoring check: Chips from pools. Pochen pot. Centre + 1 per card from opponents. Expected outcome: Most chips when someone is eliminated..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win chips. Stage 1: Hold A/K/Q/J/10 of pay suit â†’ take pool. Marriage (K+Q), Sequence (7-8-9) of pay suit. Stage 2: Pochenâ€”bet on best pair/triple/quartet. Stage 3: Stopsâ€”play cards in ascending sequence; first out wins centre + 1 per card from others.',
+      'Turn-flow example: 1. Stage 1: Claim pools for pay-suit cards. 2. Stage 2: Bet (Pochen); best pair/triple/quartet wins. 3. Stage 3: Winner of Pochen (or left of dealer if all pass) leads; play next higher in suit; stop when no one has next card; last player leads again. First out wins.',
+      'Scoring example: Chips from pools. Pochen pot. Centre + 1 per card from opponents. Most chips when someone is eliminated..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'poch.rules.objective',
+        title: 'Objective',
+        text: 'Win chips. Stage 1: Hold A/K/Q/J/10 of pay suit â†’ take pool. Marriage (K+Q), Sequence (7-8-9) of pay suit. Stage 2: Pochenâ€”bet on best pair/triple/quartet. Stage 3: Stopsâ€”play cards in ascending sequence; first out wins centre + 1 per card from others.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'poch.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Stage 1: Claim pools for pay-suit cards. 2. Stage 2: Bet (Pochen); best pair/triple/quartet wins. 3. Stage 3: Winner of Pochen (or left of dealer if all pass) leads; play next higher in suit; stop when no one has next card; last player leads again. First out wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'poch.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'poch.setup.deck',
+        title: 'Deck',
+        text: '32 cards. Rank A-K-Q-J-10-9-8-7.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'poch.setup.equipment',
+        title: 'Equipment',
+        text: 'Poch board (9 pools: Ace, King, Queen, Jack, Ten, Marriage, Sequence, Pochen, Centre). Chips.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'poch.setup.dealing',
+        title: 'Deal',
+        text: 'All cards dealt; 1 left. That card = pay suit. Each puts 1 chip in each pool.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'poch.score.win-condition',
+        title: 'Win condition',
+        text: 'Most chips when someone is eliminated.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'poch.score.description',
+        title: 'Scoring',
+        text: 'Chips from pools. Pochen pot. Centre + 1 per card from opponents.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'poch.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Pay suit from turned card.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'poch.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Pochen: pairs, triples, quartets only.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'poch.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Stops: play next higher in suit; stop = new lead.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'poch.rules.key.4',
+        title: 'Key rule 4',
+        text: 'First out in stage 3 wins centre + 1 per opponent card.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'poch.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'poch.rules.objective',
+          'poch.rules.gameplay',
+        ],
+      },
+      {
+        id: 'poch.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'poch.setup.players',
+          'poch.setup.deck',
+          'poch.setup.equipment',
+          'poch.setup.dealing',
+        ],
+      },
+      {
+        id: 'poch.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'poch.rules.key.1',
+          'poch.rules.key.2',
+          'poch.rules.key.3',
+          'poch.rules.key.4',
+        ],
+      },
+      {
+        id: 'poch.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'poch.score.description',
+          'poch.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'poch.setup.dealing',
+        'poch.rules.objective',
+      ],
+      fold: [
+        'poch.rules.gameplay',
+      ],
+      bet: [
+        'poch.rules.gameplay',
+      ],
+      play_card: [
+        'poch.rules.gameplay',
+      ],
+      stake: [
+        'poch.rules.gameplay',
+      ],
+      claim_pool: [
+        'poch.rules.gameplay',
+      ],
+    },
   },
 }

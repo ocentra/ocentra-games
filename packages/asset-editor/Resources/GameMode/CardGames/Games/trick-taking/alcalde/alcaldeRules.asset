@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Alcalde. Type: Asymmetrical Trick-taking. Rules: Alcalde (6 cards, 2 plays/trick) vs 2 Opponents (3 cards each, 1 play/trick). No follow-suit. Goal: Alcalde needs 60 points from Brisca values (A=11, 3=10, K=4, Q=3, J=2).',
-    Player: "Welcome to Alcalde. You are either the Mayor (Alcalde) or one of the two opponents trying to take them down. As Alcalde, you'll play TWO cards to every trick, giving you a massive advantage in points—but you need 60 total to win. Opponents, peek at each other's cards and cooperate to keep the Mayor under 60!",
+    LLM: "1. **Trump Exchange**: Any player with the 7 or 2 of trumps can swap it for the face-up 'Life' card if the Life card is a point card (A, 3, K, Q, J). 2. **Cooperation**: The two opponents may peek at each other's hands throughout the game but are forbidden from verbal signaling. 3. **The Trick**: Play is counter-clockwise. Each opponent plays ONE card. The Alcalde then plays TWO cards. 4. **No Follow Suit**: Players can play any card; they are not required to follow the suit of the lead. 5. **Winning Tricks**: The highest trump wins. If no trumps, the highest card of the led suit wins. 6. **Drawing**: After a trick, the winner draws (2 cards for Alcalde, 1 for opponents) followed by others in order.",
+    Player: "1. **Trump Exchange**: Any player with the 7 or 2 of trumps can swap it for the face-up 'Life' card if the Life card is a point card (A, 3, K, Q, J). 2. **Cooperation**: The two opponents may peek at each other's hands throughout the game but are forbidden from verbal signaling. 3. **The Trick**: Play is counter-clockwise. Each opponent plays ONE card. The Alcalde then plays TWO cards. 4. **No Follow Suit**: Players can play any card; they are not required to follow the suit of the lead. 5. **Winning Tricks**: The highest trump wins. If no trumps, the highest card of the led suit wins. 6. **Drawing**: After a trick, the winner draws (2 cards for Alcalde, 1 for opponents) followed by others in order.",
     objective: 'As Alcalde: Score 60+ points to retain the title. As Opponents: Prevent the Alcalde from reaching 60 points to depose them.',
     gameplay: "1. **Trump Exchange**: Any player with the 7 or 2 of trumps can swap it for the face-up 'Life' card if the Life card is a point card (A, 3, K, Q, J). 2. **Cooperation**: The two opponents may peek at each other's hands throughout the game but are forbidden from verbal signaling. 3. **The Trick**: Play is counter-clockwise. Each opponent plays ONE card. The Alcalde then plays TWO cards. 4. **No Follow Suit**: Players can play any card; they are not required to follow the suit of the lead. 5. **Winning Tricks**: The highest trump wins. If no trumps, the highest card of the led suit wins. 6. **Drawing**: After a trick, the winner draws (2 cards for Alcalde, 1 for opponents) followed by others in order.",
     keyRules: [
@@ -53,10 +53,174 @@
       go_out: 'Hand ends when stock and hands are empty; Alcalde wins or loses by point total.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before reveal_trump.',
-      'Scoring check: Scoring is determined by the total 120 card points captured in tricks. Expected outcome: 7.',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: As Alcalde: Score 60+ points to retain the title. As Opponents: Prevent the Alcalde from reaching 60 points to depose them.',
+      "Turn-flow example: 1. **Trump Exchange**: Any player with the 7 or 2 of trumps can swap it for the face-up 'Life' card if the Life card is a point card (A, 3, K, Q, J). 2. **Cooperation**: The two opponents may peek at each other's hands throughout the game but are forbidden from verbal signaling. 3. **The Trick**: Play is counter-clockwise. Each opponent plays ONE card. The Alcalde then plays TWO cards. 4. **No Follow Suit**: Players can play any card; they are not required to follow the suit of the lead. 5. **Winning Tricks**: The highest trump wins. If no trumps, the highest card of the led suit wins. 6. **Drawing**: After a trick, the winner draws (2 cards for Alcalde, 1 for opponents) followed by others in order.",
+      "Scoring example: Scoring is determined by the total 120 card points captured in tricks. Alcalde needs 60 points to 'win'. If they hit 60+, they score 1 game point and stay in office. If <60, opponents each score 1 game point..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'alcalde.rules.objective',
+        title: 'Objective',
+        text: 'As Alcalde: Score 60+ points to retain the title. As Opponents: Prevent the Alcalde from reaching 60 points to depose them.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'alcalde.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Trump Exchange**: Any player with the 7 or 2 of trumps can swap it for the face-up 'Life' card if the Life card is a point card (A, 3, K, Q, J). 2. **Cooperation**: The two opponents may peek at each other's hands throughout the game but are forbidden from verbal signaling. 3. **The Trick**: Play is counter-clockwise. Each opponent plays ONE card. The Alcalde then plays TWO cards. 4. **No Follow Suit**: Players can play any card; they are not required to follow the suit of the lead. 5. **Winning Tricks**: The highest trump wins. If no trumps, the highest card of the led suit wins. 6. **Drawing**: After a trick, the winner draws (2 cards for Alcalde, 1 for opponents) followed by others in order.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'alcalde.setup.players',
+        title: 'Players',
+        text: 'Exactly 3 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'alcalde.setup.deck',
+        title: 'Deck',
+        text: '40-card Spanish pack. Rank: Ace-3-King-Queen-Jack-7-6-5-4-2 (in order of power/value).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'alcalde.setup.equipment',
+        title: 'Equipment',
+        text: 'Spanish deck (Naipes), scorepad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'alcalde.setup.dealing',
+        title: 'Deal',
+        text: "Alcalde deals 3 cards to each opponent and 6 cards to themselves. The next card is the 'Life' card (Trump indicator).",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'alcalde.score.win-condition',
+        title: 'Win condition',
+        text: "Alcalde needs 60 points to 'win'. If they hit 60+, they score 1 game point and stay in office. If <60, opponents each score 1 game point.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'alcalde.score.description',
+        title: 'Scoring',
+        text: 'Scoring is determined by the total 120 card points captured in tricks.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'alcalde.rules.key.1',
+        title: 'Key rule 1',
+        text: "Alcalde plays twice per trick, meaning they control the final 'slap' of the round.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'alcalde.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Point Values: Ace=11, 3=10, King=4, Queen=3, Jack=2. Total in deck = 120 points.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'alcalde.rules.key.3',
+        title: 'Key rule 3',
+        text: "The 'Life' card is drawn as the very last card of the deck.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'alcalde.rules.key.4',
+        title: 'Key rule 4',
+        text: 'If the Alcalde fails to reach 60, the player to their right becomes the new Alcalde for the next hand.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'alcalde.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'alcalde.rules.objective',
+          'alcalde.rules.gameplay',
+        ],
+      },
+      {
+        id: 'alcalde.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'alcalde.setup.players',
+          'alcalde.setup.deck',
+          'alcalde.setup.equipment',
+          'alcalde.setup.dealing',
+        ],
+      },
+      {
+        id: 'alcalde.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'alcalde.rules.key.1',
+          'alcalde.rules.key.2',
+          'alcalde.rules.key.3',
+          'alcalde.rules.key.4',
+        ],
+      },
+      {
+        id: 'alcalde.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'alcalde.score.description',
+          'alcalde.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'alcalde.setup.dealing',
+        'alcalde.rules.objective',
+      ],
+      deal: [
+        'alcalde.rules.gameplay',
+      ],
+      reveal_market: [
+        'alcalde.rules.gameplay',
+      ],
+      buy_market: [
+        'alcalde.rules.gameplay',
+      ],
+      award_pot: [
+        'alcalde.rules.gameplay',
+      ],
+      play_card: [
+        'alcalde.rules.gameplay',
+      ],
+      draw: [
+        'alcalde.rules.gameplay',
+      ],
+      pass: [
+        'alcalde.rules.gameplay',
+      ],
+    },
   },
 }

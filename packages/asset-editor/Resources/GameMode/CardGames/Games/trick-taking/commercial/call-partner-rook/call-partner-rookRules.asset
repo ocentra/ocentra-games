@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Call Partner Rook. Logic: bidding, nest, trump, called partner; trick points 1=15, 14=10, 10=10, 5=5, Rook=20, last trick=20; first to 500.',
-    Player: 'Call Partner Rook: four players, bid for nest, name trump, call partner by card; follow color, Rook between 11 and 10 in trump; first to 500 wins.',
+    LLM: "Dealer deals 13 cards to each player and 5 to the nest (first card to dealer's left; after each of the first five rounds one card to the nest). Players bid in multiples of 5, dealer first, clockwise; each bid must be higher than the last, and a player who passes cannot bid again. When three have passed, the fourth is the high bidder. The bidder picks up the nest without showing it (18 cards), discards any five face-down to form a new nest, names trump (a color), and calls for a partner by naming a card not in hand; whoever holds that card is the bidder's partner for the hand (secret until the card is played), and the other two form the opposing team (if the bidder holds the called card, the bidder plays alone). Player to the left of the bidder leads to the first trick; players must follow the led color if able; the Rook counts as trump. Highest trump wins the trick, or if no trump was played, highest card of the led color. Winner of each trick leads next; winner of the last trick takes the five discarded nest cards. Each team totals card points from its tricks; if the bidder's team made at least the bid, each member scores the team's points; otherwise the bidder's team subtracts the bid from their score. The opposing team always scores the points they took. Game ends when a player reaches 500 or more; highest score wins.",
+    Player: "Dealer deals 13 cards to each player and 5 to the nest (first card to dealer's left; after each of the first five rounds one card to the nest). Players bid in multiples of 5, dealer first, clockwise; each bid must be higher than the last, and a player who passes cannot bid again. When three have passed, the fourth is the high bidder. The bidder picks up the nest without showing it (18 cards), discards any five face-down to form a new nest, names trump (a color), and calls for a partner by naming a card not in hand; whoever holds that card is the bidder's partner for the hand (secret until the card is played), and the other two form the opposing team (if the bidder holds the called card, the bidder plays alone). Player to the left of the bidder leads to the first trick; players must follow the led color if able; the Rook counts as trump. Highest trump wins the trick, or if no trump was played, highest card of the led color. Winner of each trick leads next; winner of the last trick takes the five discarded nest cards. Each team totals card points from its tricks; if the bidder's team made at least the bid, each member scores the team's points; otherwise the bidder's team subtracts the bid from their score. The opposing team always scores the points they took. Game ends when a player reaches 500 or more; highest score wins.",
     objective: 'As the bidding team, take at least the number of card points you bid; as the opposing team, score the points you take. First player to reach 500 or more points wins.',
     gameplay: "Dealer deals 13 cards to each player and 5 to the nest (first card to dealer's left; after each of the first five rounds one card to the nest). Players bid in multiples of 5, dealer first, clockwise; each bid must be higher than the last, and a player who passes cannot bid again. When three have passed, the fourth is the high bidder. The bidder picks up the nest without showing it (18 cards), discards any five face-down to form a new nest, names trump (a color), and calls for a partner by naming a card not in hand; whoever holds that card is the bidder's partner for the hand (secret until the card is played), and the other two form the opposing team (if the bidder holds the called card, the bidder plays alone). Player to the left of the bidder leads to the first trick; players must follow the led color if able; the Rook counts as trump. Highest trump wins the trick, or if no trump was played, highest card of the led color. Winner of each trick leads next; winner of the last trick takes the five discarded nest cards. Each team totals card points from its tricks; if the bidder's team made at least the bid, each member scores the team's points; otherwise the bidder's team subtracts the bid from their score. The opposing team always scores the points they took. Game ends when a player reaches 500 or more; highest score wins.",
     keyRules: [
@@ -50,10 +50,150 @@
       go_out: 'Hand ends after 12 tricks; game to 500 points.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before bidding.',
-      "Scoring check: Card points: 1=15, 14=10, 10=10, 5=5, Rook=20; last trick=20 (200 per hand). Bidder's team scores its points if they make the bid, else subtract the bid; opposing team always scores its points. Individual scores; first to 500 wins. Expected outcome: 500.",
+      'Setup example: 13 card(s) per player.',
+      'Rule example: As the bidding team, take at least the number of card points you bid; as the opposing team, score the points you take. First player to reach 500 or more points wins.',
+      "Turn-flow example: Dealer deals 13 cards to each player and 5 to the nest (first card to dealer's left; after each of the first five rounds one card to the nest). Players bid in multiples of 5, dealer first, clockwise; each bid must be higher than the last, and a player who passes cannot bid again. When three have passed, the fourth is the high bidder. The bidder picks up the nest without showing it (18 cards), discards any five face-down to form a new nest, names trump (a color), and calls for a partner by naming a card not in hand; whoever holds that card is the bidder's partner for the hand (secret until the card is played), and the other two form the opposing team (if the bidder holds the called card, the bidder plays alone). Player to the left of the bidder leads to the first trick; players must follow the led color if able; the Rook counts as trump. Highest trump wins the trick, or if no trump was played, highest card of the led color. Winner of each trick leads next; winner of the last trick takes the five discarded nest cards. Each team totals card points from its tricks; if the bidder's team made at least the bid, each member scores the team's points; otherwise the bidder's team subtracts the bid from their score. The opposing team always scores the points they took. Game ends when a player reaches 500 or more; highest score wins.",
+      "Scoring example: Card points: 1=15, 14=10, 10=10, 5=5, Rook=20; last trick=20 (200 per hand). Bidder's team scores its points if they make the bid, else subtract the bid; opposing team always scores its points. Individual scores; first to 500 wins. First to 500..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'call-partner-rook.rules.objective',
+        title: 'Objective',
+        text: 'As the bidding team, take at least the number of card points you bid; as the opposing team, score the points you take. First player to reach 500 or more points wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'call-partner-rook.rules.gameplay',
+        title: 'Turn flow',
+        text: "Dealer deals 13 cards to each player and 5 to the nest (first card to dealer's left; after each of the first five rounds one card to the nest). Players bid in multiples of 5, dealer first, clockwise; each bid must be higher than the last, and a player who passes cannot bid again. When three have passed, the fourth is the high bidder. The bidder picks up the nest without showing it (18 cards), discards any five face-down to form a new nest, names trump (a color), and calls for a partner by naming a card not in hand; whoever holds that card is the bidder's partner for the hand (secret until the card is played), and the other two form the opposing team (if the bidder holds the called card, the bidder plays alone). Player to the left of the bidder leads to the first trick; players must follow the led color if able; the Rook counts as trump. Highest trump wins the trick, or if no trump was played, highest card of the led color. Winner of each trick leads next; winner of the last trick takes the five discarded nest cards. Each team totals card points from its tricks; if the bidder's team made at least the bid, each member scores the team's points; otherwise the bidder's team subtracts the bid from their score. The opposing team always scores the points they took. Game ends when a player reaches 500 or more; highest score wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'call-partner-rook.setup.players',
+        title: 'Players',
+        text: 'Four players; two teams per hand (bidder and called partner vs others).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'call-partner-rook.setup.deck',
+        title: 'Deck',
+        text: 'Rook 57-card deck (4 colors 1–14 plus Rook).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'call-partner-rook.setup.equipment',
+        title: 'Equipment',
+        text: 'Rook deck',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'call-partner-rook.setup.dealing',
+        title: 'Deal',
+        text: "One card at a time to each player until each has 13; first card goes to the player to dealer's left. After each of the first five rounds of the deal, one card is placed face down in the center to form the five-card nest.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'call-partner-rook.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 500.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'call-partner-rook.score.description',
+        title: 'Scoring',
+        text: "Card points: 1=15, 14=10, 10=10, 5=5, Rook=20; last trick=20 (200 per hand). Bidder's team scores its points if they make the bid, else subtract the bid; opposing team always scores its points. Individual scores; first to 500 wins.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'call-partner-rook.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Bid in multiples of 5; dealer bids first; three passes end the auction. Bidder takes nest, discards five, names trump, calls partner by naming a card. Follow color; Rook ranks between 11 and 10 in trump. Last trick winner takes nest cards. Card points: 1=15, 14=10, 10=10, 5=5, Rook=20, last trick=20. First to 500 wins.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'call-partner-rook.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'call-partner-rook.rules.objective',
+          'call-partner-rook.rules.gameplay',
+        ],
+      },
+      {
+        id: 'call-partner-rook.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'call-partner-rook.setup.players',
+          'call-partner-rook.setup.deck',
+          'call-partner-rook.setup.equipment',
+          'call-partner-rook.setup.dealing',
+        ],
+      },
+      {
+        id: 'call-partner-rook.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'call-partner-rook.rules.key.1',
+        ],
+      },
+      {
+        id: 'call-partner-rook.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'call-partner-rook.score.description',
+          'call-partner-rook.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'call-partner-rook.setup.dealing',
+        'call-partner-rook.rules.objective',
+      ],
+      deal: [
+        'call-partner-rook.rules.gameplay',
+      ],
+      play_card: [
+        'call-partner-rook.rules.gameplay',
+      ],
+      discard: [
+        'call-partner-rook.rules.gameplay',
+      ],
+      pass: [
+        'call-partner-rook.rules.gameplay',
+      ],
+      bid: [
+        'call-partner-rook.rules.gameplay',
+      ],
+      take_nest: [
+        'call-partner-rook.rules.gameplay',
+      ],
+      name_trump: [
+        'call-partner-rook.rules.gameplay',
+      ],
+      call_partner: [
+        'call-partner-rook.rules.gameplay',
+      ],
+    },
   },
 }

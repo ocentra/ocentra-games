@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tong Its. Logic: See rules.objective and rules.gameplay.',
-    Player: "Tong Its is a popular Rummy-style game from the Philippines for three players. It involves drawing, melding sets/runs, and discarding. Players aim to empty their hands ('Tong Its') or minimize points. It features a mechanism to 'Draw' (fight) where players compare scores to end the hand early.",
+    LLM: "1. Draw (from Stock or Discard if meldable). 2. Meld (Bahay) optional. 3. Sapaw (Lay off) on others' melds. 4. Discard. Winning: 'Tong Its' (0 cards). 'Draw' (Call comparison). Stack run out.",
+    Player: "1. Draw (from Stock or Discard if meldable). 2. Meld (Bahay) optional. 3. Sapaw (Lay off) on others' melds. 4. Discard. Winning: 'Tong Its' (0 cards). 'Draw' (Call comparison). Stack run out.",
     objective: 'Empty hand (Tong Its) or have lowest points when Draw is called/deck runs out.',
     gameplay: "1. Draw (from Stock or Discard if meldable). 2. Meld (Bahay) optional. 3. Sapaw (Lay off) on others' melds. 4. Discard. Winning: 'Tong Its' (0 cards). 'Draw' (Call comparison). Stack run out.",
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Tong It: all cards melded or laid off. Draw: must have opened; cannot call if sapaw on your melds since last turn.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 12 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use draw, meld, discard, go_out before round end.',
-      'Scoring check: Winner gets paid by losers based on points or fixed stake. Burned (Sunog) if no meld laid. Expected outcome: Empty hand (Tong Its) or have lowest points when Draw is called/deck runs out..',
+      'Setup example: 12 card(s) per player.',
+      'Rule example: Empty hand (Tong Its) or have lowest points when Draw is called/deck runs out.',
+      "Turn-flow example: 1. Draw (from Stock or Discard if meldable). 2. Meld (Bahay) optional. 3. Sapaw (Lay off) on others' melds. 4. Discard. Winning: 'Tong Its' (0 cards). 'Draw' (Call comparison). Stack run out.",
+      'Scoring example: Winner gets paid by losers based on points or fixed stake. Burned (Sunog) if no meld laid. Empty hand (Tong Its) or have lowest points when Draw is called/deck runs out..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tong-its.rules.objective',
+        title: 'Objective',
+        text: 'Empty hand (Tong Its) or have lowest points when Draw is called/deck runs out.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tong-its.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Draw (from Stock or Discard if meldable). 2. Meld (Bahay) optional. 3. Sapaw (Lay off) on others' melds. 4. Discard. Winning: 'Tong Its' (0 cards). 'Draw' (Call comparison). Stack run out.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tong-its.setup.players',
+        title: 'Players',
+        text: 'Three players only.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tong-its.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card. Values: Face=10, A=1, Num=Face.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tong-its.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, chips/money',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tong-its.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer 13 cards, others 12.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tong-its.score.win-condition',
+        title: 'Win condition',
+        text: 'Empty hand (Tong Its) or have lowest points when Draw is called/deck runs out.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tong-its.score.description',
+        title: 'Scoring',
+        text: 'Winner gets paid by losers based on points or fixed stake. Burned (Sunog) if no meld laid.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tong-its.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Sapaw (laying off) is key',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tong-its.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Cannot call Draw if Sapawed recently',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tong-its.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Burned (Sunog) if no melds open',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tong-its.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tong-its.rules.objective',
+          'tong-its.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tong-its.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tong-its.setup.players',
+          'tong-its.setup.deck',
+          'tong-its.setup.equipment',
+          'tong-its.setup.dealing',
+        ],
+      },
+      {
+        id: 'tong-its.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tong-its.rules.key.1',
+          'tong-its.rules.key.2',
+          'tong-its.rules.key.3',
+        ],
+      },
+      {
+        id: 'tong-its.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tong-its.score.description',
+          'tong-its.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tong-its.setup.dealing',
+        'tong-its.rules.objective',
+      ],
+      draw: [
+        'tong-its.rules.gameplay',
+      ],
+      discard: [
+        'tong-its.rules.gameplay',
+      ],
+      meld: [
+        'tong-its.rules.gameplay',
+      ],
+      go_out: [
+        'tong-its.rules.gameplay',
+      ],
+    },
   },
 }

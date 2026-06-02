@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Jacks Back (Five Card Draw variant). Setup: Ante, deal 5 cards. Betting round (standard). Draw phase: discard and draw up to 5 cards. Exposure phase: each player may optionally turn one hole card face up. Final betting round. Showdown: highest 5-card Poker hand wins. Exposure mechanic: opponents see one of your cards before final betting, allowing them to adjust strategy.',
-    Player: "Welcome to Jacks Back! Play Five Card Draw as usual: draw up to 5 cards. Then, here's the twist: you may choose to turn one of your hole cards face up. This information affects the final betting round. Best hand at showdown wins the pot.",
+    LLM: "Ante and deal five cards face down to each player. First betting round: Jacks or Better required to open; if no one opens, the hand is not thrown in—players keep their cards and the game switches to ace-to-five lowball with a new betting round begun by the player to dealer's left. If someone opened, play continues as normal Five Card Draw: each active player may discard and draw up to three replacements, then second betting round, then showdown; highest five-card hand wins. If the hand became lowball, after the new betting round players draw to improve for low, then a final betting round; showdown with lowest hand winning (A-2-3-4-5 is best). Often played with a joker as bug for high and fitter for low.",
+    Player: "Ante and deal five cards face down to each player. First betting round: Jacks or Better required to open; if no one opens, the hand is not thrown in—players keep their cards and the game switches to ace-to-five lowball with a new betting round begun by the player to dealer's left. If someone opened, play continues as normal Five Card Draw: each active player may discard and draw up to three replacements, then second betting round, then showdown; highest five-card hand wins. If the hand became lowball, after the new betting round players draw to improve for low, then a final betting round; showdown with lowest hand winning (A-2-3-4-5 is best). Often played with a joker as bug for high and fitter for low.",
     objective: 'Win the pot by having the best high hand at showdown if someone opened the first betting round, or the best low hand (ace-to-five, straights and flushes do not count) if no one opened and the hand was played as lowball.',
     gameplay: "Ante and deal five cards face down to each player. First betting round: Jacks or Better required to open; if no one opens, the hand is not thrown in—players keep their cards and the game switches to ace-to-five lowball with a new betting round begun by the player to dealer's left. If someone opened, play continues as normal Five Card Draw: each active player may discard and draw up to three replacements, then second betting round, then showdown; highest five-card hand wins. If the hand became lowball, after the new betting round players draw to improve for low, then a final betting round; showdown with lowest hand winning (A-2-3-4-5 is best). Often played with a joker as bug for high and fitter for low.",
     keyRules: [
@@ -53,10 +53,183 @@
       go_out: 'This game does not support go out.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in ante; all_simultaneous may use post_ante before round end.',
-      'Scoring check: Standard Five Card Draw scoring. Exposure mechanic adds information for final betting. Expected outcome: Highest 5-card Poker hand at showdown wins pot..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win the pot by having the best high hand at showdown if someone opened the first betting round, or the best low hand (ace-to-five, straights and flushes do not count) if no one opened and the hand was played as lowball.',
+      "Turn-flow example: Ante and deal five cards face down to each player. First betting round: Jacks or Better required to open; if no one opens, the hand is not thrown in—players keep their cards and the game switches to ace-to-five lowball with a new betting round begun by the player to dealer's left. If someone opened, play continues as normal Five Card Draw: each active player may discard and draw up to three replacements, then second betting round, then showdown; highest five-card hand wins. If the hand became lowball, after the new betting round players draw to improve for low, then a final betting round; showdown with lowest hand winning (A-2-3-4-5 is best). Often played with a joker as bug for high and fitter for low.",
+      'Scoring example: Standard Five Card Draw scoring. Exposure mechanic adds information for final betting. Highest 5-card Poker hand at showdown wins pot..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'five-card-draw-jacks-back.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the best high hand at showdown if someone opened the first betting round, or the best low hand (ace-to-five, straights and flushes do not count) if no one opened and the hand was played as lowball.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-back.rules.gameplay',
+        title: 'Turn flow',
+        text: "Ante and deal five cards face down to each player. First betting round: Jacks or Better required to open; if no one opens, the hand is not thrown in—players keep their cards and the game switches to ace-to-five lowball with a new betting round begun by the player to dealer's left. If someone opened, play continues as normal Five Card Draw: each active player may discard and draw up to three replacements, then second betting round, then showdown; highest five-card hand wins. If the hand became lowball, after the new betting round players draw to improve for low, then a final betting round; showdown with lowest hand winning (A-2-3-4-5 is best). Often played with a joker as bug for high and fitter for low.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-back.setup.players',
+        title: 'Players',
+        text: 'Two to six players; three to five is ideal so that more hands are played and the Lowball fallback when no one opens is used often.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-back.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-back.setup.equipment',
+        title: 'Equipment',
+        text: 'Chips.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-back.setup.dealing',
+        title: 'Deal',
+        text: 'Five cards each face down; first betting round requires Jacks or Better to open. If someone opens, draw and second betting round as in Five Card Draw. If no one opens, same hand becomes ace-to-five lowball with a new betting round, then draw for low, then final betting and showdown.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-back.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest 5-card Poker hand at showdown wins pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-back.score.description',
+        title: 'Scoring',
+        text: 'Standard Five Card Draw scoring. Exposure mechanic adds information for final betting.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-back.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Jacks or Better to open first betting round',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-back.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If no one opens, same hand becomes ace-to-five lowball; new betting round, draw, then final betting and low-hand showdown',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-back.rules.key.3',
+        title: 'Key rule 3',
+        text: 'If someone opened, standard Five Card Draw: draw, second betting round, high-hand showdown',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-back.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Standard Five Card Draw hand ranking for high; ace-to-five ranking for low when played as lowball',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'five-card-draw-jacks-back.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'five-card-draw-jacks-back.rules.objective',
+          'five-card-draw-jacks-back.rules.gameplay',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-back.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'five-card-draw-jacks-back.setup.players',
+          'five-card-draw-jacks-back.setup.deck',
+          'five-card-draw-jacks-back.setup.equipment',
+          'five-card-draw-jacks-back.setup.dealing',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-back.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'five-card-draw-jacks-back.rules.key.1',
+          'five-card-draw-jacks-back.rules.key.2',
+          'five-card-draw-jacks-back.rules.key.3',
+          'five-card-draw-jacks-back.rules.key.4',
+        ],
+      },
+      {
+        id: 'five-card-draw-jacks-back.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'five-card-draw-jacks-back.score.description',
+          'five-card-draw-jacks-back.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'five-card-draw-jacks-back.setup.dealing',
+        'five-card-draw-jacks-back.rules.objective',
+      ],
+      deal: [
+        'five-card-draw-jacks-back.rules.gameplay',
+      ],
+      fold: [
+        'five-card-draw-jacks-back.rules.gameplay',
+      ],
+      check: [
+        'five-card-draw-jacks-back.rules.gameplay',
+      ],
+      call: [
+        'five-card-draw-jacks-back.rules.gameplay',
+      ],
+      bet: [
+        'five-card-draw-jacks-back.rules.gameplay',
+      ],
+      raise: [
+        'five-card-draw-jacks-back.rules.gameplay',
+      ],
+      post_ante: [
+        'five-card-draw-jacks-back.rules.gameplay',
+      ],
+      draw_cards: [
+        'five-card-draw-jacks-back.rules.gameplay',
+      ],
+      expose_one_card: [
+        'five-card-draw-jacks-back.rules.gameplay',
+      ],
+      show_hand: [
+        'five-card-draw-jacks-back.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Neunkart. Logic: Win the tricks, card points, or contract result required by the local form of the game.',
-    Player: 'Neunkart is a traditional trick-taking card game using 36-card French-suited pack for 2 or more players. It is also called Fett und Mager and is documented from North German play.',
+    LLM: 'Players lead to tricks, follow suit when able, and compare the led suit, trumps, or special ranking to decide the winner of each trick.',
+    Player: 'Players lead to tricks, follow suit when able, and compare the led suit, trumps, or special ranking to decide the winner of each trick.',
     objective: 'Win the tricks, card points, or contract result required by the local form of the game.',
     gameplay: 'Players lead to tricks, follow suit when able, and compare the led suit, trumps, or special ranking to decide the winner of each trick.',
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Tricks, card points, or contract success determine scoring. Expected outcome: Win the tricks, card points, or contract result required by the local form of the game..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win the tricks, card points, or contract result required by the local form of the game.',
+      'Turn-flow example: Players lead to tricks, follow suit when able, and compare the led suit, trumps, or special ranking to decide the winner of each trick.',
+      'Scoring example: Tricks, card points, or contract success determine scoring. Win the tricks, card points, or contract result required by the local form of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'neunkart.rules.objective',
+        title: 'Objective',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'neunkart.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players lead to tricks, follow suit when able, and compare the led suit, trumps, or special ranking to decide the winner of each trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'neunkart.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Neunkart.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'neunkart.setup.deck',
+        title: 'Deck',
+        text: '36-card French-suited pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'neunkart.setup.equipment',
+        title: 'Equipment',
+        text: '36-card French-suited pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'neunkart.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 36-card French-suited pack to 2 or more players according to the local rules before trick play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'neunkart.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'neunkart.score.description',
+        title: 'Scoring',
+        text: 'Tricks, card points, or contract success determine scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'neunkart.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trick-taking structure.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'neunkart.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Follow suit when able.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'neunkart.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trump or rank hierarchy controls trick winners.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'neunkart.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Captured tricks or card points decide the hand.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'neunkart.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'neunkart.rules.objective',
+          'neunkart.rules.gameplay',
+        ],
+      },
+      {
+        id: 'neunkart.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'neunkart.setup.players',
+          'neunkart.setup.deck',
+          'neunkart.setup.equipment',
+          'neunkart.setup.dealing',
+        ],
+      },
+      {
+        id: 'neunkart.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'neunkart.rules.key.1',
+          'neunkart.rules.key.2',
+          'neunkart.rules.key.3',
+          'neunkart.rules.key.4',
+        ],
+      },
+      {
+        id: 'neunkart.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'neunkart.score.description',
+          'neunkart.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'neunkart.setup.dealing',
+        'neunkart.rules.objective',
+      ],
+      play_card: [
+        'neunkart.rules.gameplay',
+      ],
+      discard: [
+        'neunkart.rules.gameplay',
+      ],
+      pass: [
+        'neunkart.rules.gameplay',
+      ],
+      bid: [
+        'neunkart.rules.gameplay',
+      ],
+    },
   },
 }

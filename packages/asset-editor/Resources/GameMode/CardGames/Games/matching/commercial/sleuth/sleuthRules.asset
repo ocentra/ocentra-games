@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Fan Tan (Sevens). Logic: See rules.objective and rules.gameplay.',
-    Player: "Fan Tan, also widely known as 'Sevens', 'Domino', or 'Parliament', is a classic layout-based card game where the objective is to be the first to get rid of all your cards. Players build upon a central layout of cards, starting with the Sevens and expanding outward to the Ace and Two in each suit. It is a game of both luck and light strategy, as players can choose to hold back key 'blocking' cards to prevent opponents from playing.",
+    LLM: 'One Gem card is hidden, the rest are dealt to players, and Search cards control what questions may be asked. Players record answers and eliminate possibilities until they can name the missing gem.',
+    Player: 'One Gem card is hidden, the rest are dealt to players, and Search cards control what questions may be asked. Players record answers and eliminate possibilities until they can name the missing gem.',
     objective: 'Deduce the identity of the single missing gem card before the other players.',
     gameplay: 'One Gem card is hidden, the rest are dealt to players, and Search cards control what questions may be asked. Players record answers and eliminate possibilities until they can name the missing gem.',
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'First to empty hand wins automatically.',
     },
     exampleHands: [
-      'Opening deal: 3-7 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play_round.',
-      'Scoring check: Be the first player to shed all cards from your hand. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Deduce the identity of the single missing gem card before the other players.',
+      'Turn-flow example: One Gem card is hidden, the rest are dealt to players, and Search cards control what questions may be asked. Players record answers and eliminate possibilities until they can name the missing gem.',
+      'Scoring example: Be the first player to shed all cards from your hand. Be the first player to shed all cards from your hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'sleuth.rules.objective',
+        title: 'Objective',
+        text: 'Deduce the identity of the single missing gem card before the other players.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'sleuth.rules.gameplay',
+        title: 'Turn flow',
+        text: 'One Gem card is hidden, the rest are dealt to players, and Search cards control what questions may be asked. Players record answers and eliminate possibilities until they can name the missing gem.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'sleuth.setup.players',
+        title: 'Players',
+        text: '3-7 players use the table arrangement described for Sleuth.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'sleuth.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Sleuth Gem and Search card decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'sleuth.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Sleuth Gem and Search card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'sleuth.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Sleuth Gem and Search card decks and deal or lay out cards according to the documented Sleuth rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'sleuth.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to shed all cards from your hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'sleuth.score.description',
+        title: 'Scoring',
+        text: 'Be the first player to shed all cards from your hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'sleuth.rules.key.1',
+        title: 'Key rule 1',
+        text: 'One gem card is secretly removed as the solution.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'sleuth.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Search cards define legal questions.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'sleuth.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Players use deduction from opponents answers to identify the missing card.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'sleuth.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'sleuth.rules.objective',
+          'sleuth.rules.gameplay',
+        ],
+      },
+      {
+        id: 'sleuth.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'sleuth.setup.players',
+          'sleuth.setup.deck',
+          'sleuth.setup.equipment',
+          'sleuth.setup.dealing',
+        ],
+      },
+      {
+        id: 'sleuth.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'sleuth.rules.key.1',
+          'sleuth.rules.key.2',
+          'sleuth.rules.key.3',
+        ],
+      },
+      {
+        id: 'sleuth.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'sleuth.score.description',
+          'sleuth.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'sleuth.setup.dealing',
+        'sleuth.rules.objective',
+      ],
+      deal: [
+        'sleuth.rules.gameplay',
+      ],
+      play_card: [
+        'sleuth.rules.gameplay',
+      ],
+      pass: [
+        'sleuth.rules.gameplay',
+      ],
+    },
   },
 }

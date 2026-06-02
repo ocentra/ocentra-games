@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Logic. 4 players, 2 teams. 24 cards (A-Q of 2 suits). Deal 6 each; arrange ascending. Partner shows you one card privately. Guess opponent card by position+rank. Correct: opponent reveals. Wrong: you reveal one of yours. Can declare all remaining cards at any timeâ€”must be 100% correct or team loses.',
-    Player: "Welcome to Logic! Arrange your 6 cards in ascending order. Your partner will show you one of theirsâ€”use this information wisely. Guess your opponents' hidden cards by position and rank. Guess right, they reveal. Guess wrong, you reveal one of yours. When you think you know ALL the hidden cards, declareâ€”but get even one wrong, and your team loses!",
+    LLM: "1. **The Show**: Your partner privately shows you one of their face-down cards. You now know its identity and position. 2. **The Guess**: You must guess the identity of one of your OPPONENTS' face-down cards (Position + Rank). 3. **The Reveal**: If correct: The opponent turns the card face-up permanently. If incorrect: YOU must choose one of your own face-down cards to reveal face-up. 4. **Winning Declaration**: A player can 'Declare' at any time. They must correctly identify EVERY remaining face-down card in the game (teammates and opponents). If they get even one wrong, their team loses immediately.",
+    Player: "1. **The Show**: Your partner privately shows you one of their face-down cards. You now know its identity and position. 2. **The Guess**: You must guess the identity of one of your OPPONENTS' face-down cards (Position + Rank). 3. **The Reveal**: If correct: The opponent turns the card face-up permanently. If incorrect: YOU must choose one of your own face-down cards to reveal face-up. 4. **Winning Declaration**: A player can 'Declare' at any time. They must correctly identify EVERY remaining face-down card in the game (teammates and opponents). If they get even one wrong, their team loses immediately.",
     objective: 'Be the first player to correctly declare the identities of all cards still in play.',
     gameplay: "1. **The Show**: Your partner privately shows you one of their face-down cards. You now know its identity and position. 2. **The Guess**: You must guess the identity of one of your OPPONENTS' face-down cards (Position + Rank). 3. **The Reveal**: If correct: The opponent turns the card face-up permanently. If incorrect: YOU must choose one of your own face-down cards to reveal face-up. 4. **Winning Declaration**: A player can 'Declare' at any time. They must correctly identify EVERY remaining face-down card in the game (teammates and opponents). If they get even one wrong, their team loses immediately.",
     keyRules: [
@@ -56,10 +56,210 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in setup; dealer may use deal, arrange before show.',
-      'Scoring check: Win/loss based on correct declaration. No point scoring. Expected outcome: First player to correctly declare all remaining face-down cards wins for their team..',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Be the first player to correctly declare the identities of all cards still in play.',
+      "Turn-flow example: 1. **The Show**: Your partner privately shows you one of their face-down cards. You now know its identity and position. 2. **The Guess**: You must guess the identity of one of your OPPONENTS' face-down cards (Position + Rank). 3. **The Reveal**: If correct: The opponent turns the card face-up permanently. If incorrect: YOU must choose one of your own face-down cards to reveal face-up. 4. **Winning Declaration**: A player can 'Declare' at any time. They must correctly identify EVERY remaining face-down card in the game (teammates and opponents). If they get even one wrong, their team loses immediately.",
+      'Scoring example: Win/loss based on correct declaration. No point scoring. First player to correctly declare all remaining face-down cards wins for their team..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'logic.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to correctly declare the identities of all cards still in play.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'logic.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **The Show**: Your partner privately shows you one of their face-down cards. You now know its identity and position. 2. **The Guess**: You must guess the identity of one of your OPPONENTS' face-down cards (Position + Rank). 3. **The Reveal**: If correct: The opponent turns the card face-up permanently. If incorrect: YOU must choose one of your own face-down cards to reveal face-up. 4. **Winning Declaration**: A player can 'Declare' at any time. They must correctly identify EVERY remaining face-down card in the game (teammates and opponents). If they get even one wrong, their team loses immediately.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'logic.setup.players',
+        title: 'Players',
+        text: '4 players in two fixed partnerships (A+C vs B+D).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'logic.setup.deck',
+        title: 'Deck',
+        text: '24 cards: Ace (low) through Queen (high) of two suits (e.g., Red and Black).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'logic.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck and privacy screens for card arrangement.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'logic.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 6 cards face-down. They arrange their cards in front of them in **ascending order of value** from left to right.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'logic.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to correctly declare all remaining face-down cards wins for their team.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'logic.score.description',
+        title: 'Scoring',
+        text: 'Win/loss based on correct declaration. No point scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'logic.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Cards arranged in ascending order left to right.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'logic.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Partner shows you one card (identity and position).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'logic.rules.key.3',
+        title: 'Key rule 3',
+        text: "Guess opponent's card by position and rank.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'logic.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Correct guess: opponent reveals that card.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'logic.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Incorrect guess: you must reveal one of your own cards.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'logic.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Can declare at any time to name all remaining face-down cards.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'logic.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Declaration must be 100% correct or your team loses.',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'logic.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'logic.rules.objective',
+          'logic.rules.gameplay',
+        ],
+      },
+      {
+        id: 'logic.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'logic.setup.players',
+          'logic.setup.deck',
+          'logic.setup.equipment',
+          'logic.setup.dealing',
+        ],
+      },
+      {
+        id: 'logic.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'logic.rules.key.1',
+          'logic.rules.key.2',
+          'logic.rules.key.3',
+          'logic.rules.key.4',
+          'logic.rules.key.5',
+          'logic.rules.key.6',
+          'logic.rules.key.7',
+        ],
+      },
+      {
+        id: 'logic.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'logic.score.description',
+          'logic.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'logic.setup.dealing',
+        'logic.rules.objective',
+      ],
+      deal: [
+        'logic.rules.gameplay',
+      ],
+      declare: [
+        'logic.rules.gameplay',
+      ],
+      pass: [
+        'logic.rules.gameplay',
+      ],
+      arrange: [
+        'logic.rules.gameplay',
+      ],
+      show_partner: [
+        'logic.rules.gameplay',
+      ],
+      guess: [
+        'logic.rules.gameplay',
+      ],
+      reveal_opponent: [
+        'logic.rules.gameplay',
+      ],
+      self_reveal: [
+        'logic.rules.gameplay',
+      ],
+      win: [
+        'logic.rules.gameplay',
+      ],
+      lose: [
+        'logic.rules.gameplay',
+      ],
+    },
   },
 }

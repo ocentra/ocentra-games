@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 220. Logic: See rules.objective and rules.gameplay.',
-    Player: "220 is a bidding variant of Twenty-Five, Ireland's national card game. Players bid and play tricks; each trick is worth 5 points. First side to reach 220 points wins. Uses standard 52-card deck, 5 cards each, next card for trump. Trump order: 5, J, A, K, Q, 10, 9, 8, 7, 6, 4, 3, 2; Ace of Hearts is always trump.",
+    LLM: 'Bidding round; then trick-taking. Follow suit; trump order 5 high then J, A, K, Q, 10 down to 2. Non-trump: K-Q-J-A-2-3-4-5-6-7-8-9-10. Ace of Hearts is always a trump.',
+    Player: 'Bidding round; then trick-taking. Follow suit; trump order 5 high then J, A, K, Q, 10 down to 2. Non-trump: K-Q-J-A-2-3-4-5-6-7-8-9-10. Ace of Hearts is always a trump.',
     objective: 'Be the first player or team to reach 220 points. Score 5 points per trick won and 5 for holding the highest trump in play; the last hand is played out to determine whether the bid succeeds or not.',
     gameplay: 'Bidding round; then trick-taking. Follow suit; trump order 5 high then J, A, K, Q, 10 down to 2. Non-trump: K-Q-J-A-2-3-4-5-6-7-8-9-10. Ace of Hearts is always a trump.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-9 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: 5 points per trick; first to 220 wins. Expected outcome: Reach 220 points first (5 points per trick)..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first player or team to reach 220 points. Score 5 points per trick won and 5 for holding the highest trump in play; the last hand is played out to determine whether the bid succeeds or not.',
+      'Turn-flow example: Bidding round; then trick-taking. Follow suit; trump order 5 high then J, A, K, Q, 10 down to 2. Non-trump: K-Q-J-A-2-3-4-5-6-7-8-9-10. Ace of Hearts is always a trump.',
+      'Scoring example: 5 points per trick; first to 220 wins. Reach 220 points first (5 points per trick)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '220.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player or team to reach 220 points. Score 5 points per trick won and 5 for holding the highest trump in play; the last hand is played out to determine whether the bid succeeds or not.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '220.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Bidding round; then trick-taking. Follow suit; trump order 5 high then J, A, K, Q, 10 down to 2. Non-trump: K-Q-J-A-2-3-4-5-6-7-8-9-10. Ace of Hearts is always a trump.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '220.setup.players',
+        title: 'Players',
+        text: '3-9 (or 2-10); individuals or teams',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '220.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card French pack. One pack; five cards to each player and five to the kitty. No jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '220.setup.equipment',
+        title: 'Equipment',
+        text: '52-card deck, score sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '220.setup.dealing',
+        title: 'Deal',
+        text: '5 cards each; next card turned for trump.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '220.score.win-condition',
+        title: 'Win condition',
+        text: 'Reach 220 points first (5 points per trick).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '220.score.description',
+        title: 'Scoring',
+        text: '5 points per trick; first to 220 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '220.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Bidding variant of Twenty-Five',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '220.rules.key.2',
+        title: 'Key rule 2',
+        text: '5 points per trick, target 220',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '220.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trump: 5, J, A, K, Q, 10â€¦; Aâ™¥ always trump',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '220.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '220.rules.objective',
+          '220.rules.gameplay',
+        ],
+      },
+      {
+        id: '220.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '220.setup.players',
+          '220.setup.deck',
+          '220.setup.equipment',
+          '220.setup.dealing',
+        ],
+      },
+      {
+        id: '220.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '220.rules.key.1',
+          '220.rules.key.2',
+          '220.rules.key.3',
+        ],
+      },
+      {
+        id: '220.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '220.score.description',
+          '220.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '220.setup.dealing',
+        '220.rules.objective',
+      ],
+      play_card: [
+        '220.rules.gameplay',
+      ],
+    },
   },
 }

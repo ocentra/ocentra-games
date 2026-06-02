@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Two Plus One Poker. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Guts-style: two cards each, declare in or out, those in get a third card; best three-card hand wins; losers match the pot.',
+    LLM: 'If the pot is empty all players ante. Dealer deals two cards face down to each player. Players declare in (compete for the pot) or out (drop out; no extra loss). Each player who declared in receives one more card face down. If more than one stayed in, they show hands and the best three-card hand wins the pot. All players who stayed in but did not win each pay an amount equal to the whole pot into the next deal. If only one stays in, that player takes the pot without showing.',
+    Player: 'If the pot is empty all players ante. Dealer deals two cards face down to each player. Players declare in (compete for the pot) or out (drop out; no extra loss). Each player who declared in receives one more card face down. If more than one stayed in, they show hands and the best three-card hand wins the pot. All players who stayed in but did not win each pay an amount equal to the whole pot into the next deal. If only one stays in, that player takes the pot without showing.',
     objective: 'Win the pot by having the best three-card hand among players who declare in, or be the only player to declare in.',
     gameplay: 'If the pot is empty all players ante. Dealer deals two cards face down to each player. Players declare in (compete for the pot) or out (drop out; no extra loss). Each player who declared in receives one more card face down. If more than one stayed in, they show hands and the best three-card hand wins the pot. All players who stayed in but did not win each pay an amount equal to the whole pot into the next deal. If only one stays in, that player takes the pot without showing.',
     keyRules: [
@@ -50,10 +50,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 2 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; each_player_clockwise may use ante before deal.',
-      'Scoring check: Win the pot by having the best three-card hand among players who declare in, or be the only player to declare in. Expected outcome: Best three-card hand among players who declared in wins the pot; losers who stayed in each match the pot..',
+      'Setup example: 2 card(s) per player.',
+      'Rule example: Win the pot by having the best three-card hand among players who declare in, or be the only player to declare in.',
+      'Turn-flow example: If the pot is empty all players ante. Dealer deals two cards face down to each player. Players declare in (compete for the pot) or out (drop out; no extra loss). Each player who declared in receives one more card face down. If more than one stayed in, they show hands and the best three-card hand wins the pot. All players who stayed in but did not win each pay an amount equal to the whole pot into the next deal. If only one stays in, that player takes the pot without showing.',
+      'Scoring example: Win the pot by having the best three-card hand among players who declare in, or be the only player to declare in. Best three-card hand among players who declared in wins the pot; losers who stayed in each match the pot..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'two-plus-one.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the best three-card hand among players who declare in, or be the only player to declare in.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'two-plus-one.rules.gameplay',
+        title: 'Turn flow',
+        text: 'If the pot is empty all players ante. Dealer deals two cards face down to each player. Players declare in (compete for the pot) or out (drop out; no extra loss). Each player who declared in receives one more card face down. If more than one stayed in, they show hands and the best three-card hand wins the pot. All players who stayed in but did not win each pay an amount equal to the whole pot into the next deal. If only one stays in, that player takes the pot without showing.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'two-plus-one.setup.players',
+        title: 'Players',
+        text: 'Two to six players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'two-plus-one.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'two-plus-one.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard playing cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'two-plus-one.setup.dealing',
+        title: 'Deal',
+        text: 'Two cards face down to each player, one at a time. After declarations, one card to each player who declared in.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'two-plus-one.score.win-condition',
+        title: 'Win condition',
+        text: 'Best three-card hand among players who declared in wins the pot; losers who stayed in each match the pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'two-plus-one.score.description',
+        title: 'Scoring',
+        text: 'Win the pot by having the best three-card hand among players who declare in, or be the only player to declare in.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'two-plus-one.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two cards each face down; declare in or out (turn or simultaneous e.g. chips in fist); one card dealt to each player who is in; three-card Guts ranking: three of a kind, straight flush, straight, flush, pair, nothing; losers who stayed in each match the pot; agree ante and optional max loss per deal before play.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'two-plus-one.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'two-plus-one.rules.objective',
+          'two-plus-one.rules.gameplay',
+        ],
+      },
+      {
+        id: 'two-plus-one.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'two-plus-one.setup.players',
+          'two-plus-one.setup.deck',
+          'two-plus-one.setup.equipment',
+          'two-plus-one.setup.dealing',
+        ],
+      },
+      {
+        id: 'two-plus-one.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'two-plus-one.rules.key.1',
+        ],
+      },
+      {
+        id: 'two-plus-one.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'two-plus-one.score.description',
+          'two-plus-one.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'two-plus-one.setup.dealing',
+        'two-plus-one.rules.objective',
+      ],
+      ante: [
+        'two-plus-one.rules.gameplay',
+      ],
+      deal: [
+        'two-plus-one.rules.gameplay',
+      ],
+      fold: [
+        'two-plus-one.rules.gameplay',
+      ],
+      declare: [
+        'two-plus-one.rules.gameplay',
+      ],
+      reveal_hand: [
+        'two-plus-one.rules.gameplay',
+      ],
+      award_pot: [
+        'two-plus-one.rules.gameplay',
+      ],
+      deal_third_to_ins: [
+        'two-plus-one.rules.gameplay',
+      ],
+    },
   },
 }

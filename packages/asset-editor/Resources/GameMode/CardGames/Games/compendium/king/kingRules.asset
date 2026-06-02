@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: King. See rules.objective and rules.gameplay for details.',
-    Player: 'King is a compendium card game played in many countries including Belgium, Italy, Portugal, Russia, Turkey, Colombia, and Brazil. Despite its English name, there is no evidence it was ever played in English-speaking countries. The game consists of a series of rounds with different objectivesâ€”some negative (avoiding specific cards or tricks) and some positive (winning tricks). It is closely related to Barbu, Kierki, and Trex.',
+    LLM: '1. Standard trick-taking rules apply: must follow suit if possible\n2. In negative rounds, players try to avoid taking penalty cards or tricks\n3. In positive rounds, players try to win tricks\n4. Scoring varies by regional variant',
+    Player: '1. Standard trick-taking rules apply: must follow suit if possible\n2. In negative rounds, players try to avoid taking penalty cards or tricks\n3. In positive rounds, players try to win tricks\n4. Scoring varies by regional variant',
     objective: 'Complete a series of rounds with different objectives. Accumulate the highest score (or lowest penalty) after all rounds.',
     gameplay: '1. Standard trick-taking rules apply: must follow suit if possible\n2. In negative rounds, players try to avoid taking penalty cards or tricks\n3. In positive rounds, players try to win tricks\n4. Scoring varies by regional variant',
     keyRules: [
@@ -54,10 +54,168 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Complete a series of rounds with different objectives. Accumulate the highest score (or lowest penalty) after all rounds. Expected outcome: NA.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Complete a series of rounds with different objectives. Accumulate the highest score (or lowest penalty) after all rounds.',
+      'Turn-flow example: 1. Standard trick-taking rules apply: must follow suit if possible\n2. In negative rounds, players try to avoid taking penalty cards or tricks\n3. In positive rounds, players try to win tricks\n4. Scoring varies by regional variant',
+      'Scoring example: Complete a series of rounds with different objectives. Accumulate the highest score (or lowest penalty) after all rounds. Complete a series of rounds with different objectives. Accumulate the highest score (or lowest penalty) after all rounds..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'king.rules.objective',
+        title: 'Objective',
+        text: 'Complete a series of rounds with different objectives. Accumulate the highest score (or lowest penalty) after all rounds.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'king.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Standard trick-taking rules apply: must follow suit if possible\n2. In negative rounds, players try to avoid taking penalty cards or tricks\n3. In positive rounds, players try to win tricks\n4. Scoring varies by regional variant',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'king.setup.players',
+        title: 'Players',
+        text: '4 players playing individually (partnerships form in some variants).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'king.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Aces are generally high.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'king.setup.equipment',
+        title: 'Equipment',
+        text: 'One standard 52-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'king.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 13 cards. The dealer rotates clockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'king.score.win-condition',
+        title: 'Win condition',
+        text: 'Complete a series of rounds with different objectives. Accumulate the highest score (or lowest penalty) after all rounds.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'king.score.description',
+        title: 'Scoring',
+        text: 'Complete a series of rounds with different objectives. Accumulate the highest score (or lowest penalty) after all rounds.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'king.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if able; otherwise any card.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'king.rules.key.2',
+        title: 'Key rule 2',
+        text: 'In No Hearts and No King of Hearts, hearts may not be led unless no choice; King of Hearts must be played if unable to follow suit.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'king.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Negative rounds: avoid tricks, hearts, men (K/J), queens, last two tricks, or King of Hearts per contract.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'king.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Positive rounds: win tricks or target cards for plus points.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'king.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Two rounds of six contracts (12 games); lowest total penalty or highest total score wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'king.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'king.rules.objective',
+          'king.rules.gameplay',
+        ],
+      },
+      {
+        id: 'king.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'king.setup.players',
+          'king.setup.deck',
+          'king.setup.equipment',
+          'king.setup.dealing',
+        ],
+      },
+      {
+        id: 'king.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'king.rules.key.1',
+          'king.rules.key.2',
+          'king.rules.key.3',
+          'king.rules.key.4',
+          'king.rules.key.5',
+        ],
+      },
+      {
+        id: 'king.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'king.score.description',
+          'king.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'king.setup.dealing',
+        'king.rules.objective',
+      ],
+      deal: [
+        'king.rules.gameplay',
+      ],
+      play_card: [
+        'king.rules.gameplay',
+      ],
+    },
   },
 }

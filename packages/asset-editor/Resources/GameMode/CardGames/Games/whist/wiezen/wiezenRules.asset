@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Wiezen. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Wiezen (Belgian Whist) is a Belgian 4-player trick-taking game with bidding and temporary alliances. 52-card deck, 13 each. Last card dealt = trump. Contracts: Troel (3 Aces, 4th Ace holder = partner), Solo (alone), Abondance (9+ alone), Misère (no tricks), Open Misère, Pico (exactly 1 trick), Solo Slim (all 13).',
+    LLM: 'Bidding: Troel (3 Aces), Vragen (propose partner), Solo (5+ alone), Abondance (9+ alone), Misère (no tricks/no trump), Open Misère (face-up), Pico (exactly 1), Solo Slim (all 13). Follow suit. Trump if possible.',
+    Player: 'Bidding: Troel (3 Aces), Vragen (propose partner), Solo (5+ alone), Abondance (9+ alone), Misère (no tricks/no trump), Open Misère (face-up), Pico (exactly 1), Solo Slim (all 13). Follow suit. Trump if possible.',
     objective: 'Fulfill your contract by taking the agreed number of tricks (or losing every trick in Misère), alone or with a temporary partner, to score payment from opponents.',
     gameplay: 'Bidding: Troel (3 Aces), Vragen (propose partner), Solo (5+ alone), Abondance (9+ alone), Misère (no tricks/no trump), Open Misère (face-up), Pico (exactly 1), Solo Slim (all 13). Follow suit. Trump if possible.',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_4_4_5_turn_trump before bid.',
-      'Scoring check: Contract-dependent. Higher contracts = more points. Failed = negative. Expected outcome: Fulfill contract for points..',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Fulfill your contract by taking the agreed number of tricks (or losing every trick in Misère), alone or with a temporary partner, to score payment from opponents.',
+      'Turn-flow example: Bidding: Troel (3 Aces), Vragen (propose partner), Solo (5+ alone), Abondance (9+ alone), Misère (no tricks/no trump), Open Misère (face-up), Pico (exactly 1), Solo Slim (all 13). Follow suit. Trump if possible.',
+      'Scoring example: Contract-dependent. Higher contracts = more points. Failed = negative. Fulfill contract for points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'wiezen.rules.objective',
+        title: 'Objective',
+        text: 'Fulfill your contract by taking the agreed number of tricks (or losing every trick in Misère), alone or with a temporary partner, to score payment from opponents.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'wiezen.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Bidding: Troel (3 Aces), Vragen (propose partner), Solo (5+ alone), Abondance (9+ alone), Misère (no tricks/no trump), Open Misère (face-up), Pico (exactly 1), Solo Slim (all 13). Follow suit. Trump if possible.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'wiezen.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'wiezen.setup.deck',
+        title: 'Deck',
+        text: '52 cards. A high. 13 each (4+4+5). Last card = trump.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'wiezen.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, score sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'wiezen.setup.dealing',
+        title: 'Deal',
+        text: '13 each in packets. Cards NOT shuffled between hands (only cut).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'wiezen.score.win-condition',
+        title: 'Win condition',
+        text: 'Fulfill contract for points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'wiezen.score.description',
+        title: 'Scoring',
+        text: 'Contract-dependent. Higher contracts = more points. Failed = negative.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'wiezen.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Temporary alliances (Troel, Vragen)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'wiezen.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Solo contracts',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'wiezen.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Misère/Open Misère',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'wiezen.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Pico (exactly 1 trick)',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'wiezen.rules.key.5',
+        title: 'Key rule 5',
+        text: 'No shuffle between hands',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'wiezen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'wiezen.rules.objective',
+          'wiezen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'wiezen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'wiezen.setup.players',
+          'wiezen.setup.deck',
+          'wiezen.setup.equipment',
+          'wiezen.setup.dealing',
+        ],
+      },
+      {
+        id: 'wiezen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'wiezen.rules.key.1',
+          'wiezen.rules.key.2',
+          'wiezen.rules.key.3',
+          'wiezen.rules.key.4',
+          'wiezen.rules.key.5',
+        ],
+      },
+      {
+        id: 'wiezen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'wiezen.score.description',
+          'wiezen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'wiezen.setup.dealing',
+        'wiezen.rules.objective',
+      ],
+      play_card: [
+        'wiezen.rules.gameplay',
+      ],
+      pass: [
+        'wiezen.rules.gameplay',
+      ],
+      bid: [
+        'wiezen.rules.gameplay',
+      ],
+      deal_4_4_5_turn_trump: [
+        'wiezen.rules.gameplay',
+      ],
+    },
   },
 }

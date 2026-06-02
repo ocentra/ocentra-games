@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Swingo Poker. Blinds, three betting rounds, best five from seven cards (two hole, three board, river, one from another's board). Pot limit.",
-    Player: "Poker with blinds and pot-limit betting. Choose two hole and three board cards; use river and one other player's board card at showdown.",
+    LLM: "After the deal and first betting round, each player chooses two hole cards (hidden) and three board cards (exposed). All expose their boards; second betting round, started by the highest board. Dealer deals one shared river card to the center; third betting round, again started by highest board. Showdown: each player makes the best five-card hand from their two hole cards, three board cards, river card, and one card from any other player's board. Best hand wins; ties split the pot.",
+    Player: "After the deal and first betting round, each player chooses two hole cards (hidden) and three board cards (exposed). All expose their boards; second betting round, started by the highest board. Dealer deals one shared river card to the center; third betting round, again started by highest board. Showdown: each player makes the best five-card hand from their two hole cards, three board cards, river card, and one card from any other player's board. Best hand wins; ties split the pot.",
     objective: "Win the pot by making the best five-card poker hand from seven cards: your two hole cards, your three board cards, the shared river card, and any one exposed card from another player's board.",
     gameplay: "After the deal and first betting round, each player chooses two hole cards (hidden) and three board cards (exposed). All expose their boards; second betting round, started by the highest board. Dealer deals one shared river card to the center; third betting round, again started by highest board. Showdown: each player makes the best five-card hand from their two hole cards, three board cards, river card, and one card from any other player's board. Best hand wins; ties split the pot.",
     keyRules: [
@@ -56,10 +56,213 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in blinds; each_player_clockwise may use ante before deal.',
-      "Scoring check: Standard poker hand rankings. Each player makes the best five-card hand from seven cards (two hole, three board, river, one from another's board). Best hand wins the pot; ties split equally. Expected outcome: Best five-card poker hand from the seven available cards (two hole, three board, river, one from another player's board) wins the pot. Ties split the pot..",
+      'Setup example: 5 card(s) per player.',
+      "Rule example: Win the pot by making the best five-card poker hand from seven cards: your two hole cards, your three board cards, the shared river card, and any one exposed card from another player's board.",
+      "Turn-flow example: After the deal and first betting round, each player chooses two hole cards (hidden) and three board cards (exposed). All expose their boards; second betting round, started by the highest board. Dealer deals one shared river card to the center; third betting round, again started by highest board. Showdown: each player makes the best five-card hand from their two hole cards, three board cards, river card, and one card from any other player's board. Best hand wins; ties split the pot.",
+      "Scoring example: Standard poker hand rankings. Each player makes the best five-card hand from seven cards (two hole, three board, river, one from another's board). Best hand wins the pot; ties split equally. Best five-card poker hand from the seven available cards (two hole, three board, river, one from another player's board) wins the pot. Ties split the pot..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'swingo.rules.objective',
+        title: 'Objective',
+        text: "Win the pot by making the best five-card poker hand from seven cards: your two hole cards, your three board cards, the shared river card, and any one exposed card from another player's board.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'swingo.rules.gameplay',
+        title: 'Turn flow',
+        text: "After the deal and first betting round, each player chooses two hole cards (hidden) and three board cards (exposed). All expose their boards; second betting round, started by the highest board. Dealer deals one shared river card to the center; third betting round, again started by highest board. Showdown: each player makes the best five-card hand from their two hole cards, three board cards, river card, and one card from any other player's board. Best hand wins; ties split the pot.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'swingo.setup.players',
+        title: 'Players',
+        text: 'Two to eight players; best with five to eight.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'swingo.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack without jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'swingo.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck and poker chips. Stakes (blinds and pot limit) agreed before play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'swingo.setup.dealing',
+        title: 'Deal',
+        text: "Before the deal, the player to dealer's left posts the small blind and the next player posts the big blind (twice the small blind). Dealer shuffles and cuts, then deals five cards face down to each player.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'swingo.score.win-condition',
+        title: 'Win condition',
+        text: "Best five-card poker hand from the seven available cards (two hole, three board, river, one from another player's board) wins the pot. Ties split the pot.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'swingo.score.description',
+        title: 'Scoring',
+        text: "Standard poker hand rankings. Each player makes the best five-card hand from seven cards (two hole, three board, river, one from another's board). Best hand wins the pot; ties split equally.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'swingo.rules.key.1',
+        title: 'Key rule 1',
+        text: "Blinds (small and big) are posted before the deal by the two players to dealer's left.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'swingo.rules.key.2',
+        title: 'Key rule 2',
+        text: 'First betting round is started by the player left of the big blind.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'swingo.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Each player must choose two hole cards and three board cards; boards are exposed simultaneously.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'swingo.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Second and third betting rounds are started by the surviving player with the highest ranking set of board cards (pairs, two pair, trips count; incomplete straights and flushes do not).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'swingo.rules.key.5',
+        title: 'Key rule 5',
+        text: 'A player may only fold when facing a bet or raise they are unwilling to call; if already matching the current bet they cannot fold (others may need their board card).',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'swingo.rules.key.6',
+        title: 'Key rule 6',
+        text: "At showdown each player may use any five of their seven available cards; the river and another player's board card are optional.",
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'swingo.rules.key.7',
+        title: 'Key rule 7',
+        text: "Board cards of folded players are mucked face down; surviving players' board cards remain visible for others to use.",
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'swingo.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'swingo.rules.objective',
+          'swingo.rules.gameplay',
+        ],
+      },
+      {
+        id: 'swingo.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'swingo.setup.players',
+          'swingo.setup.deck',
+          'swingo.setup.equipment',
+          'swingo.setup.dealing',
+        ],
+      },
+      {
+        id: 'swingo.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'swingo.rules.key.1',
+          'swingo.rules.key.2',
+          'swingo.rules.key.3',
+          'swingo.rules.key.4',
+          'swingo.rules.key.5',
+          'swingo.rules.key.6',
+          'swingo.rules.key.7',
+        ],
+      },
+      {
+        id: 'swingo.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'swingo.score.description',
+          'swingo.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'swingo.setup.dealing',
+        'swingo.rules.objective',
+      ],
+      ante: [
+        'swingo.rules.gameplay',
+      ],
+      deal: [
+        'swingo.rules.gameplay',
+      ],
+      fold: [
+        'swingo.rules.gameplay',
+      ],
+      check: [
+        'swingo.rules.gameplay',
+      ],
+      call: [
+        'swingo.rules.gameplay',
+      ],
+      bet: [
+        'swingo.rules.gameplay',
+      ],
+      raise: [
+        'swingo.rules.gameplay',
+      ],
+      reveal_hand: [
+        'swingo.rules.gameplay',
+      ],
+      award_pot: [
+        'swingo.rules.gameplay',
+      ],
+      choose_hole_and_board: [
+        'swingo.rules.gameplay',
+      ],
+      expose_board: [
+        'swingo.rules.gameplay',
+      ],
+    },
   },
 }

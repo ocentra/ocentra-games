@@ -58,10 +58,210 @@
       go_out: 'This action does not apply to this game.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 0 card(s) per player, 108 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before draw.',
-      'Scoring check: Points for cards left in hand; lowest total after 7 rounds wins. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Get rid of all cards by melding. Lowest cumulative score after 7 rounds wins.',
+      'Turn-flow example: 7 rounds with specific contracts: R1=2 trios (6 cards), R2=1 escalera+1 trio (7 cards), R3=2 escaleras (8 cards), R4=3 trios (9 cards), R5=2 trios+1 escalera (10 cards), R6=2 escaleras+1 trio (11 cards), R7=3 escaleras (12 cards). Turn: draw (from discard or draw pile), optionally meld, discard. To meld initially, must have complete contract and put it down at once. After initial meld, can add cards to any existing melds on table (extend trios with same rank, extend escaleras at either end). Cannot create new melds after initial contract. Ace can be high or low in escalera but not both. Jokers wild: max 1 per meld in initial contract, unlimited after. Joker at end of escalera can be moved by tucking in appropriate card. Round ends when player empties hand. Others score cards remaining.',
+      'Scoring example: Points for cards left in hand; lowest total after 7 rounds wins. Lowest total penalty points after seven rounds wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'carioca.rules.objective',
+        title: 'Objective',
+        text: 'Get rid of all cards by melding. Lowest cumulative score after 7 rounds wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'carioca.rules.gameplay',
+        title: 'Turn flow',
+        text: '7 rounds with specific contracts: R1=2 trios (6 cards), R2=1 escalera+1 trio (7 cards), R3=2 escaleras (8 cards), R4=3 trios (9 cards), R5=2 trios+1 escalera (10 cards), R6=2 escaleras+1 trio (11 cards), R7=3 escaleras (12 cards). Turn: draw (from discard or draw pile), optionally meld, discard. To meld initially, must have complete contract and put it down at once. After initial meld, can add cards to any existing melds on table (extend trios with same rank, extend escaleras at either end). Cannot create new melds after initial contract. Ace can be high or low in escalera but not both. Jokers wild: max 1 per meld in initial contract, unlimited after. Joker at end of escalera can be moved by tucking in appropriate card. Round ends when player empties hand. Others score cards remaining.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'carioca.setup.players',
+        title: 'Players',
+        text: '2-5 players, each playing individually (no partnerships). Deal and play are counter-clockwise.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'carioca.setup.deck',
+        title: 'Deck',
+        text: 'Two standard 52-card packs plus 4 jokers = 108 cards total. Jokers are wild. Cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2 (Ace high or low in escaleras).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'carioca.setup.equipment',
+        title: 'Equipment',
+        text: '108-card deck, score sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'carioca.setup.dealing',
+        title: 'Deal',
+        text: 'First dealer chosen at random. Deal passes to the right (counter-clockwise). Rounds 1-6: 11 cards each. Round 7: 12 cards each. One card turned up to start discard pile; remainder forms draw pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'carioca.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest total penalty points after seven rounds wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'carioca.score.description',
+        title: 'Scoring',
+        text: 'Points for cards left in hand; lowest total after 7 rounds wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'carioca.rules.key.1',
+        title: 'Key rule 1',
+        text: '7 rounds with increasing contract difficulty',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'carioca.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Trio = 3 of a kind (suits can match)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'carioca.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Escalera = 4-card straight flush (Ace high or low)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'carioca.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Must have complete contract before initial meld',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'carioca.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Can add to any meld on table after initial contract',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'carioca.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Jokers wild: 1 per meld initially, unlimited after',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'carioca.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Joker at escalera end can be moved by tucking card',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+      {
+        id: 'carioca.rules.key.8',
+        title: 'Key rule 8',
+        text: 'Deal and play are counter-clockwise',
+        sourceFields: [
+          'rules.keyRules.7',
+        ],
+      },
+      {
+        id: 'carioca.rules.key.9',
+        title: 'Key rule 9',
+        text: 'Round 7 deals 12 cards (others deal 11)',
+        sourceFields: [
+          'rules.keyRules.8',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'carioca.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'carioca.rules.objective',
+          'carioca.rules.gameplay',
+        ],
+      },
+      {
+        id: 'carioca.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'carioca.setup.players',
+          'carioca.setup.deck',
+          'carioca.setup.equipment',
+          'carioca.setup.dealing',
+        ],
+      },
+      {
+        id: 'carioca.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'carioca.rules.key.1',
+          'carioca.rules.key.2',
+          'carioca.rules.key.3',
+          'carioca.rules.key.4',
+          'carioca.rules.key.5',
+          'carioca.rules.key.6',
+          'carioca.rules.key.7',
+          'carioca.rules.key.8',
+          'carioca.rules.key.9',
+        ],
+      },
+      {
+        id: 'carioca.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'carioca.score.description',
+          'carioca.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'carioca.setup.dealing',
+        'carioca.rules.objective',
+      ],
+      deal: [
+        'carioca.rules.gameplay',
+      ],
+      draw: [
+        'carioca.rules.gameplay',
+      ],
+      discard: [
+        'carioca.rules.gameplay',
+      ],
+      meld: [
+        'carioca.rules.gameplay',
+      ],
+    },
   },
 }

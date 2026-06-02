@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Deuce-To-Seven Lowball. Evaluate hands by deuce-to-seven ranking, execute draw-replace flow, and resolve fixed-limit betting then showdown.',
-    Player: 'You are drawing one card holding 7-5-4-3-X in a fixed-limit deuce-to-seven hand. Balance draw odds against betting pressure from opponents standing pat.',
+    LLM: 'SINGLE DRAW VERSION:\n1. Dealer deals 5 cards to each player\n2. First betting round (beginning left of blinds)\n3. Players may discard 0-5 cards and receive replacements\n4. Second betting round\n5. Showdown - lowest hand wins\n\nTRIPLE DRAW VERSION:\n1. Deal 5 cards to each player\n2. First betting round\n3. First draw (discard and replace)\n4. Second betting round\n5. Second draw\n6. Third betting round\n7. Third draw\n8. Final betting round\n9. Showdown\n\nNote: If dealer runs out of cards during multiple draws, discards are shuffled to form new deck',
+    Player: 'SINGLE DRAW VERSION:\n1. Dealer deals 5 cards to each player\n2. First betting round (beginning left of blinds)\n3. Players may discard 0-5 cards and receive replacements\n4. Second betting round\n5. Showdown - lowest hand wins\n\nTRIPLE DRAW VERSION:\n1. Deal 5 cards to each player\n2. First betting round\n3. First draw (discard and replace)\n4. Second betting round\n5. Second draw\n6. Third betting round\n7. Third draw\n8. Final betting round\n9. Showdown\n\nNote: If dealer runs out of cards during multiple draws, discards are shuffled to form new deck',
     objective: 'Make the lowest possible five-card hand. The best hand is 7-5-4-3-2 (no flush). Straights and flushes count against you, and aces are always high.',
     gameplay: 'SINGLE DRAW VERSION:\n1. Dealer deals 5 cards to each player\n2. First betting round (beginning left of blinds)\n3. Players may discard 0-5 cards and receive replacements\n4. Second betting round\n5. Showdown - lowest hand wins\n\nTRIPLE DRAW VERSION:\n1. Deal 5 cards to each player\n2. First betting round\n3. First draw (discard and replace)\n4. Second betting round\n5. Second draw\n6. Third betting round\n7. Third draw\n8. Final betting round\n9. Showdown\n\nNote: If dealer runs out of cards during multiple draws, discards are shuffled to form new deck',
     keyRules: [
@@ -55,10 +55,204 @@
       go_out: 'Winning is by showdown hand rank, not by shedding to go out.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; each_player_clockwise may use ante before deal.',
-      'Scoring check: Lowest valid deuce-to-seven hand wins the pot at showdown. Expected outcome: NA.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Make the lowest possible five-card hand. The best hand is 7-5-4-3-2 (no flush). Straights and flushes count against you, and aces are always high.',
+      'Turn-flow example: SINGLE DRAW VERSION:\n1. Dealer deals 5 cards to each player\n2. First betting round (beginning left of blinds)\n3. Players may discard 0-5 cards and receive replacements\n4. Second betting round\n5. Showdown - lowest hand wins\n\nTRIPLE DRAW VERSION:\n1. Deal 5 cards to each player\n2. First betting round\n3. First draw (discard and replace)\n4. Second betting round\n5. Second draw\n6. Third betting round\n7. Third draw\n8. Final betting round\n9. Showdown\n\nNote: If dealer runs out of cards during multiple draws, discards are shuffled to form new deck',
+      'Scoring example: Lowest valid deuce-to-seven hand wins the pot at showdown. Hold the best low hand under deuce-to-seven rules after final betting..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'deuce-to-seven-lowball.rules.objective',
+        title: 'Objective',
+        text: 'Make the lowest possible five-card hand. The best hand is 7-5-4-3-2 (no flush). Straights and flushes count against you, and aces are always high.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'deuce-to-seven-lowball.rules.gameplay',
+        title: 'Turn flow',
+        text: 'SINGLE DRAW VERSION:\n1. Dealer deals 5 cards to each player\n2. First betting round (beginning left of blinds)\n3. Players may discard 0-5 cards and receive replacements\n4. Second betting round\n5. Showdown - lowest hand wins\n\nTRIPLE DRAW VERSION:\n1. Deal 5 cards to each player\n2. First betting round\n3. First draw (discard and replace)\n4. Second betting round\n5. Second draw\n6. Third betting round\n7. Third draw\n8. Final betting round\n9. Showdown\n\nNote: If dealer runs out of cards during multiple draws, discards are shuffled to form new deck',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'deuce-to-seven-lowball.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4-6\nPartnerships: None - individual play',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'deuce-to-seven-lowball.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included (normally played without joker)\nCard ranking: Standard for determining low hands',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'deuce-to-seven-lowball.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nPoker chips for betting\nDealer button for blind games',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'deuce-to-seven-lowball.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 5 cards face down\nDealing passes clockwise after each hand\nTypically played with blinds (small blind and big blind)',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'deuce-to-seven-lowball.score.win-condition',
+        title: 'Win condition',
+        text: 'Hold the best low hand under deuce-to-seven rules after final betting.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'deuce-to-seven-lowball.score.description',
+        title: 'Scoring',
+        text: 'Lowest valid deuce-to-seven hand wins the pot at showdown.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'deuce-to-seven-lowball.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Aces are ALWAYS high (A-2-3-4-5 is NOT a straight, but ace makes it a poor hand)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'deuce-to-seven-lowball.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Straights and flushes count against you (bad hands to have)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'deuce-to-seven-lowball.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Best hand is 7-5-4-3-2 with mixed suits (no straight, no flush)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'deuce-to-seven-lowball.rules.key.4',
+        title: 'Key rule 4',
+        text: 'When comparing hands, look at highest card first',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'deuce-to-seven-lowball.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Paired cards always make hands worse',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'deuce-to-seven-lowball.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Normal poker betting rules apply',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'deuce-to-seven-lowball.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'deuce-to-seven-lowball.rules.objective',
+          'deuce-to-seven-lowball.rules.gameplay',
+        ],
+      },
+      {
+        id: 'deuce-to-seven-lowball.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'deuce-to-seven-lowball.setup.players',
+          'deuce-to-seven-lowball.setup.deck',
+          'deuce-to-seven-lowball.setup.equipment',
+          'deuce-to-seven-lowball.setup.dealing',
+        ],
+      },
+      {
+        id: 'deuce-to-seven-lowball.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'deuce-to-seven-lowball.rules.key.1',
+          'deuce-to-seven-lowball.rules.key.2',
+          'deuce-to-seven-lowball.rules.key.3',
+          'deuce-to-seven-lowball.rules.key.4',
+          'deuce-to-seven-lowball.rules.key.5',
+          'deuce-to-seven-lowball.rules.key.6',
+        ],
+      },
+      {
+        id: 'deuce-to-seven-lowball.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'deuce-to-seven-lowball.score.description',
+          'deuce-to-seven-lowball.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'deuce-to-seven-lowball.setup.dealing',
+        'deuce-to-seven-lowball.rules.objective',
+      ],
+      ante: [
+        'deuce-to-seven-lowball.rules.gameplay',
+      ],
+      deal: [
+        'deuce-to-seven-lowball.rules.gameplay',
+      ],
+      fold: [
+        'deuce-to-seven-lowball.rules.gameplay',
+      ],
+      check: [
+        'deuce-to-seven-lowball.rules.gameplay',
+      ],
+      call: [
+        'deuce-to-seven-lowball.rules.gameplay',
+      ],
+      bet: [
+        'deuce-to-seven-lowball.rules.gameplay',
+      ],
+      raise: [
+        'deuce-to-seven-lowball.rules.gameplay',
+      ],
+      reveal_hand: [
+        'deuce-to-seven-lowball.rules.gameplay',
+      ],
+      award_pot: [
+        'deuce-to-seven-lowball.rules.gameplay',
+      ],
+      draw: [
+        'deuce-to-seven-lowball.rules.gameplay',
+      ],
+      discard: [
+        'deuce-to-seven-lowball.rules.gameplay',
+      ],
+    },
   },
 }

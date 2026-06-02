@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Crazy Eights. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Crazy Eights is a popular shedding card game, especially beloved by children. The objective is simple: be the first player to discard all your cards. Players take turns playing cards to a central discard pile, matching either the rank or suit of the top card. The eponymous "crazy" 8s are wild cards that can be played on anything and allow the player to change the suit.',
+    LLM: 'Deal all cards to four players. The player with the two of clubs begins. Players must beat the previous card where possible or pick up cards from the table; individual trump suits create different winning relations for each player. When a player has to take the pile, the next player starts a fresh pile.',
+    Player: 'Deal all cards to four players. The player with the two of clubs begins. Players must beat the previous card where possible or pick up cards from the table; individual trump suits create different winning relations for each player. When a player has to take the pile, the next player starts a fresh pile.',
     objective: 'Avoid being the player left with all the cards, the Hund or dog.',
     gameplay: 'Deal all cards to four players. The player with the two of clubs begins. Players must beat the previous card where possible or pick up cards from the table; individual trump suits create different winning relations for each player. When a player has to take the pile, the next player starts a fresh pile.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Be the first player to discard all cards from your hand. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Avoid being the player left with all the cards, the Hund or dog.',
+      'Turn-flow example: Deal all cards to four players. The player with the two of clubs begins. Players must beat the previous card where possible or pick up cards from the table; individual trump suits create different winning relations for each player. When a player has to take the pile, the next player starts a fresh pile.',
+      'Scoring example: Be the first player to discard all cards from your hand. Be the first player to discard all cards from your hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hund.rules.objective',
+        title: 'Objective',
+        text: 'Avoid being the player left with all the cards, the Hund or dog.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hund.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Deal all cards to four players. The player with the two of clubs begins. Players must beat the previous card where possible or pick up cards from the table; individual trump suits create different winning relations for each player. When a player has to take the pile, the next player starts a fresh pile.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hund.setup.players',
+        title: 'Players',
+        text: '4 players use the table arrangement described for Hund.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hund.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card French-suited deck without Jokers',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hund.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card French-suited deck without Jokers, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hund.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Standard 52-card French-suited deck without Jokers and deal or lay out cards according to the documented Hund rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hund.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hund.score.description',
+        title: 'Scoring',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hund.rules.key.1',
+        title: 'Key rule 1',
+        text: 'There is no positive winner; the game identifies the loser.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hund.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Each player has an individual trump suit.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hund.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Picking up the pile changes the next lead and the number of cards in play.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hund.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hund.rules.objective',
+          'hund.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hund.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hund.setup.players',
+          'hund.setup.deck',
+          'hund.setup.equipment',
+          'hund.setup.dealing',
+        ],
+      },
+      {
+        id: 'hund.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hund.rules.key.1',
+          'hund.rules.key.2',
+          'hund.rules.key.3',
+        ],
+      },
+      {
+        id: 'hund.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hund.score.description',
+          'hund.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hund.setup.dealing',
+        'hund.rules.objective',
+      ],
+      play_card: [
+        'hund.rules.gameplay',
+      ],
+    },
   },
 }

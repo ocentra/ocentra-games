@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Chicago Poker. Seven Card Stud, split pot. 2-8 players. 2 down, 1 up; 4th-6th up, 7th down. Five betting rounds. Pot splits 50/50: best 5-card hand wins half, highest face-down spade wins half. Must have spade in hole to win spade half. Variants: Low Chicago (lowest spade), Follow the Queen, etc.',
-    Player: "Welcome to Chicago Poker! This Seven Card Stud variant splits the pot—half to the best hand, half to the highest SPADE IN THE HOLE. Face-up spades don't count! Watch your opponents' upcards to track which spades might still be hidden. Can you balance building a strong hand with hunting for that Ace of Spades in the hole",
+    LLM: '1. **Ante**: All players post an ante. 2. **Initial Deal**: Each player receives 2 cards face down and 1 card face up. 3. **Bring-in**: Player with the lowest upcard posts a compulsory bring-in bet (or highest in some variants). 4. **Betting Rounds**: Five rounds of betting follow each card dealt (after 3rd, 4th, 5th, 6th, and 7th streets). 5. **Declaration**: After final betting, active players declare whether they are going for High Hand, High Spade, or Both.',
+    Player: '1. **Ante**: All players post an ante. 2. **Initial Deal**: Each player receives 2 cards face down and 1 card face up. 3. **Bring-in**: Player with the lowest upcard posts a compulsory bring-in bet (or highest in some variants). 4. **Betting Rounds**: Five rounds of betting follow each card dealt (after 3rd, 4th, 5th, 6th, and 7th streets). 5. **Declaration**: After final betting, active players declare whether they are going for High Hand, High Spade, or Both.',
     objective: 'Win half the pot with the highest poker hand OR win half the pot by holding the highest spade in the hole (face-down cards only).',
     gameplay: '1. **Ante**: All players post an ante. 2. **Initial Deal**: Each player receives 2 cards face down and 1 card face up. 3. **Bring-in**: Player with the lowest upcard posts a compulsory bring-in bet (or highest in some variants). 4. **Betting Rounds**: Five rounds of betting follow each card dealt (after 3rd, 4th, 5th, 6th, and 7th streets). 5. **Declaration**: After final betting, active players declare whether they are going for High Hand, High Spade, or Both.',
     keyRules: [
@@ -55,10 +55,201 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; current_player may use ante before deal_initial.',
-      'Scoring check: High-Low Split pot. 50% to the best poker hand, 50% to the highest spade in the hole (High Chicago) or lowest spade in the hole (Low Chicago). Expected outcome: Highest poker rank wins the high half; highest (or lowest) qualifying spade in hole wins the spade half..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Win half the pot with the highest poker hand OR win half the pot by holding the highest spade in the hole (face-down cards only).',
+      'Turn-flow example: 1. **Ante**: All players post an ante. 2. **Initial Deal**: Each player receives 2 cards face down and 1 card face up. 3. **Bring-in**: Player with the lowest upcard posts a compulsory bring-in bet (or highest in some variants). 4. **Betting Rounds**: Five rounds of betting follow each card dealt (after 3rd, 4th, 5th, 6th, and 7th streets). 5. **Declaration**: After final betting, active players declare whether they are going for High Hand, High Spade, or Both.',
+      'Scoring example: High-Low Split pot. 50% to the best poker hand, 50% to the highest spade in the hole (High Chicago) or lowest spade in the hole (Low Chicago). Highest poker rank wins the high half; highest (or lowest) qualifying spade in hole wins the spade half..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'chicago.rules.objective',
+        title: 'Objective',
+        text: 'Win half the pot with the highest poker hand OR win half the pot by holding the highest spade in the hole (face-down cards only).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'chicago.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Ante**: All players post an ante. 2. **Initial Deal**: Each player receives 2 cards face down and 1 card face up. 3. **Bring-in**: Player with the lowest upcard posts a compulsory bring-in bet (or highest in some variants). 4. **Betting Rounds**: Five rounds of betting follow each card dealt (after 3rd, 4th, 5th, 6th, and 7th streets). 5. **Declaration**: After final betting, active players declare whether they are going for High Hand, High Spade, or Both.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'chicago.setup.players',
+        title: 'Players',
+        text: '2-8 players (optimal with 5-7).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'chicago.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. No jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'chicago.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, poker chips, dealer button.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'chicago.setup.dealing',
+        title: 'Deal',
+        text: 'Seven Card Stud format: 2 cards face down, 4 cards face up, 1 card face down. Five betting rounds total.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'chicago.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest poker rank wins the high half; highest (or lowest) qualifying spade in hole wins the spade half.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'chicago.score.description',
+        title: 'Scoring',
+        text: 'High-Low Split pot. 50% to the best poker hand, 50% to the highest spade in the hole (High Chicago) or lowest spade in the hole (Low Chicago).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'chicago.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Pot is split 50/50 between best poker hand and highest spade in the hole (High Chicago).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'chicago.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Only FACE-DOWN spades count for the spade half of the pot.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'chicago.rules.key.3',
+        title: 'Key rule 3',
+        text: 'If the Ace of Spades is dealt face up, the King of Spades in the hole becomes the best possible spade.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'chicago.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Declaration can be sequential (around the table) or simultaneous (chips in fist: 1=High Hand, 2=High Spade, 3=Both).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'chicago.rules.key.5',
+        title: 'Key rule 5',
+        text: 'To win the spade half, you MUST have a spade face down. Without one, you cannot win that half even if no one else declares spade.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'chicago.rules.key.6',
+        title: 'Key rule 6',
+        text: "Declaring 'Both' requires winning BOTH halves to win anything (Pig Rule in some variants).",
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'chicago.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'chicago.rules.objective',
+          'chicago.rules.gameplay',
+        ],
+      },
+      {
+        id: 'chicago.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'chicago.setup.players',
+          'chicago.setup.deck',
+          'chicago.setup.equipment',
+          'chicago.setup.dealing',
+        ],
+      },
+      {
+        id: 'chicago.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'chicago.rules.key.1',
+          'chicago.rules.key.2',
+          'chicago.rules.key.3',
+          'chicago.rules.key.4',
+          'chicago.rules.key.5',
+          'chicago.rules.key.6',
+        ],
+      },
+      {
+        id: 'chicago.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'chicago.score.description',
+          'chicago.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'chicago.setup.dealing',
+        'chicago.rules.objective',
+      ],
+      ante: [
+        'chicago.rules.gameplay',
+      ],
+      deal: [
+        'chicago.rules.gameplay',
+      ],
+      fold: [
+        'chicago.rules.gameplay',
+      ],
+      check: [
+        'chicago.rules.gameplay',
+      ],
+      call: [
+        'chicago.rules.gameplay',
+      ],
+      bet: [
+        'chicago.rules.gameplay',
+      ],
+      raise: [
+        'chicago.rules.gameplay',
+      ],
+      declare: [
+        'chicago.rules.gameplay',
+      ],
+      bring_in: [
+        'chicago.rules.gameplay',
+      ],
+      reveal: [
+        'chicago.rules.gameplay',
+      ],
+    },
   },
 }

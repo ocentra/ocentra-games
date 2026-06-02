@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Launch Pad. Logic: Score the most points from completed rockets after the launch pad timer ends.',
-    Player: 'Launch Pad is a commercial family strategy card game where players construct rockets and score completed launches.',
+    LLM: 'Players draw and play rocket, metal, fuel, expert, astronaut, oxygen, certificate, security, and action cards, advancing rockets through construction, quality control, and launch preparation.',
+    Player: 'Players draw and play rocket, metal, fuel, expert, astronaut, oxygen, certificate, security, and action cards, advancing rockets through construction, quality control, and launch preparation.',
     objective: 'Score the most points from completed rockets after the launch pad timer ends.',
     gameplay: 'Players draw and play rocket, metal, fuel, expert, astronaut, oxygen, certificate, security, and action cards, advancing rockets through construction, quality control, and launch preparation.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Published scoring or victory conditions determine the winner. Expected outcome: Score the most points from completed rockets after the launch pad timer ends..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Score the most points from completed rockets after the launch pad timer ends.',
+      'Turn-flow example: Players draw and play rocket, metal, fuel, expert, astronaut, oxygen, certificate, security, and action cards, advancing rockets through construction, quality control, and launch preparation.',
+      'Scoring example: Published scoring or victory conditions determine the winner. Score the most points from completed rockets after the launch pad timer ends..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'launch-pad.rules.objective',
+        title: 'Objective',
+        text: 'Score the most points from completed rockets after the launch pad timer ends.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'launch-pad.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players draw and play rocket, metal, fuel, expert, astronaut, oxygen, certificate, security, and action cards, advancing rockets through construction, quality control, and launch preparation.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'launch-pad.setup.players',
+        title: 'Players',
+        text: '2-4 players use the table arrangement described for Launch Pad.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'launch-pad.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Launch Pad rocket, resource, action, and launch-pad cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'launch-pad.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Launch Pad rocket, resource, action, and launch-pad cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'launch-pad.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare the dedicated Launch Pad cards and any shared table, score, or resource areas from the published rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'launch-pad.score.win-condition',
+        title: 'Win condition',
+        text: 'Score the most points from completed rockets after the launch pad timer ends.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'launch-pad.score.description',
+        title: 'Scoring',
+        text: 'Published scoring or victory conditions determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'launch-pad.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two to four players.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'launch-pad.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players build rockets through three production phases.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'launch-pad.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Resources and experts are required to advance rockets.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'launch-pad.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Four launch-pad cards create the game clock.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'launch-pad.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Final rocket points decide the winner.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'launch-pad.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'launch-pad.rules.objective',
+          'launch-pad.rules.gameplay',
+        ],
+      },
+      {
+        id: 'launch-pad.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'launch-pad.setup.players',
+          'launch-pad.setup.deck',
+          'launch-pad.setup.equipment',
+          'launch-pad.setup.dealing',
+        ],
+      },
+      {
+        id: 'launch-pad.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'launch-pad.rules.key.1',
+          'launch-pad.rules.key.2',
+          'launch-pad.rules.key.3',
+          'launch-pad.rules.key.4',
+          'launch-pad.rules.key.5',
+        ],
+      },
+      {
+        id: 'launch-pad.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'launch-pad.score.description',
+          'launch-pad.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'launch-pad.setup.dealing',
+        'launch-pad.rules.objective',
+      ],
+      play_card: [
+        'launch-pad.rules.gameplay',
+      ],
+    },
   },
 }

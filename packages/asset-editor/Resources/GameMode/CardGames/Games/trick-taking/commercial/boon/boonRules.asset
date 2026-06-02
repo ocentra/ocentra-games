@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Boon. Logic: Win enough tricks or points with the active partnership or solo role.',
-    Player: 'Boon is a commercial trick-taking game derived from Sheepshead, using a proprietary card set and partnership-oriented play.',
+    LLM: 'Players follow suit and use the game-specific trump hierarchy to capture tricks, with allies and opponents determined by the hand structure.',
+    Player: 'Players follow suit and use the game-specific trump hierarchy to capture tricks, with allies and opponents determined by the hand structure.',
     objective: 'Win enough tricks or points with the active partnership or solo role.',
     gameplay: 'Players follow suit and use the game-specific trump hierarchy to capture tricks, with allies and opponents determined by the hand structure.',
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-5 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Trick points or contract results decide each hand. Expected outcome: Win enough tricks or points with the active partnership or solo role..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win enough tricks or points with the active partnership or solo role.',
+      'Turn-flow example: Players follow suit and use the game-specific trump hierarchy to capture tricks, with allies and opponents determined by the hand structure.',
+      'Scoring example: Trick points or contract results decide each hand. Win enough tricks or points with the active partnership or solo role..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'boon.rules.objective',
+        title: 'Objective',
+        text: 'Win enough tricks or points with the active partnership or solo role.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'boon.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players follow suit and use the game-specific trump hierarchy to capture tricks, with allies and opponents determined by the hand structure.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'boon.setup.players',
+        title: 'Players',
+        text: '3-5 players use the table arrangement described for Boon.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'boon.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Boon deck derived from Sheepshead-style play',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'boon.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Boon deck derived from Sheepshead-style play, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'boon.setup.dealing',
+        title: 'Deal',
+        text: 'Deal the proprietary deck according to player count and identify the hand role or partnership structure.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'boon.score.win-condition',
+        title: 'Win condition',
+        text: 'Win enough tricks or points with the active partnership or solo role.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'boon.score.description',
+        title: 'Scoring',
+        text: 'Trick points or contract results decide each hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'boon.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Derived from Sheepshead.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'boon.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Uses a proprietary deck.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'boon.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trick-taking with trump hierarchy.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'boon.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Partnership or role structure drives scoring.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'boon.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'boon.rules.objective',
+          'boon.rules.gameplay',
+        ],
+      },
+      {
+        id: 'boon.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'boon.setup.players',
+          'boon.setup.deck',
+          'boon.setup.equipment',
+          'boon.setup.dealing',
+        ],
+      },
+      {
+        id: 'boon.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'boon.rules.key.1',
+          'boon.rules.key.2',
+          'boon.rules.key.3',
+          'boon.rules.key.4',
+        ],
+      },
+      {
+        id: 'boon.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'boon.score.description',
+          'boon.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'boon.setup.dealing',
+        'boon.rules.objective',
+      ],
+      play_card: [
+        'boon.rules.gameplay',
+      ],
+      discard: [
+        'boon.rules.gameplay',
+      ],
+      pass: [
+        'boon.rules.gameplay',
+      ],
+      bid: [
+        'boon.rules.gameplay',
+      ],
+    },
   },
 }

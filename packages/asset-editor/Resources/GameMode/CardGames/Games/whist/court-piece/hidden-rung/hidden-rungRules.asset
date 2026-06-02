@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Hidden Rung (Court Piece). 4 players, 2 teams. Caller picks face-down trump from first 5 cards. Play follows Whist rules until a player is void; caller then reveals the trump. Objective: Win 7+ tricks.',
-    Player: 'Welcome to Hidden Rung. Choose your hidden trump card carefully. Partner, watch the leads—can you figure out our secret suit before the reveal?',
+    LLM: "1. **Trump Selection**: The caller chooses a card from their first 5 and places it face-down. This suit is the 'Hidden Rung'. 2. **Leading**: The caller leads the first trick. 3. **Following**: Players must follow suit if possible. 4. **Revealing Trump**: If a player cannot follow suit, they may ask the caller to reveal the trump. The caller turns the hidden card face-up. 5. **Winning Tricks**: Before the reveal, the highest card of the suit led wins. After the reveal, the highest trump wins (or highest cards of suit led if no trumps played).",
+    Player: "1. **Trump Selection**: The caller chooses a card from their first 5 and places it face-down. This suit is the 'Hidden Rung'. 2. **Leading**: The caller leads the first trick. 3. **Following**: Players must follow suit if possible. 4. **Revealing Trump**: If a player cannot follow suit, they may ask the caller to reveal the trump. The caller turns the hidden card face-up. 5. **Winning Tricks**: Before the reveal, the highest card of the suit led wins. After the reveal, the highest trump wins (or highest cards of suit led if no trumps played).",
     objective: 'A partnership aims to win the majority (at least 7) of the 13 tricks. Special bonuses (Courts) are awarded for winning 7 consecutive tricks or 7 tricks led by the same team.',
     gameplay: "1. **Trump Selection**: The caller chooses a card from their first 5 and places it face-down. This suit is the 'Hidden Rung'. 2. **Leading**: The caller leads the first trick. 3. **Following**: Players must follow suit if possible. 4. **Revealing Trump**: If a player cannot follow suit, they may ask the caller to reveal the trump. The caller turns the hidden card face-up. 5. **Winning Tricks**: Before the reveal, the highest card of the suit led wins. After the reveal, the highest trump wins (or highest cards of suit led if no trumps played).",
     keyRules: [
@@ -53,10 +53,168 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in initial_deal; dealer may use deal before trump_selection.',
-      "Scoring check: Based on number of tricks won (of 13). Winning 7 consecutive tricks or 7-0 is a 'Court'. Expected outcome: 7.",
+      'Setup example: 13 card(s) per player.',
+      'Rule example: A partnership aims to win the majority (at least 7) of the 13 tricks. Special bonuses (Courts) are awarded for winning 7 consecutive tricks or 7 tricks led by the same team.',
+      "Turn-flow example: 1. **Trump Selection**: The caller chooses a card from their first 5 and places it face-down. This suit is the 'Hidden Rung'. 2. **Leading**: The caller leads the first trick. 3. **Following**: Players must follow suit if possible. 4. **Revealing Trump**: If a player cannot follow suit, they may ask the caller to reveal the trump. The caller turns the hidden card face-up. 5. **Winning Tricks**: Before the reveal, the highest card of the suit led wins. After the reveal, the highest trump wins (or highest cards of suit led if no trumps played).",
+      "Scoring example: Based on number of tricks won (of 13). Winning 7 consecutive tricks or 7-0 is a 'Court'. The first partnership to win the required number of tricks or score a 'Court'..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hidden-rung.rules.objective',
+        title: 'Objective',
+        text: 'A partnership aims to win the majority (at least 7) of the 13 tricks. Special bonuses (Courts) are awarded for winning 7 consecutive tricks or 7 tricks led by the same team.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hidden-rung.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Trump Selection**: The caller chooses a card from their first 5 and places it face-down. This suit is the 'Hidden Rung'. 2. **Leading**: The caller leads the first trick. 3. **Following**: Players must follow suit if possible. 4. **Revealing Trump**: If a player cannot follow suit, they may ask the caller to reveal the trump. The caller turns the hidden card face-up. 5. **Winning Tricks**: Before the reveal, the highest card of the suit led wins. After the reveal, the highest trump wins (or highest cards of suit led if no trumps played).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hidden-rung.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships (North-South vs. East-West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hidden-rung.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Aces are high (A-K-Q-J-10...2).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hidden-rung.setup.equipment',
+        title: 'Equipment',
+        text: "52-card deck and a way to track tricks (or 'Courts').",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hidden-rung.setup.dealing',
+        title: 'Deal',
+        text: "The dealer deals 5 cards to each player in the first batch. The player to the dealer's right (Trump Caller) selects their hidden trump. The remaining cards are then dealt in batches of 4 until all cards are distributed (13 per player).",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hidden-rung.score.win-condition',
+        title: 'Win condition',
+        text: "The first partnership to win the required number of tricks or score a 'Court'.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hidden-rung.score.description',
+        title: 'Scoring',
+        text: "Based on number of tricks won (of 13). Winning 7 consecutive tricks or 7-0 is a 'Court'.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hidden-rung.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trumps cannot be played to a trick until they have been revealed.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hidden-rung.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Once revealed, a player void in the led suit MUST play a trump if they have one.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hidden-rung.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The hidden trump card itself can be used to win a trick once revealed.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'hidden-rung.rules.key.4',
+        title: 'Key rule 4',
+        text: "If a team wins the first 7 tricks consecutively, it is a 'Court' (instant game win).",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hidden-rung.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hidden-rung.rules.objective',
+          'hidden-rung.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hidden-rung.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hidden-rung.setup.players',
+          'hidden-rung.setup.deck',
+          'hidden-rung.setup.equipment',
+          'hidden-rung.setup.dealing',
+        ],
+      },
+      {
+        id: 'hidden-rung.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hidden-rung.rules.key.1',
+          'hidden-rung.rules.key.2',
+          'hidden-rung.rules.key.3',
+          'hidden-rung.rules.key.4',
+        ],
+      },
+      {
+        id: 'hidden-rung.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hidden-rung.score.description',
+          'hidden-rung.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hidden-rung.setup.dealing',
+        'hidden-rung.rules.objective',
+      ],
+      deal: [
+        'hidden-rung.rules.gameplay',
+      ],
+      declare: [
+        'hidden-rung.rules.gameplay',
+      ],
+      play_card: [
+        'hidden-rung.rules.gameplay',
+      ],
+      tally_tricks: [
+        'hidden-rung.rules.gameplay',
+      ],
+      reveal_trump: [
+        'hidden-rung.rules.gameplay',
+      ],
+    },
   },
 }

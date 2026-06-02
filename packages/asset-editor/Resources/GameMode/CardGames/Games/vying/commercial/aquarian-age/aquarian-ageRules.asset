@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Aquarian Age. Logic: Defeat the opponent through the games faction and battle systems.',
-    Player: 'Aquarian Age is a Japanese commercial collectible trading card game with constructed decks, character factions, and card-effect battles.',
+    LLM: 'Players build board state with characters and effects, then resolve battles through custom card text. Deck construction, resource pacing, and timing windows drive the game.',
+    Player: 'Players build board state with characters and effects, then resolve battles through custom card text. Deck construction, resource pacing, and timing windows drive the game.',
     objective: 'Defeat the opponent through the games faction and battle systems.',
     gameplay: 'Players build board state with characters and effects, then resolve battles through custom card text. Deck construction, resource pacing, and timing windows drive the game.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Win by satisfying the games combat or defeat condition. Expected outcome: Defeat the opponent through the games faction and battle systems..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Defeat the opponent through the games faction and battle systems.',
+      'Turn-flow example: Players build board state with characters and effects, then resolve battles through custom card text. Deck construction, resource pacing, and timing windows drive the game.',
+      'Scoring example: Win by satisfying the games combat or defeat condition. Defeat the opponent through the games faction and battle systems..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'aquarian-age.rules.objective',
+        title: 'Objective',
+        text: 'Defeat the opponent through the games faction and battle systems.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'aquarian-age.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players build board state with characters and effects, then resolve battles through custom card text. Deck construction, resource pacing, and timing windows drive the game.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'aquarian-age.setup.players',
+        title: 'Players',
+        text: 'Two players bring constructed decks from the commercial card pool.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'aquarian-age.setup.deck',
+        title: 'Deck',
+        text: 'Use legal Aquarian Age cards and deck-building rules.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'aquarian-age.setup.equipment',
+        title: 'Equipment',
+        text: 'Japanese collectible trading card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'aquarian-age.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare each players deck and opening hand according to the format.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'aquarian-age.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opponent through the games faction and battle systems.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'aquarian-age.score.description',
+        title: 'Scoring',
+        text: 'Win by satisfying the games combat or defeat condition.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'aquarian-age.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Constructed commercial decks are required.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'aquarian-age.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Cards belong to character and faction systems.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'aquarian-age.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Custom card text defines most interactions.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'aquarian-age.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Victory follows the battle rules.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'aquarian-age.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'aquarian-age.rules.objective',
+          'aquarian-age.rules.gameplay',
+        ],
+      },
+      {
+        id: 'aquarian-age.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'aquarian-age.setup.players',
+          'aquarian-age.setup.deck',
+          'aquarian-age.setup.equipment',
+          'aquarian-age.setup.dealing',
+        ],
+      },
+      {
+        id: 'aquarian-age.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'aquarian-age.rules.key.1',
+          'aquarian-age.rules.key.2',
+          'aquarian-age.rules.key.3',
+          'aquarian-age.rules.key.4',
+        ],
+      },
+      {
+        id: 'aquarian-age.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'aquarian-age.score.description',
+          'aquarian-age.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'aquarian-age.setup.dealing',
+        'aquarian-age.rules.objective',
+      ],
+      play_card: [
+        'aquarian-age.rules.gameplay',
+      ],
+    },
   },
 }

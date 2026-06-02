@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Double Canfield. Logic: Build all cards onto foundations by suit, wrapping ranks where required.',
-    Player: 'Double Canfield is a two-deck solitaire variant of Canfield with expanded foundations and reserve pressure.',
+    LLM: 'Use tableau moves, reserve releases, and stock passes to feed foundations while preventing reserve cards from becoming permanently trapped.',
+    Player: 'Use tableau moves, reserve releases, and stock passes to feed foundations while preventing reserve cards from becoming permanently trapped.',
     objective: 'Build all cards onto foundations by suit, wrapping ranks where required.',
     gameplay: 'Use tableau moves, reserve releases, and stock passes to feed foundations while preventing reserve cards from becoming permanently trapped.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: The game is won when every card reaches a foundation. Expected outcome: Build all cards onto foundations by suit, wrapping ranks where required..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Build all cards onto foundations by suit, wrapping ranks where required.',
+      'Turn-flow example: Use tableau moves, reserve releases, and stock passes to feed foundations while preventing reserve cards from becoming permanently trapped.',
+      'Scoring example: The game is won when every card reaches a foundation. Build all cards onto foundations by suit, wrapping ranks where required..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'double-canfield.rules.objective',
+        title: 'Objective',
+        text: 'Build all cards onto foundations by suit, wrapping ranks where required.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'double-canfield.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Use tableau moves, reserve releases, and stock passes to feed foundations while preventing reserve cards from becoming permanently trapped.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'double-canfield.setup.players',
+        title: 'Players',
+        text: '1 players use the table arrangement described for Double Canfield.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'double-canfield.setup.deck',
+        title: 'Deck',
+        text: 'Two standard 52-card decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'double-canfield.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard 52-card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'double-canfield.setup.dealing',
+        title: 'Deal',
+        text: 'Deal a Canfield-style reserve and tableau from two decks, then set foundation base ranks from the initial card.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'double-canfield.score.win-condition',
+        title: 'Win condition',
+        text: 'Build all cards onto foundations by suit, wrapping ranks where required.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'double-canfield.score.description',
+        title: 'Scoring',
+        text: 'The game is won when every card reaches a foundation.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'double-canfield.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two decks are used.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'double-canfield.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Canfield-style reserve is central.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'double-canfield.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Foundations build by suit from a base rank.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'double-canfield.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Rank sequences may wrap through king to ace.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'double-canfield.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'double-canfield.rules.objective',
+          'double-canfield.rules.gameplay',
+        ],
+      },
+      {
+        id: 'double-canfield.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'double-canfield.setup.players',
+          'double-canfield.setup.deck',
+          'double-canfield.setup.equipment',
+          'double-canfield.setup.dealing',
+        ],
+      },
+      {
+        id: 'double-canfield.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'double-canfield.rules.key.1',
+          'double-canfield.rules.key.2',
+          'double-canfield.rules.key.3',
+          'double-canfield.rules.key.4',
+        ],
+      },
+      {
+        id: 'double-canfield.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'double-canfield.score.description',
+          'double-canfield.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'double-canfield.setup.dealing',
+        'double-canfield.rules.objective',
+      ],
+      deal: [
+        'double-canfield.rules.gameplay',
+      ],
+      play_card: [
+        'double-canfield.rules.gameplay',
+      ],
+      draw: [
+        'double-canfield.rules.gameplay',
+      ],
+    },
   },
 }

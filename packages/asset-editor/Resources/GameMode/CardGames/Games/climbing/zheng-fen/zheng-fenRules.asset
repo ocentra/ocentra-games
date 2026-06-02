@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Zhēng Fēn. Logic: See rules.objective and rules.gameplay.',
-    Player: "Zhēng Fēn ('Competing for Points') is a Chinese climbing/point-trick hybrid. 54-card deck (52 + 2 jokers). Shed cards through ascending combinations. Point cards: 5=5pts, 10/K=10pts. 100 total per hand. First out gets LAST player's tricks + remaining cards. Last out scores 0. Play to 500/1000.",
+    LLM: "Climbing: play higher combinations (singles/pairs/triples/sequences). 5=5pts, 10/K=10pts. 100 total. First out = get last player's tricks. Last out = 0 points. Accumulate score over rounds.",
+    Player: "Climbing: play higher combinations (singles/pairs/triples/sequences). 5=5pts, 10/K=10pts. 100 total. First out = get last player's tricks. Last out = 0 points. Accumulate score over rounds.",
     objective: 'Win valuable cards in tricks (5s = 5 pts, 10s and Ks = 10 pts; 100 points per hand). First player to reach the agreed target (usually 500 or 1000) wins the game.',
     gameplay: "Climbing: play higher combinations (singles/pairs/triples/sequences). 5=5pts, 10/K=10pts. 100 total. First out = get last player's tricks. Last out = 0 points. Accumulate score over rounds.",
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: 5=5pts, 10=10pts, K=10pts. Last player = 0pts. First player gets their tricks. Target 500/1000. Expected outcome: 500.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win valuable cards in tricks (5s = 5 pts, 10s and Ks = 10 pts; 100 points per hand). First player to reach the agreed target (usually 500 or 1000) wins the game.',
+      "Turn-flow example: Climbing: play higher combinations (singles/pairs/triples/sequences). 5=5pts, 10/K=10pts. 100 total. First out = get last player's tricks. Last out = 0 points. Accumulate score over rounds.",
+      'Scoring example: 5=5pts, 10=10pts, K=10pts. Last player = 0pts. First player gets their tricks. Target 500/1000. Collect most points. Play to 500/1000..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'zheng-fen.rules.objective',
+        title: 'Objective',
+        text: 'Win valuable cards in tricks (5s = 5 pts, 10s and Ks = 10 pts; 100 points per hand). First player to reach the agreed target (usually 500 or 1000) wins the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'zheng-fen.rules.gameplay',
+        title: 'Turn flow',
+        text: "Climbing: play higher combinations (singles/pairs/triples/sequences). 5=5pts, 10/K=10pts. 100 total. First out = get last player's tricks. Last out = 0 points. Accumulate score over rounds.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'zheng-fen.setup.players',
+        title: 'Players',
+        text: 'Three to six players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'zheng-fen.setup.deck',
+        title: 'Deck',
+        text: '54 cards (52 + two distinguishable jokers, big and small).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'zheng-fen.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'zheng-fen.setup.dealing',
+        title: 'Deal',
+        text: 'Anticlockwise. First deal: a randomly chosen player shuffles, right-hand neighbour cuts. Players take one card at a time from the face-down pack, anticlockwise, until all cards are distributed; some may have one more card than others.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'zheng-fen.score.win-condition',
+        title: 'Win condition',
+        text: 'Collect most points. Play to 500/1000.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'zheng-fen.score.description',
+        title: 'Scoring',
+        text: '5=5pts, 10=10pts, K=10pts. Last player = 0pts. First player gets their tricks. Target 500/1000.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'zheng-fen.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Climbing card play',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'zheng-fen.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Point cards in tricks',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'zheng-fen.rules.key.3',
+        title: 'Key rule 3',
+        text: "First out wins last player's tricks",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'zheng-fen.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Last out scores 0',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'zheng-fen.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Jokers as highest',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'zheng-fen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'zheng-fen.rules.objective',
+          'zheng-fen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'zheng-fen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'zheng-fen.setup.players',
+          'zheng-fen.setup.deck',
+          'zheng-fen.setup.equipment',
+          'zheng-fen.setup.dealing',
+        ],
+      },
+      {
+        id: 'zheng-fen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'zheng-fen.rules.key.1',
+          'zheng-fen.rules.key.2',
+          'zheng-fen.rules.key.3',
+          'zheng-fen.rules.key.4',
+          'zheng-fen.rules.key.5',
+        ],
+      },
+      {
+        id: 'zheng-fen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'zheng-fen.score.description',
+          'zheng-fen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'zheng-fen.setup.dealing',
+        'zheng-fen.rules.objective',
+      ],
+      play_card: [
+        'zheng-fen.rules.gameplay',
+      ],
+    },
   },
 }

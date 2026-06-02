@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Gleek. Three players, 44-card deck, stock bidding, ruff betting, gleek/mournival declarations, and 12-trick trump play with reconstruction-dependent settlement details.',
-    Player: 'Gleek: lock variant assumptions first, then optimize stake flow across stock bid, ruff vie, declarations, and trick settlement.',
+    LLM: 'A hand proceeds in four main stages: (1) bid for right to use stock; highest bidder pays bid amount split to opponents and exchanges by discarding and taking stock cards; (2) vie for Ruff, the highest valued suit total in hand (aces 11, courts 10, numerals face value), with betting actions similar to poker; (3) declare Mournivals (four of a kind) and Gleeks (three of a kind) for fixed payments from opponents; (4) play 12 tricks, eldest leading first trick, following suit when possible, with trump from turn-up card. Trick stage adds point settlement around trick count and honour values. Historical sources disagree on some details, so rule variants must be table-agreed before play.',
+    Player: 'A hand proceeds in four main stages: (1) bid for right to use stock; highest bidder pays bid amount split to opponents and exchanges by discarding and taking stock cards; (2) vie for Ruff, the highest valued suit total in hand (aces 11, courts 10, numerals face value), with betting actions similar to poker; (3) declare Mournivals (four of a kind) and Gleeks (three of a kind) for fixed payments from opponents; (4) play 12 tricks, eldest leading first trick, following suit when possible, with trump from turn-up card. Trick stage adds point settlement around trick count and honour values. Historical sources disagree on some details, so rule variants must be table-agreed before play.',
     objective: 'Profit across phases by winning stock bid value lines, ruff vie pot, set declarations, and trick-stage point settlement.',
     gameplay: 'A hand proceeds in four main stages: (1) bid for right to use stock; highest bidder pays bid amount split to opponents and exchanges by discarding and taking stock cards; (2) vie for Ruff, the highest valued suit total in hand (aces 11, courts 10, numerals face value), with betting actions similar to poker; (3) declare Mournivals (four of a kind) and Gleeks (three of a kind) for fixed payments from opponents; (4) play 12 tricks, eldest leading first trick, following suit when possible, with trump from turn-up card. Trick stage adds point settlement around trick count and honour values. Historical sources disagree on some details, so rule variants must be table-agreed before play.',
     keyRules: [
@@ -53,10 +53,192 @@
       go_out: 'Hand ends after fixed trick count and settlement phases.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 12 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before stock_bid.',
-      'Scoring check: Scoring combines phase-specific money transfers: stock bid payout, ruff pot, declaration payments, and trick-stage differential settlement. Expected outcome: Session winner is player with greatest net stake profit over agreed number of hands..',
+      'Setup example: 12 card(s) per player.',
+      'Rule example: Profit across phases by winning stock bid value lines, ruff vie pot, set declarations, and trick-stage point settlement.',
+      'Turn-flow example: A hand proceeds in four main stages: (1) bid for right to use stock; highest bidder pays bid amount split to opponents and exchanges by discarding and taking stock cards; (2) vie for Ruff, the highest valued suit total in hand (aces 11, courts 10, numerals face value), with betting actions similar to poker; (3) declare Mournivals (four of a kind) and Gleeks (three of a kind) for fixed payments from opponents; (4) play 12 tricks, eldest leading first trick, following suit when possible, with trump from turn-up card. Trick stage adds point settlement around trick count and honour values. Historical sources disagree on some details, so rule variants must be table-agreed before play.',
+      'Scoring example: Scoring combines phase-specific money transfers: stock bid payout, ruff pot, declaration payments, and trick-stage differential settlement. Session winner is player with greatest net stake profit over agreed number of hands..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'gleek.rules.objective',
+        title: 'Objective',
+        text: 'Profit across phases by winning stock bid value lines, ruff vie pot, set declarations, and trick-stage point settlement.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'gleek.rules.gameplay',
+        title: 'Turn flow',
+        text: 'A hand proceeds in four main stages: (1) bid for right to use stock; highest bidder pays bid amount split to opponents and exchanges by discarding and taking stock cards; (2) vie for Ruff, the highest valued suit total in hand (aces 11, courts 10, numerals face value), with betting actions similar to poker; (3) declare Mournivals (four of a kind) and Gleeks (three of a kind) for fixed payments from opponents; (4) play 12 tricks, eldest leading first trick, following suit when possible, with trump from turn-up card. Trick stage adds point settlement around trick count and honour values. Historical sources disagree on some details, so rule variants must be table-agreed before play.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'gleek.setup.players',
+        title: 'Players',
+        text: '3 players clockwise; eldest is left of dealer.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'gleek.setup.deck',
+        title: 'Deck',
+        text: '44 cards ranked A K Q J 10 9 8 7 6 5 4 in each suit (2s and 3s removed).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'gleek.setup.equipment',
+        title: 'Equipment',
+        text: 'Counters or stakes for pot payments.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'gleek.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 12 cards to each player; place remaining 8 as stock and turn top card to set trump.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'gleek.score.win-condition',
+        title: 'Win condition',
+        text: 'Session winner is player with greatest net stake profit over agreed number of hands.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'gleek.score.description',
+        title: 'Scoring',
+        text: 'Scoring combines phase-specific money transfers: stock bid payout, ruff pot, declaration payments, and trick-stage differential settlement.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'gleek.rules.key.1',
+        title: 'Key rule 1',
+        text: 'A gleek is three of a kind and a mournival is four of a kind.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'gleek.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Ruff compares best suit-point total, not generic hand rank.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'gleek.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trick phase is fixed at 12 tricks with follow-suit requirement.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'gleek.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Extant reconstructions differ on specific edge rules; session must declare which reconstruction is authoritative.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'gleek.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'gleek.rules.objective',
+          'gleek.rules.gameplay',
+        ],
+      },
+      {
+        id: 'gleek.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'gleek.setup.players',
+          'gleek.setup.deck',
+          'gleek.setup.equipment',
+          'gleek.setup.dealing',
+        ],
+      },
+      {
+        id: 'gleek.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'gleek.rules.key.1',
+          'gleek.rules.key.2',
+          'gleek.rules.key.3',
+          'gleek.rules.key.4',
+        ],
+      },
+      {
+        id: 'gleek.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'gleek.score.description',
+          'gleek.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'gleek.setup.dealing',
+        'gleek.rules.objective',
+      ],
+      ante: [
+        'gleek.rules.gameplay',
+      ],
+      deal: [
+        'gleek.rules.gameplay',
+      ],
+      buy_stock: [
+        'gleek.rules.gameplay',
+      ],
+      fold: [
+        'gleek.rules.gameplay',
+      ],
+      call: [
+        'gleek.rules.gameplay',
+      ],
+      bet: [
+        'gleek.rules.gameplay',
+      ],
+      raise: [
+        'gleek.rules.gameplay',
+      ],
+      declare: [
+        'gleek.rules.gameplay',
+      ],
+      reveal_hand: [
+        'gleek.rules.gameplay',
+      ],
+      award_pot: [
+        'gleek.rules.gameplay',
+      ],
+      play_card: [
+        'gleek.rules.gameplay',
+      ],
+      pass: [
+        'gleek.rules.gameplay',
+      ],
+      bid: [
+        'gleek.rules.gameplay',
+      ],
+    },
   },
 }

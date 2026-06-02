@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players build decks from collectible cards, put groups into play, use plot cards for tactical effects, and attack or defend control of groups. The game expands the earlier Illuminati network-control idea into a CCG deck-construction format.',
+    Player: 'Players build decks from collectible cards, put groups into play, use plot cards for tactical effects, and attack or defend control of groups. The game expands the earlier Illuminati network-control idea into a CCG deck-construction format.',
     objective: 'Use Illuminati, Group, and Plot cards to advance your conspiracy and meet the scenario or faction victory requirements.',
     gameplay: 'Players build decks from collectible cards, put groups into play, use plot cards for tactical effects, and attack or defend control of groups. The game expands the earlier Illuminati network-control idea into a CCG deck-construction format.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Use Illuminati, Group, and Plot cards to advance your conspiracy and meet the scenario or faction victory requirements.',
+      'Turn-flow example: Players build decks from collectible cards, put groups into play, use plot cards for tactical effects, and attack or defend control of groups. The game expands the earlier Illuminati network-control idea into a CCG deck-construction format.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'illuminati-new-world-order.rules.objective',
+        title: 'Objective',
+        text: 'Use Illuminati, Group, and Plot cards to advance your conspiracy and meet the scenario or faction victory requirements.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'illuminati-new-world-order.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players build decks from collectible cards, put groups into play, use plot cards for tactical effects, and attack or defend control of groups. The game expands the earlier Illuminati network-control idea into a CCG deck-construction format.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'illuminati-new-world-order.setup.players',
+        title: 'Players',
+        text: '2-6 players use the table arrangement described for Illuminati: New World Order.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'illuminati-new-world-order.setup.deck',
+        title: 'Deck',
+        text: 'Commercial collectible card game decks and booster cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'illuminati-new-world-order.setup.equipment',
+        title: 'Equipment',
+        text: 'Commercial collectible card game decks and booster cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'illuminati-new-world-order.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Commercial collectible card game decks and booster cards and deal or lay out cards according to the documented Illuminati: New World Order rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'illuminati-new-world-order.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'illuminati-new-world-order.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'illuminati-new-world-order.rules.key.1',
+        title: 'Key rule 1',
+        text: 'INWO is a collectible card game with starter decks and boosters.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'illuminati-new-world-order.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Card types include Group, Plot, and Illuminati cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'illuminati-new-world-order.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Do not reproduce protected card text or art without rights.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'illuminati-new-world-order.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'illuminati-new-world-order.rules.objective',
+          'illuminati-new-world-order.rules.gameplay',
+        ],
+      },
+      {
+        id: 'illuminati-new-world-order.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'illuminati-new-world-order.setup.players',
+          'illuminati-new-world-order.setup.deck',
+          'illuminati-new-world-order.setup.equipment',
+          'illuminati-new-world-order.setup.dealing',
+        ],
+      },
+      {
+        id: 'illuminati-new-world-order.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'illuminati-new-world-order.rules.key.1',
+          'illuminati-new-world-order.rules.key.2',
+          'illuminati-new-world-order.rules.key.3',
+        ],
+      },
+      {
+        id: 'illuminati-new-world-order.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'illuminati-new-world-order.score.description',
+          'illuminati-new-world-order.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'illuminati-new-world-order.setup.dealing',
+        'illuminati-new-world-order.rules.objective',
+      ],
+      play_card: [
+        'illuminati-new-world-order.rules.gameplay',
+      ],
+    },
   },
 }

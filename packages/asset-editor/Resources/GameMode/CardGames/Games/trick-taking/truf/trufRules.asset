@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Truf. Logic: See rules.objective and rules.gameplay.',
-    Player: "Truf is an Indonesian trick-taking game for 4 players. Unique bidding: each player simultaneously places a card face-down â€” the rank indicates how many tricks they bid (court cards = 0, A = 1, numbers = face value). Highest bidder's card suit becomes trump. Trump cards are played face down and revealed later. Exact bid = points; over/under = penalty.",
+    LLM: "Bid by placing card face-down (rank = trick bid, court = 0). Highest bid selects trump (their card's suit). Play tricks. Follow suit. Trumps played face-down (hidden). Can't lead trump unless only trumps remain.",
+    Player: "Bid by placing card face-down (rank = trick bid, court = 0). Highest bid selects trump (their card's suit). Play tricks. Follow suit. Trumps played face-down (hidden). Can't lead trump unless only trumps remain.",
     objective: 'Win exactly the number of tricks bid. Highest total score wins.',
     gameplay: "Bid by placing card face-down (rank = trick bid, court = 0). Highest bid selects trump (their card's suit). Play tricks. Follow suit. Trumps played face-down (hidden). Can't lead trump unless only trumps remain.",
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Exact bid = positive. Over/Under = negative (difference). Expected outcome: Win exactly the number of tricks bid. Highest total score wins..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win exactly the number of tricks bid. Highest total score wins.',
+      "Turn-flow example: Bid by placing card face-down (rank = trick bid, court = 0). Highest bid selects trump (their card's suit). Play tricks. Follow suit. Trumps played face-down (hidden). Can't lead trump unless only trumps remain.",
+      'Scoring example: Exact bid = positive. Over/Under = negative (difference). Win exactly the number of tricks bid. Highest total score wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'truf.rules.objective',
+        title: 'Objective',
+        text: 'Win exactly the number of tricks bid. Highest total score wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'truf.rules.gameplay',
+        title: 'Turn flow',
+        text: "Bid by placing card face-down (rank = trick bid, court = 0). Highest bid selects trump (their card's suit). Play tricks. Follow suit. Trumps played face-down (hidden). Can't lead trump unless only trumps remain.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'truf.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'truf.setup.deck',
+        title: 'Deck',
+        text: '52 cards (4 players) or 39 (3 players, remove 1 black suit). 13 each.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'truf.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, score sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'truf.setup.dealing',
+        title: 'Deal',
+        text: '13 cards each. Re-deal if hand is all number or all court cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'truf.score.win-condition',
+        title: 'Win condition',
+        text: 'Win exactly the number of tricks bid. Highest total score wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'truf.score.description',
+        title: 'Scoring',
+        text: 'Exact bid = positive. Over/Under = negative (difference).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'truf.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Card-as-bid mechanic',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'truf.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Trumps played face down',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'truf.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Re-deal for all-number or all-court hands',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'truf.rules.key.4',
+        title: 'Key rule 4',
+        text: "Can't lead trump until trumped",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'truf.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'truf.rules.objective',
+          'truf.rules.gameplay',
+        ],
+      },
+      {
+        id: 'truf.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'truf.setup.players',
+          'truf.setup.deck',
+          'truf.setup.equipment',
+          'truf.setup.dealing',
+        ],
+      },
+      {
+        id: 'truf.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'truf.rules.key.1',
+          'truf.rules.key.2',
+          'truf.rules.key.3',
+          'truf.rules.key.4',
+        ],
+      },
+      {
+        id: 'truf.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'truf.score.description',
+          'truf.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'truf.setup.dealing',
+        'truf.rules.objective',
+      ],
+      play_card: [
+        'truf.rules.gameplay',
+      ],
+    },
   },
 }

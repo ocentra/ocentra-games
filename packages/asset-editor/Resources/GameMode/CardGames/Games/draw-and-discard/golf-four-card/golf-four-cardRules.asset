@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Golf (Four Card). Logic: See rules.objective and rules.gameplay.',
-    Player: 'Four-card Golf: 2+ players, 52 cards. Each has 4 cards in a square, two visible once. Draw or take discard to replace; knock to end hand. Lowest score wins. Also Turtle, Polish Poker Four Card.',
+    LLM: 'Draw or take discard; replace one card or knock. Cannot look at face-down before choosing.',
+    Player: 'Draw or take discard; replace one card or knock. Cannot look at face-down before choosing.',
     objective: 'Lowest point total in 4-card layout. Knock ends hand.',
     gameplay: 'Draw or take discard; replace one card or knock. Cannot look at face-down before choosing.',
     keyRules: [
@@ -51,10 +51,138 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Number=face value; J/Q=10; K=0. Pairs in column often 0. Expected outcome: 100.',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Lowest point total in 4-card layout. Knock ends hand.',
+      'Turn-flow example: Draw or take discard; replace one card or knock. Cannot look at face-down before choosing.',
+      'Scoring example: Number=face value; J/Q=10; K=0. Pairs in column often 0. Lowest point total in 4-card layout. Knock ends hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'golf-four-card.rules.objective',
+        title: 'Objective',
+        text: 'Lowest point total in 4-card layout. Knock ends hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'golf-four-card.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Draw or take discard; replace one card or knock. Cannot look at face-down before choosing.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'golf-four-card.setup.players',
+        title: 'Players',
+        text: '2-8; best with 4.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'golf-four-card.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack. With eight or more players, two packs may be shuffled together.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'golf-four-card.setup.equipment',
+        title: 'Equipment',
+        text: 'Score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'golf-four-card.setup.dealing',
+        title: 'Deal',
+        text: '4 cards each, 2x2; look at 2 once. Stock and discard.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'golf-four-card.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest point total in 4-card layout. Knock ends hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'golf-four-card.score.description',
+        title: 'Scoring',
+        text: 'Number=face value; J/Q=10; K=0. Pairs in column often 0.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'golf-four-card.rules.key.1',
+        title: 'Key rule 1',
+        text: '4 cards, 2 viewable once',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'golf-four-card.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Knock ends hand',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'golf-four-card.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'golf-four-card.rules.objective',
+          'golf-four-card.rules.gameplay',
+        ],
+      },
+      {
+        id: 'golf-four-card.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'golf-four-card.setup.players',
+          'golf-four-card.setup.deck',
+          'golf-four-card.setup.equipment',
+          'golf-four-card.setup.dealing',
+        ],
+      },
+      {
+        id: 'golf-four-card.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'golf-four-card.rules.key.1',
+          'golf-four-card.rules.key.2',
+        ],
+      },
+      {
+        id: 'golf-four-card.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'golf-four-card.score.description',
+          'golf-four-card.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'golf-four-card.setup.dealing',
+        'golf-four-card.rules.objective',
+      ],
+      play_card: [
+        'golf-four-card.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Babylon 5 Collectible Card Game. Logic: Advance the players agenda or satisfy the games faction victory condition.',
-    Player: 'Babylon 5 Collectible Card Game is a commercial licensed CCG where players use factions, agendas, and card effects from the Babylon 5 setting.',
+    LLM: 'Players use influence, characters, fleets, and event cards to pursue agendas and interfere with opponents. Card text and faction identity drive most actions.',
+    Player: 'Players use influence, characters, fleets, and event cards to pursue agendas and interfere with opponents. Card text and faction identity drive most actions.',
     objective: 'Advance the players agenda or satisfy the games faction victory condition.',
     gameplay: 'Players use influence, characters, fleets, and event cards to pursue agendas and interfere with opponents. Card text and faction identity drive most actions.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Victory is based on agenda progress or faction-specific game conditions. Expected outcome: Advance the players agenda or satisfy the games faction victory condition..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Advance the players agenda or satisfy the games faction victory condition.',
+      'Turn-flow example: Players use influence, characters, fleets, and event cards to pursue agendas and interfere with opponents. Card text and faction identity drive most actions.',
+      'Scoring example: Victory is based on agenda progress or faction-specific game conditions. Advance the players agenda or satisfy the games faction victory condition..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'babylon-5-collectible-card-game.rules.objective',
+        title: 'Objective',
+        text: 'Advance the players agenda or satisfy the games faction victory condition.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'babylon-5-collectible-card-game.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players use influence, characters, fleets, and event cards to pursue agendas and interfere with opponents. Card text and faction identity drive most actions.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'babylon-5-collectible-card-game.setup.players',
+        title: 'Players',
+        text: 'Players bring constructed faction decks.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'babylon-5-collectible-card-game.setup.deck',
+        title: 'Deck',
+        text: 'Use legal commercial Babylon 5 cards and deck construction rules.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'babylon-5-collectible-card-game.setup.equipment',
+        title: 'Equipment',
+        text: 'Commercial Babylon 5 collectible card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'babylon-5-collectible-card-game.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare starting faction materials, shuffle decks, and draw opening hands.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'babylon-5-collectible-card-game.score.win-condition',
+        title: 'Win condition',
+        text: 'Advance the players agenda or satisfy the games faction victory condition.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'babylon-5-collectible-card-game.score.description',
+        title: 'Scoring',
+        text: 'Victory is based on agenda progress or faction-specific game conditions.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'babylon-5-collectible-card-game.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Constructed commercial decks are required.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'babylon-5-collectible-card-game.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Faction agendas shape victory paths.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'babylon-5-collectible-card-game.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Characters and events resolve through custom card text.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'babylon-5-collectible-card-game.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Multiplayer political interaction is important.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'babylon-5-collectible-card-game.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'babylon-5-collectible-card-game.rules.objective',
+          'babylon-5-collectible-card-game.rules.gameplay',
+        ],
+      },
+      {
+        id: 'babylon-5-collectible-card-game.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'babylon-5-collectible-card-game.setup.players',
+          'babylon-5-collectible-card-game.setup.deck',
+          'babylon-5-collectible-card-game.setup.equipment',
+          'babylon-5-collectible-card-game.setup.dealing',
+        ],
+      },
+      {
+        id: 'babylon-5-collectible-card-game.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'babylon-5-collectible-card-game.rules.key.1',
+          'babylon-5-collectible-card-game.rules.key.2',
+          'babylon-5-collectible-card-game.rules.key.3',
+          'babylon-5-collectible-card-game.rules.key.4',
+        ],
+      },
+      {
+        id: 'babylon-5-collectible-card-game.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'babylon-5-collectible-card-game.score.description',
+          'babylon-5-collectible-card-game.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'babylon-5-collectible-card-game.setup.dealing',
+        'babylon-5-collectible-card-game.rules.objective',
+      ],
+      play_card: [
+        'babylon-5-collectible-card-game.rules.gameplay',
+      ],
+    },
   },
 }

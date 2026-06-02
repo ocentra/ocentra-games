@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 7 Wonders Duel. Logic: Win by military supremacy, science supremacy, or the highest civilization score after the third Age.',
-    Player: '7 Wonders Duel is a two-player commercial card-drafting strategy game where players take visible and hidden cards from a shared structure to build civilizations.',
+    LLM: 'Players alternate taking available cards from the structure. Cards can be built, discarded for coins, or used to construct wonders. Military and science progress can end the game immediately before final scoring.',
+    Player: 'Players alternate taking available cards from the structure. Cards can be built, discarded for coins, or used to construct wonders. Military and science progress can end the game immediately before final scoring.',
     objective: 'Win by military supremacy, science supremacy, or the highest civilization score after the third Age.',
     gameplay: 'Players alternate taking available cards from the structure. Cards can be built, discarded for coins, or used to construct wonders. Military and science progress can end the game immediately before final scoring.',
     keyRules: [
@@ -53,10 +53,177 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_cards before round end.',
-      'Scoring check: Military or science can win instantly; otherwise highest victory-point total after Age III wins. Expected outcome: Win by military supremacy, science supremacy, or the highest civilization score after the third Age..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win by military supremacy, science supremacy, or the highest civilization score after the third Age.',
+      'Turn-flow example: Players alternate taking available cards from the structure. Cards can be built, discarded for coins, or used to construct wonders. Military and science progress can end the game immediately before final scoring.',
+      'Scoring example: Military or science can win instantly; otherwise highest victory-point total after Age III wins. Win by military supremacy, science supremacy, or the highest civilization score after the third Age..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '7-wonders-duel.rules.objective',
+        title: 'Objective',
+        text: 'Win by military supremacy, science supremacy, or the highest civilization score after the third Age.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '7-wonders-duel.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players alternate taking available cards from the structure. Cards can be built, discarded for coins, or used to construct wonders. Military and science progress can end the game immediately before final scoring.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '7-wonders-duel.setup.players',
+        title: 'Players',
+        text: 'Two players face a shared card structure and personal civilization area.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '7-wonders-duel.setup.deck',
+        title: 'Deck',
+        text: 'Use the dedicated Age decks, guild cards, wonder cards, tokens, and military/science tracks.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '7-wonders-duel.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated civilization cards, guild cards, wonder cards, science tokens, and military track, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '7-wonders-duel.setup.dealing',
+        title: 'Deal',
+        text: 'Lay out the current Age in its prescribed overlapping structure, with some cards face down and some cards face up.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '7-wonders-duel.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by military supremacy, science supremacy, or the highest civilization score after the third Age.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '7-wonders-duel.score.description',
+        title: 'Scoring',
+        text: 'Military or science can win instantly; otherwise highest victory-point total after Age III wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '7-wonders-duel.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Only uncovered cards are available.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '7-wonders-duel.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Cards can be built, discarded, or used for wonders.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '7-wonders-duel.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Military or science can produce an instant win.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: '7-wonders-duel.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Otherwise points after three Ages decide the game.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '7-wonders-duel.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '7-wonders-duel.rules.objective',
+          '7-wonders-duel.rules.gameplay',
+        ],
+      },
+      {
+        id: '7-wonders-duel.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '7-wonders-duel.setup.players',
+          '7-wonders-duel.setup.deck',
+          '7-wonders-duel.setup.equipment',
+          '7-wonders-duel.setup.dealing',
+        ],
+      },
+      {
+        id: '7-wonders-duel.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '7-wonders-duel.rules.key.1',
+          '7-wonders-duel.rules.key.2',
+          '7-wonders-duel.rules.key.3',
+          '7-wonders-duel.rules.key.4',
+        ],
+      },
+      {
+        id: '7-wonders-duel.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '7-wonders-duel.score.description',
+          '7-wonders-duel.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '7-wonders-duel.setup.dealing',
+        '7-wonders-duel.rules.objective',
+      ],
+      deal_cards: [
+        '7-wonders-duel.rules.gameplay',
+      ],
+      ask_for_rank: [
+        '7-wonders-duel.rules.gameplay',
+      ],
+      draw_stock: [
+        '7-wonders-duel.rules.gameplay',
+      ],
+      check_books: [
+        '7-wonders-duel.rules.gameplay',
+      ],
+      give_cards: [
+        '7-wonders-duel.rules.gameplay',
+      ],
+      say_go_fish: [
+        '7-wonders-duel.rules.gameplay',
+      ],
+      lay_down_book: [
+        '7-wonders-duel.rules.gameplay',
+      ],
+      check_game_end: [
+        '7-wonders-duel.rules.gameplay',
+      ],
+    },
   },
 }

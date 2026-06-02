@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Arlington. Type: Contract Rummy. Rules: 105 cards. 7 hands. 2s and Joker are wild. Wild-replacement allowed. Offering Phase after turn. Aces/Wilds offered to left only. Goal: Most points after 7 hands.',
-    Player: "Welcome to Arlington (Oklahoma Rummy). We're playing Hand 1: The contract is two sets of three. Draw your card, then look at the tableâ€”can you steal a wild by replacing it with a natural card Don't forget, after you play, you MUST offer a card to the group!",
+    LLM: "1. **Draw**: Draw the top card of the stock or the discard pile. 2. **Stealing Wilds**: If an opponent has a meld on the table containing a wild card (2 or Joker), and you hold the 'natural' card that wild is representing, you may swap your natural card for that wild and add the wild to your hand. 3. **Melding**: Lay down the specific contract for the current hand. You cannot lay down any other melds until your contract is complete. 4. **Offering**: At the end of your turn, you MUST offer one card from your hand to the table. Starting from your left, each player has a chance to take it and discard a card from their hand to maintain count. 5. **Going Rummy**: To end the hand, you must meld your entire hand and have one card left to discard.",
+    Player: "1. **Draw**: Draw the top card of the stock or the discard pile. 2. **Stealing Wilds**: If an opponent has a meld on the table containing a wild card (2 or Joker), and you hold the 'natural' card that wild is representing, you may swap your natural card for that wild and add the wild to your hand. 3. **Melding**: Lay down the specific contract for the current hand. You cannot lay down any other melds until your contract is complete. 4. **Offering**: At the end of your turn, you MUST offer one card from your hand to the table. Starting from your left, each player has a chance to take it and discard a card from their hand to maintain count. 5. **Going Rummy**: To end the hand, you must meld your entire hand and have one card left to discard.",
     objective: "Score the most points over seven hands by fulfilling each hand's specific meld contract and eventually 'going rummy' (discarding all cards).",
     gameplay: "1. **Draw**: Draw the top card of the stock or the discard pile. 2. **Stealing Wilds**: If an opponent has a meld on the table containing a wild card (2 or Joker), and you hold the 'natural' card that wild is representing, you may swap your natural card for that wild and add the wild to your hand. 3. **Melding**: Lay down the specific contract for the current hand. You cannot lay down any other melds until your contract is complete. 4. **Offering**: At the end of your turn, you MUST offer one card from your hand to the table. Starting from your left, each player has a chance to take it and discard a card from their hand to maintain count. 5. **Going Rummy**: To end the hand, you must meld your entire hand and have one card left to discard.",
     keyRules: [
@@ -52,10 +52,174 @@
       go_out: 'Going out is detected by the system in check_rummy; no separate go_out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_thirteen before turn_start.',
-      'Scoring check: Points are earned for cards on the table and subtracted for cards in hand. Expected outcome: 7.',
+      'Setup example: 13 card(s) per player.',
+      "Rule example: Score the most points over seven hands by fulfilling each hand's specific meld contract and eventually 'going rummy' (discarding all cards).",
+      "Turn-flow example: 1. **Draw**: Draw the top card of the stock or the discard pile. 2. **Stealing Wilds**: If an opponent has a meld on the table containing a wild card (2 or Joker), and you hold the 'natural' card that wild is representing, you may swap your natural card for that wild and add the wild to your hand. 3. **Melding**: Lay down the specific contract for the current hand. You cannot lay down any other melds until your contract is complete. 4. **Offering**: At the end of your turn, you MUST offer one card from your hand to the table. Starting from your left, each player has a chance to take it and discard a card from their hand to maintain count. 5. **Going Rummy**: To end the hand, you must meld your entire hand and have one card left to discard.",
+      'Scoring example: Points are earned for cards on the table and subtracted for cards in hand. Highest total score after seven rounds wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'arlington.rules.objective',
+        title: 'Objective',
+        text: "Score the most points over seven hands by fulfilling each hand's specific meld contract and eventually 'going rummy' (discarding all cards).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'arlington.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Draw**: Draw the top card of the stock or the discard pile. 2. **Stealing Wilds**: If an opponent has a meld on the table containing a wild card (2 or Joker), and you hold the 'natural' card that wild is representing, you may swap your natural card for that wild and add the wild to your hand. 3. **Melding**: Lay down the specific contract for the current hand. You cannot lay down any other melds until your contract is complete. 4. **Offering**: At the end of your turn, you MUST offer one card from your hand to the table. Starting from your left, each player has a chance to take it and discard a card from their hand to maintain count. 5. **Going Rummy**: To end the hand, you must meld your entire hand and have one card left to discard.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'arlington.setup.players',
+        title: 'Players',
+        text: '2-8 players. Individual play or 2-player partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'arlington.setup.deck',
+        title: 'Deck',
+        text: '105 cards (2 x 52 + 1 Joker). All 2s and the Joker are wild.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'arlington.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard decks, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'arlington.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 13 cards. The remainder forms the stock pile. The top card is flipped to start the discard pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'arlington.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest total score after seven rounds wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'arlington.score.description',
+        title: 'Scoring',
+        text: 'Points are earned for cards on the table and subtracted for cards in hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'arlington.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Contract Progression: Hand 1 (Two sets of 3); Hand 7 (Three runs of 4). Requirements increase each hand.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'arlington.rules.key.2',
+        title: 'Key rule 2',
+        text: "Aces & Wilds Offerting: Aces and Wild cards can ONLY be offered to the player on your immediate left. If they don't want it, it goes to the discard pile.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'arlington.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Discard Pile Capture: You can only take the top discard if you use it in a meld immediately.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'arlington.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'arlington.rules.objective',
+          'arlington.rules.gameplay',
+        ],
+      },
+      {
+        id: 'arlington.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'arlington.setup.players',
+          'arlington.setup.deck',
+          'arlington.setup.equipment',
+          'arlington.setup.dealing',
+        ],
+      },
+      {
+        id: 'arlington.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'arlington.rules.key.1',
+          'arlington.rules.key.2',
+          'arlington.rules.key.3',
+        ],
+      },
+      {
+        id: 'arlington.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'arlington.score.description',
+          'arlington.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'arlington.setup.dealing',
+        'arlington.rules.objective',
+      ],
+      deal_thirteen: [
+        'arlington.rules.gameplay',
+      ],
+      draw_stock: [
+        'arlington.rules.gameplay',
+      ],
+      draw_discard: [
+        'arlington.rules.gameplay',
+      ],
+      replace_wild: [
+        'arlington.rules.gameplay',
+      ],
+      lay_contract: [
+        'arlington.rules.gameplay',
+      ],
+      add_to_meld: [
+        'arlington.rules.gameplay',
+      ],
+      offer_card: [
+        'arlington.rules.gameplay',
+      ],
+      accept_offer: [
+        'arlington.rules.gameplay',
+      ],
+      check_rummy: [
+        'arlington.rules.gameplay',
+      ],
+      final_scoring: [
+        'arlington.rules.gameplay',
+      ],
+    },
   },
 }

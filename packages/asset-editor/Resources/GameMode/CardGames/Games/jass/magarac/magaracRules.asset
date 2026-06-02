@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magarac. Type: Reaction/Matching. Rules: Pass cards left simultaneously. Collect four of a kind to trigger slam. Last to react gets a letter (M-A-G-A-R-A-C). Complete word = lose.',
-    Player: "Pass cards left as fast as you can! Try to collect four of a kind, then SLAM your hand and yell 'Magarac!' Be the last to react and you get a letter. Spell MAGARAC and you're out!",
+    LLM: '1. Players simultaneously pass one unwanted card from their hand to the player on their left. 2. This continues rapidly until one player collects all four cards of the same rank.',
+    Player: '1. Players simultaneously pass one unwanted card from their hand to the player on their left. 2. This continues rapidly until one player collects all four cards of the same rank.',
     objective: 'Avoid being the last player to react when a set is completed.',
     gameplay: '1. Players simultaneously pass one unwanted card from their hand to the player on their left. 2. This continues rapidly until one player collects all four cards of the same rank.',
     keyRules: [
@@ -53,10 +53,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-13 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in passing; all_simultaneous may use pass, declare before round end.',
-      'Scoring check: Loser of each round receives a letter (M-A-G-A-R-A-C). Completing the word means losing the game. Expected outcome: Avoid being the last player to complete MAGARAC..',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Avoid being the last player to react when a set is completed.',
+      'Turn-flow example: 1. Players simultaneously pass one unwanted card from their hand to the player on their left. 2. This continues rapidly until one player collects all four cards of the same rank.',
+      'Scoring example: Loser of each round receives a letter (M-A-G-A-R-A-C). Completing the word means losing the game. Avoid being the last player to complete MAGARAC..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'magarac.rules.objective',
+        title: 'Objective',
+        text: 'Avoid being the last player to react when a set is completed.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'magarac.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Players simultaneously pass one unwanted card from their hand to the player on their left. 2. This continues rapidly until one player collects all four cards of the same rank.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'magarac.setup.players',
+        title: 'Players',
+        text: 'Optimal with 4-6 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'magarac.setup.deck',
+        title: 'Deck',
+        text: 'Use 4 cards of the same rank for each player. (e.g., 4 players = 16 cards total).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'magarac.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, tokens for spelling MAGARAC.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'magarac.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 4 cards face-down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'magarac.score.win-condition',
+        title: 'Win condition',
+        text: 'Avoid being the last player to complete MAGARAC.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'magarac.score.description',
+        title: 'Scoring',
+        text: 'Loser of each round receives a letter (M-A-G-A-R-A-C). Completing the word means losing the game.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'magarac.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Pass cards simultaneously to the left',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'magarac.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Collect four of a kind to trigger the slam',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'magarac.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Last to react loses the round',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'magarac.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Loser receives letters spelling MAGARAC',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'magarac.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'magarac.rules.objective',
+          'magarac.rules.gameplay',
+        ],
+      },
+      {
+        id: 'magarac.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'magarac.setup.players',
+          'magarac.setup.deck',
+          'magarac.setup.equipment',
+          'magarac.setup.dealing',
+        ],
+      },
+      {
+        id: 'magarac.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'magarac.rules.key.1',
+          'magarac.rules.key.2',
+          'magarac.rules.key.3',
+          'magarac.rules.key.4',
+        ],
+      },
+      {
+        id: 'magarac.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'magarac.score.description',
+          'magarac.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'magarac.setup.dealing',
+        'magarac.rules.objective',
+      ],
+      declare: [
+        'magarac.rules.gameplay',
+      ],
+      pass: [
+        'magarac.rules.gameplay',
+      ],
+    },
   },
 }

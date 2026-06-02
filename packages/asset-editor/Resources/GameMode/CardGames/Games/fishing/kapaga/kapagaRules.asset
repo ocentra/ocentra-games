@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kapaga. See rules.objective and rules.gameplay for details.',
-    Player: "Kapaga is a traditional Greenlandic card game belonging to the 'Crazy Eights' family. It is a fast-paced shedding game played with a standard 52-card deck. The game is known for its high interaction, specific localized penalty rules, and the central role of the '8' and 'Ace' as power cards. It is a staple social activity in Greenlandic homes and community centers.",
+    LLM: '1. Players must play a card that matches either the suit or the rank of the top card on the foundation pile.\n2. If a player cannot match, they must draw from the stock until they can play (or draw exactly once, depending on house variant).',
+    Player: '1. Players must play a card that matches either the suit or the rank of the top card on the foundation pile.\n2. If a player cannot match, they must draw from the stock until they can play (or draw exactly once, depending on house variant).',
     objective: 'Be the first player to discard all cards from your hand.',
     gameplay: '1. Players must play a card that matches either the suit or the rank of the top card on the foundation pile.\n2. If a player cannot match, they must draw from the stock until they can play (or draw exactly once, depending on house variant).',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Be the first player to discard all cards from your hand. Expected outcome: 1.',
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Be the first player to discard all cards from your hand.',
+      'Turn-flow example: 1. Players must play a card that matches either the suit or the rank of the top card on the foundation pile.\n2. If a player cannot match, they must draw from the stock until they can play (or draw exactly once, depending on house variant).',
+      'Scoring example: Be the first player to discard all cards from your hand. Be the first player to discard all cards from your hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'kapaga.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kapaga.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Players must play a card that matches either the suit or the rank of the top card on the foundation pile.\n2. If a player cannot match, they must draw from the stock until they can play (or draw exactly once, depending on house variant).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kapaga.setup.players',
+        title: 'Players',
+        text: '3 to 4 is optimal.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kapaga.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. No Jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kapaga.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. No Jokers.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kapaga.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 7 cards. One card is placed face-up to start the foundations pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kapaga.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kapaga.score.description',
+        title: 'Scoring',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kapaga.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Play a card matching the suit or rank of the top card on the foundation pile.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kapaga.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If you cannot play, draw from the stock until you can (or once per turn in some variants).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kapaga.rules.key.3',
+        title: 'Key rule 3',
+        text: 'An 8 may be played on anything and lets you choose the new suit.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kapaga.rules.key.4',
+        title: 'Key rule 4',
+        text: 'An Ace skips the next player.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'kapaga.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Call when you have one card left (e.g. Kapaga); failure may incur a draw penalty.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kapaga.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kapaga.rules.objective',
+          'kapaga.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kapaga.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kapaga.setup.players',
+          'kapaga.setup.deck',
+          'kapaga.setup.equipment',
+          'kapaga.setup.dealing',
+        ],
+      },
+      {
+        id: 'kapaga.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kapaga.rules.key.1',
+          'kapaga.rules.key.2',
+          'kapaga.rules.key.3',
+          'kapaga.rules.key.4',
+          'kapaga.rules.key.5',
+        ],
+      },
+      {
+        id: 'kapaga.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kapaga.score.description',
+          'kapaga.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kapaga.setup.dealing',
+        'kapaga.rules.objective',
+      ],
+      deal: [
+        'kapaga.rules.gameplay',
+      ],
+      play_card: [
+        'kapaga.rules.gameplay',
+      ],
+      draw: [
+        'kapaga.rules.gameplay',
+      ],
+      discard: [
+        'kapaga.rules.gameplay',
+      ],
+    },
   },
 }

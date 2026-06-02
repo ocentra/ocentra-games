@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Navajo Tens (Fishing). 52 cards. Draw, then capture cards totaling 10 from the tableau. Highest score wins.',
-    Player: 'Neeznáá Dah Yíjihí (Navajo Tens). Capture cards from the table that total ten.',
+    LLM: 'On your turn, play one card from your hand. Capture cards from the center that combine with your card to make 10 (e.g. play 7, capture 3). Multiple cards can be captured if their sum equals 10. If you cannot capture, add your card to the center. Draw to replenish after each play.',
+    Player: 'On your turn, play one card from your hand. Capture cards from the center that combine with your card to make 10 (e.g. play 7, capture 3). Multiple cards can be captured if their sum equals 10. If you cannot capture, add your card to the center. Draw to replenish after each play.',
     objective: 'Capture the most cards by making combinations that sum to 10.',
     gameplay: 'On your turn, play one card from your hand. Capture cards from the center that combine with your card to make 10 (e.g. play 7, capture 3). Multiple cards can be captured if their sum equals 10. If you cannot capture, add your card to the center. Draw to replenish after each play.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-7 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Players capture cards that sum to 10; the player with the most captured cards wins. Expected outcome: NA.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Capture the most cards by making combinations that sum to 10.',
+      'Turn-flow example: On your turn, play one card from your hand. Capture cards from the center that combine with your card to make 10 (e.g. play 7, capture 3). Multiple cards can be captured if their sum equals 10. If you cannot capture, add your card to the center. Draw to replenish after each play.',
+      'Scoring example: Players capture cards that sum to 10; the player with the most captured cards wins. See rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'navajo-tens.rules.objective',
+        title: 'Objective',
+        text: 'Capture the most cards by making combinations that sum to 10.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'navajo-tens.rules.gameplay',
+        title: 'Turn flow',
+        text: 'On your turn, play one card from your hand. Capture cards from the center that combine with your card to make 10 (e.g. play 7, capture 3). Multiple cards can be captured if their sum equals 10. If you cannot capture, add your card to the center. Draw to replenish after each play.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'navajo-tens.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'navajo-tens.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'navajo-tens.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'navajo-tens.setup.dealing',
+        title: 'Deal',
+        text: 'Four cards dealt to each player, four cards face-up in the center. Remaining cards form the draw pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'navajo-tens.score.win-condition',
+        title: 'Win condition',
+        text: 'See rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'navajo-tens.score.description',
+        title: 'Scoring',
+        text: 'Players capture cards that sum to 10; the player with the most captured cards wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'navajo-tens.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Card values: A=1, 2-10=face value, J=Q=K=10',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'navajo-tens.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Captures must sum to exactly 10',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'navajo-tens.rules.key.3',
+        title: 'Key rule 3',
+        text: 'If no capture possible, card is added to center layout',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'navajo-tens.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Replenish hand after each play',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'navajo-tens.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'navajo-tens.rules.objective',
+          'navajo-tens.rules.gameplay',
+        ],
+      },
+      {
+        id: 'navajo-tens.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'navajo-tens.setup.players',
+          'navajo-tens.setup.deck',
+          'navajo-tens.setup.equipment',
+          'navajo-tens.setup.dealing',
+        ],
+      },
+      {
+        id: 'navajo-tens.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'navajo-tens.rules.key.1',
+          'navajo-tens.rules.key.2',
+          'navajo-tens.rules.key.3',
+          'navajo-tens.rules.key.4',
+        ],
+      },
+      {
+        id: 'navajo-tens.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'navajo-tens.score.description',
+          'navajo-tens.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'navajo-tens.setup.dealing',
+        'navajo-tens.rules.objective',
+      ],
+      play_card: [
+        'navajo-tens.rules.gameplay',
+      ],
+      draw: [
+        'navajo-tens.rules.gameplay',
+      ],
+      pass: [
+        'navajo-tens.rules.gameplay',
+      ],
+    },
   },
 }

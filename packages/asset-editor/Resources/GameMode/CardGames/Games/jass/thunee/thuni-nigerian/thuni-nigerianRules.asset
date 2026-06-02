@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Thuni (Nigerian). Plain-trick game, J-9-A-10-K-Q ranking. Follow suit; win majority of tricks. Partnership.',
-    Player: 'Nigerian Thuni is a trick-taking game related to South African Thunee but played as a plain-trick game (no card points). The objective is winning tricks rather than counting card values, though the unusual ranking (J-9 high) remains.',
+    LLM: 'Dealer deals all cards (6 each with 24-card deck or 8 each with 32-card deck). Left of dealer leads to the first trick. Players must follow suit when able; otherwise may play any card. Highest card of the led suit wins the trick; trick winner leads next. Game ends when all tricks are played; side with more tricks wins.',
+    Player: 'Dealer deals all cards (6 each with 24-card deck or 8 each with 32-card deck). Left of dealer leads to the first trick. Players must follow suit when able; otherwise may play any card. Highest card of the led suit wins the trick; trick winner leads next. Game ends when all tricks are played; side with more tricks wins.',
     objective: 'Win the majority of tricks. No card points are counted; the game is played as plain-trick with the unusual ranking J-9-A-10-K-Q. Partners sit opposite and combine trick counts.',
     gameplay: 'Dealer deals all cards (6 each with 24-card deck or 8 each with 32-card deck). Left of dealer leads to the first trick. Players must follow suit when able; otherwise may play any card. Highest card of the led suit wins the trick; trick winner leads next. Game ends when all tricks are played; side with more tricks wins.',
     keyRules: [
@@ -52,10 +52,150 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 8 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_cards before play.',
-      'Scoring check: Count tricks won. Expected outcome: Win majority of tricks..',
+      'Setup example: 8 card(s) per player.',
+      'Rule example: Win the majority of tricks. No card points are counted; the game is played as plain-trick with the unusual ranking J-9-A-10-K-Q. Partners sit opposite and combine trick counts.',
+      'Turn-flow example: Dealer deals all cards (6 each with 24-card deck or 8 each with 32-card deck). Left of dealer leads to the first trick. Players must follow suit when able; otherwise may play any card. Highest card of the led suit wins the trick; trick winner leads next. Game ends when all tricks are played; side with more tricks wins.',
+      'Scoring example: Count tricks won. Win majority of tricks..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'thuni-nigerian.rules.objective',
+        title: 'Objective',
+        text: 'Win the majority of tricks. No card points are counted; the game is played as plain-trick with the unusual ranking J-9-A-10-K-Q. Partners sit opposite and combine trick counts.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'thuni-nigerian.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Dealer deals all cards (6 each with 24-card deck or 8 each with 32-card deck). Left of dealer leads to the first trick. Players must follow suit when able; otherwise may play any card. Highest card of the led suit wins the trick; trick winner leads next. Game ends when all tricks are played; side with more tricks wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'thuni-nigerian.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'thuni-nigerian.setup.deck',
+        title: 'Deck',
+        text: '24 cards (or 32). Rank: J-9-A-10-K-Q.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'thuni-nigerian.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'thuni-nigerian.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 6 cards each (4 then 2) with 24-card deck, or 8 each with 32-card deck. Dealer offers cut to left.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'thuni-nigerian.score.win-condition',
+        title: 'Win condition',
+        text: 'Win majority of tricks.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'thuni-nigerian.score.description',
+        title: 'Scoring',
+        text: 'Count tricks won.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'thuni-nigerian.rules.key.1',
+        title: 'Key rule 1',
+        text: 'J > 9 > A > 10 > K > Q',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'thuni-nigerian.rules.key.2',
+        title: 'Key rule 2',
+        text: 'No card points',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'thuni-nigerian.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Partnership',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'thuni-nigerian.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'thuni-nigerian.rules.objective',
+          'thuni-nigerian.rules.gameplay',
+        ],
+      },
+      {
+        id: 'thuni-nigerian.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'thuni-nigerian.setup.players',
+          'thuni-nigerian.setup.deck',
+          'thuni-nigerian.setup.equipment',
+          'thuni-nigerian.setup.dealing',
+        ],
+      },
+      {
+        id: 'thuni-nigerian.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'thuni-nigerian.rules.key.1',
+          'thuni-nigerian.rules.key.2',
+          'thuni-nigerian.rules.key.3',
+        ],
+      },
+      {
+        id: 'thuni-nigerian.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'thuni-nigerian.score.description',
+          'thuni-nigerian.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'thuni-nigerian.setup.dealing',
+        'thuni-nigerian.rules.objective',
+      ],
+      play_card: [
+        'thuni-nigerian.rules.gameplay',
+      ],
+      deal_cards: [
+        'thuni-nigerian.rules.gameplay',
+      ],
+    },
   },
 }

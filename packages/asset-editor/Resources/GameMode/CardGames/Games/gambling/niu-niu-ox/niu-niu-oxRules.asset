@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Niu Niu (Ox-Ox / Bullfighting). Logic: See rules.objective and rules.gameplay.',
-    Player: "Niu Niu (literally 'Ox Ox') is a popular gambling card game originating from Southern China and widely played in Southeast Asia. It is a banking game where players receive five cards and must split them into a three-card set (totaling a multiple of 10) and a two-card hand. The value of the two-card hand determines the strength of the 'Ox'. It is known for its fast pace, significant multipliers on high hands, and its ubiquity in Asian casinos and social gatherings.",
+    LLM: "One banker and multiple players. Each receives five cards. Players split their five cards into a three-card set (total must be a multiple of 10) and a two-card hand. The two-card hand's point value (units digit only, e.g. 17 counts as 7) is the hand rank. Banker does the same. Compare each player's hand to the banker: higher point value wins. Niu Niu (both three- and two-card parts total zero) is the highest normal hand. Ties broken by highest single card. Equal bet pays 1:1 (minus 5% commission on wins); Double bet pays 1:1 for 1-6 points, 2:1 for 7-9, 3:1 for Niu Niu (player can lose up to 3x on Double).",
+    Player: "One banker and multiple players. Each receives five cards. Players split their five cards into a three-card set (total must be a multiple of 10) and a two-card hand. The two-card hand's point value (units digit only, e.g. 17 counts as 7) is the hand rank. Banker does the same. Compare each player's hand to the banker: higher point value wins. Niu Niu (both three- and two-card parts total zero) is the highest normal hand. Ties broken by highest single card. Equal bet pays 1:1 (minus 5% commission on wins); Double bet pays 1:1 for 1-6 points, 2:1 for 7-9, 3:1 for Niu Niu (player can lose up to 3x on Double).",
     objective: 'Beat the banker by forming a higher Niu value: split your five cards into a three-card set (sum must be a multiple of 10) and a two-card hand; the units digit of the two-card sum is your rank (0–9). Higher rank wins; Niu Niu (0) beats all point hands; ties are broken by highest single card.',
     gameplay: "One banker and multiple players. Each receives five cards. Players split their five cards into a three-card set (total must be a multiple of 10) and a two-card hand. The two-card hand's point value (units digit only, e.g. 17 counts as 7) is the hand rank. Banker does the same. Compare each player's hand to the banker: higher point value wins. Niu Niu (both three- and two-card parts total zero) is the highest normal hand. Ties broken by highest single card. Equal bet pays 1:1 (minus 5% commission on wins); Double bet pays 1:1 for 1-6 points, 2:1 for 7-9, 3:1 for Niu Niu (player can lose up to 3x on Double).",
     keyRules: [
@@ -53,10 +53,168 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in bet_phase; each_player_clockwise may use bet before deal_phase.',
-      'Scoring check: Have a higher hand value than the banker. Expected outcome: Have a higher hand value than the banker..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Beat the banker by forming a higher Niu value: split your five cards into a three-card set (sum must be a multiple of 10) and a two-card hand; the units digit of the two-card sum is your rank (0–9). Higher rank wins; Niu Niu (0) beats all point hands; ties are broken by highest single card.',
+      "Turn-flow example: One banker and multiple players. Each receives five cards. Players split their five cards into a three-card set (total must be a multiple of 10) and a two-card hand. The two-card hand's point value (units digit only, e.g. 17 counts as 7) is the hand rank. Banker does the same. Compare each player's hand to the banker: higher point value wins. Niu Niu (both three- and two-card parts total zero) is the highest normal hand. Ties broken by highest single card. Equal bet pays 1:1 (minus 5% commission on wins); Double bet pays 1:1 for 1-6 points, 2:1 for 7-9, 3:1 for Niu Niu (player can lose up to 3x on Double).",
+      'Scoring example: Have a higher hand value than the banker. Have a higher hand value than the banker..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'niu-niu-ox.rules.objective',
+        title: 'Objective',
+        text: 'Beat the banker by forming a higher Niu value: split your five cards into a three-card set (sum must be a multiple of 10) and a two-card hand; the units digit of the two-card sum is your rank (0–9). Higher rank wins; Niu Niu (0) beats all point hands; ties are broken by highest single card.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'niu-niu-ox.rules.gameplay',
+        title: 'Turn flow',
+        text: "One banker and multiple players. Each receives five cards. Players split their five cards into a three-card set (total must be a multiple of 10) and a two-card hand. The two-card hand's point value (units digit only, e.g. 17 counts as 7) is the hand rank. Banker does the same. Compare each player's hand to the banker: higher point value wins. Niu Niu (both three- and two-card parts total zero) is the highest normal hand. Ties broken by highest single card. Equal bet pays 1:1 (minus 5% commission on wins); Double bet pays 1:1 for 1-6 points, 2:1 for 7-9, 3:1 for Niu Niu (player can lose up to 3x on Double).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'niu-niu-ox.setup.players',
+        title: 'Players',
+        text: 'One banker, multiple players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'niu-niu-ox.setup.deck',
+        title: 'Deck',
+        text: '52 cards. Rank: King > Queen > Jack > 10 > 9... > Ace. Suits: Spade > Heart > Club > Diamond.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'niu-niu-ox.setup.equipment',
+        title: 'Equipment',
+        text: '52 cards. Rank: King > Queen > Jack > 10 > 9... > Ace. Suits: Spade > Heart > Club > Diamond.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'niu-niu-ox.setup.dealing',
+        title: 'Deal',
+        text: 'Each player (and the banker) receives 5 cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'niu-niu-ox.score.win-condition',
+        title: 'Win condition',
+        text: 'Have a higher hand value than the banker.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'niu-niu-ox.score.description',
+        title: 'Scoring',
+        text: 'Have a higher hand value than the banker.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'niu-niu-ox.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Split five cards into three-card (multiple of 10) and two-card hand; units digit of two-card sum is your Niu value (0-9).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'niu-niu-ox.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Higher Niu value beats lower; Niu Niu (0+0) beats all point hands. Tie-break by highest card.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'niu-niu-ox.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Equal bet: 1:1 win/loss, 5% commission on wins. Double bet: 1-6 pays 1:1, 7-9 pays 2:1, Niu Niu pays 3:1; lose up to 3x stake.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'niu-niu-ox.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Face cards count as 10. Aces typically 1 or 11 by variant.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'niu-niu-ox.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'niu-niu-ox.rules.objective',
+          'niu-niu-ox.rules.gameplay',
+        ],
+      },
+      {
+        id: 'niu-niu-ox.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'niu-niu-ox.setup.players',
+          'niu-niu-ox.setup.deck',
+          'niu-niu-ox.setup.equipment',
+          'niu-niu-ox.setup.dealing',
+        ],
+      },
+      {
+        id: 'niu-niu-ox.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'niu-niu-ox.rules.key.1',
+          'niu-niu-ox.rules.key.2',
+          'niu-niu-ox.rules.key.3',
+          'niu-niu-ox.rules.key.4',
+        ],
+      },
+      {
+        id: 'niu-niu-ox.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'niu-niu-ox.score.description',
+          'niu-niu-ox.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'niu-niu-ox.setup.dealing',
+        'niu-niu-ox.rules.objective',
+      ],
+      bet: [
+        'niu-niu-ox.rules.gameplay',
+      ],
+      reveal_hand: [
+        'niu-niu-ox.rules.gameplay',
+      ],
+      award_pot: [
+        'niu-niu-ox.rules.gameplay',
+      ],
+      deal_cards: [
+        'niu-niu-ox.rules.gameplay',
+      ],
+      confirm_split: [
+        'niu-niu-ox.rules.gameplay',
+      ],
+    },
   },
 }

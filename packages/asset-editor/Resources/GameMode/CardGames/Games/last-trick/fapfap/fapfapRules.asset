@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Fapfap (Agram/Sink-Sink). Last-trick-only design. 5 tricks total. Turn sequence: leading player plays any card; others follow suit if able (else any card). Highest led-suit card wins trick. Trick winner leads next. Winner of trick 5 wins game. Card ranks: A 10 9 8 7 6 5 4 3 (no Aâ™ , no K Q J 2). Cameroon variant: winning final trick with 3 = double stake; with other cards = single stake.',
-    Player: 'Welcome to Fapfap, a West African favorite. You play 5 tricks. Only the last one counts. Winning early tricks can hurt you—it forces you to lead and give control away. Save your Aces and 10s for the final moment. In the Cameroon variant, winning the last trick with a 3 doubles your stake!',
+    LLM: "1. **Starting Play**: The player to the dealer's right leads the first trick with any card. 2. **Following Suit**: Players must follow the suit of the led card if able. If unable, any card may be played. 3. **Winning a Trick**: The highest card of the led suit wins the trick. No trump suit exists. 4. **Next Lead**: The winner of the trick leads the next trick with any card. 5. **Final Trick**: After 5 or 6 tricks (depending on variant), the winner of the last trick wins the game. 6. **Round Completion**: After each complete game, the deal passes to the next player clockwise.",
+    Player: "1. **Starting Play**: The player to the dealer's right leads the first trick with any card. 2. **Following Suit**: Players must follow the suit of the led card if able. If unable, any card may be played. 3. **Winning a Trick**: The highest card of the led suit wins the trick. No trump suit exists. 4. **Next Lead**: The winner of the trick leads the next trick with any card. 5. **Final Trick**: After 5 or 6 tricks (depending on variant), the winner of the last trick wins the game. 6. **Round Completion**: After each complete game, the deal passes to the next player clockwise.",
     objective: 'Win the final (5th or 6th) trick. Winning earlier tricks may be disadvantageous as the trick winner must lead the next trick.',
     gameplay: "1. **Starting Play**: The player to the dealer's right leads the first trick with any card. 2. **Following Suit**: Players must follow the suit of the led card if able. If unable, any card may be played. 3. **Winning a Trick**: The highest card of the led suit wins the trick. No trump suit exists. 4. **Next Lead**: The winner of the trick leads the next trick with any card. 5. **Final Trick**: After 5 or 6 tricks (depending on variant), the winner of the last trick wins the game. 6. **Round Completion**: After each complete game, the deal passes to the next player clockwise.",
     keyRules: [
@@ -54,10 +54,171 @@
       go_out: 'Winner determined by final trick, not by going out.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before trick_1.',
-      'Scoring check: Winner is determined by final trick victory. Optional chip-based scoring modifies stakes based on the winning card rank. Expected outcome: First player to win the final (5th or 6th) trick wins the round..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the final (5th or 6th) trick. Winning earlier tricks may be disadvantageous as the trick winner must lead the next trick.',
+      "Turn-flow example: 1. **Starting Play**: The player to the dealer's right leads the first trick with any card. 2. **Following Suit**: Players must follow the suit of the led card if able. If unable, any card may be played. 3. **Winning a Trick**: The highest card of the led suit wins the trick. No trump suit exists. 4. **Next Lead**: The winner of the trick leads the next trick with any card. 5. **Final Trick**: After 5 or 6 tricks (depending on variant), the winner of the last trick wins the game. 6. **Round Completion**: After each complete game, the deal passes to the next player clockwise.",
+      'Scoring example: Winner is determined by final trick victory. Optional chip-based scoring modifies stakes based on the winning card rank. First player to win the final (5th or 6th) trick wins the round..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'fapfap.rules.objective',
+        title: 'Objective',
+        text: 'Win the final (5th or 6th) trick. Winning earlier tricks may be disadvantageous as the trick winner must lead the next trick.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'fapfap.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Starting Play**: The player to the dealer's right leads the first trick with any card. 2. **Following Suit**: Players must follow the suit of the led card if able. If unable, any card may be played. 3. **Winning a Trick**: The highest card of the led suit wins the trick. No trump suit exists. 4. **Next Lead**: The winner of the trick leads the next trick with any card. 5. **Final Trick**: After 5 or 6 tricks (depending on variant), the winner of the last trick wins the game. 6. **Round Completion**: After each complete game, the deal passes to the next player clockwise.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'fapfap.setup.players',
+        title: 'Players',
+        text: '2 to 5 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'fapfap.setup.deck',
+        title: 'Deck',
+        text: '35-card stripped deck. Take a standard 52-card deck and remove: all Kings, all Queens, all Jacks, all 2s, and the Ace of Spades (The Chief). Remaining deck: Ace (except Spades), 3-10 of all suits.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'fapfap.setup.equipment',
+        title: 'Equipment',
+        text: 'Deck and chips/stakes for optional scoring variant.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'fapfap.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer (rotates clockwise) shuffles; right-hand player cuts. Dealer distributes 5 or 6 cards to each player (depending on regional variant) in two batches. Cameroon: 6 cards (3, then 3). Niger: 5 cards (3, then 2).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'fapfap.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to win the final (5th or 6th) trick wins the round.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'fapfap.score.description',
+        title: 'Scoring',
+        text: 'Winner is determined by final trick victory. Optional chip-based scoring modifies stakes based on the winning card rank.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'fapfap.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Card rank order (high to low): Ace, 10, 9, 8, 7, 6, 5, 4, 3 (except Spades: 10, 9, 8, 7, 6, 5, 4, 3 only; no Ace of Spades).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'fapfap.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must follow suit if able; otherwise, play any card.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'fapfap.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Only the final trick matters; earlier trick wins are often strategic disadvantages.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'fapfap.rules.key.4',
+        title: 'Key rule 4',
+        text: 'No trump suit in standard play.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'fapfap.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Trick winner leads the next trick, forcing them to potentially give away control.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'fapfap.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'fapfap.rules.objective',
+          'fapfap.rules.gameplay',
+        ],
+      },
+      {
+        id: 'fapfap.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'fapfap.setup.players',
+          'fapfap.setup.deck',
+          'fapfap.setup.equipment',
+          'fapfap.setup.dealing',
+        ],
+      },
+      {
+        id: 'fapfap.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'fapfap.rules.key.1',
+          'fapfap.rules.key.2',
+          'fapfap.rules.key.3',
+          'fapfap.rules.key.4',
+          'fapfap.rules.key.5',
+        ],
+      },
+      {
+        id: 'fapfap.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'fapfap.score.description',
+          'fapfap.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'fapfap.setup.dealing',
+        'fapfap.rules.objective',
+      ],
+      deal: [
+        'fapfap.rules.gameplay',
+      ],
+      play_card: [
+        'fapfap.rules.gameplay',
+      ],
+      declare_winner: [
+        'fapfap.rules.gameplay',
+      ],
+    },
   },
 }

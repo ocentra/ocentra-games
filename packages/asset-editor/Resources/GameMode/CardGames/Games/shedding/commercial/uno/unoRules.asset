@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Crazy Eights. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Crazy Eights is a popular shedding card game, especially beloved by children. The objective is simple: be the first player to discard all your cards. Players take turns playing cards to a central discard pile, matching either the rank or suit of the top card. The eponymous "crazy" 8s are wild cards that can be played on anything and allow the player to change the suit.',
+    LLM: 'Players match the current discard by color, number, or symbol, draw when unable to play, and use action cards to skip, reverse, force draws, or change color.',
+    Player: 'Players match the current discard by color, number, or symbol, draw when unable to play, and use action cards to skip, reverse, force draws, or change color.',
     objective: 'Be the first player to empty your hand, then score cards left in opponents hands.',
     gameplay: 'Players match the current discard by color, number, or symbol, draw when unable to play, and use action cards to skip, reverse, force draws, or change color.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Be the first player to discard all cards from your hand. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first player to empty your hand, then score cards left in opponents hands.',
+      'Turn-flow example: Players match the current discard by color, number, or symbol, draw when unable to play, and use action cards to skip, reverse, force draws, or change color.',
+      'Scoring example: Be the first player to discard all cards from your hand. Be the first player to discard all cards from your hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'uno.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to empty your hand, then score cards left in opponents hands.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'uno.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players match the current discard by color, number, or symbol, draw when unable to play, and use action cards to skip, reverse, force draws, or change color.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'uno.setup.players',
+        title: 'Players',
+        text: '2-10 players use the table arrangement described for Uno.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'uno.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Uno color, number, and action card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'uno.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Uno color, number, and action card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'uno.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Uno color, number, and action card deck and deal or lay out cards according to the documented Uno rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'uno.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'uno.score.description',
+        title: 'Scoring',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'uno.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Match color, number, or action symbol.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'uno.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Action cards change direction, skip, force draws, or change color.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'uno.rules.key.3',
+        title: 'Key rule 3',
+        text: 'A player must call Uno when down to one card under standard rules.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'uno.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'uno.rules.objective',
+          'uno.rules.gameplay',
+        ],
+      },
+      {
+        id: 'uno.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'uno.setup.players',
+          'uno.setup.deck',
+          'uno.setup.equipment',
+          'uno.setup.dealing',
+        ],
+      },
+      {
+        id: 'uno.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'uno.rules.key.1',
+          'uno.rules.key.2',
+          'uno.rules.key.3',
+        ],
+      },
+      {
+        id: 'uno.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'uno.score.description',
+          'uno.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'uno.setup.dealing',
+        'uno.rules.objective',
+      ],
+      play_card: [
+        'uno.rules.gameplay',
+      ],
+    },
   },
 }

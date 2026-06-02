@@ -53,10 +53,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use turn_stock_to_waste, play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Build all four foundations from Ace to King in suit. The game is won when all 52 cards are on the foundations.',
+      'Turn-flow example: 1. Turn a card from the stock onto the waste; only the topmost card of the waste may be played. 2. The top waste card may be moved to a foundation (build up in suit from Ace to King) or to a tableau pile. 3. On the tableau, build down in alternating colors; any card may be placed on an empty tableau pile. 4. You may move one or more cards from one tableau pile to another when the build rule holds. 5. Only one pass through the stock is allowed; there is no redeal.',
+      'Scoring example: Points or match rules. Win when all four foundations are built from Ace to King in suit (all 52 cards on foundations)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pas-seul.rules.objective',
+        title: 'Objective',
+        text: 'Build all four foundations from Ace to King in suit. The game is won when all 52 cards are on the foundations.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pas-seul.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Turn a card from the stock onto the waste; only the topmost card of the waste may be played. 2. The top waste card may be moved to a foundation (build up in suit from Ace to King) or to a tableau pile. 3. On the tableau, build down in alternating colors; any card may be placed on an empty tableau pile. 4. You may move one or more cards from one tableau pile to another when the build rule holds. 5. Only one pass through the stock is allowed; there is no redeal.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pas-seul.setup.players',
+        title: 'Players',
+        text: 'One player. Pas Seul is a single-player patience (solitaire) game.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pas-seul.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck. One deck. No jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pas-seul.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck and table space for stock, waste, six tableau piles, and four foundations.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pas-seul.setup.dealing',
+        title: 'Deal',
+        text: 'Layout: Place four foundation spaces (upper right). Six tableau piles (main stacks) below. Stock (closed deck) upper left; waste pile next to it. Deal one card face-up to each of the six tableau piles to start (or per variant). Remaining cards form the stock. Only one pass through the stock is allowed.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pas-seul.score.win-condition',
+        title: 'Win condition',
+        text: 'Win when all four foundations are built from Ace to King in suit (all 52 cards on foundations).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pas-seul.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pas-seul.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Foundations: build ascending in the same suit from Ace to King.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pas-seul.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Tableau: build descending in alternating colors; only the top card of a pile is movable.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pas-seul.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Only the top card of the waste pile may be played to foundation or tableau.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pas-seul.rules.key.4',
+        title: 'Key rule 4',
+        text: 'One pass through the deck only; no redeal.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pas-seul.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pas-seul.rules.objective',
+          'pas-seul.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pas-seul.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pas-seul.setup.players',
+          'pas-seul.setup.deck',
+          'pas-seul.setup.equipment',
+          'pas-seul.setup.dealing',
+        ],
+      },
+      {
+        id: 'pas-seul.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pas-seul.rules.key.1',
+          'pas-seul.rules.key.2',
+          'pas-seul.rules.key.3',
+          'pas-seul.rules.key.4',
+        ],
+      },
+      {
+        id: 'pas-seul.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pas-seul.score.description',
+          'pas-seul.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pas-seul.setup.dealing',
+        'pas-seul.rules.objective',
+      ],
+      play_card: [
+        'pas-seul.rules.gameplay',
+      ],
+      turn_stock_to_waste: [
+        'pas-seul.rules.gameplay',
+      ],
+    },
   },
 }

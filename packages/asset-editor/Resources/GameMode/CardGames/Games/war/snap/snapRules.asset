@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Snap. Objective: be the last player with cards. On your turn flip the top of your face-down pile onto your face-up pile; when two pile tops match in rank, first to call Snap wins both piles; false snap creates a snap pool; first to call Snap pool when a pile matches the pool wins the pool.',
-    Player: "Snap is a classic children's card game that tests mental reaction speed and pattern recognition. Players take turns flipping cards from their personal piles onto a central pile or their own discard pile. When two cards of the same rank (e.g., two 7s) appear consecutively or simultaneously on top of piles, the first player to shout 'Snap!' wins the cards. The goal is to win the entire deck.",
+    LLM: "The deck is shuffled and dealt out equally to players face-down; players do not look at their cards. Player to dealer's left begins; turn passes clockwise. On your turn you turn the top card of your face-down pile and place it face-up alongside, forming a face-up pile beside your face-down pile. When two face-up pile tops match in rank (e.g. two sixes), any player who notices may shout Snap; the first to do so takes both matching face-up piles and adds them face-down to the bottom of their face-down pile. Play continues from the player to the left of whoever turned. If you have no face-down cards when it is your turn, turn your face-up pile over to make a new face-down pile and turn the top card. If you have no cards at all you are out. Last player with cards wins. If a player shouts Snap in error, that player's face-up pile is put in the centre as a snap pool; if the top of any pile later matches the top of a snap pool, the first to call Snap pool takes both piles.",
+    Player: "The deck is shuffled and dealt out equally to players face-down; players do not look at their cards. Player to dealer's left begins; turn passes clockwise. On your turn you turn the top card of your face-down pile and place it face-up alongside, forming a face-up pile beside your face-down pile. When two face-up pile tops match in rank (e.g. two sixes), any player who notices may shout Snap; the first to do so takes both matching face-up piles and adds them face-down to the bottom of their face-down pile. Play continues from the player to the left of whoever turned. If you have no face-down cards when it is your turn, turn your face-up pile over to make a new face-down pile and turn the top card. If you have no cards at all you are out. Last player with cards wins. If a player shouts Snap in error, that player's face-up pile is put in the centre as a snap pool; if the top of any pile later matches the top of a snap pool, the first to call Snap pool takes both piles.",
     objective: 'Be the last player with cards by calling Snap when two face-up pile tops match in rank; the first to call wins those piles and adds them to the bottom of their face-down pile.',
     gameplay: "The deck is shuffled and dealt out equally to players face-down; players do not look at their cards. Player to dealer's left begins; turn passes clockwise. On your turn you turn the top card of your face-down pile and place it face-up alongside, forming a face-up pile beside your face-down pile. When two face-up pile tops match in rank (e.g. two sixes), any player who notices may shout Snap; the first to do so takes both matching face-up piles and adds them face-down to the bottom of their face-down pile. Play continues from the player to the left of whoever turned. If you have no face-down cards when it is your turn, turn your face-up pile over to make a new face-down pile and turn the top card. If you have no cards at all you are out. Last player with cards wins. If a player shouts Snap in error, that player's face-up pile is put in the centre as a snap pool; if the top of any pile later matches the top of a snap pool, the first to call Snap pool takes both piles.",
     keyRules: [
@@ -55,10 +55,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Win all the cards. Expected outcome: Win all the cards..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the last player with cards by calling Snap when two face-up pile tops match in rank; the first to call wins those piles and adds them to the bottom of their face-down pile.',
+      "Turn-flow example: The deck is shuffled and dealt out equally to players face-down; players do not look at their cards. Player to dealer's left begins; turn passes clockwise. On your turn you turn the top card of your face-down pile and place it face-up alongside, forming a face-up pile beside your face-down pile. When two face-up pile tops match in rank (e.g. two sixes), any player who notices may shout Snap; the first to do so takes both matching face-up piles and adds them face-down to the bottom of their face-down pile. Play continues from the player to the left of whoever turned. If you have no face-down cards when it is your turn, turn your face-up pile over to make a new face-down pile and turn the top card. If you have no cards at all you are out. Last player with cards wins. If a player shouts Snap in error, that player's face-up pile is put in the centre as a snap pool; if the top of any pile later matches the top of a snap pool, the first to call Snap pool takes both piles.",
+      'Scoring example: Win all the cards. Win all the cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'snap.rules.objective',
+        title: 'Objective',
+        text: 'Be the last player with cards by calling Snap when two face-up pile tops match in rank; the first to call wins those piles and adds them to the bottom of their face-down pile.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'snap.rules.gameplay',
+        title: 'Turn flow',
+        text: "The deck is shuffled and dealt out equally to players face-down; players do not look at their cards. Player to dealer's left begins; turn passes clockwise. On your turn you turn the top card of your face-down pile and place it face-up alongside, forming a face-up pile beside your face-down pile. When two face-up pile tops match in rank (e.g. two sixes), any player who notices may shout Snap; the first to do so takes both matching face-up piles and adds them face-down to the bottom of their face-down pile. Play continues from the player to the left of whoever turned. If you have no face-down cards when it is your turn, turn your face-up pile over to make a new face-down pile and turn the top card. If you have no cards at all you are out. Last player with cards wins. If a player shouts Snap in error, that player's face-up pile is put in the centre as a snap pool; if the top of any pile later matches the top of a snap pool, the first to call Snap pool takes both piles.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'snap.setup.players',
+        title: 'Players',
+        text: 'Two to four players typically; the game can be played by up to about six, beyond which it becomes unwieldy. Each player keeps their cards in a face-down stack in front of them.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'snap.setup.deck',
+        title: 'Deck',
+        text: 'A standard 52-card pack is used. Suits do not matter; only the ranks (A, 2–10, J, Q, K) matter for matching. Some play with special Snap or matching-card packs.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'snap.setup.equipment',
+        title: 'Equipment',
+        text: 'A standard 52-card pack is used. Suits do not matter; only the ranks (A, 2–10, J, Q, K) matter for matching. Some play with special Snap or matching-card packs.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'snap.setup.dealing',
+        title: 'Deal',
+        text: 'Deal entirely to players face-down into personal piles.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'snap.score.win-condition',
+        title: 'Win condition',
+        text: 'Win all the cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'snap.score.description',
+        title: 'Scoring',
+        text: 'Win all the cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'snap.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Deal entire deck equally face-down; players do not look at cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'snap.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Turn top card face-up on your turn; turn the card facing away from yourself so others see it first.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'snap.rules.key.3',
+        title: 'Key rule 3',
+        text: 'When two face-up pile tops match in rank, any player may shout Snap; first to do so wins both piles.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'snap.rules.key.4',
+        title: 'Key rule 4',
+        text: 'False snap: your face-up pile is moved to the centre as a snap pool.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'snap.rules.key.5',
+        title: 'Key rule 5',
+        text: 'When a pile top matches a snap pool top, first to call Snap pool wins both.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'snap.rules.key.6',
+        title: 'Key rule 6',
+        text: 'No face-down cards on your turn: turn your face-up pile over and continue; no cards at all means you are out.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'snap.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'snap.rules.objective',
+          'snap.rules.gameplay',
+        ],
+      },
+      {
+        id: 'snap.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'snap.setup.players',
+          'snap.setup.deck',
+          'snap.setup.equipment',
+          'snap.setup.dealing',
+        ],
+      },
+      {
+        id: 'snap.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'snap.rules.key.1',
+          'snap.rules.key.2',
+          'snap.rules.key.3',
+          'snap.rules.key.4',
+          'snap.rules.key.5',
+          'snap.rules.key.6',
+        ],
+      },
+      {
+        id: 'snap.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'snap.score.description',
+          'snap.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'snap.setup.dealing',
+        'snap.rules.objective',
+      ],
+      play_card: [
+        'snap.rules.gameplay',
+      ],
+    },
   },
 }

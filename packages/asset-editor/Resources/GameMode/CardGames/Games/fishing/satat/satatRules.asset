@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Satat. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Satat is a trick-taking card game from Mauritius (related to Indian Seven Hands); name from Hindi "saat hant". Win at least seven of 13 tricks.',
+    LLM: '1. Setup: Deal cards to all players\n2. Gameplay: Players take turns playing cards\n3. Scoring: Points awarded based on game outcomes\n4. Winning: First to reach target score or complete objective wins',
+    Player: '1. Setup: Deal cards to all players\n2. Gameplay: Players take turns playing cards\n3. Scoring: Points awarded based on game outcomes\n4. Winning: First to reach target score or complete objective wins',
     objective: 'Be the first player to achieve the winning condition through strategic play of cards.',
     gameplay: '1. Setup: Deal cards to all players\n2. Gameplay: Players take turns playing cards\n3. Scoring: Points awarded based on game outcomes\n4. Winning: First to reach target score or complete objective wins',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Points based on cards captured or objectives completed\nGame ends when target reached\n-- Expected outcome: Be the first player to achieve the winning condition through strategic play of cards..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first player to achieve the winning condition through strategic play of cards.',
+      'Turn-flow example: 1. Setup: Deal cards to all players\n2. Gameplay: Players take turns playing cards\n3. Scoring: Points awarded based on game outcomes\n4. Winning: First to reach target score or complete objective wins',
+      'Scoring example: Points based on cards captured or objectives completed\nGame ends when target reached\n-- Be the first player to achieve the winning condition through strategic play of cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'satat.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to achieve the winning condition through strategic play of cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'satat.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Setup: Deal cards to all players\n2. Gameplay: Players take turns playing cards\n3. Scoring: Points awarded based on game outcomes\n4. Winning: First to reach target score or complete objective wins',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'satat.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'satat.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'satat.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'satat.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'satat.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to achieve the winning condition through strategic play of cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'satat.score.description',
+        title: 'Scoring',
+        text: 'Points based on cards captured or objectives completed\nGame ends when target reached\n--',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'satat.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow game-specific card play rules',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'satat.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Score according to game objectives',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'satat.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Win by achieving game goal',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'satat.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'satat.rules.objective',
+          'satat.rules.gameplay',
+        ],
+      },
+      {
+        id: 'satat.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'satat.setup.players',
+          'satat.setup.deck',
+          'satat.setup.equipment',
+          'satat.setup.dealing',
+        ],
+      },
+      {
+        id: 'satat.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'satat.rules.key.1',
+          'satat.rules.key.2',
+          'satat.rules.key.3',
+        ],
+      },
+      {
+        id: 'satat.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'satat.score.description',
+          'satat.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'satat.setup.dealing',
+        'satat.rules.objective',
+      ],
+      play_card: [
+        'satat.rules.gameplay',
+      ],
+    },
   },
 }

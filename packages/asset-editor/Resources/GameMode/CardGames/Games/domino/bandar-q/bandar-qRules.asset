@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Bandar Q. Type: Domino Banking. Rules: 28 double-six dominoes. 2 tiles per hand. Score = Sum modulo 10. Banker wins ties. 9 (Kiu) wins double payout.',
-    Player: "The Banker is ready. Place your bets in the circle. You've got two tiles coming your wayâ€”look for that 9 to score the double payout.",
+    LLM: 'Bettors place wagers. Each player and the Banker receive two dominoes. Pip total modulo 10; closest to 9 wins. Banker wins ties.',
+    Player: 'Bettors place wagers. Each player and the Banker receive two dominoes. Pip total modulo 10; closest to 9 wins. Banker wins ties.',
     objective: 'Score a total closer to 9 than the Banker to win your bet.',
     gameplay: 'Bettors place wagers. Each player and the Banker receive two dominoes. Pip total modulo 10; closest to 9 wins. Banker wins ties.',
     keyRules: [
@@ -52,10 +52,165 @@
       go_out: 'Round ends at comparison; no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 2 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in wagering; current_player may use place_bet before dealing.',
-      'Scoring check: Payout based on comparison with the Banker. Expected outcome: 9.',
+      'Setup example: 2 card(s) per player.',
+      'Rule example: Score a total closer to 9 than the Banker to win your bet.',
+      'Turn-flow example: Bettors place wagers. Each player and the Banker receive two dominoes. Pip total modulo 10; closest to 9 wins. Banker wins ties.',
+      'Scoring example: Payout based on comparison with the Banker. Higher modulo-10 total than the dealer..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'bandar-q.rules.objective',
+        title: 'Objective',
+        text: 'Score a total closer to 9 than the Banker to win your bet.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bandar-q.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Bettors place wagers. Each player and the Banker receive two dominoes. Pip total modulo 10; closest to 9 wins. Banker wins ties.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bandar-q.setup.players',
+        title: 'Players',
+        text: "2-8 players. One is the 'Bandar' (Banker); others are 'Pemasang' (Bettors).",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bandar-q.setup.deck',
+        title: 'Deck',
+        text: 'A standard double-six set of 28 dominoes (0-0 to 6-6).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bandar-q.setup.equipment',
+        title: 'Equipment',
+        text: "Dominoes, betting chips, Banker's box.",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bandar-q.setup.dealing',
+        title: 'Deal',
+        text: 'After bets are placed, each player and the Banker receive 2 tiles face down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bandar-q.score.win-condition',
+        title: 'Win condition',
+        text: 'Higher modulo-10 total than the dealer.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bandar-q.score.description',
+        title: 'Scoring',
+        text: 'Payout based on comparison with the Banker.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bandar-q.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The Banker always wins on a tie.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bandar-q.rules.key.2',
+        title: 'Key rule 2',
+        text: "A hand of 10 pips is 0 points (the 'Baccarat' equivalent of the game).",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bandar-q.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Maximum hand value is 9.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bandar-q.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bandar-q.rules.objective',
+          'bandar-q.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bandar-q.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bandar-q.setup.players',
+          'bandar-q.setup.deck',
+          'bandar-q.setup.equipment',
+          'bandar-q.setup.dealing',
+        ],
+      },
+      {
+        id: 'bandar-q.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bandar-q.rules.key.1',
+          'bandar-q.rules.key.2',
+          'bandar-q.rules.key.3',
+        ],
+      },
+      {
+        id: 'bandar-q.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bandar-q.score.description',
+          'bandar-q.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bandar-q.setup.dealing',
+        'bandar-q.rules.objective',
+      ],
+      bet: [
+        'bandar-q.rules.gameplay',
+      ],
+      place_bet: [
+        'bandar-q.rules.gameplay',
+      ],
+      deal_two_tiles: [
+        'bandar-q.rules.gameplay',
+      ],
+      show_tiles: [
+        'bandar-q.rules.gameplay',
+      ],
+      compare_modulo_10: [
+        'bandar-q.rules.gameplay',
+      ],
+      payout_bets: [
+        'bandar-q.rules.gameplay',
+      ],
+      rotate_banker: [
+        'bandar-q.rules.gameplay',
+      ],
+    },
   },
 }

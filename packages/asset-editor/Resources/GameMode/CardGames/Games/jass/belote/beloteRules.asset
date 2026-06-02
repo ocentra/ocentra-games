@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Belote. Type: Jass/Trick-Taking. Rules: J(20)>9(14)>A(11)>10(10). Must follow, Must Trump if void. 162 total points. Belote=K+Q of trump.',
-    Player: "The turned card is the Jack of Diamonds. That's 20 points instantly! You hold the 9 and Ace of Diamonds too. Take it! You have the Top 3 Trumps ('Trente-Quatre'). Declare 'Tierce' on the first trick for bonus points.",
+    LLM: "1. **Bidding**: Accept turned trump or call another suit. 2. **Declarations**: Announced during the first trick. Only the team with the highest declaration scores theirs. 3. **The Play**: Forehand leads. Must follow suit. If void, must trump (unless partner winning). Must over-trump if trumps are led. 4. **Scoring**: Sum card points + declarations + 'Dix de Der' (10 bonus).",
+    Player: "1. **Bidding**: Accept turned trump or call another suit. 2. **Declarations**: Announced during the first trick. Only the team with the highest declaration scores theirs. 3. **The Play**: Forehand leads. Must follow suit. If void, must trump (unless partner winning). Must over-trump if trumps are led. 4. **Scoring**: Sum card points + declarations + 'Dix de Der' (10 bonus).",
     objective: 'The contracting team must score more points than the defenders (usually > 81 points out of 162 total). First team to 501 or 1000 wins the match.',
     gameplay: "1. **Bidding**: Accept turned trump or call another suit. 2. **Declarations**: Announced during the first trick. Only the team with the highest declaration scores theirs. 3. **The Play**: Forehand leads. Must follow suit. If void, must trump (unless partner winning). Must over-trump if trumps are led. 4. **Scoring**: Sum card points + declarations + 'Dix de Der' (10 bonus).",
     keyRules: [
@@ -52,10 +52,171 @@
       go_out: 'The hand terminates only after all eight tricks have been played by all participants.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in dealing_1; system may use deal_5_turn_1 before auction.',
-      'Scoring check: Points accumulate over deals. Expected outcome: 501.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: The contracting team must score more points than the defenders (usually > 81 points out of 162 total). First team to 501 or 1000 wins the match.',
+      "Turn-flow example: 1. **Bidding**: Accept turned trump or call another suit. 2. **Declarations**: Announced during the first trick. Only the team with the highest declaration scores theirs. 3. **The Play**: Forehand leads. Must follow suit. If void, must trump (unless partner winning). Must over-trump if trumps are led. 4. **Scoring**: Sum card points + declarations + 'Dix de Der' (10 bonus).",
+      'Scoring example: Points accumulate over deals. First team to 501 (short game) or 1000 (long game) points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'belote.rules.objective',
+        title: 'Objective',
+        text: 'The contracting team must score more points than the defenders (usually > 81 points out of 162 total). First team to 501 or 1000 wins the match.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'belote.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Bidding**: Accept turned trump or call another suit. 2. **Declarations**: Announced during the first trick. Only the team with the highest declaration scores theirs. 3. **The Play**: Forehand leads. Must follow suit. If void, must trump (unless partner winning). Must over-trump if trumps are led. 4. **Scoring**: Sum card points + declarations + 'Dix de Der' (10 bonus).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'belote.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships (North-South vs East-West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'belote.setup.deck',
+        title: 'Deck',
+        text: '32 cards. Ranks: Ace (11), 10 (10), King (4), Queen (3), Jack (20/2), 9 (14/0), 8 (0), 7 (0).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'belote.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 32-card French pack (Piquet deck), score pad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'belote.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 5 cards to each player (3-2). One card is turned face up (The Proposal). Players bid to take it as trump. If all pass, a second round of bidding allows naming any other suit. Remaining cards are dealt (3 each) for a total of 8.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'belote.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to 501 (short game) or 1000 (long game) points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'belote.score.description',
+        title: 'Scoring',
+        text: 'Points accumulate over deals.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'belote.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The Jack of Trumps is the boss card (20 pts). The 9 of Trumps is the second boss (14 pts).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'belote.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Strict trumping rules: You cannot undercut/under-trump unless forced.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'belote.rules.key.3',
+        title: 'Key rule 3',
+        text: "Melds (Declarations) are only valid if they are better than the opponents' best meld.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'belote.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'belote.rules.objective',
+          'belote.rules.gameplay',
+        ],
+      },
+      {
+        id: 'belote.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'belote.setup.players',
+          'belote.setup.deck',
+          'belote.setup.equipment',
+          'belote.setup.dealing',
+        ],
+      },
+      {
+        id: 'belote.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'belote.rules.key.1',
+          'belote.rules.key.2',
+          'belote.rules.key.3',
+        ],
+      },
+      {
+        id: 'belote.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'belote.score.description',
+          'belote.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'belote.setup.dealing',
+        'belote.rules.objective',
+      ],
+      declare: [
+        'belote.rules.gameplay',
+      ],
+      play_card: [
+        'belote.rules.gameplay',
+      ],
+      pass: [
+        'belote.rules.gameplay',
+      ],
+      meld: [
+        'belote.rules.gameplay',
+      ],
+      deal_5_turn_1: [
+        'belote.rules.gameplay',
+      ],
+      take_trump: [
+        'belote.rules.gameplay',
+      ],
+      deal_3_each: [
+        'belote.rules.gameplay',
+      ],
+      play_card_announce_meld: [
+        'belote.rules.gameplay',
+      ],
+      calculate_total_points: [
+        'belote.rules.gameplay',
+      ],
+    },
   },
 }

@@ -52,10 +52,156 @@
       go_out: 'Allowed only when hand-empty condition is satisfied.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before main_play.',
-      'Scoring check: Scoring uses the documented rules for Dudák and determines round or match winners accordingly. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the first to shed all cards. Avoid being the last player left with cards.',
+      'Turn-flow example: 1. Attacking: One player leads a card (the attack).\n2. Defending: The defender must play a higher card of the same suit or a trump.\n3. Beating cards: If a defender beats all attacking cards, the cards are discarded (Vejbit).\n4. Failure: If a defender cannot beat a card, they must pick up common pile.',
+      'Scoring example: Scoring uses the documented rules for Dudák and determines round or match winners accordingly. Be the first to shed all cards. Avoid being the last player left with cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'dudak.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to shed all cards. Avoid being the last player left with cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'dudak.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Attacking: One player leads a card (the attack).\n2. Defending: The defender must play a higher card of the same suit or a trump.\n3. Beating cards: If a defender beats all attacking cards, the cards are discarded (Vejbit).\n4. Failure: If a defender cannot beat a card, they must pick up common pile.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'dudak.setup.players',
+        title: 'Players',
+        text: 'Best with 4 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'dudak.setup.deck',
+        title: 'Deck',
+        text: '32ndcard Germanndsuited pack: Acorns (žaludy), Leaves (zelené), Hearts (červené), Balls (kule).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'dudak.setup.equipment',
+        title: 'Equipment',
+        text: 'German-suited deck (A, K, O, U, 10, 9, 8, 7).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'dudak.setup.dealing',
+        title: 'Deal',
+        text: 'Usually 4nd6 cards to each player (common variation handles all 32 cards being dealt).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'dudak.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first to shed all cards. Avoid being the last player left with cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'dudak.score.description',
+        title: 'Scoring',
+        text: 'Scoring uses the documented rules for Dudák and determines round or match winners accordingly.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'dudak.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Hearts are often the permanent trump suit.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'dudak.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Attacking cards must match the rank of any card currently on the table to continue an attack.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'dudak.rules.key.3',
+        title: 'Key rule 3',
+        text: "In 'Secret Dudák,' trumps are revealed midndhand by the first player who chooses to do so.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'dudak.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'dudak.rules.objective',
+          'dudak.rules.gameplay',
+        ],
+      },
+      {
+        id: 'dudak.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'dudak.setup.players',
+          'dudak.setup.deck',
+          'dudak.setup.equipment',
+          'dudak.setup.dealing',
+        ],
+      },
+      {
+        id: 'dudak.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'dudak.rules.key.1',
+          'dudak.rules.key.2',
+          'dudak.rules.key.3',
+        ],
+      },
+      {
+        id: 'dudak.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'dudak.score.description',
+          'dudak.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'dudak.setup.dealing',
+        'dudak.rules.objective',
+      ],
+      deal: [
+        'dudak.rules.gameplay',
+      ],
+      declare: [
+        'dudak.rules.gameplay',
+      ],
+      play_card: [
+        'dudak.rules.gameplay',
+      ],
+      go_out: [
+        'dudak.rules.gameplay',
+      ],
+    },
   },
 }

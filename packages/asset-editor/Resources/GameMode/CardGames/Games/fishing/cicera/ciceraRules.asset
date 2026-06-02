@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Score points by capturing cards from the table and achieving specific card combinations. Points awarded for most cards, most cards in a specific suit, and capturing the seven of coins/diamonds (settebello).',
+      "Turn-flow example: 1. Deal 12 cards to each player, 4 cards face-up to table\n2. If 3+ Aces on table, reshuffle and redeal\n3. Player to dealer's right plays first, turns proceed anticlockwise\n4. On turn: Play one card to capture matching table card(s) by value\n5. If capture made: Take captured card(s) and played card as trick\n6. If no capture: Played card remains on table\n7. Continue until all cards are played\n8. Last player to capture takes remaining table cards",
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'cicera.rules.objective',
+        title: 'Objective',
+        text: 'Score points by capturing cards from the table and achieving specific card combinations. Points awarded for most cards, most cards in a specific suit, and capturing the seven of coins/diamonds (settebello).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'cicera.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Deal 12 cards to each player, 4 cards face-up to table\n2. If 3+ Aces on table, reshuffle and redeal\n3. Player to dealer's right plays first, turns proceed anticlockwise\n4. On turn: Play one card to capture matching table card(s) by value\n5. If capture made: Take captured card(s) and played card as trick\n6. If no capture: Played card remains on table\n7. Continue until all cards are played\n8. Last player to capture takes remaining table cards",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'cicera.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 4\nMaximum Players: 4\nOptimal Players: 4\nPartnerships: Yes, fixed partnerships (partners opposite)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'cicera.setup.deck',
+        title: 'Deck',
+        text: 'Type: Bresciane 52-card pack\nNumber of Decks: 1\nJokers: Not included\nCards: Re (King), Cavallo (Horse), Fante (Jack), 10, 9, 8, 7, 6, 5, 4, 3, 2, A in each suit\nAlternative: Standard international 52-card pack can be used',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'cicera.setup.equipment',
+        title: 'Equipment',
+        text: 'Bresciane 52-card deck (or standard 52-card pack)\nScore sheet\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'cicera.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: 12 cards each\nTable Cards: 4 cards face-up to center\nDealing Pattern: Anticlockwise\nRedeal: If 3 or 4 Aces appear in initial table cards, reshuffle and redeal',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'cicera.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'cicera.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'cicera.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must capture if possible - cannot play a card that could capture without capturing',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'cicera.rules.key.2',
+        title: 'Key rule 2',
+        text: "Can capture single card of matching value OR multiple cards summing to played card's value",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'cicera.rules.key.3',
+        title: 'Key rule 3',
+        text: 'A sweep (cappotto) occurs when capturing all table cards at once',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'cicera.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Last player to capture any cards takes remaining table cards at end',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'cicera.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Play is anticlockwise (traditional for Italian games)',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'cicera.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'cicera.rules.objective',
+          'cicera.rules.gameplay',
+        ],
+      },
+      {
+        id: 'cicera.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'cicera.setup.players',
+          'cicera.setup.deck',
+          'cicera.setup.equipment',
+          'cicera.setup.dealing',
+        ],
+      },
+      {
+        id: 'cicera.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'cicera.rules.key.1',
+          'cicera.rules.key.2',
+          'cicera.rules.key.3',
+          'cicera.rules.key.4',
+          'cicera.rules.key.5',
+        ],
+      },
+      {
+        id: 'cicera.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'cicera.score.description',
+          'cicera.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'cicera.setup.dealing',
+        'cicera.rules.objective',
+      ],
+      play_card: [
+        'cicera.rules.gameplay',
+      ],
+    },
   },
 }

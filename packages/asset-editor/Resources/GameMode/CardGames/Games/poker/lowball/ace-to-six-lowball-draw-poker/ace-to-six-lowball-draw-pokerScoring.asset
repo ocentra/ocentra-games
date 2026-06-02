@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Pot game; best low hand wins the pot at showdown.',
+      winCondition: 'Lowest valid ace-to-six hand at showdown wins.',
+      targetScore: null,
+      scoringDirection: 'low_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: 'Pot game; no fixed target score; play ends at showdown.',
+        cardValues: 'Poker uses hand rankings for lows; individual card points are not assigned.',
+      },
+      splitRules: 'Exact ties split pot evenly with odd chip by house rule.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'poker_ranking',
     patternMultipliers: null,
     priorityOrder: [],

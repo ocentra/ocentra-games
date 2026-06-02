@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 313 Rummy. Eleven rounds with increasing hand size; round-based wilds; draw from stock or discard, then discard; go out by melding all but one; penalty points for deadwood, lowest total wins.',
-    Player: 'Three-Thirteen Rummy: eleven rounds, 3 to 13 cards per round; draw one, discard one; form sets and runs; lowest score wins.',
+    LLM: "The player to dealer's left begins; play is clockwise. Each turn consists of drawing one card (from the top of the stock or the top card of the discard pile; only the top of the discard may be taken) and then discarding one card face up onto the discard pile. A player may go out when, after drawing, they can arrange all but one card into sets and runs, discard that card, and announce they are out; each other player gets one more turn, then the round ends when the turn returns to the player who went out.",
+    Player: "The player to dealer's left begins; play is clockwise. Each turn consists of drawing one card (from the top of the stock or the top card of the discard pile; only the top of the discard may be taken) and then discarding one card face up onto the discard pile. A player may go out when, after drawing, they can arrange all but one card into sets and runs, discard that card, and announce they are out; each other player gets one more turn, then the round ends when the turn returns to the player who went out.",
     objective: 'Form all cards in hand into valid combinations: sets of three or more cards of the same rank, or runs of three or more cards in the same suit in sequence. Aces rank low. Unmatched cards at round end count as penalty points; the player with the lowest total score after eleven rounds wins.',
     gameplay: "The player to dealer's left begins; play is clockwise. Each turn consists of drawing one card (from the top of the stock or the top card of the discard pile; only the top of the discard may be taken) and then discarding one card face up onto the discard pile. A player may go out when, after drawing, they can arrange all but one card into sets and runs, discard that card, and announce they are out; each other player gets one more turn, then the round ends when the turn returns to the player who went out.",
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: At round end each player arranges their hand into sets and runs. Unmatched cards score penalty: Ace 1, 2–10 face value, Jack 11, Queen 12, King 13. Totals accumulate across rounds; lowest total after round 11 wins. Expected outcome: Lowest total penalty score after eleven rounds wins..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Form all cards in hand into valid combinations: sets of three or more cards of the same rank, or runs of three or more cards in the same suit in sequence. Aces rank low. Unmatched cards at round end count as penalty points; the player with the lowest total score after eleven rounds wins.',
+      "Turn-flow example: The player to dealer's left begins; play is clockwise. Each turn consists of drawing one card (from the top of the stock or the top card of the discard pile; only the top of the discard may be taken) and then discarding one card face up onto the discard pile. A player may go out when, after drawing, they can arrange all but one card into sets and runs, discard that card, and announce they are out; each other player gets one more turn, then the round ends when the turn returns to the player who went out.",
+      'Scoring example: At round end each player arranges their hand into sets and runs. Unmatched cards score penalty: Ace 1, 2–10 face value, Jack 11, Queen 12, King 13. Totals accumulate across rounds; lowest total after round 11 wins. Lowest total penalty score after eleven rounds wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '313-rummy.rules.objective',
+        title: 'Objective',
+        text: 'Form all cards in hand into valid combinations: sets of three or more cards of the same rank, or runs of three or more cards in the same suit in sequence. Aces rank low. Unmatched cards at round end count as penalty points; the player with the lowest total score after eleven rounds wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '313-rummy.rules.gameplay',
+        title: 'Turn flow',
+        text: "The player to dealer's left begins; play is clockwise. Each turn consists of drawing one card (from the top of the stock or the top card of the discard pile; only the top of the discard may be taken) and then discarding one card face up onto the discard pile. A player may go out when, after drawing, they can arrange all but one card into sets and runs, discard that card, and announce they are out; each other player gets one more turn, then the round ends when the turn returns to the player who went out.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '313-rummy.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '313-rummy.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '313-rummy.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, scoring materials',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '313-rummy.setup.dealing',
+        title: 'Deal',
+        text: 'Eleven rounds. First dealer is chosen at random; the turn to deal passes to the left after each round. In round 1 three cards are dealt to each player, in round 2 four cards, and so on until round 11 when thirteen cards each are dealt. The remainder is placed face down as the stock; the top card is turned face up beside it to start the discard pile. One deck for two players, two decks for three or four.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '313-rummy.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest total penalty score after eleven rounds wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '313-rummy.score.description',
+        title: 'Scoring',
+        text: 'At round end each player arranges their hand into sets and runs. Unmatched cards score penalty: Ace 1, 2–10 face value, Jack 11, Queen 12, King 13. Totals accumulate across rounds; lowest total after round 11 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '313-rummy.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Eleven rounds with 3 to 13 cards dealt per round; dealer rotates left.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '313-rummy.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Wild card equals the number of cards dealt that round (round 1 threes wild, round 11 kings wild).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '313-rummy.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Valid combinations: sets of three or more same rank; runs of three or more same suit in sequence; aces low.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: '313-rummy.rules.key.4',
+        title: 'Key rule 4',
+        text: "Draw one from stock or top of discard, then discard one. No laying off on other players' melds.",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '313-rummy.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '313-rummy.rules.objective',
+          '313-rummy.rules.gameplay',
+        ],
+      },
+      {
+        id: '313-rummy.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '313-rummy.setup.players',
+          '313-rummy.setup.deck',
+          '313-rummy.setup.equipment',
+          '313-rummy.setup.dealing',
+        ],
+      },
+      {
+        id: '313-rummy.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '313-rummy.rules.key.1',
+          '313-rummy.rules.key.2',
+          '313-rummy.rules.key.3',
+          '313-rummy.rules.key.4',
+        ],
+      },
+      {
+        id: '313-rummy.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '313-rummy.score.description',
+          '313-rummy.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '313-rummy.setup.dealing',
+        '313-rummy.rules.objective',
+      ],
+      play_card: [
+        '313-rummy.rules.gameplay',
+      ],
+    },
   },
 }

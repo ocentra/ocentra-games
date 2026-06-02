@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tehonbiki. Objective: choose or guess hidden numbered outcomes while managing table reads, reveal timing, and payout pressure.',
-    Player: 'Tehonbiki: read the banker, manage your guesses, and avoid becoming predictable in repeated hidden-number rounds.',
+    LLM: 'The banker secretly commits to a number outcome using the Tehonbiki card set. Other players place their guesses or wagers against that concealed choice. The banker reveals the result, payouts are settled, and the banker role continues or rotates according to house rules.',
+    Player: 'The banker secretly commits to a number outcome using the Tehonbiki card set. Other players place their guesses or wagers against that concealed choice. The banker reveals the result, payouts are settled, and the banker role continues or rotates according to house rules.',
     objective: 'Correctly guess or back the hidden number chosen by the banker and collect the resulting payout.',
     gameplay: 'The banker secretly commits to a number outcome using the Tehonbiki card set. Other players place their guesses or wagers against that concealed choice. The banker reveals the result, payouts are settled, and the banker role continues or rotates according to house rules.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Scoring follows the local Tehonbiki payout table, with bettors and banker settling each reveal immediately after the hidden number is shown. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Correctly guess or back the hidden number chosen by the banker and collect the resulting payout.',
+      'Turn-flow example: The banker secretly commits to a number outcome using the Tehonbiki card set. Other players place their guesses or wagers against that concealed choice. The banker reveals the result, payouts are settled, and the banker role continues or rotates according to house rules.',
+      'Scoring example: Scoring follows the local Tehonbiki payout table, with bettors and banker settling each reveal immediately after the hidden number is shown. The player or banker who finishes ahead under the agreed payout schedule wins the hand, deal, or running session..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tehonbiki.rules.objective',
+        title: 'Objective',
+        text: 'Correctly guess or back the hidden number chosen by the banker and collect the resulting payout.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tehonbiki.rules.gameplay',
+        title: 'Turn flow',
+        text: 'The banker secretly commits to a number outcome using the Tehonbiki card set. Other players place their guesses or wagers against that concealed choice. The banker reveals the result, payouts are settled, and the banker role continues or rotates according to house rules.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tehonbiki.setup.players',
+        title: 'Players',
+        text: 'One banker with multiple bettors; roles rotate by house rules.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tehonbiki.setup.deck',
+        title: 'Deck',
+        text: 'A specialized Tehonbiki numbered-card set, modeled here as a 48-card family for repeated number identities and local layouts.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tehonbiki.setup.equipment',
+        title: 'Equipment',
+        text: 'Tehonbiki cards and stake tracking or betting markers.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tehonbiki.setup.dealing',
+        title: 'Deal',
+        text: 'Instead of a conventional trick-taking deal, the banker prepares the concealed number choice and the table places guesses or wagers under the current house format.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tehonbiki.score.win-condition',
+        title: 'Win condition',
+        text: 'The player or banker who finishes ahead under the agreed payout schedule wins the hand, deal, or running session.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tehonbiki.score.description',
+        title: 'Scoring',
+        text: 'Scoring follows the local Tehonbiki payout table, with bettors and banker settling each reveal immediately after the hidden number is shown.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tehonbiki.rules.key.1',
+        title: 'Key rule 1',
+        text: 'One banker plays against one or more guessing opponents.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tehonbiki.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Rounds revolve around hidden number information rather than trick-taking.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tehonbiki.rules.key.3',
+        title: 'Key rule 3',
+        text: 'House rules determine stake ladders, reveal procedure, and banker rotation.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tehonbiki.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Result resolution is immediate after the banker reveals the chosen outcome.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tehonbiki.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tehonbiki.rules.objective',
+          'tehonbiki.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tehonbiki.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tehonbiki.setup.players',
+          'tehonbiki.setup.deck',
+          'tehonbiki.setup.equipment',
+          'tehonbiki.setup.dealing',
+        ],
+      },
+      {
+        id: 'tehonbiki.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tehonbiki.rules.key.1',
+          'tehonbiki.rules.key.2',
+          'tehonbiki.rules.key.3',
+          'tehonbiki.rules.key.4',
+        ],
+      },
+      {
+        id: 'tehonbiki.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tehonbiki.score.description',
+          'tehonbiki.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tehonbiki.setup.dealing',
+        'tehonbiki.rules.objective',
+      ],
+      play_card: [
+        'tehonbiki.rules.gameplay',
+      ],
+    },
   },
 }

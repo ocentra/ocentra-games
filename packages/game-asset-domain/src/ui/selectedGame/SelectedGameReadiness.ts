@@ -37,11 +37,16 @@ export interface SelectedGameReadinessOptions {
 }
 
 const PROVENANCE_PATTERN = /\b(provenance|scraper|audit)\b|https?:\/\//i;
+const BAD_RULE_EXAMPLE_PATTERN = /\b(undefined|null|NaN)\b|Opening deal:\s*- player\(s\)|,\s+card\(s\)|,\s+deck\(s\)/i;
+const HANDWAVE_MOVE_VALIDITY_PATTERN = /^(see game rules\.?|n\/a|na|placeholder|todo|tbd)$/i;
+const FAKE_PRESENTATION_METRIC_PATTERN = /^(cards|0\+|0s)$/i;
 const REQUIRED_VALIDATION_PURPOSES = ['setup', 'flow', 'scoring'] as const;
 const PUBLIC_RELEASE_STATUSES = new Set<GameModeStatus>([
   GameModeStatus.Available,
   GameModeStatus.ComingSoon,
 ]);
+const REQUIRED_RULE_TEXT_FIELDS = ['objective', 'gameplay', 'turnFlow'] as const;
+const REQUIRED_RULE_ARRAY_FIELDS = ['keyRules', 'exampleHands'] as const;
 type RequiredValidationPurpose = typeof REQUIRED_VALIDATION_PURPOSES[number];
 
 interface ValidationFixtureContractInput {
@@ -59,6 +64,16 @@ export function validateSelectedGamePresentationReadiness(
   const label = options.label ?? presentation.hero.title ?? 'selected-game';
   const requiredTabs = options.requireTabs ?? DEFAULT_SELECTED_GAME_TAB_ORDER;
   const issues: SelectedGameReadinessIssue[] = [];
+
+  if (!asText(presentation.hero.title)) {
+    issues.push(issue('error', 'missing-hero-title', 'hero.title', 'Selected-game hero title must come from an authored game asset.'));
+  }
+
+  presentation.sideA.stats.forEach((metric, index) => {
+    if (FAKE_PRESENTATION_METRIC_PATTERN.test(asText(metric.value))) {
+      issues.push(issue('error', 'fake-presentation-metric', `sideA.stats.${index}.value`, `Selected-game metric ${metric.label} is using a fake fallback value.`));
+    }
+  });
 
   for (const tabId of requiredTabs) {
     const tab = presentation.tabs.find((item) => item.id === tabId);
@@ -110,11 +125,15 @@ export function validateSelectedGameBundleReadiness(
   const issues = [...report.issues];
   const gameInfo = dataOf(bundle.gameInfo);
   const gameMode = dataOf(bundle.gameMode);
+  const rules = dataOf(bundle.rules);
   const scoring = dataOf(bundle.scoring);
   const mechanics = dataOf(bundle.mechanics);
   const deckModel = dataOf(bundle.deckModel);
   const actions = dataOf(bundle.actions);
   const validationFixtures = dataOf(bundle.validationFixtures);
+
+  issues.push(...validateGameInfoContract(gameInfo));
+  issues.push(...validateLayoutContract(dataOf(bundle.layout)));
 
   if (options.requireRichGameInfo !== false) {
     for (const field of ['historyContent', 'setupContent', 'variationsContent', 'aiContent'] as const) {
@@ -123,6 +142,11 @@ export function validateSelectedGameBundleReadiness(
       }
     }
   }
+
+  issues.push(...validateProcessedSourceIdentity(gameInfo));
+  issues.push(...validateRulesContract(rules, gameMode));
+  issues.push(...validateRuleExamples(rules));
+  issues.push(...validateScoringContract(scoring));
 
   if (!isMeaningful(gameMode.deckAsset) && !isMeaningful(dataOf(bundle.deck))) {
     issues.push(issue('error', 'missing-deck', 'gameMode.deckAsset', 'Selected-game Deck tab needs a deck asset reference or loaded deck asset.'));
@@ -164,6 +188,172 @@ export function validateSelectedGameBundleReadiness(
     label: report.label,
     issues,
   });
+}
+
+function validateGameInfoContract(gameInfo: Record<string, unknown>): SelectedGameReadinessIssue[] {
+  const issues: SelectedGameReadinessIssue[] = [];
+  const requiredFields = [
+    ['gameInfo.hero.title', asText(asRecord(gameInfo.hero).title)],
+    ['gameInfo.description', asText(gameInfo.description)],
+    ['gameInfo.Player', asText(gameInfo.Player)],
+    ['gameInfo.tagline', asText(gameInfo.tagline)],
+    ['gameInfo.gameCategory', asText(gameInfo.gameCategory)],
+    ['gameInfo.subcategory', asText(gameInfo.subcategory)],
+    ['gameInfo.deck', asText(gameInfo.deck)],
+  ] as const;
+  requiredFields.forEach(([path, value]) => {
+    if (!value) {
+      issues.push(issue('error', 'missing-game-info-field', path, `${path} must be authored in GameInfo.`));
+    }
+  });
+  if (asFiniteNumber(gameInfo.minPlayers) === null) {
+    issues.push(issue('error', 'missing-game-info-field', 'gameInfo.minPlayers', 'GameInfo minimum player count must be authored.'));
+  }
+  if (asFiniteNumber(gameInfo.maxPlayers) === null) {
+    issues.push(issue('error', 'missing-game-info-field', 'gameInfo.maxPlayers', 'GameInfo maximum player count must be authored.'));
+  }
+  return issues;
+}
+
+function validateLayoutContract(layout: Record<string, unknown>): SelectedGameReadinessIssue[] {
+  const issues: SelectedGameReadinessIssue[] = [];
+  const tabs = asArray(asRecord(layout.contentPlan).tabs).map(asRecord);
+  if (tabs.length === 0) {
+    issues.push(issue('error', 'missing-layout-content-plan', 'layout.contentPlan.tabs', 'Selected-game layout must define the content plan.'));
+    return issues;
+  }
+  DEFAULT_SELECTED_GAME_TAB_ORDER.forEach((tabId) => {
+    const tab = tabs.find((item) => asText(item.id) === tabId);
+    if (!tab) {
+      issues.push(issue('error', 'missing-layout-tab-plan', `layout.contentPlan.tabs.${tabId}`, `Selected-game layout must define the ${tabId} tab plan.`));
+      return;
+    }
+    if (!asText(tab.source)) {
+      issues.push(issue('error', 'missing-layout-tab-source', `layout.contentPlan.tabs.${tabId}.source`, `Selected-game layout ${tabId} tab must declare its ScriptableObject source.`));
+    }
+    if (!asText(tab.tip)) {
+      issues.push(issue('error', 'missing-layout-tab-tip', `layout.contentPlan.tabs.${tabId}.tip`, `Selected-game layout ${tabId} tab must carry its tip copy.`));
+    }
+  });
+  return issues;
+}
+
+function validateRulesContract(
+  rules: Record<string, unknown>,
+  gameMode: Record<string, unknown>,
+): SelectedGameReadinessIssue[] {
+  const issues: SelectedGameReadinessIssue[] = [];
+  for (const field of REQUIRED_RULE_TEXT_FIELDS) {
+    if (!asText(rules[field])) {
+      issues.push(issue('error', 'missing-core-rule-field', `rules.${field}`, `Rules must include ${field}.`));
+    }
+  }
+  for (const field of REQUIRED_RULE_ARRAY_FIELDS) {
+    if (asTextArray(rules[field]).length === 0) {
+      issues.push(issue('error', 'missing-core-rule-field', `rules.${field}`, `Rules must include at least one ${field} entry.`));
+    }
+  }
+  if (!isMeaningful(rules.setup)) {
+    issues.push(issue('error', 'missing-core-rule-field', 'rules.setup', 'Rules must include setup details.'));
+  }
+
+  const moveValidity = asRecord(rules.moveValidityConditions);
+  const moveValidityEntries = Object.entries(moveValidity)
+    .map(([actionId, text]) => [actionId, asText(text)] as const)
+    .filter(([actionId]) => Boolean(actionId));
+  if (moveValidityEntries.length === 0) {
+    issues.push(issue('error', 'missing-core-rule-field', 'rules.moveValidityConditions', 'Rules must include move validity conditions.'));
+  }
+
+  const moveValiditySeverity = releaseBlockingSeverity(gameMode);
+  moveValidityEntries.forEach(([actionId, text]) => {
+    if (!text) {
+      issues.push(issue('error', 'empty-move-validity-condition', `rules.moveValidityConditions.${actionId}`, `Move validity for ${actionId} must have concrete text.`));
+      return;
+    }
+    if (HANDWAVE_MOVE_VALIDITY_PATTERN.test(text)) {
+      issues.push(issue(moveValiditySeverity, 'move-validity-needs-source-review', `rules.moveValidityConditions.${actionId}`, `Move validity for ${actionId} is hand-wavy and needs source-checked conditions.`));
+    }
+  });
+
+  const rulesById = new Set(asArray(rules.rules).map(asRecord).map((rule) => asText(rule.id)).filter(Boolean));
+  if (rulesById.size > 0) {
+    asArray(rules.ruleGroups).map(asRecord).forEach((group, groupIndex) => {
+      const ruleIds = asTextArray(group.ruleIds);
+      if (ruleIds.length === 0) {
+        issues.push(issue('error', 'empty-rule-group', `rules.ruleGroups.${groupIndex}.ruleIds`, 'Rule group must link at least one rule id.'));
+      }
+      ruleIds.forEach((ruleId) => {
+        if (!rulesById.has(ruleId)) {
+          issues.push(issue('error', 'rule-group-missing-rule', `rules.ruleGroups.${groupIndex}.ruleIds`, `Rule group references missing rule id ${ruleId}.`));
+        }
+      });
+    });
+
+    Object.entries(asRecord(rules.actionRuleLinks)).forEach(([actionId, linkedRuleIds]) => {
+      const ruleIds = asTextArray(linkedRuleIds);
+      if (ruleIds.length === 0) {
+        issues.push(issue('error', 'empty-action-rule-link', `rules.actionRuleLinks.${actionId}`, `Action ${actionId} must link to at least one authored rule id.`));
+      }
+      ruleIds.forEach((ruleId) => {
+        if (!rulesById.has(ruleId)) {
+          issues.push(issue('error', 'action-rule-link-missing-rule', `rules.actionRuleLinks.${actionId}`, `Action ${actionId} references missing rule id ${ruleId}.`));
+        }
+      });
+    });
+  }
+
+  return issues;
+}
+
+function validateScoringContract(scoring: Record<string, unknown>): SelectedGameReadinessIssue[] {
+  const issues: SelectedGameReadinessIssue[] = [];
+  if (!asText(scoring.description)) {
+    issues.push(issue('error', 'missing-scoring-field', 'scoring.description', 'Scoring must include a public description.'));
+  }
+  if (!asText(scoring.winCondition)) {
+    issues.push(issue('error', 'missing-scoring-field', 'scoring.winCondition', 'Scoring must include a win condition.'));
+  }
+  const scoringRules = asRecord(scoring.scoringRules);
+  if (!isMeaningful(scoringRules)) {
+    issues.push(issue('error', 'missing-scoring-rules', 'scoring.scoringRules', 'Scoring must include scoringRules explaining numeric or descriptive scoring.'));
+  }
+  if (!isMeaningful(scoring.cardValues) && !isMeaningful(asRecord(scoringRules).nullReasons)) {
+    issues.push(issue('error', 'missing-scoring-card-value-policy', 'scoring.scoringRules.nullReasons.cardValues', 'Scoring must explain why card values are empty or provide card values.'));
+  }
+  return issues;
+}
+
+function validateRuleExamples(rules: Record<string, unknown>): SelectedGameReadinessIssue[] {
+  return asArray(rules.exampleHands)
+    .map(asText)
+    .flatMap((exampleText, index) => (
+      BAD_RULE_EXAMPLE_PATTERN.test(exampleText)
+        ? [issue('error', 'bad-rule-example', `rules.exampleHands.${index}`, 'Rule example contains blank/generated placeholder values.')]
+        : []
+    ));
+}
+
+function validateProcessedSourceIdentity(gameInfo: Record<string, unknown>): SelectedGameReadinessIssue[] {
+  const issues: SelectedGameReadinessIssue[] = [];
+  const processedSource = asRecord(asRecord(gameInfo.editorOnly).processedSource);
+  if (!isMeaningful(processedSource)) {
+    return issues;
+  }
+
+  const sourceName = asText(processedSource.name);
+  const heroTitle = asText(asRecord(gameInfo.hero).title);
+  if (sourceName && heroTitle && sourceName !== heroTitle) {
+    issues.push(issue('error', 'game-info-source-title-mismatch', 'gameInfo.hero.title', `GameInfo hero title "${heroTitle}" must match processed source name "${sourceName}".`));
+  }
+
+  const sourceDescription = asText(asRecord(processedSource.overview).description);
+  const playerDescription = asText(gameInfo.Player);
+  if (sourceDescription && playerDescription && sourceDescription !== playerDescription) {
+    issues.push(issue('error', 'game-info-source-description-mismatch', 'gameInfo.Player', 'GameInfo Player overview must match the processed source overview description.'));
+  }
+
+  return issues;
 }
 
 export function assertSelectedGameReadiness(report: SelectedGameReadinessReport, failOnWarnings = false): void {
@@ -395,20 +585,45 @@ function validateReleaseReviewContract(
     return [];
   }
 
-  const migrationReview = asRecord(asRecord(gameInfo.editorOnly).migrationReview);
-  const reviewStatus = asText(migrationReview.status);
-  if (!reviewStatus || reviewStatus === 'verified') {
+  const editorOnly = asRecord(gameInfo.editorOnly);
+  if (!isMeaningful(editorOnly.processedSource)) {
     return [];
   }
 
-  return [
-    issue(
-      'error',
-      'release-review-not-verified',
-      'gameInfo.editorOnly.migrationReview.status',
-      `Public migrated game cannot be ${releaseStatus} while migrationReview.status is ${reviewStatus}.`,
-    ),
-  ];
+  const migrationReview = asRecord(editorOnly.migrationReview);
+  const reviewStatus = asText(migrationReview.status);
+  if (!reviewStatus || reviewStatus !== 'verified') {
+    return [
+      issue(
+        'error',
+        'release-review-not-verified',
+        'gameInfo.editorOnly.migrationReview.status',
+        `Public migrated game cannot be ${releaseStatus} while migrationReview.status is ${reviewStatus || 'missing'}.`,
+      ),
+    ];
+  }
+
+  const issues: SelectedGameReadinessIssue[] = [];
+  if (!asText(migrationReview.reviewedAt)) {
+    issues.push(issue('error', 'release-review-missing-reviewed-at', 'gameInfo.editorOnly.migrationReview.reviewedAt', 'Verified public migration review must record reviewedAt.'));
+  }
+  if (!asText(migrationReview.reviewer)) {
+    issues.push(issue('error', 'release-review-missing-reviewer', 'gameInfo.editorOnly.migrationReview.reviewer', 'Verified public migration review must record reviewer.'));
+  }
+
+  const requiredChecks = asTextArray(migrationReview.requiredChecks);
+  const verifiedChecks = new Set(asTextArray(migrationReview.verifiedChecks));
+  for (const requiredCheck of requiredChecks) {
+    if (!verifiedChecks.has(requiredCheck)) {
+      issues.push(issue('error', 'release-review-missing-verified-check', 'gameInfo.editorOnly.migrationReview.verifiedChecks', `Verified public migration review must include check: ${requiredCheck}.`));
+    }
+  }
+
+  return issues;
+}
+
+function releaseBlockingSeverity(gameMode: Record<string, unknown>): SelectedGameReadinessIssue['severity'] {
+  return PUBLIC_RELEASE_STATUSES.has(asText(gameMode.releaseStatus) as GameModeStatus) ? 'error' : 'warning';
 }
 
 function assertSameNumber(

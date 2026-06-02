@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Uke-Shogi. Logic: See rules.objective and rules.gameplay.',
-    Player: "Uke-Shogi is a Japanese defensive card game inspired by Shogi (Japanese Chess) concepts. The 'Uke' (受け) refers to defense. Players use standard cards to represent chess-like pieces, focusing on defensive positioning and piece capture mechanics. A niche hybrid of card and board game concepts.",
+    LLM: "Cards represent Shogi pieces with specific movement rules. Focus on defensive (Uke) strategy. Captured cards can be redeployed (drop mechanic from Shogi). Promotion possible when reaching opponent's territory.",
+    Player: "Cards represent Shogi pieces with specific movement rules. Focus on defensive (Uke) strategy. Captured cards can be redeployed (drop mechanic from Shogi). Promotion possible when reaching opponent's territory.",
     objective: 'Be the first player to play all your cards (empty your hand) to win the deal. Players take turns matching the current lead card or passing; the last player to match plays a new card until one player runs out.',
     gameplay: "Cards represent Shogi pieces with specific movement rules. Focus on defensive (Uke) strategy. Captured cards can be redeployed (drop mechanic from Shogi). Promotion possible when reaching opponent's territory.",
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Win by capturing King card. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first player to play all your cards (empty your hand) to win the deal. Players take turns matching the current lead card or passing; the last player to match plays a new card until one player runs out.',
+      "Turn-flow example: Cards represent Shogi pieces with specific movement rules. Focus on defensive (Uke) strategy. Captured cards can be redeployed (drop mechanic from Shogi). Promotion possible when reaching opponent's territory.",
+      "Scoring example: Win by capturing King card. Capture opponent's King-equivalent card..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'uke-shogi.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to play all your cards (empty your hand) to win the deal. Players take turns matching the current lead card or passing; the last player to match plays a new card until one player runs out.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'uke-shogi.rules.gameplay',
+        title: 'Turn flow',
+        text: "Cards represent Shogi pieces with specific movement rules. Focus on defensive (Uke) strategy. Captured cards can be redeployed (drop mechanic from Shogi). Promotion possible when reaching opponent's territory.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'uke-shogi.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'uke-shogi.setup.deck',
+        title: 'Deck',
+        text: 'Historical sources describe a dedicated shogi-piece card pack (around 40-42 cards), not a standard French 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'uke-shogi.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'uke-shogi.setup.dealing',
+        title: 'Deal',
+        text: 'Cards dealt to represent board positions.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'uke-shogi.score.win-condition',
+        title: 'Win condition',
+        text: "Capture opponent's King-equivalent card.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'uke-shogi.score.description',
+        title: 'Scoring',
+        text: 'Win by capturing King card.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'uke-shogi.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Card-based Shogi mechanics',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'uke-shogi.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Drop captured pieces',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'uke-shogi.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Defensive focus',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'uke-shogi.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Promotion zone',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'uke-shogi.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'uke-shogi.rules.objective',
+          'uke-shogi.rules.gameplay',
+        ],
+      },
+      {
+        id: 'uke-shogi.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'uke-shogi.setup.players',
+          'uke-shogi.setup.deck',
+          'uke-shogi.setup.equipment',
+          'uke-shogi.setup.dealing',
+        ],
+      },
+      {
+        id: 'uke-shogi.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'uke-shogi.rules.key.1',
+          'uke-shogi.rules.key.2',
+          'uke-shogi.rules.key.3',
+          'uke-shogi.rules.key.4',
+        ],
+      },
+      {
+        id: 'uke-shogi.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'uke-shogi.score.description',
+          'uke-shogi.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'uke-shogi.setup.dealing',
+        'uke-shogi.rules.objective',
+      ],
+      play_card: [
+        'uke-shogi.rules.gameplay',
+      ],
+    },
   },
 }

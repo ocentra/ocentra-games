@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Viersche. Logic: See rules.objective and rules.gameplay.',
-    Player: "Viersche (Hundert/Hunderte) is a Black Forest German partnership trick-taking game. 4 players in 2 teams. 36-card deck. 9 cards each. Bottom card = trump. Forehand MUST lead trump first trick (if no trumps, lead face-down). Race to 100+ card points. First to claim 100 wins; erase 4 'rungs' to win session.",
+    LLM: 'Forehand leads first â€” MUST lead trump (no trump = face-down card). Follow suit. 140 total card points per deal. Claim 100 after winning trick. All 9 tricks = 2 rungs erased.',
+    Player: 'Forehand leads first â€” MUST lead trump (no trump = face-down card). Follow suit. 140 total card points per deal. Claim 100 after winning trick. All 9 tricks = 2 rungs erased.',
     objective: 'First to claim 100+ card points. Erase 4 rungs to win session.',
     gameplay: 'Forehand leads first â€” MUST lead trump (no trump = face-down card). Follow suit. 140 total card points per deal. Claim 100 after winning trick. All 9 tricks = 2 rungs erased.',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: A=11, 10=10, K=4, Q=3, J=2. Total=140. First to 100 claims win. Expected outcome: First to claim 100+ card points. Erase 4 rungs to win session..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: First to claim 100+ card points. Erase 4 rungs to win session.',
+      'Turn-flow example: Forehand leads first â€” MUST lead trump (no trump = face-down card). Follow suit. 140 total card points per deal. Claim 100 after winning trick. All 9 tricks = 2 rungs erased.',
+      'Scoring example: A=11, 10=10, K=4, Q=3, J=2. Total=140. First to 100 claims win. First to claim 100+ card points. Erase 4 rungs to win session..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'viersche.rules.objective',
+        title: 'Objective',
+        text: 'First to claim 100+ card points. Erase 4 rungs to win session.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'viersche.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Forehand leads first â€” MUST lead trump (no trump = face-down card). Follow suit. 140 total card points per deal. Claim 100 after winning trick. All 9 tricks = 2 rungs erased.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'viersche.setup.players',
+        title: 'Players',
+        text: '4 (2 fixed teams)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'viersche.setup.deck',
+        title: 'Deck',
+        text: '36 cards. A-K-Q-J-10-9-8-7-6. Bottom card = trump.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'viersche.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, slate/chalk for scoring',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'viersche.setup.dealing',
+        title: 'Deal',
+        text: '9 each in packets of 3. Bottom card turned up = trump.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'viersche.score.win-condition',
+        title: 'Win condition',
+        text: 'First to claim 100+ card points. Erase 4 rungs to win session.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'viersche.score.description',
+        title: 'Scoring',
+        text: 'A=11, 10=10, K=4, Q=3, J=2. Total=140. First to 100 claims win.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'viersche.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must lead trump first trick',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'viersche.rules.key.2',
+        title: 'Key rule 2',
+        text: '140 total card points',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'viersche.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Claim 100 to win rung',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'viersche.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Sweep = 2 rungs',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'viersche.rules.key.5',
+        title: 'Key rule 5',
+        text: '4 rungs to win session',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'viersche.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'viersche.rules.objective',
+          'viersche.rules.gameplay',
+        ],
+      },
+      {
+        id: 'viersche.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'viersche.setup.players',
+          'viersche.setup.deck',
+          'viersche.setup.equipment',
+          'viersche.setup.dealing',
+        ],
+      },
+      {
+        id: 'viersche.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'viersche.rules.key.1',
+          'viersche.rules.key.2',
+          'viersche.rules.key.3',
+          'viersche.rules.key.4',
+          'viersche.rules.key.5',
+        ],
+      },
+      {
+        id: 'viersche.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'viersche.score.description',
+          'viersche.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'viersche.setup.dealing',
+        'viersche.rules.objective',
+      ],
+      deal: [
+        'viersche.rules.gameplay',
+      ],
+      play_card: [
+        'viersche.rules.gameplay',
+      ],
+      draw: [
+        'viersche.rules.gameplay',
+      ],
+      finish_game: [
+        'viersche.rules.gameplay',
+      ],
+    },
   },
 }

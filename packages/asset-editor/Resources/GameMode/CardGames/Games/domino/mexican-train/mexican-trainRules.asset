@@ -55,10 +55,177 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 12 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card, draw before round end.',
-      "Scoring check: Winner scores total pips in opponents' hands. If blocked, lowest pip count scores the difference from each opponent. Expected outcome: NA.",
+      'Setup example: 12 card(s) per player.',
+      'Rule example: Be the first player to play all your dominoes, or have the lowest pip count when the game is blocked.',
+      "Turn-flow example: Play starts with the highest double (12-12) in the center. Each player has a personal train from the hub; a shared Mexican Train is open to all. On the first turn only, a player may play as many matching tiles as they can on their train. From the second turn onward, each player plays one tile per turn (or more if playing doubles) onto their own train, another player's marked train, or the Mexican Train. If unable to play, the player draws one tile from the boneyard and may play it if it fits; otherwise they pass and place a marker on their train. Exposed doubles must be satisfied by the next player. The first player to play all tiles wins the round; otherwise the player with fewest pips in hand wins when blocked.",
+      "Scoring example: Winner scores total pips in opponents' hands. If blocked, lowest pip count scores the difference from each opponent. First to play all tiles, or lowest pip count when blocked..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'mexican-train.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to play all your dominoes, or have the lowest pip count when the game is blocked.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mexican-train.rules.gameplay',
+        title: 'Turn flow',
+        text: "Play starts with the highest double (12-12) in the center. Each player has a personal train from the hub; a shared Mexican Train is open to all. On the first turn only, a player may play as many matching tiles as they can on their train. From the second turn onward, each player plays one tile per turn (or more if playing doubles) onto their own train, another player's marked train, or the Mexican Train. If unable to play, the player draws one tile from the boneyard and may play it if it fits; otherwise they pass and place a marker on their train. Exposed doubles must be satisfied by the next player. The first player to play all tiles wins the round; otherwise the player with fewest pips in hand wins when blocked.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mexican-train.setup.players',
+        title: 'Players',
+        text: '2-8 players (best with 4-6).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mexican-train.setup.deck',
+        title: 'Deck',
+        text: 'Double-twelve domino set (91 tiles with 0-12 pips on each half).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mexican-train.setup.equipment',
+        title: 'Equipment',
+        text: 'Double-twelve domino set, train markers (coins or special markers), central hub piece (optional).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mexican-train.setup.dealing',
+        title: 'Deal',
+        text: 'Number of tiles varies by player count: 2 players = 15 each, 3-4 players = 12 each, 5-6 players = 10 each, 7-8 players = 9 each. Remaining tiles form the boneyard.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mexican-train.score.win-condition',
+        title: 'Win condition',
+        text: 'First to play all tiles, or lowest pip count when blocked.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mexican-train.score.description',
+        title: 'Scoring',
+        text: "Winner scores total pips in opponents' hands. If blocked, lowest pip count scores the difference from each opponent.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mexican-train.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Start with highest double in center',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'mexican-train.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Each player has a personal train',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'mexican-train.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Mexican Train is shared by all',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'mexican-train.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Marked trains are public',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'mexican-train.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Doubles must be satisfied immediately',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'mexican-train.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Lowest pip count wins if blocked',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mexican-train.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mexican-train.rules.objective',
+          'mexican-train.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mexican-train.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mexican-train.setup.players',
+          'mexican-train.setup.deck',
+          'mexican-train.setup.equipment',
+          'mexican-train.setup.dealing',
+        ],
+      },
+      {
+        id: 'mexican-train.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mexican-train.rules.key.1',
+          'mexican-train.rules.key.2',
+          'mexican-train.rules.key.3',
+          'mexican-train.rules.key.4',
+          'mexican-train.rules.key.5',
+          'mexican-train.rules.key.6',
+        ],
+      },
+      {
+        id: 'mexican-train.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mexican-train.score.description',
+          'mexican-train.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mexican-train.setup.dealing',
+        'mexican-train.rules.objective',
+      ],
+      play_card: [
+        'mexican-train.rules.gameplay',
+      ],
+      draw: [
+        'mexican-train.rules.gameplay',
+      ],
+    },
   },
 }

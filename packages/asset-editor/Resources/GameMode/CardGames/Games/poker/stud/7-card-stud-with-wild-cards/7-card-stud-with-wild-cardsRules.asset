@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 7 Card Stud with Wild Cards. Logic: See rules.objective and rules.gameplay.',
-    Player: '7 Card Stud with wild cards: same as 7 Card Stud but certain cards (e.g. deuces, one-eyed jacks) are wild. Wilds substitute for any card; hand rankings unchanged. USA; common in home games.',
+    LLM: 'Same as 7 Card Stud (two down, four up, one down; betting rounds). Designated cards (e.g. all deuces, one-eyed jacks) are wild. Showdown: best five-card hand wins.',
+    Player: 'Same as 7 Card Stud (two down, four up, one down; betting rounds). Designated cards (e.g. all deuces, one-eyed jacks) are wild. Showdown: best five-card hand wins.',
     objective: 'Make the best five-card poker hand from your seven cards; wild cards substitute for any card.',
     gameplay: 'Same as 7 Card Stud (two down, four up, one down; betting rounds). Designated cards (e.g. all deuces, one-eyed jacks) are wild. Showdown: best five-card hand wins.',
     keyRules: [
@@ -52,10 +52,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; each_player_clockwise may use ante before betting.',
-      'Scoring check: Pot to winner; hand ranking unchanged with wilds. Expected outcome: Make the best five-card poker hand from your seven cards; wild cards substitute for any card..',
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Make the best five-card poker hand from your seven cards; wild cards substitute for any card.',
+      'Turn-flow example: Same as 7 Card Stud (two down, four up, one down; betting rounds). Designated cards (e.g. all deuces, one-eyed jacks) are wild. Showdown: best five-card hand wins.',
+      'Scoring example: Pot to winner; hand ranking unchanged with wilds. Make the best five-card poker hand from your seven cards; wild cards substitute for any card..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '7-card-stud-with-wild-cards.rules.objective',
+        title: 'Objective',
+        text: 'Make the best five-card poker hand from your seven cards; wild cards substitute for any card.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '7-card-stud-with-wild-cards.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Same as 7 Card Stud (two down, four up, one down; betting rounds). Designated cards (e.g. all deuces, one-eyed jacks) are wild. Showdown: best five-card hand wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '7-card-stud-with-wild-cards.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '7-card-stud-with-wild-cards.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '7-card-stud-with-wild-cards.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '7-card-stud-with-wild-cards.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '7-card-stud-with-wild-cards.score.win-condition',
+        title: 'Win condition',
+        text: 'Make the best five-card poker hand from your seven cards; wild cards substitute for any card.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '7-card-stud-with-wild-cards.score.description',
+        title: 'Scoring',
+        text: 'Pot to winner; hand ranking unchanged with wilds.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '7-card-stud-with-wild-cards.rules.key.1',
+        title: 'Key rule 1',
+        text: '7 Card Stud with wilds (e.g. deuces, one-eyed jacks)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '7-card-stud-with-wild-cards.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Wild = any rank and suit',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '7-card-stud-with-wild-cards.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Stronger hands more common',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '7-card-stud-with-wild-cards.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '7-card-stud-with-wild-cards.rules.objective',
+          '7-card-stud-with-wild-cards.rules.gameplay',
+        ],
+      },
+      {
+        id: '7-card-stud-with-wild-cards.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '7-card-stud-with-wild-cards.setup.players',
+          '7-card-stud-with-wild-cards.setup.deck',
+          '7-card-stud-with-wild-cards.setup.equipment',
+          '7-card-stud-with-wild-cards.setup.dealing',
+        ],
+      },
+      {
+        id: '7-card-stud-with-wild-cards.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '7-card-stud-with-wild-cards.rules.key.1',
+          '7-card-stud-with-wild-cards.rules.key.2',
+          '7-card-stud-with-wild-cards.rules.key.3',
+        ],
+      },
+      {
+        id: '7-card-stud-with-wild-cards.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '7-card-stud-with-wild-cards.score.description',
+          '7-card-stud-with-wild-cards.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '7-card-stud-with-wild-cards.setup.dealing',
+        '7-card-stud-with-wild-cards.rules.objective',
+      ],
+      ante: [
+        '7-card-stud-with-wild-cards.rules.gameplay',
+      ],
+      fold: [
+        '7-card-stud-with-wild-cards.rules.gameplay',
+      ],
+      check: [
+        '7-card-stud-with-wild-cards.rules.gameplay',
+      ],
+      call: [
+        '7-card-stud-with-wild-cards.rules.gameplay',
+      ],
+      bet: [
+        '7-card-stud-with-wild-cards.rules.gameplay',
+      ],
+      raise: [
+        '7-card-stud-with-wild-cards.rules.gameplay',
+      ],
+    },
   },
 }

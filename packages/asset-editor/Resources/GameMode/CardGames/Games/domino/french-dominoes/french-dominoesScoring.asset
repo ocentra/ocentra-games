@@ -10,7 +10,26 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Points are awarded based on remaining pips (dots) on dominoes. Lower scores are better. Players accumulate points across multiple rounds.',
+      winCondition: "Last player remaining with a score below 100 points wins the entire game. When a player's cumulative score reaches 100+, they are eliminated.",
+      targetScore: 100,
+      scoringDirection: 'low_wins',
+      cardValues: {
+        pips: '1',
+      },
+      nullReasons: {},
+      splitRules: "Each player's unplayed dominoes are tallied and added to their cumulative score. First player reaching 100+ points is eliminated. Game continues until one player remains or mutual agreement.",
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],
@@ -18,7 +37,7 @@
     cardValues: {
       pips: 1,
     },
-    penalties: '{\n  "unplayed_double": "Double the number of pips on the double tile.",\n  "illegal_play": "10 points",\n  "passing_when_able": "10 points",\n  "three_consecutive_passes": "10 points per blocked player",\n  "winner_final_double_no_doubles_held": "Triple other players\' scores",\n  "winner_final_double_opponents_hold_doubles": "Quadruple other players\' scores"\n}',
+    penalties: '{"unplayed_double":"Double the number of pips on the double tile.","illegal_play":"10 points","passing_when_able":"10 points","three_consecutive_passes":"10 points per blocked player","winner_final_double_no_doubles_held":"Triple other players\' scores","winner_final_double_opponents_hold_doubles":"Quadruple other players\' scores"}',
     targetScore: 100,
     scoringDirection: 'low_wins',
     rankingAsset: {

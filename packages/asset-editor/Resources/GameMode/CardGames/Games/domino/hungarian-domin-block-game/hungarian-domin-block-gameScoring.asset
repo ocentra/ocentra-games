@@ -10,7 +10,29 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: "Players score based on pips remaining in opponents' hands. In avoidance variants, lowest score wins.",
+      winCondition: 'First player to empty hand, or lowest pip total if game blocks.',
+      targetScore: null,
+      scoringDirection: null,
+      cardValues: {
+        'Per pip': '1',
+      },
+      nullReasons: {
+        targetScore: 'No fixed target score; play by game rules.',
+        scoringDirection: 'Scoring direction is not applicable; winner is determined by game rules.',
+      },
+      splitRules: '',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],
@@ -18,7 +40,7 @@
     cardValues: {
       'Per pip': 1,
     },
-    penalties: '{\n  "Blocked with High Pips": "Accumulate pip total from remaining hand"\n}',
+    penalties: '{"Blocked with High Pips":"Accumulate pip total from remaining hand"}',
     targetScore: null,
     scoringDirection: null,
     rankingAsset: {

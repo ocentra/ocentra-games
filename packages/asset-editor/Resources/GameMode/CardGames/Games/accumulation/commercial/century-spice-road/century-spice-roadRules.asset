@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Century Spice Road. Logic: Score the most points by acquiring point cards through spice conversion and trading.',
-    Player: 'Century Spice Road is a commercial card-driven strategy game where players trade and upgrade spice cubes to buy point cards.',
+    LLM: 'Players play merchant cards to gain, trade, or upgrade spices; rest to recover played cards; or spend spices to claim point cards.',
+    Player: 'Players play merchant cards to gain, trade, or upgrade spices; rest to recover played cards; or spend spices to claim point cards.',
     objective: 'Score the most points by acquiring point cards through spice conversion and trading.',
     gameplay: 'Players play merchant cards to gain, trade, or upgrade spices; rest to recover played cards; or spend spices to claim point cards.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Point cards and bonus coins are summed; highest total wins. Expected outcome: Score the most points by acquiring point cards through spice conversion and trading..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Score the most points by acquiring point cards through spice conversion and trading.',
+      'Turn-flow example: Players play merchant cards to gain, trade, or upgrade spices; rest to recover played cards; or spend spices to claim point cards.',
+      'Scoring example: Point cards and bonus coins are summed; highest total wins. Score the most points by acquiring point cards through spice conversion and trading..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'century-spice-road.rules.objective',
+        title: 'Objective',
+        text: 'Score the most points by acquiring point cards through spice conversion and trading.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'century-spice-road.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play merchant cards to gain, trade, or upgrade spices; rest to recover played cards; or spend spices to claim point cards.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'century-spice-road.setup.players',
+        title: 'Players',
+        text: '2-5 players use the table arrangement described for Century Spice Road.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'century-spice-road.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated merchant and point cards plus spice cubes',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'century-spice-road.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated merchant and point cards plus spice cubes, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'century-spice-road.setup.dealing',
+        title: 'Deal',
+        text: 'Set out merchant cards, point cards, and starting spice cubes for each player.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'century-spice-road.score.win-condition',
+        title: 'Win condition',
+        text: 'Score the most points by acquiring point cards through spice conversion and trading.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'century-spice-road.score.description',
+        title: 'Scoring',
+        text: 'Point cards and bonus coins are summed; highest total wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'century-spice-road.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Cards drive spice actions.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'century-spice-road.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Spice cubes are upgraded and traded.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'century-spice-road.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Point cards are bought with spice sets.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'century-spice-road.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Resting returns played action cards.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'century-spice-road.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Highest point total wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'century-spice-road.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'century-spice-road.rules.objective',
+          'century-spice-road.rules.gameplay',
+        ],
+      },
+      {
+        id: 'century-spice-road.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'century-spice-road.setup.players',
+          'century-spice-road.setup.deck',
+          'century-spice-road.setup.equipment',
+          'century-spice-road.setup.dealing',
+        ],
+      },
+      {
+        id: 'century-spice-road.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'century-spice-road.rules.key.1',
+          'century-spice-road.rules.key.2',
+          'century-spice-road.rules.key.3',
+          'century-spice-road.rules.key.4',
+          'century-spice-road.rules.key.5',
+        ],
+      },
+      {
+        id: 'century-spice-road.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'century-spice-road.score.description',
+          'century-spice-road.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'century-spice-road.setup.dealing',
+        'century-spice-road.rules.objective',
+      ],
+      play_card: [
+        'century-spice-road.rules.gameplay',
+      ],
+    },
   },
 }

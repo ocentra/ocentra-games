@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Munchkin. Logic: Reach level ten before the other players while surviving monsters and interference.',
-    Player: 'Munchkin is a commercial dedicated-deck card game spoofing tabletop role-playing dungeon crawls with negotiation and take-that play.',
+    LLM: 'Players kick down doors, fight monsters with bonuses, ask for help, play curses or modifiers, take treasure, and level up from victories.',
+    Player: 'Players kick down doors, fight monsters with bonuses, ask for help, play curses or modifiers, take treasure, and level up from victories.',
     objective: 'Reach level ten before the other players while surviving monsters and interference.',
     gameplay: 'Players kick down doors, fight monsters with bonuses, ask for help, play curses or modifiers, take treasure, and level up from victories.',
     keyRules: [
@@ -54,10 +54,168 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 3-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: Published scoring or victory conditions determine the winner. Expected outcome: Reach level ten before the other players while surviving monsters and interference..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Reach level ten before the other players while surviving monsters and interference.',
+      'Turn-flow example: Players kick down doors, fight monsters with bonuses, ask for help, play curses or modifiers, take treasure, and level up from victories.',
+      'Scoring example: Published scoring or victory conditions determine the winner. Reach level ten before the other players while surviving monsters and interference..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'munchkin.rules.objective',
+        title: 'Objective',
+        text: 'Reach level ten before the other players while surviving monsters and interference.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'munchkin.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players kick down doors, fight monsters with bonuses, ask for help, play curses or modifiers, take treasure, and level up from victories.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'munchkin.setup.players',
+        title: 'Players',
+        text: '3-6 players use the table arrangement described for Munchkin.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'munchkin.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Munchkin door and treasure cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'munchkin.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Munchkin door and treasure cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'munchkin.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare the dedicated Munchkin cards and any shared table, score, or resource areas from the published rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'munchkin.score.win-condition',
+        title: 'Win condition',
+        text: 'Reach level ten before the other players while surviving monsters and interference.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'munchkin.score.description',
+        title: 'Scoring',
+        text: 'Published scoring or victory conditions determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'munchkin.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dedicated commercial deck.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'munchkin.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players race to level ten.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'munchkin.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Monsters and treasures drive turns.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'munchkin.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Players may help or sabotage.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'munchkin.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Humour and negotiation are central.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'munchkin.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'munchkin.rules.objective',
+          'munchkin.rules.gameplay',
+        ],
+      },
+      {
+        id: 'munchkin.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'munchkin.setup.players',
+          'munchkin.setup.deck',
+          'munchkin.setup.equipment',
+          'munchkin.setup.dealing',
+        ],
+      },
+      {
+        id: 'munchkin.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'munchkin.rules.key.1',
+          'munchkin.rules.key.2',
+          'munchkin.rules.key.3',
+          'munchkin.rules.key.4',
+          'munchkin.rules.key.5',
+        ],
+      },
+      {
+        id: 'munchkin.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'munchkin.score.description',
+          'munchkin.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'munchkin.setup.dealing',
+        'munchkin.rules.objective',
+      ],
+      play_card: [
+        'munchkin.rules.gameplay',
+      ],
+      flip_top_card: [
+        'munchkin.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Herzeln. Logic: Finish with the best total across the sequence of trick-taking contracts.',
-    Player: 'Herzeln is an Austrian compendium trick-taking game with several deals and changing penalty objectives.',
+    LLM: 'Players lead one card to each trick, follow suit when able, and compare the led suit and trump or rank hierarchy to decide the trick winner.',
+    Player: 'Players lead one card to each trick, follow suit when able, and compare the led suit and trump or rank hierarchy to decide the trick winner.',
     objective: 'Finish with the best total across the sequence of trick-taking contracts.',
     gameplay: 'Players lead one card to each trick, follow suit when able, and compare the led suit and trump or rank hierarchy to decide the trick winner.',
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Captured tricks, card points, or the active contract determine the score. Expected outcome: Finish with the best total across the sequence of trick-taking contracts..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Finish with the best total across the sequence of trick-taking contracts.',
+      'Turn-flow example: Players lead one card to each trick, follow suit when able, and compare the led suit and trump or rank hierarchy to decide the trick winner.',
+      'Scoring example: Captured tricks, card points, or the active contract determine the score. Finish with the best total across the sequence of trick-taking contracts..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'herzeln.rules.objective',
+        title: 'Objective',
+        text: 'Finish with the best total across the sequence of trick-taking contracts.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'herzeln.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players lead one card to each trick, follow suit when able, and compare the led suit and trump or rank hierarchy to decide the trick winner.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'herzeln.setup.players',
+        title: 'Players',
+        text: '3-4 players use the table arrangement described for Herzeln.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'herzeln.setup.deck',
+        title: 'Deck',
+        text: '24 or 32-card French or German Skat deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'herzeln.setup.equipment',
+        title: 'Equipment',
+        text: '24 or 32-card French or German Skat deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'herzeln.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 24 or 32-card French or German Skat deck for 3-4 players according to the local rules before the first trick.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'herzeln.score.win-condition',
+        title: 'Win condition',
+        text: 'Finish with the best total across the sequence of trick-taking contracts.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'herzeln.score.description',
+        title: 'Scoring',
+        text: 'Captured tricks, card points, or the active contract determine the score.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'herzeln.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trick-taking structure.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'herzeln.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players follow suit when able.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'herzeln.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trump or rank hierarchy decides contested tricks.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'herzeln.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Captured tricks or card points determine the result.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'herzeln.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'herzeln.rules.objective',
+          'herzeln.rules.gameplay',
+        ],
+      },
+      {
+        id: 'herzeln.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'herzeln.setup.players',
+          'herzeln.setup.deck',
+          'herzeln.setup.equipment',
+          'herzeln.setup.dealing',
+        ],
+      },
+      {
+        id: 'herzeln.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'herzeln.rules.key.1',
+          'herzeln.rules.key.2',
+          'herzeln.rules.key.3',
+          'herzeln.rules.key.4',
+        ],
+      },
+      {
+        id: 'herzeln.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'herzeln.score.description',
+          'herzeln.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'herzeln.setup.dealing',
+        'herzeln.rules.objective',
+      ],
+      play_card: [
+        'herzeln.rules.gameplay',
+      ],
+      discard: [
+        'herzeln.rules.gameplay',
+      ],
+      pass: [
+        'herzeln.rules.gameplay',
+      ],
+      bid: [
+        'herzeln.rules.gameplay',
+      ],
+    },
   },
 }

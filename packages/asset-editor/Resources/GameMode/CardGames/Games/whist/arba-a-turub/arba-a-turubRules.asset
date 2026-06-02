@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Arba'a Turub. Type: Quad-Deck Whist (Somalia). Players: 4 (Partnerships). Rules: 144 cards. 36 each. Identical cards tie-broken by play order. Match logic: 2 consecutive wins, with Hand 2 Tricks > Hand 1 Tricks.",
-    Player: "Welcome to Arba'a Turub. You have your first 3 cardsâ€”name the trump now! You'll eventually have 36 cards to play. Remember: if you and an opponent both play the Ace of Spades, whoever played first takes the trick. To win the match, win two in a row and score more the second time!",
+    LLM: '1. **Trump Calling**: Eldest hand calls trumps after seeing only their first three cards. 2. **Trick Play**: Eldest leads. Players MUST follow suit if possible. 3. **Identical Card Rule**: If two or more identical cards are played to one trick, the one played FIRST wins (if it is the highest rank). 4. **Signalling**: Partners are permitted to signal suit strength via knocks (strong) or tongue-clicks (weak). 5. **Match Resolution**: If a team wins a hand, they must win the next hand with a higher trick count to end the match. If they lose the second hand, the count resets. If they win with fewer tricks, it is a draw and they must try again.',
+    Player: '1. **Trump Calling**: Eldest hand calls trumps after seeing only their first three cards. 2. **Trick Play**: Eldest leads. Players MUST follow suit if possible. 3. **Identical Card Rule**: If two or more identical cards are played to one trick, the one played FIRST wins (if it is the highest rank). 4. **Signalling**: Partners are permitted to signal suit strength via knocks (strong) or tongue-clicks (weak). 5. **Match Resolution**: If a team wins a hand, they must win the next hand with a higher trick count to end the match. If they lose the second hand, the count resets. If they win with fewer tricks, it is a draw and they must try again.',
     objective: 'Win two consecutive hands (deals). The second consecutive win must contain more tricks than the first win.',
     gameplay: '1. **Trump Calling**: Eldest hand calls trumps after seeing only their first three cards. 2. **Trick Play**: Eldest leads. Players MUST follow suit if possible. 3. **Identical Card Rule**: If two or more identical cards are played to one trick, the one played FIRST wins (if it is the highest rank). 4. **Signalling**: Partners are permitted to signal suit strength via knocks (strong) or tongue-clicks (weak). 5. **Match Resolution**: If a team wins a hand, they must win the next hand with a higher trick count to end the match. If they lose the second hand, the count resets. If they win with fewer tricks, it is a draw and they must try again.',
     keyRules: [
@@ -52,10 +52,162 @@
       go_out: 'Hand ends when all 36 tricks are played.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 36 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in trump_init; dealer may use deal_three_to_eldest, call_trump before deal_completion.',
-      "Scoring check: Scoring is binary (Hand won or Hand lost/drawn). Expected outcome: Progressive Consecutive Wins: Win Hand A (Tricks > 18), then Win Hand B (Tricks > Hand A's count)..",
+      'Setup example: 36 card(s) per player.',
+      'Rule example: Win two consecutive hands (deals). The second consecutive win must contain more tricks than the first win.',
+      'Turn-flow example: 1. **Trump Calling**: Eldest hand calls trumps after seeing only their first three cards. 2. **Trick Play**: Eldest leads. Players MUST follow suit if possible. 3. **Identical Card Rule**: If two or more identical cards are played to one trick, the one played FIRST wins (if it is the highest rank). 4. **Signalling**: Partners are permitted to signal suit strength via knocks (strong) or tongue-clicks (weak). 5. **Match Resolution**: If a team wins a hand, they must win the next hand with a higher trick count to end the match. If they lose the second hand, the count resets. If they win with fewer tricks, it is a draw and they must try again.',
+      "Scoring example: Scoring is binary (Hand won or Hand lost/drawn). Progressive Consecutive Wins: Win Hand A (Tricks > 18), then Win Hand B (Tricks > Hand A's count)..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'arba-a-turub.rules.objective',
+        title: 'Objective',
+        text: 'Win two consecutive hands (deals). The second consecutive win must contain more tricks than the first win.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'arba-a-turub.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Trump Calling**: Eldest hand calls trumps after seeing only their first three cards. 2. **Trick Play**: Eldest leads. Players MUST follow suit if possible. 3. **Identical Card Rule**: If two or more identical cards are played to one trick, the one played FIRST wins (if it is the highest rank). 4. **Signalling**: Partners are permitted to signal suit strength via knocks (strong) or tongue-clicks (weak). 5. **Match Resolution**: If a team wins a hand, they must win the next hand with a higher trick count to end the match. If they lose the second hand, the count resets. If they win with fewer tricks, it is a draw and they must try again.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'arba-a-turub.setup.players',
+        title: 'Players',
+        text: '4 players in two fixed partnerships (North-South vs East-West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'arba-a-turub.setup.deck',
+        title: 'Deck',
+        text: '144 cards. Prepared by taking four 52-card decks and removing all 2s, 3s, 4s, and 5s. Ranks: A(high), K, Q, J, 10, 9, 8, 7, 6(low).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'arba-a-turub.setup.equipment',
+        title: 'Equipment',
+        text: 'Four identical decks, table space large enough for 144 cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'arba-a-turub.setup.dealing',
+        title: 'Deal',
+        text: "Deal starts clockwise. Each player receives 36 cards in batches of 3. **Crucial**: After the first 3 cards are dealt to the player on the dealer's left (Eldest Hand), they must declare trumps immediately.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'arba-a-turub.score.win-condition',
+        title: 'Win condition',
+        text: "Progressive Consecutive Wins: Win Hand A (Tricks > 18), then Win Hand B (Tricks > Hand A's count).",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'arba-a-turub.score.description',
+        title: 'Scoring',
+        text: 'Scoring is binary (Hand won or Hand lost/drawn).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'arba-a-turub.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Large Hands: Managing 36 cards requires physical organization and stamina.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'arba-a-turub.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Early Trump: Calling trumps on just 3 cards introduces a massive element of luck and risk-taking.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'arba-a-turub.rules.key.3',
+        title: 'Key rule 3',
+        text: 'First-Card Advantage: Since multiple identical cards exist, the lead has a significant advantage in tie-breaking.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'arba-a-turub.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'arba-a-turub.rules.objective',
+          'arba-a-turub.rules.gameplay',
+        ],
+      },
+      {
+        id: 'arba-a-turub.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'arba-a-turub.setup.players',
+          'arba-a-turub.setup.deck',
+          'arba-a-turub.setup.equipment',
+          'arba-a-turub.setup.dealing',
+        ],
+      },
+      {
+        id: 'arba-a-turub.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'arba-a-turub.rules.key.1',
+          'arba-a-turub.rules.key.2',
+          'arba-a-turub.rules.key.3',
+        ],
+      },
+      {
+        id: 'arba-a-turub.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'arba-a-turub.score.description',
+          'arba-a-turub.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'arba-a-turub.setup.dealing',
+        'arba-a-turub.rules.objective',
+      ],
+      play_card: [
+        'arba-a-turub.rules.gameplay',
+      ],
+      deal_three_to_eldest: [
+        'arba-a-turub.rules.gameplay',
+      ],
+      call_trump: [
+        'arba-a-turub.rules.gameplay',
+      ],
+      complete_deal_36: [
+        'arba-a-turub.rules.gameplay',
+      ],
+      signal_partner: [
+        'arba-a-turub.rules.gameplay',
+      ],
+      validate_match_win: [
+        'arba-a-turub.rules.gameplay',
+      ],
+    },
   },
 }

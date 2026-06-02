@@ -52,10 +52,156 @@
       go_out: 'Game ends per rules.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before bid.',
-      "Scoring check: Score points by winning tricks and capturing 'count' tiles. Be the first team to reach 500 points. Expected outcome: First team to reach 500 points wins. Points from count tiles in won tricks..",
+      'Setup example: 0 card(s) per player.',
+      "Rule example: Score points by winning tricks and capturing 'count' tiles. Be the first team to reach 500 points.",
+      "Turn-flow example: 1. Bidding: Starts left of dealer. Bids range from 60 to 88 (jumping in increments of 2). Multiples of 88 (176, 264, etc.) are used for aggressive hands.\n2. The Kitty: The high bidder takes the 2 kitty tiles and discards 2 tiles of their choice (cannot discard count tiles into the kitty).\n3. Play: Winner of the bid leads the first tile and names trumps (a specific suit or 'No Trumps').\n4. Identical Tiles: Since there are two sets, if two identical tiles are played in one trick, the FIRST one played wins.",
+      "Scoring example: Score points by winning tricks and capturing 'count' tiles. Be the first team to reach 500 points. First team to reach 500 points wins. Points from count tiles in won tricks..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'eighty-eight.rules.objective',
+        title: 'Objective',
+        text: "Score points by winning tricks and capturing 'count' tiles. Be the first team to reach 500 points.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'eighty-eight.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Bidding: Starts left of dealer. Bids range from 60 to 88 (jumping in increments of 2). Multiples of 88 (176, 264, etc.) are used for aggressive hands.\n2. The Kitty: The high bidder takes the 2 kitty tiles and discards 2 tiles of their choice (cannot discard count tiles into the kitty).\n3. Play: Winner of the bid leads the first tile and names trumps (a specific suit or 'No Trumps').\n4. Identical Tiles: Since there are two sets, if two identical tiles are played in one trick, the FIRST one played wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'eighty-eight.setup.players',
+        title: 'Players',
+        text: '6 players divided into two teams of three. Players from opposite teams sit in alternating order around the table.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'eighty-eight.setup.deck',
+        title: 'Deck',
+        text: '56 Dominoes (Two Double-Six sets mixed together).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'eighty-eight.setup.equipment',
+        title: 'Equipment',
+        text: '56 Dominoes (Two Double-Six sets mixed together).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'eighty-eight.setup.dealing',
+        title: 'Deal',
+        text: "Each player is dealt 9 tiles. 2 tiles are left face-down as 'The Kitty'.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'eighty-eight.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to reach 500 points wins. Points from count tiles in won tricks.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'eighty-eight.score.description',
+        title: 'Scoring',
+        text: "Score points by winning tricks and capturing 'count' tiles. Be the first team to reach 500 points.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'eighty-eight.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit (follow the high end of the tile led).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'eighty-eight.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Winning bidder reveals their trump choice AFTER exchanging with the kitty.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'eighty-eight.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The kitty contains no points unless specifically allowed by house rules.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'eighty-eight.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'eighty-eight.rules.objective',
+          'eighty-eight.rules.gameplay',
+        ],
+      },
+      {
+        id: 'eighty-eight.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'eighty-eight.setup.players',
+          'eighty-eight.setup.deck',
+          'eighty-eight.setup.equipment',
+          'eighty-eight.setup.dealing',
+        ],
+      },
+      {
+        id: 'eighty-eight.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'eighty-eight.rules.key.1',
+          'eighty-eight.rules.key.2',
+          'eighty-eight.rules.key.3',
+        ],
+      },
+      {
+        id: 'eighty-eight.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'eighty-eight.score.description',
+          'eighty-eight.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'eighty-eight.setup.dealing',
+        'eighty-eight.rules.objective',
+      ],
+      deal: [
+        'eighty-eight.rules.gameplay',
+      ],
+      play_card: [
+        'eighty-eight.rules.gameplay',
+      ],
+      pass: [
+        'eighty-eight.rules.gameplay',
+      ],
+      bid: [
+        'eighty-eight.rules.gameplay',
+      ],
+    },
   },
 }

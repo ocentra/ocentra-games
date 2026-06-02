@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'After all tiles are played or discarded, each player exposes discarded tiles and counts total pips. The player with fewest pips wins the deal. Each pair of players settles by pip difference; stake per pip is agreed in advance; the player with more pips pays the player with fewer.',
+      winCondition: 'The player with fewest total pips on discarded tiles wins the deal and leads the next. Tie: whoever played earlier in the deal (previous first player has priority, then to the right).',
+      targetScore: null,
+      scoringDirection: 'low_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: 'No fixed target score; play by game rules.',
+        cardValues: 'Scoring is by total pips on discarded tiles per deal, not by fixed card point values.',
+      },
+      splitRules: '',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

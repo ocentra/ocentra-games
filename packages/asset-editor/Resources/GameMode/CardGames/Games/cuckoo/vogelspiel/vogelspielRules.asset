@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Cuckoo. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Cuckoo is a card game card game that involves gameplay, scoring, strategy. The game originated in Various and has become popular worldwide.',
+    LLM: 'Players use a special deck descended from Cuccu or Malcontent. The highest bird or lowest witch card defines the distinctive rank structure and exchange pressure.',
+    Player: 'Players use a special deck descended from Cuccu or Malcontent. The highest bird or lowest witch card defines the distinctive rank structure and exchange pressure.',
     objective: 'Avoid the losing card or win the exchange sequence under the Cuccu-family rules.',
     gameplay: 'Players use a special deck descended from Cuccu or Malcontent. The highest bird or lowest witch card defines the distinctive rank structure and exchange pressure.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Players start with lives (e.g. 3); lowest card each round loses a life. Last player left wins the pot. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Avoid the losing card or win the exchange sequence under the Cuccu-family rules.',
+      'Turn-flow example: Players use a special deck descended from Cuccu or Malcontent. The highest bird or lowest witch card defines the distinctive rank structure and exchange pressure.',
+      'Scoring example: Players start with lives (e.g. 3); lowest card each round loses a life. Last player left wins the pot. Last player remaining after all others have lost their lives..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'vogelspiel.rules.objective',
+        title: 'Objective',
+        text: 'Avoid the losing card or win the exchange sequence under the Cuccu-family rules.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'vogelspiel.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players use a special deck descended from Cuccu or Malcontent. The highest bird or lowest witch card defines the distinctive rank structure and exchange pressure.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'vogelspiel.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Vogelspiel.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'vogelspiel.setup.deck',
+        title: 'Deck',
+        text: 'Special Vogelspiel or Hexenspiel cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'vogelspiel.setup.equipment',
+        title: 'Equipment',
+        text: 'Special Vogelspiel or Hexenspiel cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'vogelspiel.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Special Vogelspiel or Hexenspiel cards and deal or lay out cards according to the documented Vogelspiel rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'vogelspiel.score.win-condition',
+        title: 'Win condition',
+        text: 'Last player remaining after all others have lost their lives.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'vogelspiel.score.description',
+        title: 'Scoring',
+        text: 'Players start with lives (e.g. 3); lowest card each round loses a life. Last player left wins the pot.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'vogelspiel.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Uses special cards rather than an ordinary French pack.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'vogelspiel.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Descends from the Cuccu family.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'vogelspiel.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Known as Vogelspiel or Hexenspiel depending on card imagery.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'vogelspiel.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'vogelspiel.rules.objective',
+          'vogelspiel.rules.gameplay',
+        ],
+      },
+      {
+        id: 'vogelspiel.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'vogelspiel.setup.players',
+          'vogelspiel.setup.deck',
+          'vogelspiel.setup.equipment',
+          'vogelspiel.setup.dealing',
+        ],
+      },
+      {
+        id: 'vogelspiel.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'vogelspiel.rules.key.1',
+          'vogelspiel.rules.key.2',
+          'vogelspiel.rules.key.3',
+        ],
+      },
+      {
+        id: 'vogelspiel.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'vogelspiel.score.description',
+          'vogelspiel.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'vogelspiel.setup.dealing',
+        'vogelspiel.rules.objective',
+      ],
+      play_card: [
+        'vogelspiel.rules.gameplay',
+      ],
+    },
   },
 }

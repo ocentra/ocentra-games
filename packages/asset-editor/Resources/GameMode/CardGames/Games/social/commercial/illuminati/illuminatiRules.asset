@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 52 Pick-up. Logic: See rules.objective and rules.gameplay.',
-    Player: '52 Pick-up is a social prank using a standard pack: one player offers a game, scatters the cards, and the other player is left to pick them up. It is recorded as a social card-game joke rather than a strategic contest.',
+    LLM: "Each player controls an Illuminati card, spends money tokens, and attacks to control or neutralize group cards. Players negotiate, interfere, and defend networks while expanding their power structure. Victory depends on the faction's published condition.",
+    Player: "Each player controls an Illuminati card, spends money tokens, and attacks to control or neutralize group cards. Players negotiate, interfere, and defend networks while expanding their power structure. Victory depends on the faction's published condition.",
     objective: "Complete your Illuminati group's special victory condition by controlling enough groups or achieving its secret objective.",
     gameplay: "Each player controls an Illuminati card, spends money tokens, and attacks to control or neutralize group cards. Players negotiate, interfere, and defend networks while expanding their power structure. Victory depends on the faction's published condition.",
     keyRules: [
@@ -52,10 +52,150 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: No scoring; the activity ends when the deck has been picked up. Expected outcome: 1.',
+      'Setup example: 0 card(s) per player.',
+      "Rule example: Complete your Illuminati group's special victory condition by controlling enough groups or achieving its secret objective.",
+      "Turn-flow example: Each player controls an Illuminati card, spends money tokens, and attacks to control or neutralize group cards. Players negotiate, interfere, and defend networks while expanding their power structure. Victory depends on the faction's published condition.",
+      'Scoring example: No scoring; the activity ends when the deck has been picked up. No formal winner is defined..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'illuminati.rules.objective',
+        title: 'Objective',
+        text: "Complete your Illuminati group's special victory condition by controlling enough groups or achieving its secret objective.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'illuminati.rules.gameplay',
+        title: 'Turn flow',
+        text: "Each player controls an Illuminati card, spends money tokens, and attacks to control or neutralize group cards. Players negotiate, interfere, and defend networks while expanding their power structure. Victory depends on the faction's published condition.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'illuminati.setup.players',
+        title: 'Players',
+        text: '2-8 players use the table arrangement described for Illuminati.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'illuminati.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Illuminati cards and money tokens',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'illuminati.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Illuminati cards and money tokens, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'illuminati.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Illuminati cards and money tokens and deal or lay out cards according to the documented Illuminati rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'illuminati.score.win-condition',
+        title: 'Win condition',
+        text: 'No formal winner is defined.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'illuminati.score.description',
+        title: 'Scoring',
+        text: 'No scoring; the activity ends when the deck has been picked up.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'illuminati.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Each player begins as a different Illuminati faction.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'illuminati.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Groups are controlled in a branching power structure.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'illuminati.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Negotiation, interference, and special powers are central to play.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'illuminati.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'illuminati.rules.objective',
+          'illuminati.rules.gameplay',
+        ],
+      },
+      {
+        id: 'illuminati.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'illuminati.setup.players',
+          'illuminati.setup.deck',
+          'illuminati.setup.equipment',
+          'illuminati.setup.dealing',
+        ],
+      },
+      {
+        id: 'illuminati.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'illuminati.rules.key.1',
+          'illuminati.rules.key.2',
+          'illuminati.rules.key.3',
+        ],
+      },
+      {
+        id: 'illuminati.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'illuminati.score.description',
+          'illuminati.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'illuminati.setup.dealing',
+        'illuminati.rules.objective',
+      ],
+      play_card: [
+        'illuminati.rules.gameplay',
+      ],
+      flip_top_card: [
+        'illuminati.rules.gameplay',
+      ],
+    },
   },
 }

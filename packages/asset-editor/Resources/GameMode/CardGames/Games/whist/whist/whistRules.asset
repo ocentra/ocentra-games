@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Whist. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Whist is the classic English partnership trick-taking game and ancestor of Bridge. 4 players, 2 teams. 52 cards, 13 each. Last card dealt (to dealer) turned face-up = trump. Eldest hand leads. Follow suit. Each trick over 6 = 1 point. Honours (A-K-Q-J of trump): 3 held = 2pts, 4 held = 4pts. Game to 5 (British) or 7 (American). Rubber = best of 3.',
+    LLM: 'Eldest hand leads. Follow suit. Trump if void (optional). Highest trump or highest of led suit wins. Each trick over 6 = 1pt. Honours: 3 of A-K-Q-J trump = 2pts, 4 = 4pts.',
+    Player: 'Eldest hand leads. Follow suit. Trump if void (optional). Highest trump or highest of led suit wins. Each trick over 6 = 1pt. Honours: 3 of A-K-Q-J trump = 2pts, 4 = 4pts.',
     objective: 'Partnerships aim to win more tricks than the opponents; each odd trick (over six) scores one point. The first side to reach the agreed game target (5 points in Britain, 7 in America) wins the game.',
     gameplay: 'Eldest hand leads. Follow suit. Trump if void (optional). Highest trump or highest of led suit wins. Each trick over 6 = 1pt. Honours: 3 of A-K-Q-J trump = 2pts, 4 = 4pts.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Odd tricks (over 6) = 1pt each. Honours bonus. Game: 5pts (British) or 7pts (American). Rubber: best of 3 games. Expected outcome: Win majority of tricks. First to 5/7 points..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Partnerships aim to win more tricks than the opponents; each odd trick (over six) scores one point. The first side to reach the agreed game target (5 points in Britain, 7 in America) wins the game.',
+      'Turn-flow example: Eldest hand leads. Follow suit. Trump if void (optional). Highest trump or highest of led suit wins. Each trick over 6 = 1pt. Honours: 3 of A-K-Q-J trump = 2pts, 4 = 4pts.',
+      'Scoring example: Odd tricks (over 6) = 1pt each. Honours bonus. Game: 5pts (British) or 7pts (American). Rubber: best of 3 games. Win majority of tricks. First to 5/7 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'whist.rules.objective',
+        title: 'Objective',
+        text: 'Partnerships aim to win more tricks than the opponents; each odd trick (over six) scores one point. The first side to reach the agreed game target (5 points in Britain, 7 in America) wins the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'whist.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Eldest hand leads. Follow suit. Trump if void (optional). Highest trump or highest of led suit wins. Each trick over 6 = 1pt. Honours: 3 of A-K-Q-J trump = 2pts, 4 = 4pts.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'whist.setup.players',
+        title: 'Players',
+        text: '4 (2 fixed teams)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'whist.setup.deck',
+        title: 'Deck',
+        text: '52 cards. A high. 13 each.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'whist.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'whist.setup.dealing',
+        title: 'Deal',
+        text: '13 each. Last card (to dealer) turned up = trump.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'whist.score.win-condition',
+        title: 'Win condition',
+        text: 'Win majority of tricks. First to 5/7 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'whist.score.description',
+        title: 'Scoring',
+        text: 'Odd tricks (over 6) = 1pt each. Honours bonus. Game: 5pts (British) or 7pts (American). Rubber: best of 3 games.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'whist.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow suit',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'whist.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Last dealt card = trump',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'whist.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Odd tricks scoring',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'whist.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Honours bonuses',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'whist.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Rubber format',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'whist.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'whist.rules.objective',
+          'whist.rules.gameplay',
+        ],
+      },
+      {
+        id: 'whist.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'whist.setup.players',
+          'whist.setup.deck',
+          'whist.setup.equipment',
+          'whist.setup.dealing',
+        ],
+      },
+      {
+        id: 'whist.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'whist.rules.key.1',
+          'whist.rules.key.2',
+          'whist.rules.key.3',
+          'whist.rules.key.4',
+          'whist.rules.key.5',
+        ],
+      },
+      {
+        id: 'whist.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'whist.score.description',
+          'whist.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'whist.setup.dealing',
+        'whist.rules.objective',
+      ],
+      play_card: [
+        'whist.rules.gameplay',
+      ],
+    },
   },
 }

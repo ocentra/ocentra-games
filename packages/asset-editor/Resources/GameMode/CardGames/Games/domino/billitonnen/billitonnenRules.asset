@@ -10,7 +10,7 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Billitonnen. 28 dominoes (double-6). 2-4 players. Tiles drawn face-down in a row. On turn: flip leftmost unflipped tile. If it matches either open end of the line, play it. If not, return it face-down. First to empty hand or fewest tiles at block wins. Memory of returned tiles is key advantage.',
+    LLM: '1. **Start**: A tile is drawn from the boneyard to start the line. 2. **The Turn**: On your turn, flip over the LEFTMOST face-down tile in your row. 3. **The Match**: If the tile matches either open end of the central line, you must play it. 4. **The Failure**: If the tile does not match, you must turn it face down again in its original position. 5. **Boneyard**: Unused tiles are not drawn; the game relies only on the initial hand.',
     Player: '1. **Start**: A tile is drawn from the boneyard to start the line. 2. **The Turn**: On your turn, flip over the LEFTMOST face-down tile in your row. 3. **The Match**: If the tile matches either open end of the central line, you must play it. 4. **The Failure**: If the tile does not match, you must turn it face down again in its original position. 5. **Boneyard**: Unused tiles are not drawn; the game relies only on the initial hand.',
     objective: 'Be the first player to empty your face-down row by matching tiles to the central line.',
     gameplay: '1. **Start**: A tile is drawn from the boneyard to start the line. 2. **The Turn**: On your turn, flip over the LEFTMOST face-down tile in your row. 3. **The Match**: If the tile matches either open end of the central line, you must play it. 4. **The Failure**: If the tile does not match, you must turn it face down again in its original position. 5. **Boneyard**: Unused tiles are not drawn; the game relies only on the initial hand.',
@@ -52,10 +52,156 @@
       go_out: 'The round concludes automatically when a player flips and plays their final face-down tile.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in dealing; system may use deal_tiles_facedown before play_loop.',
-      "Scoring check: The player who empties their hand first wins the round. In a blocked game, the player with the fewest remaining tiles wins. Expected outcome: Emptying the player's row or having the fewest tiles at a block..",
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Be the first player to empty your face-down row by matching tiles to the central line.',
+      'Turn-flow example: 1. **Start**: A tile is drawn from the boneyard to start the line. 2. **The Turn**: On your turn, flip over the LEFTMOST face-down tile in your row. 3. **The Match**: If the tile matches either open end of the central line, you must play it. 4. **The Failure**: If the tile does not match, you must turn it face down again in its original position. 5. **Boneyard**: Unused tiles are not drawn; the game relies only on the initial hand.',
+      "Scoring example: The player who empties their hand first wins the round. In a blocked game, the player with the fewest remaining tiles wins. Emptying the player's row or having the fewest tiles at a block..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'billitonnen.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to empty your face-down row by matching tiles to the central line.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'billitonnen.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Start**: A tile is drawn from the boneyard to start the line. 2. **The Turn**: On your turn, flip over the LEFTMOST face-down tile in your row. 3. **The Match**: If the tile matches either open end of the central line, you must play it. 4. **The Failure**: If the tile does not match, you must turn it face down again in its original position. 5. **Boneyard**: Unused tiles are not drawn; the game relies only on the initial hand.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'billitonnen.setup.players',
+        title: 'Players',
+        text: '2 to 4 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'billitonnen.setup.deck',
+        title: 'Deck',
+        text: 'Standard double-six domino set (28 tiles).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'billitonnen.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'billitonnen.setup.dealing',
+        title: 'Deal',
+        text: 'Players draw tiles based on count (2p=7, 3p=7, 4p=6). Tiles are placed in a face-down row in front of each player. No one may look at their tiles.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'billitonnen.score.win-condition',
+        title: 'Win condition',
+        text: "Emptying the player's row or having the fewest tiles at a block.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'billitonnen.score.description',
+        title: 'Scoring',
+        text: 'The player who empties their hand first wins the round. In a blocked game, the player with the fewest remaining tiles wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'billitonnen.rules.key.1',
+        title: 'Key rule 1',
+        text: 'You must always turn the leftmost tile first.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'billitonnen.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Memory is your only tool: you must remember what tiles were returned face-down.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'billitonnen.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The game ends when someone goes domino (empties row) or when no one can move (blocked).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'billitonnen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'billitonnen.rules.objective',
+          'billitonnen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'billitonnen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'billitonnen.setup.players',
+          'billitonnen.setup.deck',
+          'billitonnen.setup.equipment',
+          'billitonnen.setup.dealing',
+        ],
+      },
+      {
+        id: 'billitonnen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'billitonnen.rules.key.1',
+          'billitonnen.rules.key.2',
+          'billitonnen.rules.key.3',
+        ],
+      },
+      {
+        id: 'billitonnen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'billitonnen.score.description',
+          'billitonnen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'billitonnen.setup.dealing',
+        'billitonnen.rules.objective',
+      ],
+      deal_tiles_facedown: [
+        'billitonnen.rules.gameplay',
+      ],
+      flip_leftmost_tile: [
+        'billitonnen.rules.gameplay',
+      ],
+      place_on_line: [
+        'billitonnen.rules.gameplay',
+      ],
+      return_facedown: [
+        'billitonnen.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tapp Tarock. Logic: rules.objective and rules.gameplay; Tarock point scoring and contract values.',
-    Player: 'Tapp Tarock is a three-player Austrian Tarock game. Deal 16 each and 6 in the talon. Bid Dreier, Unterer, Oberer, or Solo. Declarer exchanges with three talon cards in lower contracts or plays alone in Solo. Follow suit or trump; declarer needs 36 points to win.',
+    LLM: 'Bidding: Forehand opens; players pass or bid Dreier, Unterer, Oberer, or Solo in ascending order; overcall or hold. Highest bidder is declarer. In Dreier/Unterer/Oberer the declarer exposes both talon halves, picks one, discards three cards (no Kings or Trull; tarocks only if no option, then shown to defenders); unused half counts to defenders. In Solo, talon is set aside for defenders. Announcements: win last trick with Trump I, or Valat (win every trick). Play: Anticlockwise from forehand. Must follow suit if able; otherwise must play a trump; otherwise may discard. Scoring: Tarock packet scheme; declarer needs 36+ points to win.',
+    Player: 'Bidding: Forehand opens; players pass or bid Dreier, Unterer, Oberer, or Solo in ascending order; overcall or hold. Highest bidder is declarer. In Dreier/Unterer/Oberer the declarer exposes both talon halves, picks one, discards three cards (no Kings or Trull; tarocks only if no option, then shown to defenders); unused half counts to defenders. In Solo, talon is set aside for defenders. Announcements: win last trick with Trump I, or Valat (win every trick). Play: Anticlockwise from forehand. Must follow suit if able; otherwise must play a trump; otherwise may discard. Scoring: Tarock packet scheme; declarer needs 36+ points to win.',
     objective: 'As declarer, score at least 36 card points (35⅔ rounded up) from tricks and talon to win the contract; defenders win if declarer fails. Optional announcements (win last trick with Trump I, or Valat) add bonus risk and reward.',
     gameplay: 'Bidding: Forehand opens; players pass or bid Dreier, Unterer, Oberer, or Solo in ascending order; overcall or hold. Highest bidder is declarer. In Dreier/Unterer/Oberer the declarer exposes both talon halves, picks one, discards three cards (no Kings or Trull; tarocks only if no option, then shown to defenders); unused half counts to defenders. In Solo, talon is set aside for defenders. Announcements: win last trick with Trump I, or Valat (win every trick). Play: Anticlockwise from forehand. Must follow suit if able; otherwise must play a trump; otherwise may discard. Scoring: Tarock packet scheme; declarer needs 36+ points to win.',
     keyRules: [
@@ -53,10 +53,171 @@
       go_out: 'Game ends after 16 tricks and scoring.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 16 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before bid.',
-      'Scoring check: Card points in packets of three, 2 deducted per packet; declarer needs 36 (35⅔ rounded up) to win. Game values: Dreier 3, Unterer 4, Oberer 5, Solo 8, Valat 12 or 24 announced. Bonuses for Köpfe, Tarock Trull, Royal Trull, Pagat Ultimo, Valat. Expected outcome: Declarer wins by taking 36+ card points; defenders win if declarer fails. Optional announcements add bonus points..',
+      'Setup example: 16 card(s) per player.',
+      'Rule example: As declarer, score at least 36 card points (35⅔ rounded up) from tricks and talon to win the contract; defenders win if declarer fails. Optional announcements (win last trick with Trump I, or Valat) add bonus risk and reward.',
+      'Turn-flow example: Bidding: Forehand opens; players pass or bid Dreier, Unterer, Oberer, or Solo in ascending order; overcall or hold. Highest bidder is declarer. In Dreier/Unterer/Oberer the declarer exposes both talon halves, picks one, discards three cards (no Kings or Trull; tarocks only if no option, then shown to defenders); unused half counts to defenders. In Solo, talon is set aside for defenders. Announcements: win last trick with Trump I, or Valat (win every trick). Play: Anticlockwise from forehand. Must follow suit if able; otherwise must play a trump; otherwise may discard. Scoring: Tarock packet scheme; declarer needs 36+ points to win.',
+      'Scoring example: Card points in packets of three, 2 deducted per packet; declarer needs 36 (35⅔ rounded up) to win. Game values: Dreier 3, Unterer 4, Oberer 5, Solo 8, Valat 12 or 24 announced. Bonuses for Köpfe, Tarock Trull, Royal Trull, Pagat Ultimo, Valat. Declarer wins by taking 36+ card points; defenders win if declarer fails. Optional announcements add bonus points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tapp-tarock.rules.objective',
+        title: 'Objective',
+        text: 'As declarer, score at least 36 card points (35⅔ rounded up) from tricks and talon to win the contract; defenders win if declarer fails. Optional announcements (win last trick with Trump I, or Valat) add bonus risk and reward.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tapp-tarock.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Bidding: Forehand opens; players pass or bid Dreier, Unterer, Oberer, or Solo in ascending order; overcall or hold. Highest bidder is declarer. In Dreier/Unterer/Oberer the declarer exposes both talon halves, picks one, discards three cards (no Kings or Trull; tarocks only if no option, then shown to defenders); unused half counts to defenders. In Solo, talon is set aside for defenders. Announcements: win last trick with Trump I, or Valat (win every trick). Play: Anticlockwise from forehand. Must follow suit if able; otherwise must play a trump; otherwise may discard. Scoring: Tarock packet scheme; declarer needs 36+ points to win.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tapp-tarock.setup.players',
+        title: 'Players',
+        text: 'Three players. Seating and first dealer may be determined by lot.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tapp-tarock.setup.deck',
+        title: 'Deck',
+        text: '54-card Industrie und Glück Tarot pack: 22 trumps (Sküs, XXI down to I) and 32 suit cards in four French suits (K, Q, Cavalier, Jack, and four pip cards per suit). Black suits rank K>Q>C>J>10>9>8>7; red suits K>Q>C>J>1>2>3>4.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tapp-tarock.setup.equipment',
+        title: 'Equipment',
+        text: '54-card Austrian Tarock deck, score sheet or chips.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tapp-tarock.setup.dealing',
+        title: 'Deal',
+        text: "Dealer shuffles and offers cut. Top six cards are placed face down in two crosswise packets of three as the talon. Then 16 cards to each player anticlockwise in packets of four, starting with forehand (to dealer's right). If the cutter knocks, all 16 are dealt in one packet.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tapp-tarock.score.win-condition',
+        title: 'Win condition',
+        text: 'Declarer wins by taking 36+ card points; defenders win if declarer fails. Optional announcements add bonus points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tapp-tarock.score.description',
+        title: 'Scoring',
+        text: 'Card points in packets of three, 2 deducted per packet; declarer needs 36 (35⅔ rounded up) to win. Game values: Dreier 3, Unterer 4, Oberer 5, Solo 8, Valat 12 or 24 announced. Bonuses for Köpfe, Tarock Trull, Royal Trull, Pagat Ultimo, Valat.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tapp-tarock.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow suit if able; otherwise trump; otherwise discard.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tapp-tarock.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Declarer needs 36 card points to win (70 total, 35⅔ rounded up).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tapp-tarock.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Discards may not include Kings or Trull (Sküs, Mond, or Trump I).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tapp-tarock.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Game values: Dreier 3, Unterer 4, Oberer 5, Solo 8, Valat 12 or 24 if announced.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tapp-tarock.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tapp-tarock.rules.objective',
+          'tapp-tarock.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tapp-tarock.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tapp-tarock.setup.players',
+          'tapp-tarock.setup.deck',
+          'tapp-tarock.setup.equipment',
+          'tapp-tarock.setup.dealing',
+        ],
+      },
+      {
+        id: 'tapp-tarock.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tapp-tarock.rules.key.1',
+          'tapp-tarock.rules.key.2',
+          'tapp-tarock.rules.key.3',
+          'tapp-tarock.rules.key.4',
+        ],
+      },
+      {
+        id: 'tapp-tarock.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tapp-tarock.score.description',
+          'tapp-tarock.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tapp-tarock.setup.dealing',
+        'tapp-tarock.rules.objective',
+      ],
+      deal: [
+        'tapp-tarock.rules.gameplay',
+      ],
+      declare: [
+        'tapp-tarock.rules.gameplay',
+      ],
+      award_pot: [
+        'tapp-tarock.rules.gameplay',
+      ],
+      play_card: [
+        'tapp-tarock.rules.gameplay',
+      ],
+      pass: [
+        'tapp-tarock.rules.gameplay',
+      ],
+      bid: [
+        'tapp-tarock.rules.gameplay',
+      ],
+    },
   },
 }

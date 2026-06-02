@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players choose characters, manage loot cards and items, attack monsters, and interfere with one another. Exact effects come from proprietary card text.',
+    Player: 'Players choose characters, manage loot cards and items, attack monsters, and interfere with one another. Exact effects come from proprietary card text.',
     objective: 'Be the first player to collect the required number of souls by defeating bosses and using loot and treasure cards.',
     gameplay: 'Players choose characters, manage loot cards and items, attack monsters, and interfere with one another. Exact effects come from proprietary card text.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Be the first player to collect the required number of souls by defeating bosses and using loot and treasure cards.',
+      'Turn-flow example: Players choose characters, manage loot cards and items, attack monsters, and interfere with one another. Exact effects come from proprietary card text.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'the-binding-of-isaac-four-souls.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to collect the required number of souls by defeating bosses and using loot and treasure cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'the-binding-of-isaac-four-souls.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players choose characters, manage loot cards and items, attack monsters, and interfere with one another. Exact effects come from proprietary card text.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'the-binding-of-isaac-four-souls.setup.players',
+        title: 'Players',
+        text: '2-4 players use the table arrangement described for The Binding of Isaac Four Souls.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'the-binding-of-isaac-four-souls.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Four Souls loot, treasure, monster, and character decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'the-binding-of-isaac-four-souls.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Four Souls loot, treasure, monster, and character decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'the-binding-of-isaac-four-souls.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Four Souls loot, treasure, monster, and character decks and deal or lay out cards according to the documented The Binding of Isaac Four Souls rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'the-binding-of-isaac-four-souls.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'the-binding-of-isaac-four-souls.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'the-binding-of-isaac-four-souls.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Players begin with a character, starting item, coins, and loot cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'the-binding-of-isaac-four-souls.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Defeating bosses awards souls.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'the-binding-of-isaac-four-souls.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Treasure and loot effects are proprietary card text.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'the-binding-of-isaac-four-souls.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'the-binding-of-isaac-four-souls.rules.objective',
+          'the-binding-of-isaac-four-souls.rules.gameplay',
+        ],
+      },
+      {
+        id: 'the-binding-of-isaac-four-souls.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'the-binding-of-isaac-four-souls.setup.players',
+          'the-binding-of-isaac-four-souls.setup.deck',
+          'the-binding-of-isaac-four-souls.setup.equipment',
+          'the-binding-of-isaac-four-souls.setup.dealing',
+        ],
+      },
+      {
+        id: 'the-binding-of-isaac-four-souls.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'the-binding-of-isaac-four-souls.rules.key.1',
+          'the-binding-of-isaac-four-souls.rules.key.2',
+          'the-binding-of-isaac-four-souls.rules.key.3',
+        ],
+      },
+      {
+        id: 'the-binding-of-isaac-four-souls.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'the-binding-of-isaac-four-souls.score.description',
+          'the-binding-of-isaac-four-souls.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'the-binding-of-isaac-four-souls.setup.dealing',
+        'the-binding-of-isaac-four-souls.rules.objective',
+      ],
+      play_card: [
+        'the-binding-of-isaac-four-souls.rules.gameplay',
+      ],
+    },
   },
 }

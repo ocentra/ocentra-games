@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points awarded for: most cards, most spades, 10 of Diamonds, 2 of Spades, and Aces. Exact values vary by regional rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Capture cards from the table by matching their values. Score points for specific captured cards and achievements.',
+      "Turn-flow example: Players take turns playing one card from hand. A card can capture table cards of the same value, or combinations of table cards that sum to the played card's value. If no capture is possible, the card is added to the table.",
+      'Scoring example: Points awarded for: most cards, most spades, 10 of Diamonds, 2 of Spades, and Aces. Exact values vary by regional rules. First to reach target score (typically 16 or 21 points) or highest score when stock is exhausted..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'mulle.rules.objective',
+        title: 'Objective',
+        text: 'Capture cards from the table by matching their values. Score points for specific captured cards and achievements.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mulle.rules.gameplay',
+        title: 'Turn flow',
+        text: "Players take turns playing one card from hand. A card can capture table cards of the same value, or combinations of table cards that sum to the played card's value. If no capture is possible, the card is added to the table.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mulle.setup.players',
+        title: 'Players',
+        text: '2-4 players (best with 2-3).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mulle.setup.deck',
+        title: 'Deck',
+        text: "Standard 52-card deck. Cards have numerical capture values: 2-10 = face value, Jack = 11, Queen = 12, King = 13, Ace = 1 or 14 (player's choice).",
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mulle.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mulle.setup.dealing',
+        title: 'Deal',
+        text: '4 cards to each player and 4 cards face-up to the table. Remaining cards form the stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mulle.score.win-condition',
+        title: 'Win condition',
+        text: 'First to reach target score (typically 16 or 21 points) or highest score when stock is exhausted.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mulle.score.description',
+        title: 'Scoring',
+        text: 'Points awarded for: most cards, most spades, 10 of Diamonds, 2 of Spades, and Aces. Exact values vary by regional rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mulle.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Capture by matching card values',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'mulle.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Can capture combinations that sum to played card',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'mulle.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Building creates new capture values',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'mulle.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Sweep (clearing the table) scores bonus',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'mulle.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Score for specific cards and achievements',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mulle.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mulle.rules.objective',
+          'mulle.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mulle.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mulle.setup.players',
+          'mulle.setup.deck',
+          'mulle.setup.equipment',
+          'mulle.setup.dealing',
+        ],
+      },
+      {
+        id: 'mulle.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mulle.rules.key.1',
+          'mulle.rules.key.2',
+          'mulle.rules.key.3',
+          'mulle.rules.key.4',
+          'mulle.rules.key.5',
+        ],
+      },
+      {
+        id: 'mulle.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mulle.score.description',
+          'mulle.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mulle.setup.dealing',
+        'mulle.rules.objective',
+      ],
+      play_card: [
+        'mulle.rules.gameplay',
+      ],
+    },
   },
 }

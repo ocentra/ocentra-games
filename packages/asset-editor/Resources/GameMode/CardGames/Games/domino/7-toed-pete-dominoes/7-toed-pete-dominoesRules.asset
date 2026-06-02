@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 7-Toed Pete (Dominoes Variant). Logic: See rules.objective and rules.gameplay.',
-    Player: 'Seven-Toed Pete is a connecting domino game in the Fives family played with a double-six set. Four players build a cross-shaped layout from a single spinner, scoring whenever the open ends total a multiple of five and taking extra turns for scoring plays or doubles.',
+    LLM: 'The game uses a double-six domino set. Each player receives seven tiles. In the four-player game there is no boneyard; in the two- or three-player variant, remaining tiles form a boneyard to draw from when a player cannot play. The first scoring tile or double led starts the layout, and the first double played becomes the only spinner, from which four arms of a cross-shaped layout grow. Players in turn match the open ends; whenever a player makes the open ends total a multiple of five or plays a double, that player takes an immediate extra turn. If a player cannot play and there is a boneyard, they must draw until able to play; otherwise they pass. A hand ends when a player dominoes with their last tile or when the game is blocked with no legal plays.',
+    Player: 'The game uses a double-six domino set. Each player receives seven tiles. In the four-player game there is no boneyard; in the two- or three-player variant, remaining tiles form a boneyard to draw from when a player cannot play. The first scoring tile or double led starts the layout, and the first double played becomes the only spinner, from which four arms of a cross-shaped layout grow. Players in turn match the open ends; whenever a player makes the open ends total a multiple of five or plays a double, that player takes an immediate extra turn. If a player cannot play and there is a boneyard, they must draw until able to play; otherwise they pass. A hand ends when a player dominoes with their last tile or when the game is blocked with no legal plays.',
     objective: 'Score points by making the open ends of the layout total a multiple of five and by winning hands with the lowest pip total; the first player to reach the agreed total of points or chips wins.',
     gameplay: 'The game uses a double-six domino set. Each player receives seven tiles. In the four-player game there is no boneyard; in the two- or three-player variant, remaining tiles form a boneyard to draw from when a player cannot play. The first scoring tile or double led starts the layout, and the first double played becomes the only spinner, from which four arms of a cross-shaped layout grow. Players in turn match the open ends; whenever a player makes the open ends total a multiple of five or plays a double, that player takes an immediate extra turn. If a player cannot play and there is a boneyard, they must draw until able to play; otherwise they pass. A hand ends when a player dominoes with their last tile or when the game is blocked with no legal plays.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      "Scoring check: Whenever a player makes the open ends of the layout total a multiple of five, they score that total; the winner of the hand (the player who dominoes or has the fewest pips when the game blocks) scores the total pip value of opponents' remaining tiles, often divided by five into points or chips. Expected outcome: Play continues over multiple hands, and the first player to reach the agreed total of points or chips wins..",
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Score points by making the open ends of the layout total a multiple of five and by winning hands with the lowest pip total; the first player to reach the agreed total of points or chips wins.',
+      'Turn-flow example: The game uses a double-six domino set. Each player receives seven tiles. In the four-player game there is no boneyard; in the two- or three-player variant, remaining tiles form a boneyard to draw from when a player cannot play. The first scoring tile or double led starts the layout, and the first double played becomes the only spinner, from which four arms of a cross-shaped layout grow. Players in turn match the open ends; whenever a player makes the open ends total a multiple of five or plays a double, that player takes an immediate extra turn. If a player cannot play and there is a boneyard, they must draw until able to play; otherwise they pass. A hand ends when a player dominoes with their last tile or when the game is blocked with no legal plays.',
+      "Scoring example: Whenever a player makes the open ends of the layout total a multiple of five, they score that total; the winner of the hand (the player who dominoes or has the fewest pips when the game blocks) scores the total pip value of opponents' remaining tiles, often divided by five into points or chips. Play continues over multiple hands, and the first player to reach the agreed total of points or chips wins..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '7-toed-pete-dominoes.rules.objective',
+        title: 'Objective',
+        text: 'Score points by making the open ends of the layout total a multiple of five and by winning hands with the lowest pip total; the first player to reach the agreed total of points or chips wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '7-toed-pete-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: 'The game uses a double-six domino set. Each player receives seven tiles. In the four-player game there is no boneyard; in the two- or three-player variant, remaining tiles form a boneyard to draw from when a player cannot play. The first scoring tile or double led starts the layout, and the first double played becomes the only spinner, from which four arms of a cross-shaped layout grow. Players in turn match the open ends; whenever a player makes the open ends total a multiple of five or plays a double, that player takes an immediate extra turn. If a player cannot play and there is a boneyard, they must draw until able to play; otherwise they pass. A hand ends when a player dominoes with their last tile or when the game is blocked with no legal plays.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '7-toed-pete-dominoes.setup.players',
+        title: 'Players',
+        text: 'Four players in the basic game; two or three players can play a draw variant with a boneyard.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '7-toed-pete-dominoes.setup.deck',
+        title: 'Deck',
+        text: 'Double-six domino set (28 tiles)',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '7-toed-pete-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'Double-six domino set, scoring chips or markers',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '7-toed-pete-dominoes.setup.dealing',
+        title: 'Deal',
+        text: 'For four players, each receives seven tiles and there is no boneyard. For two or three players, each receives seven tiles and the remaining tiles form a boneyard to draw from when unable to play.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '7-toed-pete-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'Play continues over multiple hands, and the first player to reach the agreed total of points or chips wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '7-toed-pete-dominoes.score.description',
+        title: 'Scoring',
+        text: "Whenever a player makes the open ends of the layout total a multiple of five, they score that total; the winner of the hand (the player who dominoes or has the fewest pips when the game blocks) scores the total pip value of opponents' remaining tiles, often divided by five into points or chips.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '7-toed-pete-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Member of the Fives family of domino games; scoring on multiples of five.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '7-toed-pete-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Uses a double-six domino set and usually four players, each taking seven tiles.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '7-toed-pete-dominoes.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Only the first double played becomes the spinner, producing a four-armed cross layout.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: '7-toed-pete-dominoes.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Playing a double or making the open ends total a multiple of five grants an extra turn.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: '7-toed-pete-dominoes.rules.key.5',
+        title: 'Key rule 5',
+        text: "A hand ends when a player dominoes or the game is blocked; the winner scores from opponents' remaining tiles.",
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '7-toed-pete-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '7-toed-pete-dominoes.rules.objective',
+          '7-toed-pete-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: '7-toed-pete-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '7-toed-pete-dominoes.setup.players',
+          '7-toed-pete-dominoes.setup.deck',
+          '7-toed-pete-dominoes.setup.equipment',
+          '7-toed-pete-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: '7-toed-pete-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '7-toed-pete-dominoes.rules.key.1',
+          '7-toed-pete-dominoes.rules.key.2',
+          '7-toed-pete-dominoes.rules.key.3',
+          '7-toed-pete-dominoes.rules.key.4',
+          '7-toed-pete-dominoes.rules.key.5',
+        ],
+      },
+      {
+        id: '7-toed-pete-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '7-toed-pete-dominoes.score.description',
+          '7-toed-pete-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '7-toed-pete-dominoes.setup.dealing',
+        '7-toed-pete-dominoes.rules.objective',
+      ],
+      play_card: [
+        '7-toed-pete-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

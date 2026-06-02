@@ -59,10 +59,210 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 0 card(s) per player, 55 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      "Rule example: Be the first player to play all your dominoes. Score points based on opponents' remaining tiles. First to reach target score (usually 100 or 150) wins.",
+      "Turn-flow example: The player with the highest double (9-9 with double-9 set) starts. If not drawn, all players draw one extra tile until found. The first double played starts the 'spinner' with four arms. Subsequent doubles are played crosswise and are 'spinners' - the next three plays must be on the double, creating a chicken foot. After three tiles are played on a double, the arm can be extended normally. Players unable to play draw from the chicken yard. If still unable to play, they pass.",
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'chicken-foot.rules.objective',
+        title: 'Objective',
+        text: "Be the first player to play all your dominoes. Score points based on opponents' remaining tiles. First to reach target score (usually 100 or 150) wins.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'chicken-foot.rules.gameplay',
+        title: 'Turn flow',
+        text: "The player with the highest double (9-9 with double-9 set) starts. If not drawn, all players draw one extra tile until found. The first double played starts the 'spinner' with four arms. Subsequent doubles are played crosswise and are 'spinners' - the next three plays must be on the double, creating a chicken foot. After three tiles are played on a double, the arm can be extended normally. Players unable to play draw from the chicken yard. If still unable to play, they pass.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'chicken-foot.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 8\nOptimal Players: 4-6\nPartnerships: Optional in some variants',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'chicken-foot.setup.deck',
+        title: 'Deck',
+        text: 'Type: Double-9 domino set (55 tiles)\nAlternative: Double-12 (91 tiles) for more players\nTiles: Each player draws specific number based on player count',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'chicken-foot.setup.equipment',
+        title: 'Equipment',
+        text: 'Double-9 or double-12 domino set\nScore sheet\nTable space for layout',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'chicken-foot.setup.dealing',
+        title: 'Deal',
+        text: "Tiles per Player varies by number of players:\n2 players: 12-15 tiles each\n3 players: 10-11 tiles each\n4 players: 9-10 tiles each\n5-6 players: 7-8 tiles each\n7-8 players: 6-7 tiles each\nRemaining tiles form the 'chicken yard' (boneyard)",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'chicken-foot.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'chicken-foot.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'chicken-foot.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Highest double starts (9-9 for double-9 set)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'chicken-foot.rules.key.2',
+        title: 'Key rule 2',
+        text: 'First double is the spinner with four arms',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'chicken-foot.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Subsequent doubles are played crosswise',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'chicken-foot.rules.key.4',
+        title: 'Key rule 4',
+        text: 'After a double is played, next three plays must be on it (chicken foot)',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'chicken-foot.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Chicken foot must be completed before extending other arms',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'chicken-foot.rules.key.6',
+        title: 'Key rule 6',
+        text: 'If unable to play, draw from chicken yard',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'chicken-foot.rules.key.7',
+        title: 'Key rule 7',
+        text: 'If still unable after drawing, pass',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+      {
+        id: 'chicken-foot.rules.key.8',
+        title: 'Key rule 8',
+        text: 'Round ends when player empties hand or game is blocked',
+        sourceFields: [
+          'rules.keyRules.7',
+        ],
+      },
+      {
+        id: 'chicken-foot.rules.key.9',
+        title: 'Key rule 9',
+        text: "Winner scores opponents' remaining pips",
+        sourceFields: [
+          'rules.keyRules.8',
+        ],
+      },
+      {
+        id: 'chicken-foot.rules.key.10',
+        title: 'Key rule 10',
+        text: 'First to 100/150 points wins',
+        sourceFields: [
+          'rules.keyRules.9',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'chicken-foot.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'chicken-foot.rules.objective',
+          'chicken-foot.rules.gameplay',
+        ],
+      },
+      {
+        id: 'chicken-foot.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'chicken-foot.setup.players',
+          'chicken-foot.setup.deck',
+          'chicken-foot.setup.equipment',
+          'chicken-foot.setup.dealing',
+        ],
+      },
+      {
+        id: 'chicken-foot.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'chicken-foot.rules.key.1',
+          'chicken-foot.rules.key.2',
+          'chicken-foot.rules.key.3',
+          'chicken-foot.rules.key.4',
+          'chicken-foot.rules.key.5',
+          'chicken-foot.rules.key.6',
+          'chicken-foot.rules.key.7',
+          'chicken-foot.rules.key.8',
+          'chicken-foot.rules.key.9',
+          'chicken-foot.rules.key.10',
+        ],
+      },
+      {
+        id: 'chicken-foot.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'chicken-foot.score.description',
+          'chicken-foot.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'chicken-foot.setup.dealing',
+        'chicken-foot.rules.objective',
+      ],
+      play_card: [
+        'chicken-foot.rules.gameplay',
+      ],
+    },
   },
 }

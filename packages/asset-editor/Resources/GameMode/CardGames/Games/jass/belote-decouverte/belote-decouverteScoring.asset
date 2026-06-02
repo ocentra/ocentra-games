@@ -11,7 +11,11 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Standard Belote ranking/values apply to all captured tricks.',
+      winCondition: 'Usually played to 500 or 1000 total points.',
+      targetScore: 500,
+      scoringDirection: 'high_wins',
+      cardValues: {
         'Trump Jack': '20 points',
         'Trump Nine': '14 points',
         Ace: '11 points',
@@ -20,13 +24,39 @@
         Queen: '3 points',
         'Jack (Other)': '2 points',
       },
+      sourceCardValues: {
+        raw: {
+          'Trump Jack': '20 points',
+          'Trump Nine': '14 points',
+          Ace: '11 points',
+          Ten: '10 points',
+          King: '4 points',
+          Queen: '3 points',
+          'Jack (Other)': '2 points',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        nullReasons: 'Not applicable.',
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: 'Ties are broken by the team that won the last trick.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],
     winCondition: 'Usually played to 500 or 1000 total points.',
     cardValues: {},
-    penalties: '{\n  "Dix de Der": "Winning the last (16th) trick awards a 10-point bonus."\n}',
+    penalties: '{"Dix de Der":"Winning the last (16th) trick awards a 10-point bonus."}',
     targetScore: 500,
     scoringDirection: 'high_wins',
     rankingAsset: {

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Doppelkopf. 48-card German game. 4 players. Queens of Clubs identify Re team (secret). Trump: all Queens > all Jacks > all Diamonds. Must follow suit. Total 240 card points. Re needs 121.',
-    Player: "You hold â™£Q + â™ Q. You're the ENTIRE Re team alone? Noâ€”the other â™£Q and â™ Q are with two other players. Wait, with a 48-card double deck, there are TWO of each. The four Queens of Clubs are split: whoever holds the other #2 â™£Q copy is your partner. Signal by playing your â™£Q on a trick your partner wins.",
+    LLM: 'Must follow suit; if void of led suit, may play any card (including trump). Highest trump wins; else highest of led suit. Winner leads next trick.',
+    Player: 'Must follow suit; if void of led suit, may play any card (including trump). Highest trump wins; else highest of led suit. Winner leads next trick.',
     objective: 'The Re team (holders of Queens of Clubs) aims to score 121+ of 240 card points; Kontra aims to score 120+.',
     gameplay: 'Must follow suit; if void of led suit, may play any card (including trump). Highest trump wins; else highest of led suit. Winner leads next trick.',
     keyRules: [
@@ -52,10 +52,168 @@
       go_out: 'Doppelkopf is modeled as a Trick-taking flow; go out is not a core player action in its documented rules.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 12 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_12 before announce.',
-      'Scoring check: Game points awarded for winning, with multipliers for announcements. Expected outcome: Re team scores 121+; Kontra scores 120+ card points..',
+      'Setup example: 12 card(s) per player.',
+      'Rule example: The Re team (holders of Queens of Clubs) aims to score 121+ of 240 card points; Kontra aims to score 120+.',
+      'Turn-flow example: Must follow suit; if void of led suit, may play any card (including trump). Highest trump wins; else highest of led suit. Winner leads next trick.',
+      'Scoring example: Game points awarded for winning, with multipliers for announcements. Re team scores 121+; Kontra scores 120+ card points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'doppelkopf.rules.objective',
+        title: 'Objective',
+        text: 'The Re team (holders of Queens of Clubs) aims to score 121+ of 240 card points; Kontra aims to score 120+.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'doppelkopf.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Must follow suit; if void of led suit, may play any card (including trump). Highest trump wins; else highest of led suit. Winner leads next trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'doppelkopf.setup.players',
+        title: 'Players',
+        text: 'Doppelkopf is played by exactly four players in the standard game. Two form the Re team and two form Kontra; the partnership is not fixed at the start—it is determined secretly by who holds the Queens of Clubs. With five people present, the game can be played with the dealer sitting out each hand.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'doppelkopf.setup.deck',
+        title: 'Deck',
+        text: '48 cards: Double deck of 9-10-J-Q-K-A in 4 suits (9s to Aces); 8s and below discarded. Each rank appears TWICE.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'doppelkopf.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards. Score sheet or Ramsch log.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'doppelkopf.setup.dealing',
+        title: 'Deal',
+        text: '12 cards each. Entirely dealt.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'doppelkopf.score.win-condition',
+        title: 'Win condition',
+        text: 'Re team scores 121+; Kontra scores 120+ card points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'doppelkopf.score.description',
+        title: 'Scoring',
+        text: 'Game points awarded for winning, with multipliers for announcements.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'doppelkopf.rules.key.1',
+        title: 'Key rule 1',
+        text: 'All Queens and all Jacks and all Diamonds are trumpâ€”a very large trump suit.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'doppelkopf.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The partnership is NOT known at the startâ€”you discover it through play.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'doppelkopf.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Total card points = 240 (2 complete sets). Re needs 121 to win; Kontra needs 120.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'doppelkopf.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'doppelkopf.rules.objective',
+          'doppelkopf.rules.gameplay',
+        ],
+      },
+      {
+        id: 'doppelkopf.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'doppelkopf.setup.players',
+          'doppelkopf.setup.deck',
+          'doppelkopf.setup.equipment',
+          'doppelkopf.setup.dealing',
+        ],
+      },
+      {
+        id: 'doppelkopf.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'doppelkopf.rules.key.1',
+          'doppelkopf.rules.key.2',
+          'doppelkopf.rules.key.3',
+        ],
+      },
+      {
+        id: 'doppelkopf.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'doppelkopf.score.description',
+          'doppelkopf.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'doppelkopf.setup.dealing',
+        'doppelkopf.rules.objective',
+      ],
+      deal: [
+        'doppelkopf.rules.gameplay',
+      ],
+      declare: [
+        'doppelkopf.rules.gameplay',
+      ],
+      play_card: [
+        'doppelkopf.rules.gameplay',
+      ],
+      pass: [
+        'doppelkopf.rules.gameplay',
+      ],
+      deal_12: [
+        'doppelkopf.rules.gameplay',
+      ],
+      announce_re: [
+        'doppelkopf.rules.gameplay',
+      ],
+      announce_kontra: [
+        'doppelkopf.rules.gameplay',
+      ],
+      hochzeit: [
+        'doppelkopf.rules.gameplay',
+      ],
+    },
   },
 }

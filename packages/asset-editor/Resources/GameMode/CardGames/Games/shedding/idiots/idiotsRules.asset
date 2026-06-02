@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Idiots (Shithead/Palace). 2-6 players, 52-card deck (2 decks for 5+). Setup: 3 blind face-down, 3 table face-up, 3 hand. Swap: Players swap hand/table cards. Play: Must play equal/higher than discard top. Pick up pile if can't play. Magic: 2(reset) 7(reverse) 8(skip) 10(burn) 4-of-a-kind(burn). Win: First to shed all layers.",
-    Player: "Welcome to Idiots (Shithead/Palace). You have three layers: hand cards, face-up table cards, and face-down blind cards. Play cards higher than the discard top. Can't play Pick up the pile. Magic cards shake it up: 2s reset, 7s reverse the direction, 8s skip, 10s burn. Last person with cards is the Idiot!",
+    LLM: '1. Starting: Player with the lowest card (usually 3) begins.\n2. Play: You must play a card equal to or HIGHER than the top card of the discard pile.\n3. **Picking Up**: If you cannot play, you must pick up the ENTIRE discard pile into your hand.\n4. **Magic Cards**: - **2s**: Reset the pile (can be played on any card). - **7s**: Next player must play a card equal to or LOWER than 7. - **8s**: Skip the next player. - **10s**: Burn the pile (it is removed from the game, and you play again). - **Four-of-a-kind**: Playing 4 of the same rank also burns the pile.',
+    Player: '1. Starting: Player with the lowest card (usually 3) begins.\n2. Play: You must play a card equal to or HIGHER than the top card of the discard pile.\n3. **Picking Up**: If you cannot play, you must pick up the ENTIRE discard pile into your hand.\n4. **Magic Cards**: - **2s**: Reset the pile (can be played on any card). - **7s**: Next player must play a card equal to or LOWER than 7. - **8s**: Skip the next player. - **10s**: Burn the pile (it is removed from the game, and you play again). - **Four-of-a-kind**: Playing 4 of the same rank also burns the pile.',
     objective: 'Be the first to get rid of all cards (Hand -> Table -> Blind).',
     gameplay: '1. Starting: Player with the lowest card (usually 3) begins.\n2. Play: You must play a card equal to or HIGHER than the top card of the discard pile.\n3. **Picking Up**: If you cannot play, you must pick up the ENTIRE discard pile into your hand.\n4. **Magic Cards**: - **2s**: Reset the pile (can be played on any card). - **7s**: Next player must play a card equal to or LOWER than 7. - **8s**: Skip the next player. - **10s**: Burn the pile (it is removed from the game, and you play again). - **Four-of-a-kind**: Playing 4 of the same rank also burns the pile.',
     keyRules: [
@@ -52,10 +52,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before card_swap.',
-      'Scoring check: First player to shed all cards wins. Last player holding cards loses and is declared the Idiot/Shithead. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Be the first to get rid of all cards (Hand -> Table -> Blind).',
+      'Turn-flow example: 1. Starting: Player with the lowest card (usually 3) begins.\n2. Play: You must play a card equal to or HIGHER than the top card of the discard pile.\n3. **Picking Up**: If you cannot play, you must pick up the ENTIRE discard pile into your hand.\n4. **Magic Cards**: - **2s**: Reset the pile (can be played on any card). - **7s**: Next player must play a card equal to or LOWER than 7. - **8s**: Skip the next player. - **10s**: Burn the pile (it is removed from the game, and you play again). - **Four-of-a-kind**: Playing 4 of the same rank also burns the pile.',
+      'Scoring example: First player to shed all cards wins. Last player holding cards loses and is declared the Idiot/Shithead. First player to empty hand, table cards, and blind cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'idiots.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to get rid of all cards (Hand -> Table -> Blind).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'idiots.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Starting: Player with the lowest card (usually 3) begins.\n2. Play: You must play a card equal to or HIGHER than the top card of the discard pile.\n3. **Picking Up**: If you cannot play, you must pick up the ENTIRE discard pile into your hand.\n4. **Magic Cards**: - **2s**: Reset the pile (can be played on any card). - **7s**: Next player must play a card equal to or LOWER than 7. - **8s**: Skip the next player. - **10s**: Burn the pile (it is removed from the game, and you play again). - **Four-of-a-kind**: Playing 4 of the same rank also burns the pile.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'idiots.setup.players',
+        title: 'Players',
+        text: '2 to 6 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'idiots.setup.deck',
+        title: 'Deck',
+        text: 'One deck for up to 4 players, two decks for 5+.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'idiots.setup.equipment',
+        title: 'Equipment',
+        text: 'One deck for up to 4 players, two decks for 5+.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'idiots.setup.dealing',
+        title: 'Deal',
+        text: "1. Deal 3 cards face-down to each player (Blind cards).\n2. Deal 3 cards face-up on top of them (Table cards).\n3. Deal 3 cards to each player's hand.\n4. Players can swap hand cards with their face-up Table cards before play begins.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'idiots.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to empty hand, table cards, and blind cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'idiots.score.description',
+        title: 'Scoring',
+        text: 'First player to shed all cards wins. Last player holding cards loses and is declared the Idiot/Shithead.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'idiots.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Idiots.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'idiots.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: Scoring summary: First player to shed all cards wins.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'idiots.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Be the first to get rid of all cards (Hand -> Table -> Blind).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'idiots.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'idiots.rules.objective',
+          'idiots.rules.gameplay',
+        ],
+      },
+      {
+        id: 'idiots.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'idiots.setup.players',
+          'idiots.setup.deck',
+          'idiots.setup.equipment',
+          'idiots.setup.dealing',
+        ],
+      },
+      {
+        id: 'idiots.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'idiots.rules.key.1',
+          'idiots.rules.key.2',
+          'idiots.rules.key.3',
+        ],
+      },
+      {
+        id: 'idiots.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'idiots.score.description',
+          'idiots.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'idiots.setup.dealing',
+        'idiots.rules.objective',
+      ],
+      deal: [
+        'idiots.rules.gameplay',
+      ],
+      play_card: [
+        'idiots.rules.gameplay',
+      ],
+      draw: [
+        'idiots.rules.gameplay',
+      ],
+      pass: [
+        'idiots.rules.gameplay',
+      ],
+      swap_cards: [
+        'idiots.rules.gameplay',
+      ],
+      pick_up: [
+        'idiots.rules.gameplay',
+      ],
+      finish_game: [
+        'idiots.rules.gameplay',
+      ],
+    },
   },
 }

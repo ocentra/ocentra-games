@@ -10,7 +10,32 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Each deal: card points (A=11, 10=10, K=4, Q=3, J=2) in tricks determine game score. Rubber: start at 24, subtract; first side to reach 0 wins the rubber.',
+      winCondition: "Win the rubber by reducing your side's score from 24 to 0 before the opponents.",
+      targetScore: null,
+      scoringDirection: 'low_wins',
+      cardValues: {
+        '10': '10',
+        A: '11',
+        K: '4',
+        Q: '3',
+        J: '2',
+      },
+      nullReasons: {
+        targetScore: 'Rubber is won by first side to reach 0 from 24; target is zero not a positive number.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

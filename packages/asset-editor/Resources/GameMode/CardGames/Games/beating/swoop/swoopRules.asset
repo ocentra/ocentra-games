@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Swoop. Logic: See rules.objective and rules.gameplay.',
-    Player: "Swoop is a multi-deck shedding game (3-5 decks) similar to Crazy Eights or Palace, played by 3-8 players. It features 'Mystery Cards' (face-down) and 'Swoop Cards' (Tens/Jokers) that clear the pile. The goal is to get rid of all cards in your hand, then your face-up pile, then your mystery pile.",
+    LLM: 'Players take turns adding one to four cards of the same rank to the centre play pile. Cards played must be equal to or lower than the top card; if higher, the player must pick up the whole pile first then play. A 10 or Joker clears the pile (swoop) and the player gets an extra turn. Four of a kind on top also clears the pile (swoop) and grants an extra turn. Mystery cards are played only as the first card of a turn; the player flips one face up and must play it immediately. First to empty hand, then face-up cards, then mystery cards wins the deal.',
+    Player: 'Players take turns adding one to four cards of the same rank to the centre play pile. Cards played must be equal to or lower than the top card; if higher, the player must pick up the whole pile first then play. A 10 or Joker clears the pile (swoop) and the player gets an extra turn. Four of a kind on top also clears the pile (swoop) and grants an extra turn. Mystery cards are played only as the first card of a turn; the player flips one face up and must play it immediately. First to empty hand, then face-up cards, then mystery cards wins the deal.',
     objective: 'Be the first to get rid of all your cards: first your hand, then your four face-up table cards, then your four face-down mystery cards. Each deal has one winner; the overall game is won by the player with the lowest cumulative score when someone reaches 500 points.',
     gameplay: 'Players take turns adding one to four cards of the same rank to the centre play pile. Cards played must be equal to or lower than the top card; if higher, the player must pick up the whole pile first then play. A 10 or Joker clears the pile (swoop) and the player gets an extra turn. Four of a kind on top also clears the pile (swoop) and grants an extra turn. Mystery cards are played only as the first card of a turn; the player flips one face up and must play it immediately. First to empty hand, then face-up cards, then mystery cards wins the deal.',
     keyRules: [
@@ -54,10 +54,168 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 11 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card, pickup_pile before round end.',
-      'Scoring check: When one player runs out of cards, others total points in hand (A=1, 2-9 face value, J/Q/K=10, 10/Joker=50). Cumulative; game ends when any player reaches 500+. Lowest score wins. Expected outcome: 500.',
+      'Setup example: 11 card(s) per player.',
+      'Rule example: Be the first to get rid of all your cards: first your hand, then your four face-up table cards, then your four face-down mystery cards. Each deal has one winner; the overall game is won by the player with the lowest cumulative score when someone reaches 500 points.',
+      'Turn-flow example: Players take turns adding one to four cards of the same rank to the centre play pile. Cards played must be equal to or lower than the top card; if higher, the player must pick up the whole pile first then play. A 10 or Joker clears the pile (swoop) and the player gets an extra turn. Four of a kind on top also clears the pile (swoop) and grants an extra turn. Mystery cards are played only as the first card of a turn; the player flips one face up and must play it immediately. First to empty hand, then face-up cards, then mystery cards wins the deal.',
+      'Scoring example: When one player runs out of cards, others total points in hand (A=1, 2-9 face value, J/Q/K=10, 10/Joker=50). Cumulative; game ends when any player reaches 500+. Lowest score wins. Empty Hand, then Face-Up, then Mystery. First to do so wins the deal; game winner is lowest cumulative score when someone reaches 500+..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'swoop.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to get rid of all your cards: first your hand, then your four face-up table cards, then your four face-down mystery cards. Each deal has one winner; the overall game is won by the player with the lowest cumulative score when someone reaches 500 points.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'swoop.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players take turns adding one to four cards of the same rank to the centre play pile. Cards played must be equal to or lower than the top card; if higher, the player must pick up the whole pile first then play. A 10 or Joker clears the pile (swoop) and the player gets an extra turn. Four of a kind on top also clears the pile (swoop) and grants an extra turn. Mystery cards are played only as the first card of a turn; the player flips one face up and must play it immediately. First to empty hand, then face-up cards, then mystery cards wins the deal.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'swoop.setup.players',
+        title: 'Players',
+        text: 'Three to eight players. Three or four use two decks (108 cards), five or six use three decks (162 cards), seven or eight use four decks (216 cards). Direction of play is clockwise.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'swoop.setup.deck',
+        title: 'Deck',
+        text: 'Multiple standard decks.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'swoop.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard cards; table.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'swoop.setup.dealing',
+        title: 'Deal',
+        text: '19 cards per player. Each player places 4 cards face down (mystery), then 4 face up on top of those, and keeps the remaining 11 in hand. Undealt cards are set aside. First player may be chosen by drawing high card from the leftover pile; in subsequent deals the turn to start passes clockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'swoop.score.win-condition',
+        title: 'Win condition',
+        text: 'Empty Hand, then Face-Up, then Mystery. First to do so wins the deal; game winner is lowest cumulative score when someone reaches 500+.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'swoop.score.description',
+        title: 'Scoring',
+        text: 'When one player runs out of cards, others total points in hand (A=1, 2-9 face value, J/Q/K=10, 10/Joker=50). Cumulative; game ends when any player reaches 500+. Lowest score wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'swoop.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Play 1-4 cards of same rank; equal or lower than top goes on pile; higher means pick up pile then play.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'swoop.rules.key.2',
+        title: 'Key rule 2',
+        text: '10 or Joker clears the play pile (swoop) and gives an extra turn.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'swoop.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Four cards of same rank on top of pile clears it (swoop) and gives an extra turn.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'swoop.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Cannot create more than four equal cards on top; play one for swoop then continue with the rest.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'swoop.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Mystery card only as first card of a turn; flip and play it immediately.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'swoop.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'swoop.rules.objective',
+          'swoop.rules.gameplay',
+        ],
+      },
+      {
+        id: 'swoop.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'swoop.setup.players',
+          'swoop.setup.deck',
+          'swoop.setup.equipment',
+          'swoop.setup.dealing',
+        ],
+      },
+      {
+        id: 'swoop.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'swoop.rules.key.1',
+          'swoop.rules.key.2',
+          'swoop.rules.key.3',
+          'swoop.rules.key.4',
+          'swoop.rules.key.5',
+        ],
+      },
+      {
+        id: 'swoop.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'swoop.score.description',
+          'swoop.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'swoop.setup.dealing',
+        'swoop.rules.objective',
+      ],
+      play_card: [
+        'swoop.rules.gameplay',
+      ],
+      pickup_pile: [
+        'swoop.rules.gameplay',
+      ],
+    },
   },
 }

@@ -52,10 +52,150 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 10 card(s) per player, 40 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_10_each before play.',
-      'Scoring check: Point cards in won tricks; 19 points total per deal. Figure V-IX 0.5 each; Figure X and Matte XI-XV, Brescia 1 each. Expected outcome: NA.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Score 10+ of 19 points in tricks. Point values: Figure Vâ€“IX = 0.5 each; Figure X and Matte XIâ€“XV, Brescia = 1 each. Tie = recount (82 pts, 42+ wins).',
+      'Turn-flow example: No trumps. Follow suit; highest of led suit wins (tie = first played). Winner leads. Count point cards in won tricks.',
+      'Scoring example: Point cards in won tricks; 19 points total per deal. Figure V-IX 0.5 each; Figure X and Matte XI-XV, Brescia 1 each. Partnership with 10 or more of 19 points wins the hand. Tie at 9.5 each broken by recount (82-point scale; 42 or more wins; 41-41 is no winner)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'cucco.rules.objective',
+        title: 'Objective',
+        text: 'Score 10+ of 19 points in tricks. Point values: Figure Vâ€“IX = 0.5 each; Figure X and Matte XIâ€“XV, Brescia = 1 each. Tie = recount (82 pts, 42+ wins).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'cucco.rules.gameplay',
+        title: 'Turn flow',
+        text: 'No trumps. Follow suit; highest of led suit wins (tie = first played). Winner leads. Count point cards in won tricks.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'cucco.setup.players',
+        title: 'Players',
+        text: '4 in two partnerships. Partners opposite.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'cucco.setup.deck',
+        title: 'Deck',
+        text: '40 cards: Figure (Iâ€“X, two each) and Matte (Fool, Mascherone, Secchia, Nulla, XIâ€“XV, Brescia).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'cucco.setup.equipment',
+        title: 'Equipment',
+        text: 'Special 40-card CÃ¶ch/Cucco deck; score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'cucco.setup.dealing',
+        title: 'Deal',
+        text: "10 cards each in packets of 5, anticlockwise. Dealer's right leads.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'cucco.score.win-condition',
+        title: 'Win condition',
+        text: 'Partnership with 10 or more of 19 points wins the hand. Tie at 9.5 each broken by recount (82-point scale; 42 or more wins; 41-41 is no winner).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'cucco.score.description',
+        title: 'Scoring',
+        text: 'Point cards in won tricks; 19 points total per deal. Figure V-IX 0.5 each; Figure X and Matte XI-XV, Brescia 1 each.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'cucco.rules.key.1',
+        title: 'Key rule 1',
+        text: '4p partnerships; 40-card deck (Figure + Matte)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'cucco.rules.key.2',
+        title: 'Key rule 2',
+        text: 'No trumps; follow suit; highest wins',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'cucco.rules.key.3',
+        title: 'Key rule 3',
+        text: '10+ of 19 to win',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'cucco.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'cucco.rules.objective',
+          'cucco.rules.gameplay',
+        ],
+      },
+      {
+        id: 'cucco.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'cucco.setup.players',
+          'cucco.setup.deck',
+          'cucco.setup.equipment',
+          'cucco.setup.dealing',
+        ],
+      },
+      {
+        id: 'cucco.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'cucco.rules.key.1',
+          'cucco.rules.key.2',
+          'cucco.rules.key.3',
+        ],
+      },
+      {
+        id: 'cucco.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'cucco.score.description',
+          'cucco.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'cucco.setup.dealing',
+        'cucco.rules.objective',
+      ],
+      play_card: [
+        'cucco.rules.gameplay',
+      ],
+      deal_10_each: [
+        'cucco.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tunkhannock 14-point Pitch. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Tunkhannock 14-point Pitch: Pitch to 14 points. Bid for trump; high low jack.',
+    LLM: 'Six cards each, dealt in two rounds of three. One round of bidding (min 3, max smudge 15); dealer may steal with equal bid and must bid 3 if all pass. After bidding, each player discards three and is replenished to six from the stock. Pitcher leads to first trick (trump need not be led). Follow suit or trump; you may trump even when holding the led suit; may only play off-suit when unable to follow. Six tricks. Points awarded to the player winning each point card in a trick; game point to most card points in tricks. First to 14 wins.',
+    Player: 'Six cards each, dealt in two rounds of three. One round of bidding (min 3, max smudge 15); dealer may steal with equal bid and must bid 3 if all pass. After bidding, each player discards three and is replenished to six from the stock. Pitcher leads to first trick (trump need not be led). Follow suit or trump; you may trump even when holding the led suit; may only play off-suit when unable to follow. Six tricks. Points awarded to the player winning each point card in a trick; game point to most card points in tricks. First to 14 wins.',
     objective: 'Be the first to reach 14 points. Points are scored for high (highest trump in play), low (lowest trump in play), jack (jack of trumps), off-jack, high joker, low joker, game (most card points in tricks), last trick, high spade (1 each), and five of trumps (5 points). Bid to become pitcher and name trump; make your bid or be set back.',
     gameplay: 'Six cards each, dealt in two rounds of three. One round of bidding (min 3, max smudge 15); dealer may steal with equal bid and must bid 3 if all pass. After bidding, each player discards three and is replenished to six from the stock. Pitcher leads to first trick (trump need not be led). Follow suit or trump; you may trump even when holding the led suit; may only play off-suit when unable to follow. Six tricks. Points awarded to the player winning each point card in a trick; game point to most card points in tricks. First to 14 wins.',
     keyRules: [
@@ -54,10 +54,171 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in bid; each_player_clockwise may use bid, pass before play.',
-      'Scoring check: 14 to win Expected outcome: 14.',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Be the first to reach 14 points. Points are scored for high (highest trump in play), low (lowest trump in play), jack (jack of trumps), off-jack, high joker, low joker, game (most card points in tricks), last trick, high spade (1 each), and five of trumps (5 points). Bid to become pitcher and name trump; make your bid or be set back.',
+      'Turn-flow example: Six cards each, dealt in two rounds of three. One round of bidding (min 3, max smudge 15); dealer may steal with equal bid and must bid 3 if all pass. After bidding, each player discards three and is replenished to six from the stock. Pitcher leads to first trick (trump need not be led). Follow suit or trump; you may trump even when holding the led suit; may only play off-suit when unable to follow. Six tricks. Points awarded to the player winning each point card in a trick; game point to most card points in tricks. First to 14 wins.',
+      'Scoring example: 14 to win First to 14 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pitch-tunkhannock.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to reach 14 points. Points are scored for high (highest trump in play), low (lowest trump in play), jack (jack of trumps), off-jack, high joker, low joker, game (most card points in tricks), last trick, high spade (1 each), and five of trumps (5 points). Bid to become pitcher and name trump; make your bid or be set back.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pitch-tunkhannock.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Six cards each, dealt in two rounds of three. One round of bidding (min 3, max smudge 15); dealer may steal with equal bid and must bid 3 if all pass. After bidding, each player discards three and is replenished to six from the stock. Pitcher leads to first trick (trump need not be led). Follow suit or trump; you may trump even when holding the led suit; may only play off-suit when unable to follow. Six tricks. Points awarded to the player winning each point card in a trick; game point to most card points in tricks. First to 14 wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pitch-tunkhannock.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pitch-tunkhannock.setup.deck',
+        title: 'Deck',
+        text: 'Standard 54-card deck (52 + 2 jokers).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pitch-tunkhannock.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pitch-tunkhannock.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives six cards, dealt three at a time (two rounds of three). After the bidding round, each player discards three cards face down and the dealer replenishes their hand to six cards from the undealt stock. Deal rotates clockwise after each hand.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pitch-tunkhannock.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 14 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pitch-tunkhannock.score.description',
+        title: 'Scoring',
+        text: '14 to win',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pitch-tunkhannock.rules.key.1',
+        title: 'Key rule 1',
+        text: '14 point game',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pitch-tunkhannock.rules.key.2',
+        title: 'Key rule 2',
+        text: '54 cards with two jokers',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pitch-tunkhannock.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Off-jack and jokers rank as trumps below jack',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pitch-tunkhannock.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Bid 3 to 15 (smudge); dealer can steal',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'pitch-tunkhannock.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Discard 3 and replenish after bidding',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pitch-tunkhannock.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pitch-tunkhannock.rules.objective',
+          'pitch-tunkhannock.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pitch-tunkhannock.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pitch-tunkhannock.setup.players',
+          'pitch-tunkhannock.setup.deck',
+          'pitch-tunkhannock.setup.equipment',
+          'pitch-tunkhannock.setup.dealing',
+        ],
+      },
+      {
+        id: 'pitch-tunkhannock.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pitch-tunkhannock.rules.key.1',
+          'pitch-tunkhannock.rules.key.2',
+          'pitch-tunkhannock.rules.key.3',
+          'pitch-tunkhannock.rules.key.4',
+          'pitch-tunkhannock.rules.key.5',
+        ],
+      },
+      {
+        id: 'pitch-tunkhannock.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pitch-tunkhannock.score.description',
+          'pitch-tunkhannock.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pitch-tunkhannock.setup.dealing',
+        'pitch-tunkhannock.rules.objective',
+      ],
+      play_card: [
+        'pitch-tunkhannock.rules.gameplay',
+      ],
+      pass: [
+        'pitch-tunkhannock.rules.gameplay',
+      ],
+      bid: [
+        'pitch-tunkhannock.rules.gameplay',
+      ],
+    },
   },
 }

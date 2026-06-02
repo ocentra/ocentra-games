@@ -10,7 +10,26 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Cumulative score to 500. Points come from card values in tricks (J=20, 9=14 in trumps), melds, and the last trick bonus.',
+      winCondition: 'The first team to reach or exceed 500 points wins.',
+      targetScore: 500,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        cardValues: 'Trick point values are defined in engine trumpConfig and hand ranking; scoring uses cumulative trick and meld totals.',
+      },
+      splitRules: 'If the trump-making side fails to score more than the opponents (including melds), all their points for that round are forfeited.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

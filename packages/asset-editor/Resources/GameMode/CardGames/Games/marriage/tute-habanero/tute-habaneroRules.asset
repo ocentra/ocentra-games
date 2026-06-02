@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tute habanero. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Tute habanero: Tute variant. 40-card Spanish.',
+    LLM: 'Same as Tute corriente except eight cards each instead of six. Non-dealer leads. Until stock exhausted: no follow suit or trump required; second player may play any card. Winner of trick draws from stock first, then opponent; face-up trump is last card drawn. After stock empty: must follow suit and beat if possible, trump if cannot follow. After winning a trick, may sing one 40 or 20; tute wins the game. When stock is exhausted, either player may announce capote and must then take all eight remaining tricks to win. Trump 7 or 2 may be exchanged for turned card. Wrong claim of 101+ loses.',
+    Player: 'Same as Tute corriente except eight cards each instead of six. Non-dealer leads. Until stock exhausted: no follow suit or trump required; second player may play any card. Winner of trick draws from stock first, then opponent; face-up trump is last card drawn. After stock empty: must follow suit and beat if possible, trump if cannot follow. After winning a trick, may sing one 40 or 20; tute wins the game. When stock is exhausted, either player may announce capote and must then take all eight remaining tricks to win. Trump 7 or 2 may be exchanged for turned card. Wrong claim of 101+ loses.',
     objective: 'Be first to reach 101 or more points from tricks, singing (20/40), and last trick (10); or declare tute (four kings or four horses) after winning a trick to win immediately; or announce capote when stock is exhausted and take all eight remaining tricks to win (lose one trick and opponent wins).',
     gameplay: 'Same as Tute corriente except eight cards each instead of six. Non-dealer leads. Until stock exhausted: no follow suit or trump required; second player may play any card. Winner of trick draws from stock first, then opponent; face-up trump is last card drawn. After stock empty: must follow suit and beat if possible, trump if cannot follow. After winning a trick, may sing one 40 or 20; tute wins the game. When stock is exhausted, either player may announce capote and must then take all eight remaining tricks to win. Trump 7 or 2 may be exchanged for turned card. Wrong claim of 101+ loses.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 8 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Variant Expected outcome: First to 101+ points, or declare tute (four kings or four horses), or succeed at capote (take all eight tricks after stock exhausted); wrong 101 claim loses..',
+      'Setup example: 8 card(s) per player.',
+      'Rule example: Be first to reach 101 or more points from tricks, singing (20/40), and last trick (10); or declare tute (four kings or four horses) after winning a trick to win immediately; or announce capote when stock is exhausted and take all eight remaining tricks to win (lose one trick and opponent wins).',
+      'Turn-flow example: Same as Tute corriente except eight cards each instead of six. Non-dealer leads. Until stock exhausted: no follow suit or trump required; second player may play any card. Winner of trick draws from stock first, then opponent; face-up trump is last card drawn. After stock empty: must follow suit and beat if possible, trump if cannot follow. After winning a trick, may sing one 40 or 20; tute wins the game. When stock is exhausted, either player may announce capote and must then take all eight remaining tricks to win. Trump 7 or 2 may be exchanged for turned card. Wrong claim of 101+ loses.',
+      'Scoring example: Variant First to 101+ points, or declare tute (four kings or four horses), or succeed at capote (take all eight tricks after stock exhausted); wrong 101 claim loses..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tute-habanero.rules.objective',
+        title: 'Objective',
+        text: 'Be first to reach 101 or more points from tricks, singing (20/40), and last trick (10); or declare tute (four kings or four horses) after winning a trick to win immediately; or announce capote when stock is exhausted and take all eight remaining tricks to win (lose one trick and opponent wins).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tute-habanero.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Same as Tute corriente except eight cards each instead of six. Non-dealer leads. Until stock exhausted: no follow suit or trump required; second player may play any card. Winner of trick draws from stock first, then opponent; face-up trump is last card drawn. After stock empty: must follow suit and beat if possible, trump if cannot follow. After winning a trick, may sing one 40 or 20; tute wins the game. When stock is exhausted, either player may announce capote and must then take all eight remaining tricks to win. Trump 7 or 2 may be exchanged for turned card. Wrong claim of 101+ loses.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tute-habanero.setup.players',
+        title: 'Players',
+        text: 'Two players only; no partnerships. Each plays for themselves. Head-to-head variant of Tute (same as Tute corriente) with eight cards each, a face-up trump card, and a face-down stock. Non-dealer leads first; after each trick both players draw from the stock until it is exhausted, then follow suit and beat or trump.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tute-habanero.setup.deck',
+        title: 'Deck',
+        text: '40-card Spanish pack.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tute-habanero.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tute-habanero.setup.dealing',
+        title: 'Deal',
+        text: 'Eight cards each, one at a time; next card turned face up for trump; remainder forms stock face down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tute-habanero.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 101+ points, or declare tute (four kings or four horses), or succeed at capote (take all eight tricks after stock exhausted); wrong 101 claim loses.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tute-habanero.score.description',
+        title: 'Scoring',
+        text: 'Variant',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tute-habanero.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Habanero',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tute-habanero.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Eight cards each',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tute-habanero.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Capote: announce when stock empty to take all eight tricks',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tute-habanero.rules.key.4',
+        title: 'Key rule 4',
+        text: '101+ or tute to win',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tute-habanero.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tute-habanero.rules.objective',
+          'tute-habanero.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tute-habanero.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tute-habanero.setup.players',
+          'tute-habanero.setup.deck',
+          'tute-habanero.setup.equipment',
+          'tute-habanero.setup.dealing',
+        ],
+      },
+      {
+        id: 'tute-habanero.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tute-habanero.rules.key.1',
+          'tute-habanero.rules.key.2',
+          'tute-habanero.rules.key.3',
+          'tute-habanero.rules.key.4',
+        ],
+      },
+      {
+        id: 'tute-habanero.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tute-habanero.score.description',
+          'tute-habanero.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tute-habanero.setup.dealing',
+        'tute-habanero.rules.objective',
+      ],
+      play_card: [
+        'tute-habanero.rules.gameplay',
+      ],
+    },
   },
 }

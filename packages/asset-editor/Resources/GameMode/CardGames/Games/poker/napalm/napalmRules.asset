@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Napalm. Logic: See rules.objective and rules.gameplay.',
-    Player: "Napalm (Whipsaw/3-5-7) is a multi-stage poker variant emphasizing bluffing. 4-7 players. 52-card deck. Three stages: Stage 1 (2 cards, best high), Stage 2 (+3 community, best LOW 5-card), Stage 3 (+2 more, best HIGH 5-card). Each stage: declare 'yes/no' if you think you have best hand. Single yes=token. Multiple yes=side bets. First to collect 5 tokens wins the pot.",
+    LLM: 'Ante. Stage 1: 2 cards, declare yes/no (best high 2-card). Stage 2: 3 community cards, yes/no (best LOW 5-card). Stage 3: 2 more hole cards, yes/no (best HIGH 5-card of 7). Single yes=1 token. Multiple yes=show hands, loser pays pot-sized side bet to winner.',
+    Player: 'Ante. Stage 1: 2 cards, declare yes/no (best high 2-card). Stage 2: 3 community cards, yes/no (best LOW 5-card). Stage 3: 2 more hole cards, yes/no (best HIGH 5-card of 7). Single yes=1 token. Multiple yes=show hands, loser pays pot-sized side bet to winner.',
     objective: 'Be the first to collect five tokens to win the pot; players also compete in side bets matching the pot amount each time multiple players declare yes.',
     gameplay: 'Ante. Stage 1: 2 cards, declare yes/no (best high 2-card). Stage 2: 3 community cards, yes/no (best LOW 5-card). Stage 3: 2 more hole cards, yes/no (best HIGH 5-card of 7). Single yes=1 token. Multiple yes=show hands, loser pays pot-sized side bet to winner.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-7 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Tokens: first to 5 wins pot. Side bets equal pot size. Expected outcome: Collect 5 tokens to win the pot..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first to collect five tokens to win the pot; players also compete in side bets matching the pot amount each time multiple players declare yes.',
+      'Turn-flow example: Ante. Stage 1: 2 cards, declare yes/no (best high 2-card). Stage 2: 3 community cards, yes/no (best LOW 5-card). Stage 3: 2 more hole cards, yes/no (best HIGH 5-card of 7). Single yes=1 token. Multiple yes=show hands, loser pays pot-sized side bet to winner.',
+      'Scoring example: Tokens: first to 5 wins pot. Side bets equal pot size. Collect 5 tokens to win the pot..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'napalm.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to collect five tokens to win the pot; players also compete in side bets matching the pot amount each time multiple players declare yes.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'napalm.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Ante. Stage 1: 2 cards, declare yes/no (best high 2-card). Stage 2: 3 community cards, yes/no (best LOW 5-card). Stage 3: 2 more hole cards, yes/no (best HIGH 5-card of 7). Single yes=1 token. Multiple yes=show hands, loser pays pot-sized side bet to winner.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'napalm.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'napalm.setup.deck',
+        title: 'Deck',
+        text: '52 cards. Aces high. Tokens (non-monetary) + chips for side bets.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'napalm.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, tokens, chips',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'napalm.setup.dealing',
+        title: 'Deal',
+        text: 'Staged dealing: 2+3+2 cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'napalm.score.win-condition',
+        title: 'Win condition',
+        text: 'Collect 5 tokens to win the pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'napalm.score.description',
+        title: 'Scoring',
+        text: 'Tokens: first to 5 wins pot. Side bets equal pot size.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'napalm.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Three-stage game (2-card/5-low/7-high)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'napalm.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Yes/No declaration each stage',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'napalm.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Token collection for pot',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'napalm.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Side bets = pot size',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'napalm.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Rapid money movement',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'napalm.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'napalm.rules.objective',
+          'napalm.rules.gameplay',
+        ],
+      },
+      {
+        id: 'napalm.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'napalm.setup.players',
+          'napalm.setup.deck',
+          'napalm.setup.equipment',
+          'napalm.setup.dealing',
+        ],
+      },
+      {
+        id: 'napalm.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'napalm.rules.key.1',
+          'napalm.rules.key.2',
+          'napalm.rules.key.3',
+          'napalm.rules.key.4',
+          'napalm.rules.key.5',
+        ],
+      },
+      {
+        id: 'napalm.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'napalm.score.description',
+          'napalm.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'napalm.setup.dealing',
+        'napalm.rules.objective',
+      ],
+      play_card: [
+        'napalm.rules.gameplay',
+      ],
+    },
   },
 }

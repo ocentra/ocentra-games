@@ -52,10 +52,156 @@
       go_out: 'Dubbelkingen is modeled as a Trick-taking flow; go out is not a core player action in its documented rules.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before main_play.',
-      'Scoring check: Scoring uses the documented rules for Dubbelkingen and determines round or match winners accordingly. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Finish the 20nddeal series with the highest positive score. Negative points from early rounds are offset by positive points from later rounds.',
+      "Turn-flow example: Each of the 4 players must eventually play 5 'contracts' (3 negative, 2 positive):\n1. Negative Deals (No Trumps): Avoid taking any tricks, or specific cards like Hearts, Queens, or the King of Hearts.\n2. Positive Deals (Trumps): The dealer chooses the trump suit and tries to win as many tricks as possible.\n3. Turn Order: Standard Whist-style play. You must follow suit if possible.",
+      'Scoring example: Scoring uses the documented rules for Dubbelkingen and determines round or match winners accordingly. Finish the 20nddeal series with the highest positive score. Negative points from early rounds are offset by positive points from later rounds..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'dubbelkingen.rules.objective',
+        title: 'Objective',
+        text: 'Finish the 20nddeal series with the highest positive score. Negative points from early rounds are offset by positive points from later rounds.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'dubbelkingen.rules.gameplay',
+        title: 'Turn flow',
+        text: "Each of the 4 players must eventually play 5 'contracts' (3 negative, 2 positive):\n1. Negative Deals (No Trumps): Avoid taking any tricks, or specific cards like Hearts, Queens, or the King of Hearts.\n2. Positive Deals (Trumps): The dealer chooses the trump suit and tries to win as many tricks as possible.\n3. Turn Order: Standard Whist-style play. You must follow suit if possible.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'dubbelkingen.setup.players',
+        title: 'Players',
+        text: '4 players (Solo play).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'dubbelkingen.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52ndcard pack. Aces High.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'dubbelkingen.setup.equipment',
+        title: 'Equipment',
+        text: '52ndcard deck, complex score sheet for 20 deals.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'dubbelkingen.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 13 cards. Dealing is usually done in batches (4-4nd5).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'dubbelkingen.score.win-condition',
+        title: 'Win condition',
+        text: 'Finish the 20nddeal series with the highest positive score. Negative points from early rounds are offset by positive points from later rounds.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'dubbelkingen.score.description',
+        title: 'Scoring',
+        text: 'Scoring uses the documented rules for Dubbelkingen and determines round or match winners accordingly.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'dubbelkingen.rules.key.1',
+        title: 'Key rule 1',
+        text: "The Lead: In 'No Hearts' rounds, you cannot lead a Heart until it has been 'broken' (discarded on another suit).",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'dubbelkingen.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Double Penalty: If a player takes all penalty cards in a round, the penalty often doubles for that player.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'dubbelkingen.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Choice: The current dealer chooses which of their 5 contracts to play after looking at their hand.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'dubbelkingen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'dubbelkingen.rules.objective',
+          'dubbelkingen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'dubbelkingen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'dubbelkingen.setup.players',
+          'dubbelkingen.setup.deck',
+          'dubbelkingen.setup.equipment',
+          'dubbelkingen.setup.dealing',
+        ],
+      },
+      {
+        id: 'dubbelkingen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'dubbelkingen.rules.key.1',
+          'dubbelkingen.rules.key.2',
+          'dubbelkingen.rules.key.3',
+        ],
+      },
+      {
+        id: 'dubbelkingen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'dubbelkingen.score.description',
+          'dubbelkingen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'dubbelkingen.setup.dealing',
+        'dubbelkingen.rules.objective',
+      ],
+      deal: [
+        'dubbelkingen.rules.gameplay',
+      ],
+      declare: [
+        'dubbelkingen.rules.gameplay',
+      ],
+      play_card: [
+        'dubbelkingen.rules.gameplay',
+      ],
+      bid: [
+        'dubbelkingen.rules.gameplay',
+      ],
+    },
   },
 }

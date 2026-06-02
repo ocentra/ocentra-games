@@ -11,7 +11,7 @@
   },
   data: {
     LLM: '1. **Ante**: All players post the ante. 2. **Market Setup**: Dealer turns up two cards and places them beside the deck. 3. **Buy Phase**: Starting left of dealer, each player buys one card from the market (face-up) or stock (top card, revealed on purchase). 4. **Refill**: Purchased market cards are replaced immediately from the stock. 5. **Bet Phase**: After each buy round, a standard betting round. 6. **Repetition**: Buy/bet sequence repeats 5 times until each player has 5 cards. 7. **Declaration**: Active players secret-declare High, Low, or Both using chips in hand. 8. **Showdown**: Cards revealed; pot split per declarations.',
-    Player: 'Welcome to Abyssinia. Step up to the market where victory is bought, not dealt. You start with an empty hand and a table full of opportunities. Each round, you must buy one card from the face-up market or take a chance on the stock. Watch your budget—high ranks like Aces cost more than commoners. After five rounds of buying and betting, declare your hand: go for High, Low, or both. But beware the Pig Rule—declare Both and fail, and you leave the table empty-handed.',
+    Player: '1. **Ante**: All players post the ante. 2. **Market Setup**: Dealer turns up two cards and places them beside the deck. 3. **Buy Phase**: Starting left of dealer, each player buys one card from the market (face-up) or stock (top card, revealed on purchase). 4. **Refill**: Purchased market cards are replaced immediately from the stock. 5. **Bet Phase**: After each buy round, a standard betting round. 6. **Repetition**: Buy/bet sequence repeats 5 times until each player has 5 cards. 7. **Declaration**: Active players secret-declare High, Low, or Both using chips in hand. 8. **Showdown**: Cards revealed; pot split per declarations.',
     objective: 'Win the pot by having the highest or lowest hand (or both) at the showdown.',
     gameplay: '1. **Ante**: All players post the ante. 2. **Market Setup**: Dealer turns up two cards and places them beside the deck. 3. **Buy Phase**: Starting left of dealer, each player buys one card from the market (face-up) or stock (top card, revealed on purchase). 4. **Refill**: Purchased market cards are replaced immediately from the stock. 5. **Bet Phase**: After each buy round, a standard betting round. 6. **Repetition**: Buy/bet sequence repeats 5 times until each player has 5 cards. 7. **Declaration**: Active players secret-declare High, Low, or Both using chips in hand. 8. **Showdown**: Cards revealed; pot split per declarations.',
     keyRules: [
@@ -54,10 +54,198 @@
       go_out: 'Abyssinia ends at showdown when all hands are revealed; there is no go-out-to-win mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-7 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; each_player_clockwise may use ante before market_setup.',
-      'Scoring check: High-Low Split pot. 50% to the best poker hand, 50% to the best low hand (8-or-better qualifier). Expected outcome: Highest poker rank wins the high half of the pot; lowest qualifying hand (8-high or better) wins the low half..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win the pot by having the highest or lowest hand (or both) at the showdown.',
+      'Turn-flow example: 1. **Ante**: All players post the ante. 2. **Market Setup**: Dealer turns up two cards and places them beside the deck. 3. **Buy Phase**: Starting left of dealer, each player buys one card from the market (face-up) or stock (top card, revealed on purchase). 4. **Refill**: Purchased market cards are replaced immediately from the stock. 5. **Bet Phase**: After each buy round, a standard betting round. 6. **Repetition**: Buy/bet sequence repeats 5 times until each player has 5 cards. 7. **Declaration**: Active players secret-declare High, Low, or Both using chips in hand. 8. **Showdown**: Cards revealed; pot split per declarations.',
+      'Scoring example: High-Low Split pot. 50% to the best poker hand, 50% to the best low hand (8-or-better qualifier). Highest poker rank wins the high half of the pot; lowest qualifying hand (8-high or better) wins the low half..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'abyssinia-poker.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the highest or lowest hand (or both) at the showdown.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'abyssinia-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Ante**: All players post the ante. 2. **Market Setup**: Dealer turns up two cards and places them beside the deck. 3. **Buy Phase**: Starting left of dealer, each player buys one card from the market (face-up) or stock (top card, revealed on purchase). 4. **Refill**: Purchased market cards are replaced immediately from the stock. 5. **Bet Phase**: After each buy round, a standard betting round. 6. **Repetition**: Buy/bet sequence repeats 5 times until each player has 5 cards. 7. **Declaration**: Active players secret-declare High, Low, or Both using chips in hand. 8. **Showdown**: Cards revealed; pot split per declarations.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'abyssinia-poker.setup.players',
+        title: 'Players',
+        text: '3-7 players (Optimal with 5).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'abyssinia-poker.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. No jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'abyssinia-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, poker chips, and a dealer button.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'abyssinia-poker.setup.dealing',
+        title: 'Deal',
+        text: '1. All players ante. 2. Dealer turns up two cards and places them beside the face-down deck (the Market). 3. No initial cards to players; each builds a 5-card hand over 5 buy rounds.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'abyssinia-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest poker rank wins the high half of the pot; lowest qualifying hand (8-high or better) wins the low half.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'abyssinia-poker.score.description',
+        title: 'Scoring',
+        text: 'High-Low Split pot. 50% to the best poker hand, 50% to the best low hand (8-or-better qualifier).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'abyssinia-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Market cards cost based on rank: 2-5 (2u), 6-K (1u), Ace (4u).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'abyssinia-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Cards bought from the stock are revealed to the table immediately.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'abyssinia-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Market purchases remain face-up if taken from the market row.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'abyssinia-poker.rules.key.4',
+        title: 'Key rule 4',
+        text: "Pig Rule: If declaring 'Both', you must win both High and Low halves solo or win nothing.",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'abyssinia-poker.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Each player must buy exactly one card per buy phase (mandatory).',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'abyssinia-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'abyssinia-poker.rules.objective',
+          'abyssinia-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'abyssinia-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'abyssinia-poker.setup.players',
+          'abyssinia-poker.setup.deck',
+          'abyssinia-poker.setup.equipment',
+          'abyssinia-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'abyssinia-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'abyssinia-poker.rules.key.1',
+          'abyssinia-poker.rules.key.2',
+          'abyssinia-poker.rules.key.3',
+          'abyssinia-poker.rules.key.4',
+          'abyssinia-poker.rules.key.5',
+        ],
+      },
+      {
+        id: 'abyssinia-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'abyssinia-poker.score.description',
+          'abyssinia-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'abyssinia-poker.setup.dealing',
+        'abyssinia-poker.rules.objective',
+      ],
+      ante: [
+        'abyssinia-poker.rules.gameplay',
+      ],
+      reveal_market: [
+        'abyssinia-poker.rules.gameplay',
+      ],
+      buy_market: [
+        'abyssinia-poker.rules.gameplay',
+      ],
+      buy_stock: [
+        'abyssinia-poker.rules.gameplay',
+      ],
+      fold: [
+        'abyssinia-poker.rules.gameplay',
+      ],
+      check: [
+        'abyssinia-poker.rules.gameplay',
+      ],
+      call: [
+        'abyssinia-poker.rules.gameplay',
+      ],
+      bet: [
+        'abyssinia-poker.rules.gameplay',
+      ],
+      raise: [
+        'abyssinia-poker.rules.gameplay',
+      ],
+      declare: [
+        'abyssinia-poker.rules.gameplay',
+      ],
+      reveal_hand: [
+        'abyssinia-poker.rules.gameplay',
+      ],
+      award_pot: [
+        'abyssinia-poker.rules.gameplay',
+      ],
+    },
   },
 }

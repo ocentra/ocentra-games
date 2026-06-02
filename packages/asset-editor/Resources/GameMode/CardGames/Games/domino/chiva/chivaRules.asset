@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Chiva. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Chiva: Caribbean domino game (e.g. Puerto Rico). Four players in fixed partnerships; double-6 set. Play by matching ends; doubles crosswise. Team wins by scoring 4 or 6 times in a row (characteristic Caribbean style).',
+    LLM: 'Match touching ends; doubles at right angles. If you cannot play, pass. Round ends when a player empties hand or game is blocked. Winning team scores 1 (or 2 with key tiles); first team to target consecutive wins takes the game.',
+    Player: 'Match touching ends; doubles at right angles. If you cannot play, pass. Round ends when a player empties hand or game is blocked. Winning team scores 1 (or 2 with key tiles); first team to target consecutive wins takes the game.',
     objective: 'Win a set number of rounds in a row (e.g. 4 or 6) as a team. Opponent score resets your count.',
     gameplay: 'Match touching ends; doubles at right angles. If you cannot play, pass. Round ends when a player empties hand or game is blocked. Winning team scores 1 (or 2 with key tiles); first team to target consecutive wins takes the game.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 5 card(s) per player, 28 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: One point per round won (sometimes two for key tiles). Consecutive wins required; opponent score resets to 0. Expected outcome: Win a set number of rounds in a row (e.g. 4 or 6) as a team. Opponent score resets your count..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win a set number of rounds in a row (e.g. 4 or 6) as a team. Opponent score resets your count.',
+      'Turn-flow example: Match touching ends; doubles at right angles. If you cannot play, pass. Round ends when a player empties hand or game is blocked. Winning team scores 1 (or 2 with key tiles); first team to target consecutive wins takes the game.',
+      'Scoring example: One point per round won (sometimes two for key tiles). Consecutive wins required; opponent score resets to 0. Win a set number of rounds in a row (e.g. 4 or 6) as a team. Opponent score resets your count..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'chiva.rules.objective',
+        title: 'Objective',
+        text: 'Win a set number of rounds in a row (e.g. 4 or 6) as a team. Opponent score resets your count.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'chiva.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Match touching ends; doubles at right angles. If you cannot play, pass. Round ends when a player empties hand or game is blocked. Winning team scores 1 (or 2 with key tiles); first team to target consecutive wins takes the game.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'chiva.setup.players',
+        title: 'Players',
+        text: '4; fixed partnerships, partners opposite. Play anticlockwise.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'chiva.setup.deck',
+        title: 'Deck',
+        text: 'Double-6 set (28 tiles).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'chiva.setup.equipment',
+        title: 'Equipment',
+        text: 'Double-6 domino set; table.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'chiva.setup.dealing',
+        title: 'Deal',
+        text: 'Each player draws 7 bones. Holder of double-six poses first (or winner of previous hand); doubles played crosswise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'chiva.score.win-condition',
+        title: 'Win condition',
+        text: 'Win a set number of rounds in a row (e.g. 4 or 6) as a team. Opponent score resets your count.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'chiva.score.description',
+        title: 'Scoring',
+        text: 'One point per round won (sometimes two for key tiles). Consecutive wins required; opponent score resets to 0.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'chiva.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Double-6; 7 tiles each; double-six poses first',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'chiva.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Match ends; doubles crosswise; pass if no play',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'chiva.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Win 4 or 6 rounds in a row to win game',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'chiva.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'chiva.rules.objective',
+          'chiva.rules.gameplay',
+        ],
+      },
+      {
+        id: 'chiva.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'chiva.setup.players',
+          'chiva.setup.deck',
+          'chiva.setup.equipment',
+          'chiva.setup.dealing',
+        ],
+      },
+      {
+        id: 'chiva.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'chiva.rules.key.1',
+          'chiva.rules.key.2',
+          'chiva.rules.key.3',
+        ],
+      },
+      {
+        id: 'chiva.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'chiva.score.description',
+          'chiva.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'chiva.setup.dealing',
+        'chiva.rules.objective',
+      ],
+      play_card: [
+        'chiva.rules.gameplay',
+      ],
+    },
   },
 }

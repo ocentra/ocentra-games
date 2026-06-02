@@ -4,6 +4,7 @@ import { CardGameScoring } from '../game/scoring/CardGameScoring';
 import { GameInfo } from '../game/gameInfo/GameInfo';
 import { CardGameLayout } from '../ui/layout/CardGameLayout';
 import { PageLayout, type PageLayoutDocument } from '../ui/pageLayout/PageLayout';
+import { DEFAULT_SELECTED_GAME_CONTENT_PLAN } from '../ui/selectedGame/SelectedGamePresentation';
 import { Deck } from '../card/deck/Deck';
 import { ImageCarousel } from '../content/imageCarousel/ImageCarousel';
 import { CardGameMode, type CardGameAssetLinks } from '../gameMode/cardGameMode/CardGameMode';
@@ -153,6 +154,7 @@ async function createPageLayoutAsset(
         { id: sliceId, type: kind === 'selected-game' ? 'selected-game' : 'custom', order: 10 },
       ],
     },
+    ...(kind === 'selected-game' ? { contentPlan: DEFAULT_SELECTED_GAME_CONTENT_PLAN } : {}),
     preview: {
       sampleGameRef: {
         gameId: context.gameId,

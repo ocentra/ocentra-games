@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: HORSE. Logic: See rules.objective and rules.gameplay.',
-    Player: "HORSE is a mixed poker game format that rotates through five different poker variants in a fixed sequence. The acronym stands for Hold'em, Omaha Hi/Lo, Razz, Seven Card Stud, and Eight-or-Better (Stud Hi/Lo). Popular in major tournaments like the World Series of Poker, HORSE tests a player's versatility across multiple poker disciplines. All games are played in Fixed-Limit format.",
+    LLM: "HORSE = rotation of Hold'em, Omaha, Razz, Stud, Stud Eight-or-better. Each variant 1 orbit; switch after each. Same betting structure. Lowest chip count at end loses.",
+    Player: "HORSE = rotation of Hold'em, Omaha, Razz, Stud, Stud Eight-or-better. Each variant 1 orbit; switch after each. Same betting structure. Lowest chip count at end loses.",
     objective: 'Win chips/money by winning pots in each of the five poker variants.',
     gameplay: "HORSE = rotation of Hold'em, Omaha, Razz, Stud, Stud Eight-or-better. Each variant 1 orbit; switch after each. Same betting structure. Lowest chip count at end loses.",
     keyRules: [
@@ -53,10 +53,177 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 2 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; each_player_clockwise may use ante before betting_round.',
-      'Scoring check: Win chips/money by winning pots in each of the five poker variants. Expected outcome: Win chips/money by winning pots in each of the five poker variants..',
+      'Setup example: 2 card(s) per player.',
+      'Rule example: Win chips/money by winning pots in each of the five poker variants.',
+      "Turn-flow example: HORSE = rotation of Hold'em, Omaha, Razz, Stud, Stud Eight-or-better. Each variant 1 orbit; switch after each. Same betting structure. Lowest chip count at end loses.",
+      'Scoring example: Win chips/money by winning pots in each of the five poker variants. Win chips/money by winning pots in each of the five poker variants..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'horse.rules.objective',
+        title: 'Objective',
+        text: 'Win chips/money by winning pots in each of the five poker variants.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'horse.rules.gameplay',
+        title: 'Turn flow',
+        text: "HORSE = rotation of Hold'em, Omaha, Razz, Stud, Stud Eight-or-better. Each variant 1 orbit; switch after each. Same betting structure. Lowest chip count at end loses.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'horse.setup.players',
+        title: 'Players',
+        text: '2-8 players (typically 6-8 for optimal play).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'horse.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'horse.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, poker chips, dealer button.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'horse.setup.dealing',
+        title: 'Deal',
+        text: "Deal according to current game in rotation (Hold'em, Omaha, etc.).",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'horse.score.win-condition',
+        title: 'Win condition',
+        text: 'Win chips/money by winning pots in each of the five poker variants.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'horse.score.description',
+        title: 'Scoring',
+        text: 'Win chips/money by winning pots in each of the five poker variants.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'horse.rules.key.1',
+        title: 'Key rule 1',
+        text: "All five games are played as fixed-limit. Hold'em and Omaha use blinds; Razz, Stud, and Stud 8 use antes and a compulsory bring-in.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'horse.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Rotation is fixed: H then O then R then S then E. A complete round of each game is played (every player has one deal or button) before switching.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'horse.rules.key.3',
+        title: 'Key rule 3',
+        text: "Hand rankings and showdown rules follow the current variant: standard high for Hold'em and Stud; Omaha 8 and Stud 8 split high and low (eight or better for low).",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'horse.rules.key.4',
+        title: 'Key rule 4',
+        text: 'With more than seven players, the last in order sit out for stud games so the deck does not run out.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'horse.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'horse.rules.objective',
+          'horse.rules.gameplay',
+        ],
+      },
+      {
+        id: 'horse.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'horse.setup.players',
+          'horse.setup.deck',
+          'horse.setup.equipment',
+          'horse.setup.dealing',
+        ],
+      },
+      {
+        id: 'horse.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'horse.rules.key.1',
+          'horse.rules.key.2',
+          'horse.rules.key.3',
+          'horse.rules.key.4',
+        ],
+      },
+      {
+        id: 'horse.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'horse.score.description',
+          'horse.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'horse.setup.dealing',
+        'horse.rules.objective',
+      ],
+      ante: [
+        'horse.rules.gameplay',
+      ],
+      fold: [
+        'horse.rules.gameplay',
+      ],
+      check: [
+        'horse.rules.gameplay',
+      ],
+      call: [
+        'horse.rules.gameplay',
+      ],
+      bet: [
+        'horse.rules.gameplay',
+      ],
+      raise: [
+        'horse.rules.gameplay',
+      ],
+      reveal_hand: [
+        'horse.rules.gameplay',
+      ],
+      award_pot: [
+        'horse.rules.gameplay',
+      ],
+    },
   },
 }

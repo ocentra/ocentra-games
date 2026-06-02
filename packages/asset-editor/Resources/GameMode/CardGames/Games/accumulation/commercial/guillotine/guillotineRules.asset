@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Guillotine. Logic: Collect the highest total value of noble cards after the scheduled rounds.',
-    Player: 'Guillotine is a commercial card game where players manipulate a line of nobles and collect the most valuable heads over three days.',
+    LLM: 'Players play action cards to rearrange the line of nobles, then collect the front noble and add its point value or effect to their score pile.',
+    Player: 'Players play action cards to rearrange the line of nobles, then collect the front noble and add its point value or effect to their score pile.',
     objective: 'Collect the highest total value of noble cards after the scheduled rounds.',
     gameplay: 'Players play action cards to rearrange the line of nobles, then collect the front noble and add its point value or effect to their score pile.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Published endgame scoring or victory conditions determine the winner. Expected outcome: Collect the highest total value of noble cards after the scheduled rounds..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Collect the highest total value of noble cards after the scheduled rounds.',
+      'Turn-flow example: Players play action cards to rearrange the line of nobles, then collect the front noble and add its point value or effect to their score pile.',
+      'Scoring example: Published endgame scoring or victory conditions determine the winner. Collect the highest total value of noble cards after the scheduled rounds..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'guillotine.rules.objective',
+        title: 'Objective',
+        text: 'Collect the highest total value of noble cards after the scheduled rounds.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'guillotine.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play action cards to rearrange the line of nobles, then collect the front noble and add its point value or effect to their score pile.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'guillotine.setup.players',
+        title: 'Players',
+        text: '2-5 players use the table arrangement described for Guillotine.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'guillotine.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Guillotine noble and action cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'guillotine.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Guillotine noble and action cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'guillotine.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare the dedicated Guillotine deck and any shared scoring, resource, or tableau area described by the rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'guillotine.score.win-condition',
+        title: 'Win condition',
+        text: 'Collect the highest total value of noble cards after the scheduled rounds.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'guillotine.score.description',
+        title: 'Scoring',
+        text: 'Published endgame scoring or victory conditions determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'guillotine.rules.key.1',
+        title: 'Key rule 1',
+        text: 'A line of noble cards is shared.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'guillotine.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Action cards manipulate the line.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'guillotine.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Players collect the front card each turn.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'guillotine.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Noble cards have point values.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'guillotine.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Highest total wins after three days.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'guillotine.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'guillotine.rules.objective',
+          'guillotine.rules.gameplay',
+        ],
+      },
+      {
+        id: 'guillotine.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'guillotine.setup.players',
+          'guillotine.setup.deck',
+          'guillotine.setup.equipment',
+          'guillotine.setup.dealing',
+        ],
+      },
+      {
+        id: 'guillotine.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'guillotine.rules.key.1',
+          'guillotine.rules.key.2',
+          'guillotine.rules.key.3',
+          'guillotine.rules.key.4',
+          'guillotine.rules.key.5',
+        ],
+      },
+      {
+        id: 'guillotine.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'guillotine.score.description',
+          'guillotine.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'guillotine.setup.dealing',
+        'guillotine.rules.objective',
+      ],
+      play_card: [
+        'guillotine.rules.gameplay',
+      ],
+    },
   },
 }

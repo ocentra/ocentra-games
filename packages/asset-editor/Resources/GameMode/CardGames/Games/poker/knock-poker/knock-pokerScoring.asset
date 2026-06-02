@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Best poker hand wins the pot. Knocker wins: others pay 2 chips each. Knocker loses: pays 2 chips to each staying player. Folders pay 1 chip to knocker.',
+      winCondition: 'Have the highest-ranking five-card poker hand at showdown',
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: 'No fixed target score; play by game rules.',
+        cardValues: 'Poker uses hand rankings, not point values for individual cards.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'poker_ranking',
     patternMultipliers: null,
     priorityOrder: [],

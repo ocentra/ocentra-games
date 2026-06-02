@@ -11,19 +11,45 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Scoring is zero-sum based on the contract value.',
+      winCondition: 'Capturing 53+ points (Regular/Zolo) or 104 points (Gran).',
+      targetScore: 53,
+      scoringDirection: 'high_wins',
+      cardValues: {
         '10': '10 points',
         A: '11 points',
         Q: '3 points',
         J: '2 points',
       },
+      sourceCardValues: {
+        raw: {
+          '10': '10 points',
+          A: '11 points',
+          Q: '3 points',
+          J: '2 points',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: '52-52 is a draw (Bock), usually resulting in next hand doubling the stakes.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],
     winCondition: 'Capturing 53+ points (Regular/Zolo) or 104 points (Gran).',
     cardValues: {},
-    penalties: '{\n  "Failing Bid": "The value of the bid is deducted from the player(s) score."\n}',
+    penalties: '{"Failing Bid":"The value of the bid is deducted from the player(s) score."}',
     targetScore: 53,
     scoringDirection: 'high_wins',
     rankingAsset: {

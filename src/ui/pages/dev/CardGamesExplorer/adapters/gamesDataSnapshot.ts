@@ -4,7 +4,6 @@ import { clearContentSliceCache } from '@/adapters/assets/ContentSliceCache';
 import { clearGameCatalogCache, getGameCatalogEntries } from '@/adapters/assets/GameCatalogService';
 import { clearRawAssetDocumentCache } from '@/adapters/assets/rawAssetDocument';
 import { buildGameMetadata } from './gameCatalogToGameInfo';
-import { loadAssetExplorerContent } from './assetExplorerContent';
 import { GameModeStatus } from '@ocentra/game-asset-domain/constants/game-mode-status';
 
 export interface GamesDataSnapshot {
@@ -16,29 +15,6 @@ export interface GamesDataSnapshot {
 let cachedGamesDataSnapshot: GamesDataSnapshot | null = null;
 let inFlightGamesDataSnapshot: Promise<GamesDataSnapshot> | null = null;
 let gamesDataCacheGeneration = 0;
-
-function mergeAssetSummary(game: Game, summary: Partial<Game> | undefined): Game {
-  if (!summary) {
-    return game;
-  }
-
-  return enrich({
-    ...game,
-    description: summary.description || game.description,
-    origin: summary.origin || game.origin,
-    players: summary.players || game.players,
-    deck: summary.deck || game.deck,
-    difficulty: summary.difficulty || game.difficulty,
-    duration: summary.duration || game.duration,
-    category: summary.category || game.category,
-    subcategory: summary.subcategory ?? game.subcategory,
-    player_mode: summary.player_mode ?? game.player_mode,
-    quality: summary.quality || game.quality,
-    completeness: summary.completeness && Object.keys(summary.completeness).length > 0 ? summary.completeness : game.completeness,
-    alsoKnownAs: summary.alsoKnownAs && summary.alsoKnownAs.length > 0 ? [...summary.alsoKnownAs] : game.alsoKnownAs,
-    releaseStatus: summary.releaseStatus ?? game.releaseStatus,
-  });
-}
 
 export function getCachedGamesDataSnapshot(): GamesDataSnapshot | null {
   return cachedGamesDataSnapshot;
@@ -61,7 +37,7 @@ async function buildGamesDataSnapshot(): Promise<GamesDataSnapshot> {
     }
 
     const slug = entry.gameId ? String(entry.gameId) : entry.displayName || entry.path;
-    const game = enrich({
+    loadedGames.push(enrich({
       slug,
       guid: entry.guid,
       file: entry.path,
@@ -82,11 +58,7 @@ async function buildGamesDataSnapshot(): Promise<GamesDataSnapshot> {
       link_valid: entry.releaseStatus || GameModeStatus.WorkInProgress,
       source: 'asset' as const,
       releaseStatus: entry.releaseStatus ?? GameModeStatus.WorkInProgress,
-    });
-
-    const assetContent = await loadAssetExplorerContent(game).catch(() => null);
-    const enrichedGame = mergeAssetSummary(game, assetContent?.summary);
-    loadedGames.push(enrichedGame);
+    }));
   }
 
   return {

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Groo The Game. Logic: Construct the largest or highest-scoring town before the game ends.',
-    Player: 'Groo The Game is a commercial card game based on Groo the Wanderer where players compete to build the largest town.',
+    LLM: 'Players play town and effect cards, build up their own settlement, and use Groo-related events to interfere with opponents plans.',
+    Player: 'Players play town and effect cards, build up their own settlement, and use Groo-related events to interfere with opponents plans.',
     objective: 'Construct the largest or highest-scoring town before the game ends.',
     gameplay: 'Players play town and effect cards, build up their own settlement, and use Groo-related events to interfere with opponents plans.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Published endgame scoring or victory conditions determine the winner. Expected outcome: Construct the largest or highest-scoring town before the game ends..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Construct the largest or highest-scoring town before the game ends.',
+      'Turn-flow example: Players play town and effect cards, build up their own settlement, and use Groo-related events to interfere with opponents plans.',
+      'Scoring example: Published endgame scoring or victory conditions determine the winner. Construct the largest or highest-scoring town before the game ends..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'groo-the-game.rules.objective',
+        title: 'Objective',
+        text: 'Construct the largest or highest-scoring town before the game ends.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'groo-the-game.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play town and effect cards, build up their own settlement, and use Groo-related events to interfere with opponents plans.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'groo-the-game.setup.players',
+        title: 'Players',
+        text: '2-4 players use the table arrangement described for Groo The Game.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'groo-the-game.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Groo The Game cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'groo-the-game.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Groo The Game cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'groo-the-game.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare the dedicated Groo The Game deck and any shared scoring, resource, or tableau area described by the rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'groo-the-game.score.win-condition',
+        title: 'Win condition',
+        text: 'Construct the largest or highest-scoring town before the game ends.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'groo-the-game.score.description',
+        title: 'Scoring',
+        text: 'Published endgame scoring or victory conditions determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'groo-the-game.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dedicated licensed card deck.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'groo-the-game.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players build towns.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'groo-the-game.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Effect cards disrupt construction.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'groo-the-game.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Two to four players.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'groo-the-game.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Largest or best town wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'groo-the-game.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'groo-the-game.rules.objective',
+          'groo-the-game.rules.gameplay',
+        ],
+      },
+      {
+        id: 'groo-the-game.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'groo-the-game.setup.players',
+          'groo-the-game.setup.deck',
+          'groo-the-game.setup.equipment',
+          'groo-the-game.setup.dealing',
+        ],
+      },
+      {
+        id: 'groo-the-game.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'groo-the-game.rules.key.1',
+          'groo-the-game.rules.key.2',
+          'groo-the-game.rules.key.3',
+          'groo-the-game.rules.key.4',
+          'groo-the-game.rules.key.5',
+        ],
+      },
+      {
+        id: 'groo-the-game.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'groo-the-game.score.description',
+          'groo-the-game.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'groo-the-game.setup.dealing',
+        'groo-the-game.rules.objective',
+      ],
+      play_card: [
+        'groo-the-game.rules.gameplay',
+      ],
+    },
   },
 }

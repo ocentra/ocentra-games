@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Counting Patience. Logic: Complete the pack without a card matching the forbidden count, or according to the selected counting rule.',
-    Player: 'Counting Patience is a simple patience game playable with either a 32-card Skat pack or a standard 52-card French pack.',
+    LLM: 'Turn cards in sequence while advancing a count. Matching or failing the count condition determines whether the game succeeds.',
+    Player: 'Turn cards in sequence while advancing a count. Matching or failing the count condition determines whether the game succeeds.',
     objective: 'Complete the pack without a card matching the forbidden count, or according to the selected counting rule.',
     gameplay: 'Turn cards in sequence while advancing a count. Matching or failing the count condition determines whether the game succeeds.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: The game is won or lost by completing the counting sequence under the chosen rule. Expected outcome: Complete the pack without a card matching the forbidden count, or according to the selected counting rule..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Complete the pack without a card matching the forbidden count, or according to the selected counting rule.',
+      'Turn-flow example: Turn cards in sequence while advancing a count. Matching or failing the count condition determines whether the game succeeds.',
+      'Scoring example: The game is won or lost by completing the counting sequence under the chosen rule. Complete the pack without a card matching the forbidden count, or according to the selected counting rule..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'counting-patience.rules.objective',
+        title: 'Objective',
+        text: 'Complete the pack without a card matching the forbidden count, or according to the selected counting rule.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'counting-patience.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Turn cards in sequence while advancing a count. Matching or failing the count condition determines whether the game succeeds.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'counting-patience.setup.players',
+        title: 'Players',
+        text: '1 players use the table arrangement described for Counting Patience.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'counting-patience.setup.deck',
+        title: 'Deck',
+        text: '32-card Skat pack or 52-card French pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'counting-patience.setup.equipment',
+        title: 'Equipment',
+        text: '32-card Skat pack or 52-card French pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'counting-patience.setup.dealing',
+        title: 'Deal',
+        text: 'Shuffle the chosen pack and reveal cards one by one while counting through the required rank cycle.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'counting-patience.score.win-condition',
+        title: 'Win condition',
+        text: 'Complete the pack without a card matching the forbidden count, or according to the selected counting rule.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'counting-patience.score.description',
+        title: 'Scoring',
+        text: 'The game is won or lost by completing the counting sequence under the chosen rule.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'counting-patience.rules.key.1',
+        title: 'Key rule 1',
+        text: 'One-player patience.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'counting-patience.rules.key.2',
+        title: 'Key rule 2',
+        text: 'May use 32 or 52 cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'counting-patience.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Play is driven by a repeated count.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'counting-patience.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Success depends on avoiding or meeting count-card events.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'counting-patience.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'counting-patience.rules.objective',
+          'counting-patience.rules.gameplay',
+        ],
+      },
+      {
+        id: 'counting-patience.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'counting-patience.setup.players',
+          'counting-patience.setup.deck',
+          'counting-patience.setup.equipment',
+          'counting-patience.setup.dealing',
+        ],
+      },
+      {
+        id: 'counting-patience.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'counting-patience.rules.key.1',
+          'counting-patience.rules.key.2',
+          'counting-patience.rules.key.3',
+          'counting-patience.rules.key.4',
+        ],
+      },
+      {
+        id: 'counting-patience.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'counting-patience.score.description',
+          'counting-patience.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'counting-patience.setup.dealing',
+        'counting-patience.rules.objective',
+      ],
+      deal: [
+        'counting-patience.rules.gameplay',
+      ],
+      play_card: [
+        'counting-patience.rules.gameplay',
+      ],
+      draw: [
+        'counting-patience.rules.gameplay',
+      ],
+    },
   },
 }

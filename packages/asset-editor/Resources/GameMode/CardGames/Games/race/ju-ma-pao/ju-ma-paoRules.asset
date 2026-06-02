@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Jū mǎ pāo 車馬包. Objective: Win tricks to capture the highest value pieces and score points based on piece rankings.',
-    Player: 'Jū mǎ pāo 車馬包: play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: '1. Lead player plays a single piece or combination face-down.\n2. Others play the same number of pieces face-down.\n3. Reveal all: The highest ranking piece or combination wins the trick and leads next.',
+    Player: '1. Lead player plays a single piece or combination face-down.\n2. Others play the same number of pieces face-down.\n3. Reveal all: The highest ranking piece or combination wins the trick and leads next.',
     objective: 'Win tricks to capture the highest value pieces and score points based on piece rankings.',
     gameplay: '1. Lead player plays a single piece or combination face-down.\n2. Others play the same number of pieces face-down.\n3. Reveal all: The highest ranking piece or combination wins the trick and leads next.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Scoring in Jū mǎ pāo 車馬包 is resolved as follows: Scoring follows the game-specific point or pot rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win tricks to capture the highest value pieces and score points based on piece rankings.',
+      'Turn-flow example: 1. Lead player plays a single piece or combination face-down.\n2. Others play the same number of pieces face-down.\n3. Reveal all: The highest ranking piece or combination wins the trick and leads next.',
+      'Scoring example: Scoring in Jū mǎ pāo 車馬包 is resolved as follows: Scoring follows the game-specific point or pot rules. Win condition for Jū mǎ pāo 車馬包: Meet the game winning condition..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'ju-ma-pao.rules.objective',
+        title: 'Objective',
+        text: 'Win tricks to capture the highest value pieces and score points based on piece rankings.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'ju-ma-pao.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Lead player plays a single piece or combination face-down.\n2. Others play the same number of pieces face-down.\n3. Reveal all: The highest ranking piece or combination wins the trick and leads next.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'ju-ma-pao.setup.players',
+        title: 'Players',
+        text: 'Three or four players. The game is best with three, in which case each receives eight pieces; with four players the 32 Xiangqi pieces are distributed evenly (typically eight per player). No partnerships; each plays for themselves.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'ju-ma-pao.setup.deck',
+        title: 'Deck',
+        text: 'A full set of 32 Chinese Chess pieces (16 Red, 16 Black).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'ju-ma-pao.setup.equipment',
+        title: 'Equipment',
+        text: 'A full set of 32 Chinese Chess pieces (16 Red, 16 Black).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'ju-ma-pao.setup.dealing',
+        title: 'Deal',
+        text: 'Pieces are shuffled face-down and arranged in 16 stacks of two in a circle. Each player draws a set number of pieces (usually 8).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'ju-ma-pao.score.win-condition',
+        title: 'Win condition',
+        text: 'Win condition for Jū mǎ pāo 車馬包: Meet the game winning condition.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'ju-ma-pao.score.description',
+        title: 'Scoring',
+        text: 'Scoring in Jū mǎ pāo 車馬包 is resolved as follows: Scoring follows the game-specific point or pot rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'ju-ma-pao.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Jū mǎ pāo 車馬包.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'ju-ma-pao.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: Scoring summary: Scoring follows the game-specific point or pot rules.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'ju-ma-pao.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Win tricks to capture the highest value pieces and score points based on piece rankings.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'ju-ma-pao.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'ju-ma-pao.rules.objective',
+          'ju-ma-pao.rules.gameplay',
+        ],
+      },
+      {
+        id: 'ju-ma-pao.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'ju-ma-pao.setup.players',
+          'ju-ma-pao.setup.deck',
+          'ju-ma-pao.setup.equipment',
+          'ju-ma-pao.setup.dealing',
+        ],
+      },
+      {
+        id: 'ju-ma-pao.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'ju-ma-pao.rules.key.1',
+          'ju-ma-pao.rules.key.2',
+          'ju-ma-pao.rules.key.3',
+        ],
+      },
+      {
+        id: 'ju-ma-pao.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'ju-ma-pao.score.description',
+          'ju-ma-pao.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'ju-ma-pao.setup.dealing',
+        'ju-ma-pao.rules.objective',
+      ],
+      play_card: [
+        'ju-ma-pao.rules.gameplay',
+      ],
+    },
   },
 }

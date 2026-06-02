@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Albastini. Type: Point-trick. Deck: 36 cards (A=11, 7=10, K=4, J=3, Q=2). Rule: NO follow-suit requirement. Strategy: Sacrifice low cards in 'Otea' phase, save A/7 for winning rounds.",
-    Player: "Welcome to Albastini. You have 5 cards. This is a trick-taking game where you can play ANY card at any time—you don't have to follow suit. Try to capture Aces (11 pts) and 7s (10 pts) to score over 60. Watch out for 'Ndoa' and reach your 'Mrithi' to stay in the game!",
+    LLM: "1. **Bidding (Otea)**: Dealer's opponents place one card face-up. This signifies their desire for that suit to be trumps. 2. **Trump Flip**: Dealer turns up the top card of the stock. This suit becomes trump. If an opponent bid that suit, they swap their bid card for the trump card. 3. **The Play**: Lead any card. Others play any card (no follow-suit requirement). 4. **Winning**: Highest trump wins. If no trump, highest card of the led suit wins. 5. **Drawing**: Winner 'eats' the trick, draws a new card from the stock first, then others draw. Lead next. 6. **Endings**: Play continues until stock and hands are empty.",
+    Player: "1. **Bidding (Otea)**: Dealer's opponents place one card face-up. This signifies their desire for that suit to be trumps. 2. **Trump Flip**: Dealer turns up the top card of the stock. This suit becomes trump. If an opponent bid that suit, they swap their bid card for the trump card. 3. **The Play**: Lead any card. Others play any card (no follow-suit requirement). 4. **Winning**: Highest trump wins. If no trump, highest card of the led suit wins. 5. **Drawing**: Winner 'eats' the trick, draws a new card from the stock first, then others draw. Lead next. 6. **Endings**: Play continues until stock and hands are empty.",
     objective: 'Capture tricks containing high-value cards to surpass 60 points (out of 120 total).',
     gameplay: "1. **Bidding (Otea)**: Dealer's opponents place one card face-up. This signifies their desire for that suit to be trumps. 2. **Trump Flip**: Dealer turns up the top card of the stock. This suit becomes trump. If an opponent bid that suit, they swap their bid card for the trump card. 3. **The Play**: Lead any card. Others play any card (no follow-suit requirement). 4. **Winning**: Highest trump wins. If no trump, highest card of the led suit wins. 5. **Drawing**: Winner 'eats' the trick, draws a new card from the stock first, then others draw. Lead next. 6. **Endings**: Play continues until stock and hands are empty.",
     keyRules: [
@@ -53,10 +53,174 @@
       go_out: 'Hand ends when stock and all hands are empty; no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before otea.',
-      "Scoring check: Scoring is based on the total 120 card points and 'Victory Points' (VP). Expected outcome: 5.",
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Capture tricks containing high-value cards to surpass 60 points (out of 120 total).',
+      "Turn-flow example: 1. **Bidding (Otea)**: Dealer's opponents place one card face-up. This signifies their desire for that suit to be trumps. 2. **Trump Flip**: Dealer turns up the top card of the stock. This suit becomes trump. If an opponent bid that suit, they swap their bid card for the trump card. 3. **The Play**: Lead any card. Others play any card (no follow-suit requirement). 4. **Winning**: Highest trump wins. If no trump, highest card of the led suit wins. 5. **Drawing**: Winner 'eats' the trick, draws a new card from the stock first, then others draw. Lead next. 6. **Endings**: Play continues until stock and hands are empty.",
+      "Scoring example: Scoring is based on the total 120 card points and 'Victory Points' (VP). The side with >60 card points wins the hand..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'albastini.rules.objective',
+        title: 'Objective',
+        text: 'Capture tricks containing high-value cards to surpass 60 points (out of 120 total).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'albastini.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Bidding (Otea)**: Dealer's opponents place one card face-up. This signifies their desire for that suit to be trumps. 2. **Trump Flip**: Dealer turns up the top card of the stock. This suit becomes trump. If an opponent bid that suit, they swap their bid card for the trump card. 3. **The Play**: Lead any card. Others play any card (no follow-suit requirement). 4. **Winning**: Highest trump wins. If no trump, highest card of the led suit wins. 5. **Drawing**: Winner 'eats' the trick, draws a new card from the stock first, then others draw. Lead next. 6. **Endings**: Play continues until stock and hands are empty.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'albastini.setup.players',
+        title: 'Players',
+        text: '2, 3, or teams of 2 (4 players) or 3 (6 players).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'albastini.setup.deck',
+        title: 'Deck',
+        text: '36-card standard (Remove 2s, 8s, 9s, 10s).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'albastini.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard modified deck, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'albastini.setup.dealing',
+        title: 'Deal',
+        text: '5 cards dealt to each player. Remaining cards form the stock. Dealer is chosen by agreement.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'albastini.score.win-condition',
+        title: 'Win condition',
+        text: 'The side with >60 card points wins the hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'albastini.score.description',
+        title: 'Scoring',
+        text: "Scoring is based on the total 120 card points and 'Victory Points' (VP).",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'albastini.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Card Values: Ace=11, 7=10, King=4, Jack=3, Queen=2. Total in deck = 120.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'albastini.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Ndoa (Marriage): When a 7 is captured by an Ace of the same suit.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'albastini.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Mrithi (Target): To avoid a double-loss, you must reach a minimum point threshold (10 for individuals, 20 for 4-player teams, 30 for 6-player teams).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'albastini.rules.key.4',
+        title: 'Key rule 4',
+        text: 'No follow-suit requirement: You can play any card at any time.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'albastini.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'albastini.rules.objective',
+          'albastini.rules.gameplay',
+        ],
+      },
+      {
+        id: 'albastini.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'albastini.setup.players',
+          'albastini.setup.deck',
+          'albastini.setup.equipment',
+          'albastini.setup.dealing',
+        ],
+      },
+      {
+        id: 'albastini.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'albastini.rules.key.1',
+          'albastini.rules.key.2',
+          'albastini.rules.key.3',
+          'albastini.rules.key.4',
+        ],
+      },
+      {
+        id: 'albastini.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'albastini.score.description',
+          'albastini.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'albastini.setup.dealing',
+        'albastini.rules.objective',
+      ],
+      deal: [
+        'albastini.rules.gameplay',
+      ],
+      reveal_market: [
+        'albastini.rules.gameplay',
+      ],
+      award_pot: [
+        'albastini.rules.gameplay',
+      ],
+      play_card: [
+        'albastini.rules.gameplay',
+      ],
+      draw: [
+        'albastini.rules.gameplay',
+      ],
+      pass: [
+        'albastini.rules.gameplay',
+      ],
+      bid: [
+        'albastini.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 10 Card Regrets Poker. Logic: See rules.objective and rules.gameplay.',
-    Player: '10 Card Regrets is a split-pot poker variant. 2-5 players. 52-card deck. Players build TWO open 5-card hands simultaneously: a Low hand and a High hand. Dealt 2 cards at a time, must assign each to Low or High (irrevocable). Cards revealed after assignment. 5 dealing rounds with betting between each. Pot split: best High hand + best Low hand.',
+    LLM: 'Deal 2 cards face-down. Assign each to Low or High hand (cannot move later). Reveal. Bet. Repeat 5 times = 10 cards total â†’ two 5-card hands. Showdown: pot split between best High and best Low. Low cannot win High pot and vice versa.',
+    Player: 'Deal 2 cards face-down. Assign each to Low or High hand (cannot move later). Reveal. Bet. Repeat 5 times = 10 cards total â†’ two 5-card hands. Showdown: pot split between best High and best Low. Low cannot win High pot and vice versa.',
     objective: 'Build best High hand and/or best Low hand to win split pot.',
     gameplay: 'Deal 2 cards face-down. Assign each to Low or High hand (cannot move later). Reveal. Bet. Repeat 5 times = 10 cards total â†’ two 5-card hands. Showdown: pot split between best High and best Low. Low cannot win High pot and vice versa.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Split pot: best High hand + best Low hand. Expected outcome: Build best High hand and/or best Low hand to win split pot..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Build best High hand and/or best Low hand to win split pot.',
+      'Turn-flow example: Deal 2 cards face-down. Assign each to Low or High hand (cannot move later). Reveal. Bet. Repeat 5 times = 10 cards total â†’ two 5-card hands. Showdown: pot split between best High and best Low. Low cannot win High pot and vice versa.',
+      'Scoring example: Split pot: best High hand + best Low hand. Build best High hand and/or best Low hand to win split pot..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'ten-card-regrets-poker.rules.objective',
+        title: 'Objective',
+        text: 'Build best High hand and/or best Low hand to win split pot.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'ten-card-regrets-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Deal 2 cards face-down. Assign each to Low or High hand (cannot move later). Reveal. Bet. Repeat 5 times = 10 cards total â†’ two 5-card hands. Showdown: pot split between best High and best Low. Low cannot win High pot and vice versa.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'ten-card-regrets-poker.setup.players',
+        title: 'Players',
+        text: 'Two to five players; each builds a low and a high five-card hand.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'ten-card-regrets-poker.setup.deck',
+        title: 'Deck',
+        text: '52 cards. Ante.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'ten-card-regrets-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, chips',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'ten-card-regrets-poker.setup.dealing',
+        title: 'Deal',
+        text: '2 cards per round Ã— 5 rounds = 10 total.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'ten-card-regrets-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Build best High hand and/or best Low hand to win split pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'ten-card-regrets-poker.score.description',
+        title: 'Scoring',
+        text: 'Split pot: best High hand + best Low hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'ten-card-regrets-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two open hands built simultaneously',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'ten-card-regrets-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Irrevocable card assignment',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'ten-card-regrets-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Cards revealed after placement',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'ten-card-regrets-poker.rules.key.4',
+        title: 'Key rule 4',
+        text: '5 dealing rounds + betting',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'ten-card-regrets-poker.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Split pot High/Low',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'ten-card-regrets-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'ten-card-regrets-poker.rules.objective',
+          'ten-card-regrets-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'ten-card-regrets-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'ten-card-regrets-poker.setup.players',
+          'ten-card-regrets-poker.setup.deck',
+          'ten-card-regrets-poker.setup.equipment',
+          'ten-card-regrets-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'ten-card-regrets-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'ten-card-regrets-poker.rules.key.1',
+          'ten-card-regrets-poker.rules.key.2',
+          'ten-card-regrets-poker.rules.key.3',
+          'ten-card-regrets-poker.rules.key.4',
+          'ten-card-regrets-poker.rules.key.5',
+        ],
+      },
+      {
+        id: 'ten-card-regrets-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'ten-card-regrets-poker.score.description',
+          'ten-card-regrets-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'ten-card-regrets-poker.setup.dealing',
+        'ten-card-regrets-poker.rules.objective',
+      ],
+      play_card: [
+        'ten-card-regrets-poker.rules.gameplay',
+      ],
+    },
   },
 }

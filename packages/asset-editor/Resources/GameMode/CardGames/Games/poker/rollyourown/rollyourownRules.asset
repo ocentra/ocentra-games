@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Roll Your Own Poker. Style: Stud variant. Rule: Players choose which cards to reveal. Dakota variant: Lowest hole-card is wild. Hi-Lo split.',
-    Player: "You have a pair of Aces in the hole and a Seven. Do you 'roll' an Ace to scare the table, or roll the Seven to keep them betting?",
+    LLM: "1. Ante/Blinds. 2. Deal 3 cards face-down. 3. Players simultaneously 'roll' (reveal) one card. 4. Betting round. 5. Deal 4th card down; players reveal one of their hidden cards. 6. Repeat for 5th and 6th cards. 7. Deal 7th card down. 8. Final betting round and Showdown.",
+    Player: "1. Ante/Blinds. 2. Deal 3 cards face-down. 3. Players simultaneously 'roll' (reveal) one card. 4. Betting round. 5. Deal 4th card down; players reveal one of their hidden cards. 6. Repeat for 5th and 6th cards. 7. Deal 7th card down. 8. Final betting round and Showdown.",
     objective: 'Form the best 5-card poker hand out of 7 dealt cards to win the pot.',
     gameplay: "1. Ante/Blinds. 2. Deal 3 cards face-down. 3. Players simultaneously 'roll' (reveal) one card. 4. Betting round. 5. Deal 4th card down; players reveal one of their hidden cards. 6. Repeat for 5th and 6th cards. 7. Deal 7th card down. 8. Final betting round and Showdown.",
     keyRules: [
@@ -52,10 +52,180 @@
       go_out: 'Winning is by showdown hand value, not by go-out shedding.',
     },
     exampleHands: [
-      'Opening deal: 2-7 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; dealer may use ante, deal_3_down before reveal_1.',
-      'Scoring check: Standard Poker hand rankings (Royal Flush down to High Card). Dakota uses Hi-Lo split. Expected outcome: Highest 5-card hand (Standard) or High-Low split (Dakota)..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Form the best 5-card poker hand out of 7 dealt cards to win the pot.',
+      "Turn-flow example: 1. Ante/Blinds. 2. Deal 3 cards face-down. 3. Players simultaneously 'roll' (reveal) one card. 4. Betting round. 5. Deal 4th card down; players reveal one of their hidden cards. 6. Repeat for 5th and 6th cards. 7. Deal 7th card down. 8. Final betting round and Showdown.",
+      'Scoring example: Standard Poker hand rankings (Royal Flush down to High Card). Dakota uses Hi-Lo split. Highest 5-card hand (Standard) or High-Low split (Dakota)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'rollyourown.rules.objective',
+        title: 'Objective',
+        text: 'Form the best 5-card poker hand out of 7 dealt cards to win the pot.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'rollyourown.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Ante/Blinds. 2. Deal 3 cards face-down. 3. Players simultaneously 'roll' (reveal) one card. 4. Betting round. 5. Deal 4th card down; players reveal one of their hidden cards. 6. Repeat for 5th and 6th cards. 7. Deal 7th card down. 8. Final betting round and Showdown.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'rollyourown.setup.players',
+        title: 'Players',
+        text: '2-7 players (limit based on 52-card deck exhaustion).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'rollyourown.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'rollyourown.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard cards, poker chips, dealer button.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'rollyourown.setup.dealing',
+        title: 'Deal',
+        text: "Varies by variant. Standard 'Roll Your Own' deals 3 cards down initially, then 4 more sequentially.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'rollyourown.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest 5-card hand (Standard) or High-Low split (Dakota).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'rollyourown.score.description',
+        title: 'Scoring',
+        text: 'Standard Poker hand rankings (Royal Flush down to High Card). Dakota uses Hi-Lo split.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'rollyourown.rules.key.1',
+        title: 'Key rule 1',
+        text: "Reveals must be simultaneous (usually on a count of 'one-two-three-flip').",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'rollyourown.rules.key.2',
+        title: 'Key rule 2',
+        text: 'You cannot look at the card you just received before choosing which one to flip (in strict variants).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'rollyourown.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Once a card is rolled, it remains face-up for the duration of the hand.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'rollyourown.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'rollyourown.rules.objective',
+          'rollyourown.rules.gameplay',
+        ],
+      },
+      {
+        id: 'rollyourown.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'rollyourown.setup.players',
+          'rollyourown.setup.deck',
+          'rollyourown.setup.equipment',
+          'rollyourown.setup.dealing',
+        ],
+      },
+      {
+        id: 'rollyourown.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'rollyourown.rules.key.1',
+          'rollyourown.rules.key.2',
+          'rollyourown.rules.key.3',
+        ],
+      },
+      {
+        id: 'rollyourown.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'rollyourown.score.description',
+          'rollyourown.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'rollyourown.setup.dealing',
+        'rollyourown.rules.objective',
+      ],
+      ante: [
+        'rollyourown.rules.gameplay',
+      ],
+      fold: [
+        'rollyourown.rules.gameplay',
+      ],
+      check: [
+        'rollyourown.rules.gameplay',
+      ],
+      call: [
+        'rollyourown.rules.gameplay',
+      ],
+      bet: [
+        'rollyourown.rules.gameplay',
+      ],
+      raise: [
+        'rollyourown.rules.gameplay',
+      ],
+      deal_3_down: [
+        'rollyourown.rules.gameplay',
+      ],
+      select_and_flip_1: [
+        'rollyourown.rules.gameplay',
+      ],
+      deal_1_down: [
+        'rollyourown.rules.gameplay',
+      ],
+      flip_1: [
+        'rollyourown.rules.gameplay',
+      ],
+      deal_7th_down: [
+        'rollyourown.rules.gameplay',
+      ],
+      showdown_reveal: [
+        'rollyourown.rules.gameplay',
+      ],
+    },
   },
 }

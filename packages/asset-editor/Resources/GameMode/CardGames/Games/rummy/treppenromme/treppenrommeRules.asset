@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 500 Rummy. Logic: See rules.objective and rules.gameplay.',
-    Player: '500 Rummy: first to 500 points wins. Melds (sets and runs) score positive; unmelded cards in hand count negative. Key twist: you may draw any card from the discard pile but must take all cards above it and meld the drawn card immediately. 2-8 players; 52 cards plus 2 jokers.',
+    LLM: 'Players draw and discard as in Rummy, but the discard pile is spread so every card remains partly visible. That staircase information changes discard timing and meld planning.',
+    Player: 'Players draw and discard as in Rummy, but the discard pile is spread so every card remains partly visible. That staircase information changes discard timing and meld planning.',
     objective: 'Score the most points by forming valuable melds while managing the staircase discard pile.',
     gameplay: 'Players draw and discard as in Rummy, but the discard pile is spread so every card remains partly visible. That staircase information changes discard timing and meld planning.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Melds score positive (face value; jokers 0 or as specified); unmelded in hand negative. First to 500 wins. Expected outcome: 500.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score the most points by forming valuable melds while managing the staircase discard pile.',
+      'Turn-flow example: Players draw and discard as in Rummy, but the discard pile is spread so every card remains partly visible. That staircase information changes discard timing and meld planning.',
+      'Scoring example: Melds score positive (face value; jokers 0 or as specified); unmelded in hand negative. First to 500 wins. First to 500 points wins. Melds (sets and runs) score positive; unmelded cards in hand count negative. You may take any card from the discard pile but must take all cards above it and meld the drawn card immediately..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'treppenromme.rules.objective',
+        title: 'Objective',
+        text: 'Score the most points by forming valuable melds while managing the staircase discard pile.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'treppenromme.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players draw and discard as in Rummy, but the discard pile is spread so every card remains partly visible. That staircase information changes discard timing and meld planning.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'treppenromme.setup.players',
+        title: 'Players',
+        text: '2-4 players use the table arrangement described for Treppenromme.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'treppenromme.setup.deck',
+        title: 'Deck',
+        text: 'Standard playing cards, usually with jokers depending on local rules',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'treppenromme.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard playing cards, usually with jokers depending on local rules, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'treppenromme.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Standard playing cards, usually with jokers depending on local rules and deal or lay out cards according to the documented Treppenromme rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'treppenromme.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 500 points wins. Melds (sets and runs) score positive; unmelded cards in hand count negative. You may take any card from the discard pile but must take all cards above it and meld the drawn card immediately.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'treppenromme.score.description',
+        title: 'Scoring',
+        text: 'Melds score positive (face value; jokers 0 or as specified); unmelded in hand negative. First to 500 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'treppenromme.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The discard pile is arranged as a visible staircase.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'treppenromme.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players form sets and runs for points.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'treppenromme.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Closely related to 500 Rum but with distinct discard access.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'treppenromme.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'treppenromme.rules.objective',
+          'treppenromme.rules.gameplay',
+        ],
+      },
+      {
+        id: 'treppenromme.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'treppenromme.setup.players',
+          'treppenromme.setup.deck',
+          'treppenromme.setup.equipment',
+          'treppenromme.setup.dealing',
+        ],
+      },
+      {
+        id: 'treppenromme.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'treppenromme.rules.key.1',
+          'treppenromme.rules.key.2',
+          'treppenromme.rules.key.3',
+        ],
+      },
+      {
+        id: 'treppenromme.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'treppenromme.score.description',
+          'treppenromme.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'treppenromme.setup.dealing',
+        'treppenromme.rules.objective',
+      ],
+      play_card: [
+        'treppenromme.rules.gameplay',
+      ],
+    },
   },
 }

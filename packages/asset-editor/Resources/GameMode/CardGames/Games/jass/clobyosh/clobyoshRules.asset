@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Clobyosh (Bela). Type: Jass/Trick-Taking. Rules: J(20)>9(14)>A(11). Melds: 3-run (20), 4-run (50), Bela (20). Schmeiss rule likely active.',
-    Player: "You have the Jack of Clubs and Ace of Clubs. The turned card is the 10 of Clubs. The opponent passes. TAKE IT! You have the 'Jas' (20 pts) and the Ace (11). Plus, if you have the 7 of Trumps (Dix), you can swap it for that 10!",
+    LLM: "1. **Bidding**: Dealer's opponent speaks first. Can 'Take' (accept passed card), 'Schmeiss' (offer re-deal), or 'Pass'. If both pass, second round allows naming any suit. 2. **Melding**: Before playing to the first trick, announce sequences. Only the best one counts. 3. **Play**: Follow suit. Must Trump if void. Must Over-trump if possible. 4. **Winning**: If Maker scores > Opponent, points stand. If Maker fails (BÃªte), Opponent gets ALL points.",
+    Player: "1. **Bidding**: Dealer's opponent speaks first. Can 'Take' (accept passed card), 'Schmeiss' (offer re-deal), or 'Pass'. If both pass, second round allows naming any suit. 2. **Melding**: Before playing to the first trick, announce sequences. Only the best one counts. 3. **Play**: Follow suit. Must Trump if void. Must Over-trump if possible. 4. **Winning**: If Maker scores > Opponent, points stand. If Maker fails (BÃªte), Opponent gets ALL points.",
     objective: 'Score more points than the opponent to win the deal. Usually played to 501.',
     gameplay: "1. **Bidding**: Dealer's opponent speaks first. Can 'Take' (accept passed card), 'Schmeiss' (offer re-deal), or 'Pass'. If both pass, second round allows naming any suit. 2. **Melding**: Before playing to the first trick, announce sequences. Only the best one counts. 3. **Play**: Follow suit. Must Trump if void. Must Over-trump if possible. 4. **Winning**: If Maker scores > Opponent, points stand. If Maker fails (BÃªte), Opponent gets ALL points.",
     keyRules: [
@@ -52,10 +52,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 6 card(s) per player, 32 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal_6_turn; dealer may use deal_6_turn_1 before bidding.',
-      'Scoring check: Points are cumulative. Expected outcome: 501.',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Score more points than the opponent to win the deal. Usually played to 501.',
+      "Turn-flow example: 1. **Bidding**: Dealer's opponent speaks first. Can 'Take' (accept passed card), 'Schmeiss' (offer re-deal), or 'Pass'. If both pass, second round allows naming any suit. 2. **Melding**: Before playing to the first trick, announce sequences. Only the best one counts. 3. **Play**: Follow suit. Must Trump if void. Must Over-trump if possible. 4. **Winning**: If Maker scores > Opponent, points stand. If Maker fails (BÃªte), Opponent gets ALL points.",
+      'Scoring example: Points are cumulative. 501 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'clobyosh.rules.objective',
+        title: 'Objective',
+        text: 'Score more points than the opponent to win the deal. Usually played to 501.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'clobyosh.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Bidding**: Dealer's opponent speaks first. Can 'Take' (accept passed card), 'Schmeiss' (offer re-deal), or 'Pass'. If both pass, second round allows naming any suit. 2. **Melding**: Before playing to the first trick, announce sequences. Only the best one counts. 3. **Play**: Follow suit. Must Trump if void. Must Over-trump if possible. 4. **Winning**: If Maker scores > Opponent, points stand. If Maker fails (BÃªte), Opponent gets ALL points.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'clobyosh.setup.players',
+        title: 'Players',
+        text: "Two players only. One is the dealer and one is forehand (the dealer's opponent, who speaks first in bidding). The dealer rotates after each hand; there are no partnerships and each plays for their own score toward 501.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'clobyosh.setup.deck',
+        title: 'Deck',
+        text: '32 cards (A-10-K-Q-J-9-8-7).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'clobyosh.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, score pad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'clobyosh.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 6 cards to each player (3-3). Turn the next card face up (The Proposal). Bidding follows. Once a trump is settled, deal 3 more cards to each player (total 9 each). The bottom card of the deck is turned face up (for information only).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'clobyosh.score.win-condition',
+        title: 'Win condition',
+        text: '501 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'clobyosh.score.description',
+        title: 'Scoring',
+        text: 'Points are cumulative.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'clobyosh.rules.key.1',
+        title: 'Key rule 1',
+        text: "The 'Dix' (7 of Trumps) can be swapped for the turned trump card if the trump was accepted in the first round.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'clobyosh.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Melds are declared *before* the first trick is complete, revealing information.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'clobyosh.rules.key.3',
+        title: 'Key rule 3',
+        text: "You do not need to win a trick to score 'Bella', but you DO need to win a trick to score Sequences.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'clobyosh.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'clobyosh.rules.objective',
+          'clobyosh.rules.gameplay',
+        ],
+      },
+      {
+        id: 'clobyosh.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'clobyosh.setup.players',
+          'clobyosh.setup.deck',
+          'clobyosh.setup.equipment',
+          'clobyosh.setup.dealing',
+        ],
+      },
+      {
+        id: 'clobyosh.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'clobyosh.rules.key.1',
+          'clobyosh.rules.key.2',
+          'clobyosh.rules.key.3',
+        ],
+      },
+      {
+        id: 'clobyosh.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'clobyosh.score.description',
+          'clobyosh.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'clobyosh.setup.dealing',
+        'clobyosh.rules.objective',
+      ],
+      play_card: [
+        'clobyosh.rules.gameplay',
+      ],
+      pass: [
+        'clobyosh.rules.gameplay',
+      ],
+      deal_6_turn_1: [
+        'clobyosh.rules.gameplay',
+      ],
+      take: [
+        'clobyosh.rules.gameplay',
+      ],
+      schmeiss: [
+        'clobyosh.rules.gameplay',
+      ],
+      deal_3_each: [
+        'clobyosh.rules.gameplay',
+      ],
+      declare_meld: [
+        'clobyosh.rules.gameplay',
+      ],
+    },
   },
 }

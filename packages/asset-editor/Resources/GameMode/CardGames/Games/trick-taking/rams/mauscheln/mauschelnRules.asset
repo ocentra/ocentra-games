@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Mauscheln. Logic: See rules.objective and rules.gameplay.',
-    Player: "Mauscheln (also known as 'Maus' or 'Lurk') is a traditional German gambling and trick-taking game popular in the 19th and early 20th centuries. Similar to games in the 'Rams' family, it focuses on the choice to either 'Sneak' (Mauscheln)—committing to win at least two tricks—or 'Pass' to avoid a penalty. It is famous for its fast rounds, rapidly escalating pots, and the high-stakes risk of the 'Bête' (a penalty equal to the entire pot).",
+    LLM: 'The sneaker leads to the first trick; thereafter the winner of each trick leads to the next. Players must follow suit if possible, or trump if void in the led suit; when able they must head the trick (beat the current winning card). Four tricks are played per round. Each trick won pays one quarter of the pot (Pinke); a player who joins but takes no tricks pays a bête (equal to the pot); the sneaker with only one trick pays a bête, and with zero tricks pays double bête (Mauschelbete).',
+    Player: 'The sneaker leads to the first trick; thereafter the winner of each trick leads to the next. Players must follow suit if possible, or trump if void in the led suit; when able they must head the trick (beat the current winning card). Four tricks are played per round. Each trick won pays one quarter of the pot (Pinke); a player who joins but takes no tricks pays a bête (equal to the pot); the sneaker with only one trick pays a bête, and with zero tricks pays double bête (Mauschelbete).',
     objective: "Win as many tricks as possible, provided you win at least TWO if you 'Sneak', or ONE if you simply 'Play'.",
     gameplay: 'The sneaker leads to the first trick; thereafter the winner of each trick leads to the next. Players must follow suit if possible, or trump if void in the led suit; when able they must head the trick (beat the current winning card). Four tricks are played per round. Each trick won pays one quarter of the pot (Pinke); a player who joins but takes no tricks pays a bête (equal to the pot); the sneaker with only one trick pays a bête, and with zero tricks pays double bête (Mauschelbete).',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-5 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in declare; each_player_clockwise may use mauscheln_sneak, pass, mauscheln_mitgehen before play.',
-      "Scoring check: Win as many tricks as possible, provided you win at least TWO if you 'Sneak', or ONE if you simply 'Play'. Expected outcome: Win as many tricks as possible, provided you win at least TWO if you 'Sneak', or ONE if you simply 'Play'..",
+      'Setup example: 4 card(s) per player.',
+      "Rule example: Win as many tricks as possible, provided you win at least TWO if you 'Sneak', or ONE if you simply 'Play'.",
+      'Turn-flow example: The sneaker leads to the first trick; thereafter the winner of each trick leads to the next. Players must follow suit if possible, or trump if void in the led suit; when able they must head the trick (beat the current winning card). Four tricks are played per round. Each trick won pays one quarter of the pot (Pinke); a player who joins but takes no tricks pays a bête (equal to the pot); the sneaker with only one trick pays a bête, and with zero tricks pays double bête (Mauschelbete).',
+      "Scoring example: Win as many tricks as possible, provided you win at least TWO if you 'Sneak', or ONE if you simply 'Play'. Win as many tricks as possible, provided you win at least TWO if you 'Sneak', or ONE if you simply 'Play'..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'mauscheln.rules.objective',
+        title: 'Objective',
+        text: "Win as many tricks as possible, provided you win at least TWO if you 'Sneak', or ONE if you simply 'Play'.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mauscheln.rules.gameplay',
+        title: 'Turn flow',
+        text: 'The sneaker leads to the first trick; thereafter the winner of each trick leads to the next. Players must follow suit if possible, or trump if void in the led suit; when able they must head the trick (beat the current winning card). Four tricks are played per round. Each trick won pays one quarter of the pot (Pinke); a player who joins but takes no tricks pays a bête (equal to the pot); the sneaker with only one trick pays a bête, and with zero tricks pays double bête (Mauschelbete).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mauscheln.setup.players',
+        title: 'Players',
+        text: 'Mauscheln is played by 3 to 5 players. A 32-card German-suited pack is standard; with more players a 52-card French pack may be used. Each player receives 4 cards (dealt 2+2); one card is turned for trump and the remainder form the talon.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mauscheln.setup.deck',
+        title: 'Deck',
+        text: '32 cards. Ranking: Ace (High), King, Queen/Over, Jack/Under, 10, 9, 8, 7.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mauscheln.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards; chips or coins for the pot (Pinke).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mauscheln.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer places a fixed stake (e.g., 4 coins) in the pot (Pinke). Each player gets 4 cards (2+2). A trump card is turned up.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mauscheln.score.win-condition',
+        title: 'Win condition',
+        text: "Win as many tricks as possible, provided you win at least TWO if you 'Sneak', or ONE if you simply 'Play'.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mauscheln.score.description',
+        title: 'Scoring',
+        text: "Win as many tricks as possible, provided you win at least TWO if you 'Sneak', or ONE if you simply 'Play'.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mauscheln.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Forehand leads bidding: announce sneak (commit to win at least 2 tricks) or pass (drop out). If all pass, cards are thrown in and next player pays 4 chips to pot and deals.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'mauscheln.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Once someone sneaks, others may pass (fold) or play along (Mitgehen). If all fold, sneaker takes pot without play.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'mauscheln.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Active players may exchange up to 4 cards with the talon before play.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'mauscheln.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Sneaker leads first trick; winner of each trick leads the next. Must follow suit; if void must trump; must head the trick if able.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'mauscheln.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Each trick wins 1/4 of the Pinke. Joining but taking 0 tricks pays a bête (equal to pot). Sneaker with only 1 trick pays bête; with 0 tricks pays double bête (Mauschelbete).',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mauscheln.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mauscheln.rules.objective',
+          'mauscheln.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mauscheln.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mauscheln.setup.players',
+          'mauscheln.setup.deck',
+          'mauscheln.setup.equipment',
+          'mauscheln.setup.dealing',
+        ],
+      },
+      {
+        id: 'mauscheln.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mauscheln.rules.key.1',
+          'mauscheln.rules.key.2',
+          'mauscheln.rules.key.3',
+          'mauscheln.rules.key.4',
+          'mauscheln.rules.key.5',
+        ],
+      },
+      {
+        id: 'mauscheln.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mauscheln.score.description',
+          'mauscheln.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mauscheln.setup.dealing',
+        'mauscheln.rules.objective',
+      ],
+      play_card: [
+        'mauscheln.rules.gameplay',
+      ],
+      pass: [
+        'mauscheln.rules.gameplay',
+      ],
+      mauscheln_sneak: [
+        'mauscheln.rules.gameplay',
+      ],
+      mauscheln_mitgehen: [
+        'mauscheln.rules.gameplay',
+      ],
+    },
   },
 }

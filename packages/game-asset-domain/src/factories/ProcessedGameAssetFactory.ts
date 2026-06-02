@@ -184,6 +184,59 @@ function firstPublicText(...values: unknown[]): string {
   return '';
 }
 
+function asOptionalNumber(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+function firstNumber(...values: unknown[]): number | null {
+  for (const value of values) {
+    const numberValue = asOptionalNumber(value);
+    if (numberValue !== null) {
+      return numberValue;
+    }
+  }
+  return null;
+}
+
+function formatPlayerRange(minPlayers: number | null, maxPlayers: number | null): string {
+  if (minPlayers !== null && maxPlayers !== null) {
+    return minPlayers === maxPlayers ? `${minPlayers}` : `${minPlayers}-${maxPlayers}`;
+  }
+  return `${minPlayers ?? maxPlayers ?? 'unknown'}`;
+}
+
+function firstNumberFromText(text: unknown, pattern: RegExp): number | null {
+  const match = publicText(text).match(pattern);
+  if (!match?.[1]) {
+    return null;
+  }
+  const parsed = Number(match[1]);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function buildDealSummary(game: Game, initialHandSize: number | null): string {
+  const deals = Array.from(game.setup.dealing.matchAll(/(\d+)(?:\s*-\s*(\d+))?\s+players?\s+(\d+)\s+cards?\s+each/gi))
+    .map((match) => {
+      const players = match[2] ? `${match[1]}-${match[2]} players` : `${match[1]} players`;
+      return `${players}: ${match[3]} cards`;
+    });
+  if (deals.length > 0) {
+    return deals.join('; ');
+  }
+  const sourceDeal = publicText(game.setup.dealing.replace(/\s+/g, ' '));
+  if (sourceDeal) {
+    return sourceDeal;
+  }
+  if (initialHandSize !== null) {
+    return `${initialHandSize} card(s) per player`;
+  }
+  return firstPublicText(game.setup.dealing.replace(/\s+/g, ' '), 'deal policy requires source review');
+}
+
+function cleanRuleExampleText(value: string): string {
+  return value.replace(/\bnull\b/gi, 'none');
+}
+
 function publicSetupEquipment(game: Game): string {
   return firstPublicText(game.setup.equipment, game.setup.deck, game.overview.deck);
 }
@@ -510,8 +563,120 @@ function buildAiConsiderations(game: Game): string[] {
     .slice(0, 4);
 }
 
-function buildRulesAudienceText(game: Game, prompt: unknown): string {
-  return firstPublicText(prompt, game.rules.gameplay, game.rules.objective, game.overview.description);
+function authoredRule(id: string, title: string, text: unknown, sourcePath: string): Record<string, unknown> | null {
+  const publicRuleText = publicText(text);
+  if (!publicRuleText) {
+    return null;
+  }
+  return {
+    id,
+    title,
+    text: publicRuleText,
+    sourceFields: [sourcePath],
+  };
+}
+
+function buildRuleRecords(game: Game, slug: string): Record<string, unknown>[] {
+  return [
+    authoredRule(`${slug}.rules.objective`, 'Objective', game.rules.objective, 'rules.objective'),
+    authoredRule(`${slug}.rules.gameplay`, 'Turn flow', game.rules.gameplay, 'rules.gameplay'),
+    authoredRule(`${slug}.setup.players`, 'Players', game.setup.players, 'setup.players'),
+    authoredRule(`${slug}.setup.deck`, 'Deck', game.setup.deck, 'setup.deck'),
+    authoredRule(`${slug}.setup.equipment`, 'Equipment', publicSetupEquipment(game), 'setup.equipment'),
+    authoredRule(`${slug}.setup.dealing`, 'Deal', game.setup.dealing, 'setup.dealing'),
+    authoredRule(`${slug}.score.win-condition`, 'Win condition', game.scoring.winCondition, 'scoring.winCondition'),
+    authoredRule(`${slug}.score.description`, 'Scoring', game.scoring.description, 'scoring.description'),
+    ...game.rules.keyRules.map((ruleText, index) => (
+      authoredRule(`${slug}.rules.key.${index + 1}`, `Key rule ${index + 1}`, ruleText, `rules.keyRules.${index}`)
+    )),
+  ].filter((rule): rule is Record<string, unknown> => rule !== null);
+}
+
+function buildRuleGroups(game: Game, slug: string): Record<string, unknown>[] {
+  const keyRuleIds = game.rules.keyRules
+    .map((ruleText, index) => publicText(ruleText) ? `${slug}.rules.key.${index + 1}` : '')
+    .filter(Boolean);
+  return [
+    {
+      id: `${slug}.group.overview`,
+      label: 'Objective',
+      ruleIds: [`${slug}.rules.objective`, `${slug}.rules.gameplay`],
+    },
+    {
+      id: `${slug}.group.setup`,
+      label: 'Setup',
+      ruleIds: [
+        `${slug}.setup.players`,
+        `${slug}.setup.deck`,
+        `${slug}.setup.equipment`,
+        `${slug}.setup.dealing`,
+      ],
+    },
+    ...(keyRuleIds.length > 0
+      ? [{
+          id: `${slug}.group.key-rules`,
+          label: 'Key Rules',
+          ruleIds: keyRuleIds,
+        }]
+      : []),
+    {
+      id: `${slug}.group.scoring`,
+      label: 'Scoring',
+      ruleIds: [`${slug}.score.description`, `${slug}.score.win-condition`],
+    },
+  ];
+}
+
+function buildActionRuleLinks(game: Game, slug: string): Record<string, string[]> {
+  const links: Record<string, string[]> = {
+    [SETUP_ROUND_ACTION_ID]: [`${slug}.setup.dealing`, `${slug}.rules.objective`],
+  };
+  for (const [actionId, action] of Object.entries(game.engine.playerActions)) {
+    if ((action as { supported?: boolean }).supported === true) {
+      links[actionId] = [`${slug}.rules.gameplay`];
+    }
+  }
+  for (const action of normalizeCustomActions(game.engine.customActions)) {
+    if (typeof action.id === 'string' && action.supported === true) {
+      links[action.id] = [`${slug}.rules.gameplay`];
+    }
+  }
+  return links;
+}
+
+function buildScoringRules(game: Game, sourceCardValues: Record<string, unknown> | null): Record<string, unknown> {
+  return {
+    summary: game.scoring.description,
+    winCondition: game.scoring.winCondition,
+    targetScore: game.scoring.targetScore,
+    scoringDirection: game.scoring.scoringDirection,
+    cardValues: game.scoring.cardValues,
+    ...(sourceCardValues ? { sourceCardValues } : {}),
+    nullReasons: game.scoring.nullReasons ?? {},
+    splitRules: game.scoring.splitRules ?? null,
+    sourceFields: [
+      'scoring.description',
+      'scoring.winCondition',
+      'scoring.cardValues',
+      'scoring.targetScore',
+      'scoring.scoringDirection',
+      'scoring.nullReasons',
+      'scoring.splitRules',
+    ],
+  };
+}
+
+function buildCanonicalRulesAudienceText(game: Game): string {
+  return firstPublicText(game.rules.gameplay, game.rules.objective, game.overview.description);
+}
+
+function buildCanonicalTagline(game: Game): string {
+  const description = publicText(game.overview.description);
+  if (description.length <= 140) {
+    return description;
+  }
+  const sentence = description.match(/^.{40,140}?[.!?](?:\s|$)/)?.[0]?.trim();
+  return sentence || description.slice(0, 137).trimEnd() + '...';
 }
 
 function buildStrategySummary(game: Game): string {
@@ -543,6 +708,7 @@ function buildEditorOnlyMetadata(game: Game): Record<string, unknown> {
       ],
       reviewedAt: null,
       reviewer: null,
+      verifiedChecks: [],
       notes: [],
     },
     sources: game.sources,
@@ -708,14 +874,20 @@ function buildValidationExamples(game: Game, slug: string): Record<string, unkno
 
 function buildRuleExampleHands(game: Game): string[] {
   const firstPhase = normalizePhaseFlowPhases(game.engine.phases)[0];
+  const minPlayers = firstNumber(game.engine.playerConfig.minPlayers, game.overview.players.minPlayers);
+  const maxPlayers = firstNumber(game.engine.playerConfig.maxPlayers, game.overview.players.maxPlayers);
+  const initialHandSize = firstNumber(game.engine.initialHandSize, firstNumberFromText(game.setup.dealing, /(\d+)\s+cards?\s+each/i));
+  const deckCount = firstNumber(game.engine.deckCount, firstNumberFromText(game.setup.deck, /Number of Decks:\s*(\d+)/i), 1);
+  const dealSummary = buildDealSummary(game, initialHandSize);
+  const initialVisibility = firstPublicText(game.engine.cardVisibility.initialDeal, 'face_down');
   return [
-    `Opening deal: ${game.engine.playerConfig.minPlayers}-${game.engine.playerConfig.maxPlayers} player(s), ${game.engine.initialHandSize} card(s) per player, ${game.engine.deckCount} deck(s), initial visibility ${game.engine.cardVisibility.initialDeal}.`,
-    `Opening setup: ${SETUP_ROUND_ACTION_ID} runs before player action so the initial deal can be asserted by playtests.`,
+    `Setup example: ${formatPlayerRange(minPlayers, maxPlayers)} players; ${dealSummary}; ${deckCount} deck; initial visibility ${initialVisibility}.`,
+    `Rule example: ${game.rules.objective}`,
     firstPhase
-      ? `First playable flow: enter ${firstPhase.id}; ${firstPhase.actor} may use ${Array.isArray(firstPhase.legalActions) ? firstPhase.legalActions.join(', ') : ''} before ${firstPhase.nextPhase ?? 'round end'}.`
+      ? `Turn-flow example: ${game.rules.gameplay}`
       : '',
-    `Scoring check: ${game.scoring.description} Expected outcome: ${stringifyUnknown(game.scoring.targetScore ?? game.scoring.winCondition)}.`,
-  ].map(publicText).filter(Boolean);
+    `Scoring example: ${game.scoring.description} ${stringifyUnknown(game.scoring.winCondition)}.`,
+  ].map(cleanRuleExampleText).map(publicText).filter(Boolean);
 }
 
 function asMechanicsRecord(value: unknown, fallbackKey: string): Record<string, unknown> {
@@ -1024,7 +1196,8 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
   const rankingAsset = getCardRankingReference(deckEnvelope);
   const carouselData = buildFallbackCarouselData(game, slug, category);
   const numericCardValues = normalizeNumericRecord(game.scoring.cardValues);
-  const scoringRules = buildScoringRulesSourceCardValues(game.scoring.cardValues, numericCardValues);
+  const sourceCardValues = buildScoringRulesSourceCardValues(game.scoring.cardValues, numericCardValues);
+  const scoringRules = buildScoringRules(game, sourceCardValues);
   const playerActions = buildRuntimeActionRecords(game);
   const customActions = normalizeCustomActions(game.engine.customActions);
   const phases = buildRuntimePhases(game);
@@ -1037,8 +1210,8 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
     mechanicsModelDataOverrides: buildMechanicsModelDataOverrides(game, slug, linkedDeckAsset, rankingAsset),
     assetDataOverrides: {
       rules: {
-        LLM: buildRulesAudienceText(game, game.prompts.ai),
-        Player: buildRulesAudienceText(game, game.prompts.human),
+        LLM: buildCanonicalRulesAudienceText(game),
+        Player: buildCanonicalRulesAudienceText(game),
         objective: game.rules.objective,
         gameplay: game.rules.gameplay,
         keyRules: game.rules.keyRules,
@@ -1051,6 +1224,9 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
         turnFlow: game.rules.gameplay,
         moveValidityConditions: buildMoveValidityConditions(game),
         exampleHands: buildRuleExampleHands(game),
+        rules: buildRuleRecords(game, slug),
+        ruleGroups: buildRuleGroups(game, slug),
+        actionRuleLinks: buildActionRuleLinks(game, slug),
         bonusRules: '',
         bonusRuleGuids: [],
         useTrump: game.engine.useTrump,
@@ -1070,7 +1246,7 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
       scoring: {
         rankingAsset,
         scoringType: deriveScoringType(game),
-        ...(scoringRules ? { scoringRules } : {}),
+        scoringRules,
         description: game.scoring.description,
         winCondition: game.scoring.winCondition,
         cardValues: numericCardValues,
@@ -1080,13 +1256,13 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
       },
       gameInfo: {
         hero: {
-          title: game.synthesis.hero.title || game.name,
-          subtitle: game.synthesis.hero.subtitle || gameCategory,
+          title: game.name,
+          subtitle: gameCategory,
         },
         description: game.overview.description,
-        LLM: game.prompts.ai || game.overview.description,
-        Player: game.prompts.human || game.overview.description,
-        tagline: game.synthesis.hero.tagline || game.overview.description.slice(0, 140),
+        LLM: game.overview.description,
+        Player: game.overview.description,
+        tagline: buildCanonicalTagline(game),
         tags: Array.from(new Set(['card-game', ...game.tags])),
         minPlayers: game.overview.players.minPlayers,
         maxPlayers: game.overview.players.maxPlayers,

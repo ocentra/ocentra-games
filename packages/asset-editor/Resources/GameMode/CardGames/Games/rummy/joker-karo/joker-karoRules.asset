@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Joker Karo. Objective: Be the first to discard all cards by forming valid melds (sets and sequences) on the table.',
-    Player: 'Joker Karo: play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: '1. Draw a card from the deck or discard pile.\n2. Meld cards if possible (first meld must be worth 30+ points).\n3. **Joker Exchange**: If a Joker is on the table representing a 7 of Hearts, and you have the 7 of Hearts, you can swap them and keep the Joker for yourself.\n4. Discard one card to end turn.',
+    Player: '1. Draw a card from the deck or discard pile.\n2. Meld cards if possible (first meld must be worth 30+ points).\n3. **Joker Exchange**: If a Joker is on the table representing a 7 of Hearts, and you have the 7 of Hearts, you can swap them and keep the Joker for yourself.\n4. Discard one card to end turn.',
     objective: 'Be the first to discard all cards by forming valid melds (sets and sequences) on the table.',
     gameplay: '1. Draw a card from the deck or discard pile.\n2. Meld cards if possible (first meld must be worth 30+ points).\n3. **Joker Exchange**: If a Joker is on the table representing a 7 of Hearts, and you have the 7 of Hearts, you can swap them and keep the Joker for yourself.\n4. Discard one card to end turn.',
     keyRules: [
@@ -52,10 +52,150 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Numbered cards (2-10) = face value. Expected outcome: NA.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Be the first to discard all cards by forming valid melds (sets and sequences) on the table.',
+      'Turn-flow example: 1. Draw a card from the deck or discard pile.\n2. Meld cards if possible (first meld must be worth 30+ points).\n3. **Joker Exchange**: If a Joker is on the table representing a 7 of Hearts, and you have the 7 of Hearts, you can swap them and keep the Joker for yourself.\n4. Discard one card to end turn.',
+      'Scoring example: Numbered cards (2-10) = face value. Be the first to discard all cards by forming valid melds (sets and sequences) on the table..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'joker-karo.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to discard all cards by forming valid melds (sets and sequences) on the table.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'joker-karo.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Draw a card from the deck or discard pile.\n2. Meld cards if possible (first meld must be worth 30+ points).\n3. **Joker Exchange**: If a Joker is on the table representing a 7 of Hearts, and you have the 7 of Hearts, you can swap them and keep the Joker for yourself.\n4. Discard one card to end turn.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'joker-karo.setup.players',
+        title: 'Players',
+        text: 'Usually 2 to 4 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'joker-karo.setup.deck',
+        title: 'Deck',
+        text: 'Two standard decks plus 6 Jokers (Total 110 cards).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'joker-karo.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard decks plus 6 Jokers (Total 110 cards).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'joker-karo.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 13 cards to each player. Remaining cards form a draw pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'joker-karo.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first to discard all cards by forming valid melds (sets and sequences) on the table.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'joker-karo.score.description',
+        title: 'Scoring',
+        text: 'Numbered cards (2-10) = face value.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'joker-karo.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Joker Karo.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'joker-karo.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: Numbered cards (2-10) = face value.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'joker-karo.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Be the first to discard all cards by forming valid melds (sets and sequences) on the table.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'joker-karo.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'joker-karo.rules.objective',
+          'joker-karo.rules.gameplay',
+        ],
+      },
+      {
+        id: 'joker-karo.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'joker-karo.setup.players',
+          'joker-karo.setup.deck',
+          'joker-karo.setup.equipment',
+          'joker-karo.setup.dealing',
+        ],
+      },
+      {
+        id: 'joker-karo.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'joker-karo.rules.key.1',
+          'joker-karo.rules.key.2',
+          'joker-karo.rules.key.3',
+        ],
+      },
+      {
+        id: 'joker-karo.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'joker-karo.score.description',
+          'joker-karo.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'joker-karo.setup.dealing',
+        'joker-karo.rules.objective',
+      ],
+      deal: [
+        'joker-karo.rules.gameplay',
+      ],
+      play_card: [
+        'joker-karo.rules.gameplay',
+      ],
+    },
   },
 }

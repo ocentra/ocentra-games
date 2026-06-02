@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players use constructed or starter decks, play cards for characters, resources, and effects from the Imajica setting, and resolve contests according to the published CCG rules.',
+    Player: 'Players use constructed or starter decks, play cards for characters, resources, and effects from the Imajica setting, and resolve contests according to the published CCG rules.',
     objective: 'Use a customized deck to pursue the published Imajica CCG victory condition against one or more opponents.',
     gameplay: 'Players use constructed or starter decks, play cards for characters, resources, and effects from the Imajica setting, and resolve contests according to the published CCG rules.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Use a customized deck to pursue the published Imajica CCG victory condition against one or more opponents.',
+      'Turn-flow example: Players use constructed or starter decks, play cards for characters, resources, and effects from the Imajica setting, and resolve contests according to the published CCG rules.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'imajica.rules.objective',
+        title: 'Objective',
+        text: 'Use a customized deck to pursue the published Imajica CCG victory condition against one or more opponents.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'imajica.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players use constructed or starter decks, play cards for characters, resources, and effects from the Imajica setting, and resolve contests according to the published CCG rules.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'imajica.setup.players',
+        title: 'Players',
+        text: '2-6 players use the table arrangement described for Imajica.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'imajica.setup.deck',
+        title: 'Deck',
+        text: 'Commercial Imajica customizable card game decks and boosters',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'imajica.setup.equipment',
+        title: 'Equipment',
+        text: 'Commercial Imajica customizable card game decks and boosters, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'imajica.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Commercial Imajica customizable card game decks and boosters and deal or lay out cards according to the documented Imajica rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'imajica.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'imajica.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'imajica.rules.key.1',
+        title: 'Key rule 1',
+        text: 'This is a collectible/customizable card game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'imajica.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Use metadata only unless licensed card text and art are available.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'imajica.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Implementation should model generic CCG zones and timing before adding proprietary details.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'imajica.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'imajica.rules.objective',
+          'imajica.rules.gameplay',
+        ],
+      },
+      {
+        id: 'imajica.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'imajica.setup.players',
+          'imajica.setup.deck',
+          'imajica.setup.equipment',
+          'imajica.setup.dealing',
+        ],
+      },
+      {
+        id: 'imajica.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'imajica.rules.key.1',
+          'imajica.rules.key.2',
+          'imajica.rules.key.3',
+        ],
+      },
+      {
+        id: 'imajica.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'imajica.score.description',
+          'imajica.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'imajica.setup.dealing',
+        'imajica.rules.objective',
+      ],
+      play_card: [
+        'imajica.rules.gameplay',
+      ],
+    },
   },
 }

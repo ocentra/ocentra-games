@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Evolution The Origin of Species. Logic: Score best from surviving species, population, and traits after the final round.',
-    Player: 'Evolution The Origin of Species is a commercial card game where players give species traits and compete for food and survival.',
+    LLM: 'Players create species, add traits, reveal food, feed herbivores or carnivores, resolve attacks, and score surviving species when the deck ends.',
+    Player: 'Players create species, add traits, reveal food, feed herbivores or carnivores, resolve attacks, and score surviving species when the deck ends.',
     objective: 'Score best from surviving species, population, and traits after the final round.',
     gameplay: 'Players create species, add traits, reveal food, feed herbivores or carnivores, resolve attacks, and score surviving species when the deck ends.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Final score comes from surviving species and trait values; highest total wins. Expected outcome: Score best from surviving species, population, and traits after the final round..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Score best from surviving species, population, and traits after the final round.',
+      'Turn-flow example: Players create species, add traits, reveal food, feed herbivores or carnivores, resolve attacks, and score surviving species when the deck ends.',
+      'Scoring example: Final score comes from surviving species and trait values; highest total wins. Score best from surviving species, population, and traits after the final round..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'evolution-the-origin-of-species.rules.objective',
+        title: 'Objective',
+        text: 'Score best from surviving species, population, and traits after the final round.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'evolution-the-origin-of-species.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players create species, add traits, reveal food, feed herbivores or carnivores, resolve attacks, and score surviving species when the deck ends.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'evolution-the-origin-of-species.setup.players',
+        title: 'Players',
+        text: '2-4 players use the table arrangement described for Evolution The Origin of Species.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'evolution-the-origin-of-species.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Evolution trait card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'evolution-the-origin-of-species.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Evolution trait card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'evolution-the-origin-of-species.setup.dealing',
+        title: 'Deal',
+        text: 'Deal trait cards to players and set up the shared food supply according to player count.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'evolution-the-origin-of-species.score.win-condition',
+        title: 'Win condition',
+        text: 'Score best from surviving species, population, and traits after the final round.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'evolution-the-origin-of-species.score.description',
+        title: 'Scoring',
+        text: 'Final score comes from surviving species and trait values; highest total wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'evolution-the-origin-of-species.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dedicated trait cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'evolution-the-origin-of-species.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Species compete for food.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'evolution-the-origin-of-species.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Carnivores may attack.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'evolution-the-origin-of-species.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Traits create defensive and feeding abilities.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'evolution-the-origin-of-species.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Final survival score wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'evolution-the-origin-of-species.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'evolution-the-origin-of-species.rules.objective',
+          'evolution-the-origin-of-species.rules.gameplay',
+        ],
+      },
+      {
+        id: 'evolution-the-origin-of-species.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'evolution-the-origin-of-species.setup.players',
+          'evolution-the-origin-of-species.setup.deck',
+          'evolution-the-origin-of-species.setup.equipment',
+          'evolution-the-origin-of-species.setup.dealing',
+        ],
+      },
+      {
+        id: 'evolution-the-origin-of-species.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'evolution-the-origin-of-species.rules.key.1',
+          'evolution-the-origin-of-species.rules.key.2',
+          'evolution-the-origin-of-species.rules.key.3',
+          'evolution-the-origin-of-species.rules.key.4',
+          'evolution-the-origin-of-species.rules.key.5',
+        ],
+      },
+      {
+        id: 'evolution-the-origin-of-species.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'evolution-the-origin-of-species.score.description',
+          'evolution-the-origin-of-species.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'evolution-the-origin-of-species.setup.dealing',
+        'evolution-the-origin-of-species.rules.objective',
+      ],
+      play_card: [
+        'evolution-the-origin-of-species.rules.gameplay',
+      ],
+    },
   },
 }

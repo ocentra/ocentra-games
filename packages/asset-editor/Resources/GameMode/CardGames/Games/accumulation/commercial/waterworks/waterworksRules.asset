@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Twenty-Four. Logic: See rules.objective and rules.gameplay.',
-    Player: '24 is a mathematical card game: use four numbers (from four cards) and only +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· (and parentheses) to make exactly 24. All four numbers must be used once. First to call a correct solution wins the four cards (or they go to opponent); play until one player has no cards. Popular in China since at least the 1960s (Shanghai); also played in North America.',
+    LLM: 'Players build their own pipelines from pipe cards while opponents play leaks to disrupt them. Wrench cards or repairs are used to fix leaks and continue building.',
+    Player: 'Players build their own pipelines from pipe cards while opponents play leaks to disrupt them. Wrench cards or repairs are used to fix leaks and continue building.',
     objective: 'Complete a continuous leak-free pipeline of the required length before the other players.',
     gameplay: 'Players build their own pipelines from pipe cards while opponents play leaks to disrupt them. Wrench cards or repairs are used to fix leaks and continue building.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: None; win = other player has no cards. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Complete a continuous leak-free pipeline of the required length before the other players.',
+      'Turn-flow example: Players build their own pipelines from pipe cards while opponents play leaks to disrupt them. Wrench cards or repairs are used to fix leaks and continue building.',
+      "Scoring example: None; win = other player has no cards. Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'waterworks.rules.objective',
+        title: 'Objective',
+        text: 'Complete a continuous leak-free pipeline of the required length before the other players.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'waterworks.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players build their own pipelines from pipe cards while opponents play leaks to disrupt them. Wrench cards or repairs are used to fix leaks and continue building.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'waterworks.setup.players',
+        title: 'Players',
+        text: '2-5 players use the table arrangement described for Waterworks.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'waterworks.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Waterworks pipe and leak card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'waterworks.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Waterworks pipe and leak card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'waterworks.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Waterworks pipe and leak card deck and deal or lay out cards according to the documented Waterworks rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'waterworks.score.win-condition',
+        title: 'Win condition',
+        text: "Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'waterworks.score.description',
+        title: 'Scoring',
+        text: 'None; win = other player has no cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'waterworks.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Each player builds a valve-to-spout pipeline.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'waterworks.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Opponents can play leak cards onto your pipes.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'waterworks.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Leaks must be fixed before the pipeline can be completed.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'waterworks.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'waterworks.rules.objective',
+          'waterworks.rules.gameplay',
+        ],
+      },
+      {
+        id: 'waterworks.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'waterworks.setup.players',
+          'waterworks.setup.deck',
+          'waterworks.setup.equipment',
+          'waterworks.setup.dealing',
+        ],
+      },
+      {
+        id: 'waterworks.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'waterworks.rules.key.1',
+          'waterworks.rules.key.2',
+          'waterworks.rules.key.3',
+        ],
+      },
+      {
+        id: 'waterworks.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'waterworks.score.description',
+          'waterworks.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'waterworks.setup.dealing',
+        'waterworks.rules.objective',
+      ],
+      play_card: [
+        'waterworks.rules.gameplay',
+      ],
+    },
   },
 }

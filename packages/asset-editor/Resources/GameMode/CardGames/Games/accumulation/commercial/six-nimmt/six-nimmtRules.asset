@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Six Nimmt. Logic: Finish with the fewest bullhead penalty points after the agreed number of rounds.',
-    Player: 'Six Nimmt is a commercial card game where players secretly choose numbered cards to place into ascending rows while avoiding taking rows full of bullhead penalties.',
+    LLM: 'Each player chooses one card face down, then all are revealed and placed from lowest to highest into the legal row whose end card is nearest below it. If a card would be the sixth in a row, the player takes the row as penalties and starts a new row.',
+    Player: 'Each player chooses one card face down, then all are revealed and placed from lowest to highest into the legal row whose end card is nearest below it. If a card would be the sixth in a row, the player takes the row as penalties and starts a new row.',
     objective: 'Finish with the fewest bullhead penalty points after the agreed number of rounds.',
     gameplay: 'Each player chooses one card face down, then all are revealed and placed from lowest to highest into the legal row whose end card is nearest below it. If a card would be the sixth in a row, the player takes the row as penalties and starts a new row.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Bullhead icons on collected cards are penalty points; lowest total wins. Expected outcome: Finish with the fewest bullhead penalty points after the agreed number of rounds..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Finish with the fewest bullhead penalty points after the agreed number of rounds.',
+      'Turn-flow example: Each player chooses one card face down, then all are revealed and placed from lowest to highest into the legal row whose end card is nearest below it. If a card would be the sixth in a row, the player takes the row as penalties and starts a new row.',
+      'Scoring example: Bullhead icons on collected cards are penalty points; lowest total wins. Finish with the fewest bullhead penalty points after the agreed number of rounds..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'six-nimmt.rules.objective',
+        title: 'Objective',
+        text: 'Finish with the fewest bullhead penalty points after the agreed number of rounds.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'six-nimmt.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Each player chooses one card face down, then all are revealed and placed from lowest to highest into the legal row whose end card is nearest below it. If a card would be the sixth in a row, the player takes the row as penalties and starts a new row.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'six-nimmt.setup.players',
+        title: 'Players',
+        text: 'Two to ten players each receive a hand of numbered cards.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'six-nimmt.setup.deck',
+        title: 'Deck',
+        text: 'Use the dedicated numbered deck with printed bullhead values.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'six-nimmt.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated numbered deck from 1 to 104 with bullhead penalty icons, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'six-nimmt.setup.dealing',
+        title: 'Deal',
+        text: 'Deal hands and lay four starting row cards face up.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'six-nimmt.score.win-condition',
+        title: 'Win condition',
+        text: 'Finish with the fewest bullhead penalty points after the agreed number of rounds.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'six-nimmt.score.description',
+        title: 'Scoring',
+        text: 'Bullhead icons on collected cards are penalty points; lowest total wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'six-nimmt.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Cards are selected simultaneously.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'six-nimmt.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Revealed cards resolve from lowest to highest.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'six-nimmt.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Cards must extend the nearest lower row end.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'six-nimmt.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Taking a sixth card row gives all its bullhead penalties.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'six-nimmt.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'six-nimmt.rules.objective',
+          'six-nimmt.rules.gameplay',
+        ],
+      },
+      {
+        id: 'six-nimmt.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'six-nimmt.setup.players',
+          'six-nimmt.setup.deck',
+          'six-nimmt.setup.equipment',
+          'six-nimmt.setup.dealing',
+        ],
+      },
+      {
+        id: 'six-nimmt.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'six-nimmt.rules.key.1',
+          'six-nimmt.rules.key.2',
+          'six-nimmt.rules.key.3',
+          'six-nimmt.rules.key.4',
+        ],
+      },
+      {
+        id: 'six-nimmt.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'six-nimmt.score.description',
+          'six-nimmt.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'six-nimmt.setup.dealing',
+        'six-nimmt.rules.objective',
+      ],
+      play_card: [
+        'six-nimmt.rules.gameplay',
+      ],
+    },
   },
 }

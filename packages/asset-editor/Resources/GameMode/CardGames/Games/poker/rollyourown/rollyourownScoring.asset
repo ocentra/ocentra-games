@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Standard Poker hand rankings (Royal Flush down to High Card). Dakota uses Hi-Lo split.',
+      winCondition: 'Highest 5-card hand (Standard) or High-Low split (Dakota).',
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: 'This poker variant resolves each hand independently without a fixed cumulative target score.',
+        cardValues: 'Poker uses hand rankings (e.g. flush, full house), not per-card point values.',
+      },
+      splitRules: 'In Dakota, the pot is split 50/50 between the best High hand and best Low hand.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'poker_ranking',
     patternMultipliers: null,
     priorityOrder: [],

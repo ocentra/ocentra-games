@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Differenzler Jass. Bid first, play trump tricks, score by difference between bid and actual result.',
-    Player: 'Bid carefully, then play tricks to match your declared result as closely as possible.',
+    LLM: "Trump suit is set by the suit of the bottom card of the cut packet. Beginning with the player to dealer's right and continuing clockwise, each player predicts a card-point total from 0 to 157. Play then proceeds anticlockwise with the player to dealer's right leading first. Usual Swiss Jass trick rules apply, including trump ranking and point values. After all tricks, each player's penalty is the absolute difference between predicted and achieved card points.",
+    Player: "Trump suit is set by the suit of the bottom card of the cut packet. Beginning with the player to dealer's right and continuing clockwise, each player predicts a card-point total from 0 to 157. Play then proceeds anticlockwise with the player to dealer's right leading first. Usual Swiss Jass trick rules apply, including trump ranking and point values. After all tricks, each player's penalty is the absolute difference between predicted and achieved card points.",
     objective: 'Minimize cumulative penalty by predicting your own card-point total as accurately as possible.',
     gameplay: "Trump suit is set by the suit of the bottom card of the cut packet. Beginning with the player to dealer's right and continuing clockwise, each player predicts a card-point total from 0 to 157. Play then proceeds anticlockwise with the player to dealer's right leading first. Usual Swiss Jass trick rules apply, including trump ranking and point values. After all tricks, each player's penalty is the absolute difference between predicted and achieved card points.",
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'The hand ends only after all tricks are completed.',
     },
     exampleHands: [
-      'Opening deal: 3-4 player(s), 9 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before predict_points.',
-      "Scoring check: Each player's hand penalty is the absolute difference between predicted and achieved card points. Lower cumulative penalty is better. Expected outcome: After an agreed equal-dealer session length, the player with the lowest cumulative penalty wins..",
+      'Setup example: 9 card(s) per player.',
+      'Rule example: Minimize cumulative penalty by predicting your own card-point total as accurately as possible.',
+      "Turn-flow example: Trump suit is set by the suit of the bottom card of the cut packet. Beginning with the player to dealer's right and continuing clockwise, each player predicts a card-point total from 0 to 157. Play then proceeds anticlockwise with the player to dealer's right leading first. Usual Swiss Jass trick rules apply, including trump ranking and point values. After all tricks, each player's penalty is the absolute difference between predicted and achieved card points.",
+      "Scoring example: Each player's hand penalty is the absolute difference between predicted and achieved card points. Lower cumulative penalty is better. After an agreed equal-dealer session length, the player with the lowest cumulative penalty wins..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'differenzler.rules.objective',
+        title: 'Objective',
+        text: 'Minimize cumulative penalty by predicting your own card-point total as accurately as possible.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'differenzler.rules.gameplay',
+        title: 'Turn flow',
+        text: "Trump suit is set by the suit of the bottom card of the cut packet. Beginning with the player to dealer's right and continuing clockwise, each player predicts a card-point total from 0 to 157. Play then proceeds anticlockwise with the player to dealer's right leading first. Usual Swiss Jass trick rules apply, including trump ranking and point values. After all tricks, each player's penalty is the absolute difference between predicted and achieved card points.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'differenzler.setup.players',
+        title: 'Players',
+        text: 'Three or four players. Four-player tables are common.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'differenzler.setup.deck',
+        title: 'Deck',
+        text: 'Swiss 36-card Jass deck (or French-suited equivalent regional pack).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'differenzler.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards and score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'differenzler.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer deals all cards in packets of three: 9 each with 4 players, 12 each with 3 players. Trump is determined from the cut card as described in rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'differenzler.score.win-condition',
+        title: 'Win condition',
+        text: 'After an agreed equal-dealer session length, the player with the lowest cumulative penalty wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'differenzler.score.description',
+        title: 'Scoring',
+        text: "Each player's hand penalty is the absolute difference between predicted and achieved card points. Lower cumulative penalty is better.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'differenzler.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Predictions are per player and must be between 0 and 157.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'differenzler.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Trump suit is fixed from the cut card for the hand.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'differenzler.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Scoring is absolute bid difference (exact prediction scores zero).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'differenzler.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Deal and play are anticlockwise and dealer rotates to the right.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'differenzler.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'differenzler.rules.objective',
+          'differenzler.rules.gameplay',
+        ],
+      },
+      {
+        id: 'differenzler.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'differenzler.setup.players',
+          'differenzler.setup.deck',
+          'differenzler.setup.equipment',
+          'differenzler.setup.dealing',
+        ],
+      },
+      {
+        id: 'differenzler.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'differenzler.rules.key.1',
+          'differenzler.rules.key.2',
+          'differenzler.rules.key.3',
+          'differenzler.rules.key.4',
+        ],
+      },
+      {
+        id: 'differenzler.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'differenzler.score.description',
+          'differenzler.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'differenzler.setup.dealing',
+        'differenzler.rules.objective',
+      ],
+      deal: [
+        'differenzler.rules.gameplay',
+      ],
+      award_pot: [
+        'differenzler.rules.gameplay',
+      ],
+      play_card: [
+        'differenzler.rules.gameplay',
+      ],
+      bid: [
+        'differenzler.rules.gameplay',
+      ],
+    },
   },
 }

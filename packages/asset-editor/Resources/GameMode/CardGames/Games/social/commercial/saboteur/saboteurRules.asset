@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 52 Pick-up. Logic: See rules.objective and rules.gameplay.',
-    Player: '52 Pick-up is a social prank using a standard pack: one player offers a game, scatters the cards, and the other player is left to pick them up. It is recorded as a social card-game joke rather than a strategic contest.',
+    LLM: 'Players receive secret roles and hands of path or action cards. On each turn a player plays a path card, plays an action card to help or hinder, or discards and draws. The round score depends on whether a valid path reaches the treasure.',
+    Player: 'Players receive secret roles and hands of path or action cards. On each turn a player plays a path card, plays an action card to help or hinder, or discards and draws. The round score depends on whether a valid path reaches the treasure.',
     objective: 'Miners try to complete a path to the gold while saboteurs try to prevent the route before the deck runs out.',
     gameplay: 'Players receive secret roles and hands of path or action cards. On each turn a player plays a path card, plays an action card to help or hinder, or discards and draws. The round score depends on whether a valid path reaches the treasure.',
     keyRules: [
@@ -52,10 +52,150 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 3-10 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: No scoring; the activity ends when the deck has been picked up. Expected outcome: 1.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Miners try to complete a path to the gold while saboteurs try to prevent the route before the deck runs out.',
+      'Turn-flow example: Players receive secret roles and hands of path or action cards. On each turn a player plays a path card, plays an action card to help or hinder, or discards and draws. The round score depends on whether a valid path reaches the treasure.',
+      'Scoring example: No scoring; the activity ends when the deck has been picked up. No formal winner is defined..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'saboteur.rules.objective',
+        title: 'Objective',
+        text: 'Miners try to complete a path to the gold while saboteurs try to prevent the route before the deck runs out.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'saboteur.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players receive secret roles and hands of path or action cards. On each turn a player plays a path card, plays an action card to help or hinder, or discards and draws. The round score depends on whether a valid path reaches the treasure.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'saboteur.setup.players',
+        title: 'Players',
+        text: '3-10 players use the table arrangement described for Saboteur.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'saboteur.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Saboteur path, role, and action card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'saboteur.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Saboteur path, role, and action card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'saboteur.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Saboteur path, role, and action card deck and deal or lay out cards according to the documented Saboteur rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'saboteur.score.win-condition',
+        title: 'Win condition',
+        text: 'No formal winner is defined.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'saboteur.score.description',
+        title: 'Scoring',
+        text: 'No scoring; the activity ends when the deck has been picked up.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'saboteur.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Roles are hidden as Miner or Saboteur.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'saboteur.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Path cards must connect legally to the existing tunnel network.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'saboteur.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Action cards can block, repair, or manipulate other players.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'saboteur.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'saboteur.rules.objective',
+          'saboteur.rules.gameplay',
+        ],
+      },
+      {
+        id: 'saboteur.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'saboteur.setup.players',
+          'saboteur.setup.deck',
+          'saboteur.setup.equipment',
+          'saboteur.setup.dealing',
+        ],
+      },
+      {
+        id: 'saboteur.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'saboteur.rules.key.1',
+          'saboteur.rules.key.2',
+          'saboteur.rules.key.3',
+        ],
+      },
+      {
+        id: 'saboteur.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'saboteur.score.description',
+          'saboteur.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'saboteur.setup.dealing',
+        'saboteur.rules.objective',
+      ],
+      play_card: [
+        'saboteur.rules.gameplay',
+      ],
+      flip_top_card: [
+        'saboteur.rules.gameplay',
+      ],
+    },
   },
 }

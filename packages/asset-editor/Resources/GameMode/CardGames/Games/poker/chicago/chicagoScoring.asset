@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'High-Low Split pot. 50% to the best poker hand, 50% to the highest spade in the hole (High Chicago) or lowest spade in the hole (Low Chicago).',
+      winCondition: 'Highest poker rank wins the high half; highest (or lowest) qualifying spade in hole wins the spade half.',
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: 'No fixed target score; play by game rules.',
+        cardValues: 'Poker uses hand rankings and spade-in-hole order, not point values.',
+      },
+      splitRules: 'Pot is split 50/50 between best poker hand and best hole spade. One player can win both halves if they have both the best hand and the best hole spade. Odd chips go to the high hand winner.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'poker_ranking',
     patternMultipliers: null,
     priorityOrder: [],

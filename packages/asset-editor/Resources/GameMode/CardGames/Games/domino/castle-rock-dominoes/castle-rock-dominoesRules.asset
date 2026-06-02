@@ -53,10 +53,156 @@
       go_out: 'Hand-end detection is round logic, not a discrete player action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the first player to empty your hand, or minimize remaining pips in a blocked finish.',
+      'Turn-flow example: A starting tile opens the layout. On each turn a player places one legal matching tile to an open end. If a player cannot move, the table profile determines whether they draw from a boneyard or pass. The hand ends when a player goes out or all players are blocked.',
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'castle-rock-dominoes.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to empty your hand, or minimize remaining pips in a blocked finish.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'castle-rock-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: 'A starting tile opens the layout. On each turn a player places one legal matching tile to an open end. If a player cannot move, the table profile determines whether they draw from a boneyard or pass. The hand ends when a player goes out or all players are blocked.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'castle-rock-dominoes.setup.players',
+        title: 'Players',
+        text: '2 to 6 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'castle-rock-dominoes.setup.deck',
+        title: 'Deck',
+        text: 'One double-6 domino set.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'castle-rock-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'Dominoes and table space; optional score sheet for match play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'castle-rock-dominoes.setup.dealing',
+        title: 'Deal',
+        text: 'Deal tiles according to player count; remaining tiles, if any, may form a boneyard by table preference.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'castle-rock-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'castle-rock-dominoes.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'castle-rock-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Tiles must match an exposed pip value at an open end of the layout.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'castle-rock-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: 'A turn normally consists of placing one legal tile.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'castle-rock-dominoes.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Blocked turns resolve via draw-or-pass handling defined by the table profile.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'castle-rock-dominoes.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Hand ends on first empty hand or complete block resolution.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'castle-rock-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'castle-rock-dominoes.rules.objective',
+          'castle-rock-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: 'castle-rock-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'castle-rock-dominoes.setup.players',
+          'castle-rock-dominoes.setup.deck',
+          'castle-rock-dominoes.setup.equipment',
+          'castle-rock-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: 'castle-rock-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'castle-rock-dominoes.rules.key.1',
+          'castle-rock-dominoes.rules.key.2',
+          'castle-rock-dominoes.rules.key.3',
+          'castle-rock-dominoes.rules.key.4',
+        ],
+      },
+      {
+        id: 'castle-rock-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'castle-rock-dominoes.score.description',
+          'castle-rock-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'castle-rock-dominoes.setup.dealing',
+        'castle-rock-dominoes.rules.objective',
+      ],
+      play_card: [
+        'castle-rock-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

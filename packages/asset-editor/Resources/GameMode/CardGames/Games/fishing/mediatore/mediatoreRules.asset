@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points are awarded based on the bid and whether the contract was made. Higher bids score more but are harder to make. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win the majority of the 11 card points available in tricks. The team or player who bid must make their contract.',
+      'Turn-flow example: Play follows Tressette rules: must follow suit if possible, highest card of led suit wins the trick. The 3 is the highest card in each suit.',
+      'Scoring example: Points are awarded based on the bid and whether the contract was made. Higher bids score more but are harder to make. Win at least 6 of the 11 available points in tricks..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'mediatore.rules.objective',
+        title: 'Objective',
+        text: 'Win the majority of the 11 card points available in tricks. The team or player who bid must make their contract.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mediatore.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Play follows Tressette rules: must follow suit if possible, highest card of led suit wins the trick. The 3 is the highest card in each suit.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mediatore.setup.players',
+        title: 'Players',
+        text: '4 players, playing individually or in variable partnerships based on bidding.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mediatore.setup.deck',
+        title: 'Deck',
+        text: '40-card Italian deck (or standard deck minus 8s, 9s, 10s). Suits: Coins, Cups, Swords, Clubs. Ranking: 3 (high), 2, Ace, King, Queen, Jack, 7, 6, 5, 4 (low).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mediatore.setup.equipment',
+        title: 'Equipment',
+        text: '40-card Italian deck or modified standard deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mediatore.setup.dealing',
+        title: 'Deal',
+        text: "9 cards to each player in batches of 3. The remaining 4 cards form the 'monte' (talon) placed face down.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mediatore.score.win-condition',
+        title: 'Win condition',
+        text: 'Win at least 6 of the 11 available points in tricks.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mediatore.score.description',
+        title: 'Scoring',
+        text: 'Points are awarded based on the bid and whether the contract was made. Higher bids score more but are harder to make.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mediatore.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if able',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'mediatore.rules.key.2',
+        title: 'Key rule 2',
+        text: '3 is the highest card in each suit',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'mediatore.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Bidder may exchange with the monte (in most bids)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'mediatore.rules.key.4',
+        title: 'Key rule 4',
+        text: "Partner is determined by called card in 'Chiamo'",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'mediatore.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Need majority of 11 points to win',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mediatore.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mediatore.rules.objective',
+          'mediatore.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mediatore.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mediatore.setup.players',
+          'mediatore.setup.deck',
+          'mediatore.setup.equipment',
+          'mediatore.setup.dealing',
+        ],
+      },
+      {
+        id: 'mediatore.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mediatore.rules.key.1',
+          'mediatore.rules.key.2',
+          'mediatore.rules.key.3',
+          'mediatore.rules.key.4',
+          'mediatore.rules.key.5',
+        ],
+      },
+      {
+        id: 'mediatore.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mediatore.score.description',
+          'mediatore.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mediatore.setup.dealing',
+        'mediatore.rules.objective',
+      ],
+      play_card: [
+        'mediatore.rules.gameplay',
+      ],
+    },
   },
 }

@@ -11,13 +11,40 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Scoring happens the moment a player goes out.',
+      winCondition: 'Lowest total score over several rounds (or first to reach a target point cap).',
+      targetScore: 500,
+      scoringDirection: 'high_wins',
+      cardValues: {
         '3-6': '0.5 points each',
         '7-10, J, Q, K': '1 point each',
         Aces: '1.5 points each',
         Twos: '2 points each',
         Jokers: '4 points each',
       },
+      sourceCardValues: {
+        raw: {
+          '3-6': '0.5 points each',
+          '7-10, J, Q, K': '1 point each',
+          Aces: '1.5 points each',
+          Twos: '2 points each',
+          Jokers: '4 points each',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: 'Individual or Shared Partnership scores.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,

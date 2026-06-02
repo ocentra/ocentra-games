@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Basra. Type: Fishing. Rules: Match Rank or Sum. Jack takes all. 7♦ takes all. Clear table = Basra (+10 pts). Points for cards + Basras.',
-    Player: 'The floor has a 5, an Ace (1), and a 2. You hold an 8. 5+1+2 = 8! Play your 8 to capture all three. Or drop your Jack to sweep everything. Choose wisely—the Basra bonus is at stake.',
+    LLM: "Players take turns playing one card from their hand. 1. **Match**: If your card matches the rank of a card on the floor (e.g., play 5, take 5), you capture it. 2. **Sum**: If your card equals the sum of several cards on the floor (e.g., play 9, take 4+5), you capture them. 3. **The Jack**: Playing a Jack captures ALL cards on the floor (unless the floor is empty). 4. **The 7 of Diamonds**: In most Egyptian variants, the 7♦ (The Komi) acts like a Jack and captures everything, but serves as a 'Basra' if it captures only cards totaling 10 or less visually (rules vary). 5. **Basra Bonus**: If you capture the *entire* floor with a non-Jack card (matching the last card or summing to it), you score a 'Basra' (+10 points).",
+    Player: "Players take turns playing one card from their hand. 1. **Match**: If your card matches the rank of a card on the floor (e.g., play 5, take 5), you capture it. 2. **Sum**: If your card equals the sum of several cards on the floor (e.g., play 9, take 4+5), you capture them. 3. **The Jack**: Playing a Jack captures ALL cards on the floor (unless the floor is empty). 4. **The 7 of Diamonds**: In most Egyptian variants, the 7♦ (The Komi) acts like a Jack and captures everything, but serves as a 'Basra' if it captures only cards totaling 10 or less visually (rules vary). 5. **Basra Bonus**: If you capture the *entire* floor with a non-Jack card (matching the last card or summing to it), you score a 'Basra' (+10 points).",
     objective: "Score points by capturing specific cards (Aces, Jacks, 10♦, 2♣), capturing the most cards overall, and earning 'Basra' bonuses for clearing the table.",
     gameplay: "Players take turns playing one card from their hand. 1. **Match**: If your card matches the rank of a card on the floor (e.g., play 5, take 5), you capture it. 2. **Sum**: If your card equals the sum of several cards on the floor (e.g., play 9, take 4+5), you capture them. 3. **The Jack**: Playing a Jack captures ALL cards on the floor (unless the floor is empty). 4. **The 7 of Diamonds**: In most Egyptian variants, the 7♦ (The Komi) acts like a Jack and captures everything, but serves as a 'Basra' if it captures only cards totaling 10 or less visually (rules vary). 5. **Basra Bonus**: If you capture the *entire* floor with a non-Jack card (matching the last card or summing to it), you score a 'Basra' (+10 points).",
     keyRules: [
@@ -52,10 +52,174 @@
       go_out: 'The hand ends automatically once all players have played their four cards and the stock is empty.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal_round; dealer may use deal_4_cards before play_turn.',
-      'Scoring check: Points are tallied at the end of the game (deck exhaustion). Expected outcome: 101.',
+      'Setup example: 4 card(s) per player.',
+      "Rule example: Score points by capturing specific cards (Aces, Jacks, 10♦, 2♣), capturing the most cards overall, and earning 'Basra' bonuses for clearing the table.",
+      "Turn-flow example: Players take turns playing one card from their hand. 1. **Match**: If your card matches the rank of a card on the floor (e.g., play 5, take 5), you capture it. 2. **Sum**: If your card equals the sum of several cards on the floor (e.g., play 9, take 4+5), you capture them. 3. **The Jack**: Playing a Jack captures ALL cards on the floor (unless the floor is empty). 4. **The 7 of Diamonds**: In most Egyptian variants, the 7♦ (The Komi) acts like a Jack and captures everything, but serves as a 'Basra' if it captures only cards totaling 10 or less visually (rules vary). 5. **Basra Bonus**: If you capture the *entire* floor with a non-Jack card (matching the last card or summing to it), you score a 'Basra' (+10 points).",
+      'Scoring example: Points are tallied at the end of the game (deck exhaustion). First to reach 101 or higher (or highest score after fixed rounds)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'basra.rules.objective',
+        title: 'Objective',
+        text: "Score points by capturing specific cards (Aces, Jacks, 10♦, 2♣), capturing the most cards overall, and earning 'Basra' bonuses for clearing the table.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'basra.rules.gameplay',
+        title: 'Turn flow',
+        text: "Players take turns playing one card from their hand. 1. **Match**: If your card matches the rank of a card on the floor (e.g., play 5, take 5), you capture it. 2. **Sum**: If your card equals the sum of several cards on the floor (e.g., play 9, take 4+5), you capture them. 3. **The Jack**: Playing a Jack captures ALL cards on the floor (unless the floor is empty). 4. **The 7 of Diamonds**: In most Egyptian variants, the 7♦ (The Komi) acts like a Jack and captures everything, but serves as a 'Basra' if it captures only cards totaling 10 or less visually (rules vary). 5. **Basra Bonus**: If you capture the *entire* floor with a non-Jack card (matching the last card or summing to it), you score a 'Basra' (+10 points).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'basra.setup.players',
+        title: 'Players',
+        text: '2 players (head-to-head) or 4 players (partnerships).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'basra.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card cards.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'basra.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'basra.setup.dealing',
+        title: 'Deal',
+        text: "Dealer deals 4 cards to each player and 4 cards face-up to the 'Floor' (middle). If a Jack or 7 of Diamonds appears on the floor during the initial deal, it is buried in the deck and replaced.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'basra.score.win-condition',
+        title: 'Win condition',
+        text: 'First to reach 101 or higher (or highest score after fixed rounds).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'basra.score.description',
+        title: 'Scoring',
+        text: 'Points are tallied at the end of the game (deck exhaustion).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'basra.rules.key.1',
+        title: 'Key rule 1',
+        text: "Jack takes all (but usually doesn't score a Basra bonus unless strict conditions are met).",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'basra.rules.key.2',
+        title: 'Key rule 2',
+        text: "7 of Diamonds (Komi) is a 'Super Jack' in Egyptian rules.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'basra.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Capturing cards goes into a face-down score pile.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'basra.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'basra.rules.objective',
+          'basra.rules.gameplay',
+        ],
+      },
+      {
+        id: 'basra.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'basra.setup.players',
+          'basra.setup.deck',
+          'basra.setup.equipment',
+          'basra.setup.dealing',
+        ],
+      },
+      {
+        id: 'basra.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'basra.rules.key.1',
+          'basra.rules.key.2',
+          'basra.rules.key.3',
+        ],
+      },
+      {
+        id: 'basra.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'basra.score.description',
+          'basra.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'basra.setup.dealing',
+        'basra.rules.objective',
+      ],
+      play_card: [
+        'basra.rules.gameplay',
+      ],
+      deal_4_cards: [
+        'basra.rules.gameplay',
+      ],
+      capture_card_match: [
+        'basra.rules.gameplay',
+      ],
+      capture_card_sum: [
+        'basra.rules.gameplay',
+      ],
+      play_jack_sweep: [
+        'basra.rules.gameplay',
+      ],
+      play_7_diamond_sweep: [
+        'basra.rules.gameplay',
+      ],
+      discard_card: [
+        'basra.rules.gameplay',
+      ],
+      continue_round: [
+        'basra.rules.gameplay',
+      ],
+      redeal_hands: [
+        'basra.rules.gameplay',
+      ],
+      end_game_scoring: [
+        'basra.rules.gameplay',
+      ],
+    },
   },
 }

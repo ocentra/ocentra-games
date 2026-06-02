@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Pot-based cash game. Winner of each hand takes the pot. Diablo mechanism creates escalating pots.',
+      winCondition: "Player with highest 5-card poker hand at showdown wins the current pot. If the opener loses, the opener matches the just-won pot to create the next hand's carryover pot.",
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: 'Diablo is resolved hand-by-hand through pot settlement, not by cumulative target score.',
+        cardValues: 'Poker uses hand rankings, not point values for individual cards.',
+      },
+      splitRules: 'No pot splitting. Single winner takes entire pot.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'poker_ranking',
     patternMultipliers: null,
     priorityOrder: [],

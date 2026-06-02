@@ -52,10 +52,153 @@
       go_out: 'Don Irish is modeled as a Trick-taking flow; go out is not a core player action in its documented rules.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before main_play.',
-      'Scoring check: Scoring uses the documented rules for Don Irish and determines round or match winners accordingly. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Capture tricks containing scoring cards to reach a total of 121 points.',
+      'Turn-flow example: 1. Pitching: The player who leads the first card (the pitcher) determines the trump suit by the suit of the card they lead.\n2. Trick-Taking: Players must follow suit if possible. In some variants (following All Fours), you may choose to trump even if you can follow suit.\n3. Card Ranking: A (high) K, Q, J, 10, 9, 8, 7, 6, 5, 4, 3, 2.',
+      'Scoring example: Scoring uses the documented rules for Don Irish and determines round or match winners accordingly. Capture tricks containing scoring cards to reach a total of 121 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'don-irish.rules.objective',
+        title: 'Objective',
+        text: 'Capture tricks containing scoring cards to reach a total of 121 points.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'don-irish.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Pitching: The player who leads the first card (the pitcher) determines the trump suit by the suit of the card they lead.\n2. Trick-Taking: Players must follow suit if possible. In some variants (following All Fours), you may choose to trump even if you can follow suit.\n3. Card Ranking: A (high) K, Q, J, 10, 9, 8, 7, 6, 5, 4, 3, 2.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'don-irish.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships (2 vs 2).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'don-irish.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'don-irish.setup.equipment',
+        title: 'Equipment',
+        text: '52-card deck, peg board (recommended for scoring).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'don-irish.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer deals all 52 cards (13 to each player) in batches of 3 or 4.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'don-irish.score.win-condition',
+        title: 'Win condition',
+        text: 'Capture tricks containing scoring cards to reach a total of 121 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'don-irish.score.description',
+        title: 'Scoring',
+        text: 'Scoring uses the documented rules for Don Irish and determines round or match winners accordingly.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'don-irish.rules.key.1',
+        title: 'Key rule 1',
+        text: "The 'Off-Five' (same color as trump) is considered part of the trump suit.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'don-irish.rules.key.2',
+        title: 'Key rule 2',
+        text: "There is no score for 'Game' (the count of high cards) in the Irish version, unlike English Don.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'don-irish.rules.key.3',
+        title: 'Key rule 3',
+        text: "Winning a match usually requires winning 3 or 5 'legs'.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'don-irish.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'don-irish.rules.objective',
+          'don-irish.rules.gameplay',
+        ],
+      },
+      {
+        id: 'don-irish.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'don-irish.setup.players',
+          'don-irish.setup.deck',
+          'don-irish.setup.equipment',
+          'don-irish.setup.dealing',
+        ],
+      },
+      {
+        id: 'don-irish.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'don-irish.rules.key.1',
+          'don-irish.rules.key.2',
+          'don-irish.rules.key.3',
+        ],
+      },
+      {
+        id: 'don-irish.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'don-irish.score.description',
+          'don-irish.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'don-irish.setup.dealing',
+        'don-irish.rules.objective',
+      ],
+      deal: [
+        'don-irish.rules.gameplay',
+      ],
+      declare: [
+        'don-irish.rules.gameplay',
+      ],
+      play_card: [
+        'don-irish.rules.gameplay',
+      ],
+    },
   },
 }

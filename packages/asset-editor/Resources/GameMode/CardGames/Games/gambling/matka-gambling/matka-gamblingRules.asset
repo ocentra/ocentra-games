@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Basset. Logic: Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
-    Player: 'Basset is a historical Italian gambling card game in which players bet against a banker on ranks that may appear from the pack.',
+    LLM: 'For a non-money simulation, generate the documented number draw from neutral cards or slips, compare predictions to the result, and settle only fictional points. Real-money play should not be supported.',
+    Player: 'For a non-money simulation, generate the documented number draw from neutral cards or slips, compare predictions to the result, and settle only fictional points. Real-money play should not be supported.',
     objective: 'Predict or hold the numbers selected by the draw procedure; this record is metadata only and should not implement real-money wagering.',
     gameplay: 'For a non-money simulation, generate the documented number draw from neutral cards or slips, compare predictions to the result, and settle only fictional points. Real-money play should not be supported.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-20 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Bets are paid or lost against the bank according to the exposed-card result. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Predict or hold the numbers selected by the draw procedure; this record is metadata only and should not implement real-money wagering.',
+      'Turn-flow example: For a non-money simulation, generate the documented number draw from neutral cards or slips, compare predictions to the result, and settle only fictional points. Real-money play should not be supported.',
+      'Scoring example: Bets are paid or lost against the bank according to the exposed-card result. Win stakes by backing ranks that appear in the favourable positions of the banked deal..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'matka-gambling.rules.objective',
+        title: 'Objective',
+        text: 'Predict or hold the numbers selected by the draw procedure; this record is metadata only and should not implement real-money wagering.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'matka-gambling.rules.gameplay',
+        title: 'Turn flow',
+        text: 'For a non-money simulation, generate the documented number draw from neutral cards or slips, compare predictions to the result, and settle only fictional points. Real-money play should not be supported.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'matka-gambling.setup.players',
+        title: 'Players',
+        text: '2-20 players use the table arrangement described for Matka Gambling.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'matka-gambling.setup.deck',
+        title: 'Deck',
+        text: 'Playing cards or numbered slips used as random draw material',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'matka-gambling.setup.equipment',
+        title: 'Equipment',
+        text: 'Playing cards or numbered slips used as random draw material, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'matka-gambling.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Playing cards or numbered slips used as random draw material and deal or lay out cards according to the documented Matka Gambling rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'matka-gambling.score.win-condition',
+        title: 'Win condition',
+        text: 'Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'matka-gambling.score.description',
+        title: 'Scoring',
+        text: 'Bets are paid or lost against the bank according to the exposed-card result.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'matka-gambling.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Treat as gambling metadata, not a payment or betting feature.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'matka-gambling.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The source describes playing cards as one method of generating numbers.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'matka-gambling.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Any implementation must be points-only and jurisdiction-neutral.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'matka-gambling.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'matka-gambling.rules.objective',
+          'matka-gambling.rules.gameplay',
+        ],
+      },
+      {
+        id: 'matka-gambling.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'matka-gambling.setup.players',
+          'matka-gambling.setup.deck',
+          'matka-gambling.setup.equipment',
+          'matka-gambling.setup.dealing',
+        ],
+      },
+      {
+        id: 'matka-gambling.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'matka-gambling.rules.key.1',
+          'matka-gambling.rules.key.2',
+          'matka-gambling.rules.key.3',
+        ],
+      },
+      {
+        id: 'matka-gambling.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'matka-gambling.score.description',
+          'matka-gambling.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'matka-gambling.setup.dealing',
+        'matka-gambling.rules.objective',
+      ],
+      play_card: [
+        'matka-gambling.rules.gameplay',
+      ],
+    },
   },
 }

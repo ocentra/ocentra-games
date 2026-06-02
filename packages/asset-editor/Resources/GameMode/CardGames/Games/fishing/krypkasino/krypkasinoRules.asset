@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Krypkasino. Logic: Avoidance fishing game. Key: Forced capture, avoid penalty cards, Tabbe = -1 point.',
-    Player: 'Krypkasino is a Swedish avoidance version of Casino. Try to avoid capturing cards, especially penalty cards (10 Diamonds=2pts, 2 Spades=1pt, Aces=1pt). Forced capture rule: if you can capture, you must. Clearing the table (Tabbe) gives -1 point.',
+    LLM: "1. **Forced Capture**: If you hold a card that CAN capture a card or sum from the table, you MUST capture it. You cannot choose to discard if a capture is possible.\n2. **Building**: You can 'build' onto table cards to avoid a current capture, but you must be able to capture the build yourself on a future turn.\n3. **Table Clearing (Tabbe)**: Clearing the table is worth -1 point (a good thing in misere).",
+    Player: "1. **Forced Capture**: If you hold a card that CAN capture a card or sum from the table, you MUST capture it. You cannot choose to discard if a capture is possible.\n2. **Building**: You can 'build' onto table cards to avoid a current capture, but you must be able to capture the build yourself on a future turn.\n3. **Table Clearing (Tabbe)**: Clearing the table is worth -1 point (a good thing in misere).",
     objective: 'Score as few points as possible. The round ends when a player hits 13 or 21 penalty points.',
     gameplay: "1. **Forced Capture**: If you hold a card that CAN capture a card or sum from the table, you MUST capture it. You cannot choose to discard if a capture is possible.\n2. **Building**: You can 'build' onto table cards to avoid a current capture, but you must be able to capture the build yourself on a future turn.\n3. **Table Clearing (Tabbe)**: Clearing the table is worth -1 point (a good thing in misere).",
     keyRules: [
@@ -56,10 +56,195 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal, reveal_market before play.',
-      'Scoring check: Score as few points as possible. Game ends when a player reaches 13 or 21 penalty points. Expected outcome: 13.',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Score as few points as possible. The round ends when a player hits 13 or 21 penalty points.',
+      "Turn-flow example: 1. **Forced Capture**: If you hold a card that CAN capture a card or sum from the table, you MUST capture it. You cannot choose to discard if a capture is possible.\n2. **Building**: You can 'build' onto table cards to avoid a current capture, but you must be able to capture the build yourself on a future turn.\n3. **Table Clearing (Tabbe)**: Clearing the table is worth -1 point (a good thing in misere).",
+      'Scoring example: Score as few points as possible. Game ends when a player reaches 13 or 21 penalty points. Lowest score when someone hits 13 or 21 penalty points.',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'krypkasino.rules.objective',
+        title: 'Objective',
+        text: 'Score as few points as possible. The round ends when a player hits 13 or 21 penalty points.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'krypkasino.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Forced Capture**: If you hold a card that CAN capture a card or sum from the table, you MUST capture it. You cannot choose to discard if a capture is possible.\n2. **Building**: You can 'build' onto table cards to avoid a current capture, but you must be able to capture the build yourself on a future turn.\n3. **Table Clearing (Tabbe)**: Clearing the table is worth -1 point (a good thing in misere).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'krypkasino.setup.players',
+        title: 'Players',
+        text: '2 to 4 players individually.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'krypkasino.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. **Special Capture Values**: 10 of Diamonds = 16, 2 of Spades = 15, Aces = 14 or 1.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'krypkasino.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. **Special Capture Values**: 10 of Diamonds = 16, 2 of Spades = 15, Aces = 14 or 1.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'krypkasino.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 4 cards; 4 cards are placed face-up on the table. The rest form a draw pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'krypkasino.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest score when someone hits 13 or 21 penalty points',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'krypkasino.score.description',
+        title: 'Scoring',
+        text: 'Score as few points as possible. Game ends when a player reaches 13 or 21 penalty points.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'krypkasino.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Forced capture rule: must capture if possible',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'krypkasino.rules.key.2',
+        title: 'Key rule 2',
+        text: '10 of Diamonds (Storan) = 2 penalty points',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'krypkasino.rules.key.3',
+        title: 'Key rule 3',
+        text: '2 of Spades (Lillan) = 1 penalty point',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'krypkasino.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Each Ace = 1 penalty point',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'krypkasino.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Most Cards = 1 penalty point',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'krypkasino.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Most Spades = 1 penalty point',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'krypkasino.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Tabbe (clearing table) = -1 point',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'krypkasino.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'krypkasino.rules.objective',
+          'krypkasino.rules.gameplay',
+        ],
+      },
+      {
+        id: 'krypkasino.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'krypkasino.setup.players',
+          'krypkasino.setup.deck',
+          'krypkasino.setup.equipment',
+          'krypkasino.setup.dealing',
+        ],
+      },
+      {
+        id: 'krypkasino.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'krypkasino.rules.key.1',
+          'krypkasino.rules.key.2',
+          'krypkasino.rules.key.3',
+          'krypkasino.rules.key.4',
+          'krypkasino.rules.key.5',
+          'krypkasino.rules.key.6',
+          'krypkasino.rules.key.7',
+        ],
+      },
+      {
+        id: 'krypkasino.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'krypkasino.score.description',
+          'krypkasino.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'krypkasino.setup.dealing',
+        'krypkasino.rules.objective',
+      ],
+      deal: [
+        'krypkasino.rules.gameplay',
+      ],
+      reveal_market: [
+        'krypkasino.rules.gameplay',
+      ],
+      play_card: [
+        'krypkasino.rules.gameplay',
+      ],
+      draw: [
+        'krypkasino.rules.gameplay',
+      ],
+      count_points: [
+        'krypkasino.rules.gameplay',
+      ],
+    },
   },
 }

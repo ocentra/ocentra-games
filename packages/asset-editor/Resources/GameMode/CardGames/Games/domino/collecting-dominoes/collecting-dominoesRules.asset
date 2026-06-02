@@ -52,10 +52,147 @@
       go_out: 'Hand-end detection is round logic, not a discrete player action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      "Rule example: Score best under the table's collection goal while attempting to shed tiles efficiently.",
+      "Turn-flow example: Players place legal matching tiles to open ends. Collection scoring is applied based on the table's defined collected outcomes during play or at hand end. The hand ends when a player goes out or play blocks.",
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'collecting-dominoes.rules.objective',
+        title: 'Objective',
+        text: "Score best under the table's collection goal while attempting to shed tiles efficiently.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'collecting-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: "Players place legal matching tiles to open ends. Collection scoring is applied based on the table's defined collected outcomes during play or at hand end. The hand ends when a player goes out or play blocks.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'collecting-dominoes.setup.players',
+        title: 'Players',
+        text: '2 to 6 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'collecting-dominoes.setup.deck',
+        title: 'Deck',
+        text: 'One double-6 domino set.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'collecting-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'Domino set and score tracking for collection-style scoring.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'collecting-dominoes.setup.dealing',
+        title: 'Deal',
+        text: 'Deal tiles by player count; remaining tiles may be boneyard by local rule.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'collecting-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'collecting-dominoes.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'collecting-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'All placements must be legal matches to open ends of the shared layout.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'collecting-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Collection scoring is applied by table rule profile to define what is collected and when.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'collecting-dominoes.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Hand ends on first empty hand or complete block resolution.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'collecting-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'collecting-dominoes.rules.objective',
+          'collecting-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: 'collecting-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'collecting-dominoes.setup.players',
+          'collecting-dominoes.setup.deck',
+          'collecting-dominoes.setup.equipment',
+          'collecting-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: 'collecting-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'collecting-dominoes.rules.key.1',
+          'collecting-dominoes.rules.key.2',
+          'collecting-dominoes.rules.key.3',
+        ],
+      },
+      {
+        id: 'collecting-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'collecting-dominoes.score.description',
+          'collecting-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'collecting-dominoes.setup.dealing',
+        'collecting-dominoes.rules.objective',
+      ],
+      play_card: [
+        'collecting-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

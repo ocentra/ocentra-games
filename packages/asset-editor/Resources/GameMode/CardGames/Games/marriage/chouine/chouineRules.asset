@@ -57,10 +57,192 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Score card points by winning tricks containing valuable cards (brisques) and by declaring combinations (marianna). Win the partie by reaching the target score first. A complete game consists of the best of three manches.',
+      'Turn-flow example: 1. Deal 5 cards to each player, remainder forms talon\n2. Turn top card of talon for trump indicator\n3. Player holding 7 of trumps may exchange it for the trump indicator\n4. Play consists of series of parties (deals)\n5. Each partie: Players play cards, may declare marianna (K+Q of same suit)\n6. First marianna declared sets trump suit and scores 40 points\n7. Later mariannas score 60, 80, 100 points but may or may not change trump\n8. Winner of last trick scores extra 10 points (dix de der)\n9. Total points per partie: 130 (cards) + 10 (last trick) + possible marianna points',
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'chouine.rules.objective',
+        title: 'Objective',
+        text: 'Score card points by winning tricks containing valuable cards (brisques) and by declaring combinations (marianna). Win the partie by reaching the target score first. A complete game consists of the best of three manches.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'chouine.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Deal 5 cards to each player, remainder forms talon\n2. Turn top card of talon for trump indicator\n3. Player holding 7 of trumps may exchange it for the trump indicator\n4. Play consists of series of parties (deals)\n5. Each partie: Players play cards, may declare marianna (K+Q of same suit)\n6. First marianna declared sets trump suit and scores 40 points\n7. Later mariannas score 60, 80, 100 points but may or may not change trump\n8. Winner of last trick scores extra 10 points (dix de der)\n9. Total points per partie: 130 (cards) + 10 (last trick) + possible marianna points',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'chouine.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 4\nOptimal Players: 2\nPartnerships: No (individual play)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'chouine.setup.deck',
+        title: 'Deck',
+        text: 'Type: French-suited 32-card pack\nNumber of Decks: 1\nJokers: Not included\nCards: Ace, 10, King, Queen, Jack, 9, 8, 7 in each suit\nCard Values: Ace=11, 10=10, King=4, Queen=3, Jack=2, 9/8/7=0',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'chouine.setup.equipment',
+        title: 'Equipment',
+        text: '32-card French deck\nScore sheet\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'chouine.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies (5 cards each in basic game)\nTalon: Remaining cards form stock\nDealing Pattern: Alternating cards\nFirst Dealer: Determined by drawing cards - lower rank deals',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'chouine.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'chouine.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'chouine.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No obligation to follow suit initially (until trump is established)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'chouine.rules.key.2',
+        title: 'Key rule 2',
+        text: 'First marianna declared establishes trump suit',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'chouine.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Marianna consists of King and Queen of same suit held in hand',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'chouine.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Player with 7 of trumps can exchange it for trump indicator',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'chouine.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Winner of trick draws first from talon, then opponent',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'chouine.rules.key.6',
+        title: 'Key rule 6',
+        text: 'After talon exhausted, must follow suit if possible',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'chouine.rules.key.7',
+        title: 'Key rule 7',
+        text: 'If cannot follow suit, must play trump if possible',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+      {
+        id: 'chouine.rules.key.8',
+        title: 'Key rule 8',
+        text: 'Dix de der: 10 bonus points for winning last trick',
+        sourceFields: [
+          'rules.keyRules.7',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'chouine.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'chouine.rules.objective',
+          'chouine.rules.gameplay',
+        ],
+      },
+      {
+        id: 'chouine.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'chouine.setup.players',
+          'chouine.setup.deck',
+          'chouine.setup.equipment',
+          'chouine.setup.dealing',
+        ],
+      },
+      {
+        id: 'chouine.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'chouine.rules.key.1',
+          'chouine.rules.key.2',
+          'chouine.rules.key.3',
+          'chouine.rules.key.4',
+          'chouine.rules.key.5',
+          'chouine.rules.key.6',
+          'chouine.rules.key.7',
+          'chouine.rules.key.8',
+        ],
+      },
+      {
+        id: 'chouine.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'chouine.score.description',
+          'chouine.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'chouine.setup.dealing',
+        'chouine.rules.objective',
+      ],
+      play_card: [
+        'chouine.rules.gameplay',
+      ],
+    },
   },
 }

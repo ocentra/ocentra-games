@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Big Two. Type: Climbing. Rules: 2-A-K...3 rank. Spades > Hearts > Clubs > Diamonds. Singles, Pairs, Triples, 5-card Poker hands. Goal: Empty hand.',
-    Player: 'You have the 2 of Spades—the highest single in the game. An opponent just played an Ace. Regain control of the lead with your 2, then dump that troublesome pair of 4s!',
+    LLM: '1. **The Lead**: Player with 3♦ must play it (as a single or in a combo). 2. **Climbing**: Each player in turn must play a combination of the same type (single, pair, triple, or 5-card hand) that is higher in rank than the previous play. 3. **Ranks**: 2 (High) > A > K > Q ... > 3 (Low). 4. **Suits**: Spades > Hearts > Clubs > Diamonds (used to break ties in same-rank plays). 5. **Passing**: A player can pass at any time. When 3 players pass, the last player to play starts a new trick with any combo.',
+    Player: '1. **The Lead**: Player with 3♦ must play it (as a single or in a combo). 2. **Climbing**: Each player in turn must play a combination of the same type (single, pair, triple, or 5-card hand) that is higher in rank than the previous play. 3. **Ranks**: 2 (High) > A > K > Q ... > 3 (Low). 4. **Suits**: Spades > Hearts > Clubs > Diamonds (used to break ties in same-rank plays). 5. **Passing**: A player can pass at any time. When 3 players pass, the last player to play starts a new trick with any combo.',
     objective: 'Be the first player to shed all cards from your hand.',
     gameplay: '1. **The Lead**: Player with 3♦ must play it (as a single or in a combo). 2. **Climbing**: Each player in turn must play a combination of the same type (single, pair, triple, or 5-card hand) that is higher in rank than the previous play. 3. **Ranks**: 2 (High) > A > K > Q ... > 3 (Low). 4. **Suits**: Spades > Hearts > Clubs > Diamonds (used to break ties in same-rank plays). 5. **Passing**: A player can pass at any time. When 3 players pass, the last player to play starts a new trick with any combo.',
     keyRules: [
@@ -52,10 +52,159 @@
       go_out: 'A player wins the round automatically upon playing their final combination from hand.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in dealing; system may use deal_13_each before climbing.',
-      'Scoring check: Losers receive penalty points based on remaining cards (1x, 2x, or 3x multipliers). Expected outcome: 100.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Be the first player to shed all cards from your hand.',
+      'Turn-flow example: 1. **The Lead**: Player with 3♦ must play it (as a single or in a combo). 2. **Climbing**: Each player in turn must play a combination of the same type (single, pair, triple, or 5-card hand) that is higher in rank than the previous play. 3. **Ranks**: 2 (High) > A > K > Q ... > 3 (Low). 4. **Suits**: Spades > Hearts > Clubs > Diamonds (used to break ties in same-rank plays). 5. **Passing**: A player can pass at any time. When 3 players pass, the last player to play starts a new trick with any combo.',
+      'Scoring example: Losers receive penalty points based on remaining cards (1x, 2x, or 3x multipliers). First player to empty their hand wins the round..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'big-two.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to shed all cards from your hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'big-two.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **The Lead**: Player with 3♦ must play it (as a single or in a combo). 2. **Climbing**: Each player in turn must play a combination of the same type (single, pair, triple, or 5-card hand) that is higher in rank than the previous play. 3. **Ranks**: 2 (High) > A > K > Q ... > 3 (Low). 4. **Suits**: Spades > Hearts > Clubs > Diamonds (used to break ties in same-rank plays). 5. **Passing**: A player can pass at any time. When 3 players pass, the last player to play starts a new trick with any combo.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'big-two.setup.players',
+        title: 'Players',
+        text: 'Typically 4 players playing individually.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'big-two.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck (No Jokers).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'big-two.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, score pad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'big-two.setup.dealing',
+        title: 'Deal',
+        text: 'Deal the entire deck clockwise (13 cards to each player). The player holding the 3 of Diamonds leads the first trick.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'big-two.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to empty their hand wins the round.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'big-two.score.description',
+        title: 'Scoring',
+        text: 'Losers receive penalty points based on remaining cards (1x, 2x, or 3x multipliers).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'big-two.rules.key.1',
+        title: 'Key rule 1',
+        text: '5-card combinations must follow poker rankings: Royal Flush > Straight Flush > 4-of-a-Kind > Full House > Flush > Straight.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'big-two.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The rank of a 5-card combo is determined by its highest card (e.g., an Ace-high Flush beats a King-high Flush).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'big-two.rules.key.3',
+        title: 'Key rule 3',
+        text: 'If you pass, you can still play later in the same trick cycle if the lead has not been reset.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'big-two.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'big-two.rules.objective',
+          'big-two.rules.gameplay',
+        ],
+      },
+      {
+        id: 'big-two.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'big-two.setup.players',
+          'big-two.setup.deck',
+          'big-two.setup.equipment',
+          'big-two.setup.dealing',
+        ],
+      },
+      {
+        id: 'big-two.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'big-two.rules.key.1',
+          'big-two.rules.key.2',
+          'big-two.rules.key.3',
+        ],
+      },
+      {
+        id: 'big-two.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'big-two.score.description',
+          'big-two.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'big-two.setup.dealing',
+        'big-two.rules.objective',
+      ],
+      play_card: [
+        'big-two.rules.gameplay',
+      ],
+      pass: [
+        'big-two.rules.gameplay',
+      ],
+      deal_13_each: [
+        'big-two.rules.gameplay',
+      ],
+      play_combination: [
+        'big-two.rules.gameplay',
+      ],
+      calculate_penalties: [
+        'big-two.rules.gameplay',
+      ],
+    },
   },
 }

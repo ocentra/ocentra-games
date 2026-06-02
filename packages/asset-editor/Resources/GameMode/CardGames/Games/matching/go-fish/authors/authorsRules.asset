@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Authors. Type: Memory / Collection. Rules: Whole deck dealt. Ask specific card (rank+suit). Must have same rank. If successful, repeat. Goal: Collect books of 4.',
-    Player: "Welcome to Authors! You've been dealt your hand. You have the 7 of Clubs. That means you can ask anyone for any other 7. If you're right, you keep going! Pay attention to what Sarah asks Tomâ€”it's the only way to win.",
+    LLM: "1. **Inquiry**: On your turn, you ask a specific player for a specific card (rank and suit), for example: 'Sarah, do you have the Nine of Diamonds?'. 2. **Prerequisite**: You can only ask for a card if you already hold at least one card of that same rank. 3. **The Exchange**: If the player has the card, they MUST hand it over. You then get another turn to ask anyone for another card. 4. **The End of Turn**: If the player does not have the card, your turn ends immediately and passes to the left. 5. **Completing a Book**: As soon as you hold all four suits of a rank, you must lay them face down on the table as a 'Book'.",
+    Player: "1. **Inquiry**: On your turn, you ask a specific player for a specific card (rank and suit), for example: 'Sarah, do you have the Nine of Diamonds?'. 2. **Prerequisite**: You can only ask for a card if you already hold at least one card of that same rank. 3. **The Exchange**: If the player has the card, they MUST hand it over. You then get another turn to ask anyone for another card. 4. **The End of Turn**: If the player does not have the card, your turn ends immediately and passes to the left. 5. **Completing a Book**: As soon as you hold all four suits of a rank, you must lay them face down on the table as a 'Book'.",
     objective: "Capture the most 'Books' (sets of all four cards of a single rank).",
     gameplay: "1. **Inquiry**: On your turn, you ask a specific player for a specific card (rank and suit), for example: 'Sarah, do you have the Nine of Diamonds?'. 2. **Prerequisite**: You can only ask for a card if you already hold at least one card of that same rank. 3. **The Exchange**: If the player has the card, they MUST hand it over. You then get another turn to ask anyone for another card. 4. **The End of Turn**: If the player does not have the card, your turn ends immediately and passes to the left. 5. **Completing a Book**: As soon as you hold all four suits of a rank, you must lay them face down on the table as a 'Book'.",
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'Game ends when all cards are in books; winner has most books.',
     },
     exampleHands: [
-      'Opening deal: 3-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_all_even before ask_loop.',
-      'Scoring check: Each book is worth 1 point. Expected outcome: The player with the most books at the end wins..',
+      'Setup example: 0 card(s) per player.',
+      "Rule example: Capture the most 'Books' (sets of all four cards of a single rank).",
+      "Turn-flow example: 1. **Inquiry**: On your turn, you ask a specific player for a specific card (rank and suit), for example: 'Sarah, do you have the Nine of Diamonds?'. 2. **Prerequisite**: You can only ask for a card if you already hold at least one card of that same rank. 3. **The Exchange**: If the player has the card, they MUST hand it over. You then get another turn to ask anyone for another card. 4. **The End of Turn**: If the player does not have the card, your turn ends immediately and passes to the left. 5. **Completing a Book**: As soon as you hold all four suits of a rank, you must lay them face down on the table as a 'Book'.",
+      'Scoring example: Each book is worth 1 point. The player with the most books at the end wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'authors.rules.objective',
+        title: 'Objective',
+        text: "Capture the most 'Books' (sets of all four cards of a single rank).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'authors.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Inquiry**: On your turn, you ask a specific player for a specific card (rank and suit), for example: 'Sarah, do you have the Nine of Diamonds?'. 2. **Prerequisite**: You can only ask for a card if you already hold at least one card of that same rank. 3. **The Exchange**: If the player has the card, they MUST hand it over. You then get another turn to ask anyone for another card. 4. **The End of Turn**: If the player does not have the card, your turn ends immediately and passes to the left. 5. **Completing a Book**: As soon as you hold all four suits of a rank, you must lay them face down on the table as a 'Book'.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'authors.setup.players',
+        title: 'Players',
+        text: '3-6 players (best with 4-5).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'authors.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52 cards.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'authors.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, score sheet for counting books.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'authors.setup.dealing',
+        title: 'Deal',
+        text: 'The entire deck is dealt out as evenly as possible. Some players may have one more card than others.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'authors.score.win-condition',
+        title: 'Win condition',
+        text: 'The player with the most books at the end wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'authors.score.description',
+        title: 'Scoring',
+        text: 'Each book is worth 1 point.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'authors.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No Lying: If asked for a card you hold, you must give it up immediately.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'authors.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Rank Constraint: You cannot ask for a card of a rank you do not have.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'authors.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The End State: The game continues until all 52 cards have been organized into 13 books.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'authors.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'authors.rules.objective',
+          'authors.rules.gameplay',
+        ],
+      },
+      {
+        id: 'authors.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'authors.setup.players',
+          'authors.setup.deck',
+          'authors.setup.equipment',
+          'authors.setup.dealing',
+        ],
+      },
+      {
+        id: 'authors.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'authors.rules.key.1',
+          'authors.rules.key.2',
+          'authors.rules.key.3',
+        ],
+      },
+      {
+        id: 'authors.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'authors.score.description',
+          'authors.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'authors.setup.dealing',
+        'authors.rules.objective',
+      ],
+      deal_all_even: [
+        'authors.rules.gameplay',
+      ],
+      ask_specific_card: [
+        'authors.rules.gameplay',
+      ],
+      count_books: [
+        'authors.rules.gameplay',
+      ],
+    },
   },
 }

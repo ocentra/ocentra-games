@@ -10,7 +10,30 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Penalty-based scoring where negative points accumulate. Special bonus for taking all hearts and the sheep (Jack of Diamonds). Game ends when a player reaches -1000.',
+      winCondition: "Avoid reaching -1000 points (loser is the 'pig'). Game continues until one player accumulates -1000 or more. Lowest score at end of session wins.",
+      targetScore: null,
+      scoringDirection: 'low_wins',
+      cardValues: {
+        '10-5 of Hearts': '10',
+        'Jack of Diamonds (Sheep)': '100',
+        'Ten of Clubs (Transformer)': '50',
+      },
+      nullReasons: {
+        targetScore: 'No fixed target score; play by game rules.',
+      },
+      splitRules: 'No splits; pure negative accumulation.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],
@@ -20,7 +43,7 @@
       'Jack of Diamonds (Sheep)': 100,
       'Ten of Clubs (Transformer)': 50,
     },
-    penalties: '{\n  "Reaching -1000": "Designated as the \'pig\' (may involve penalty like groveling)"\n}',
+    penalties: '{"Reaching -1000":"Designated as the \'pig\' (may involve penalty like groveling)"}',
     targetScore: null,
     scoringDirection: 'low_wins',
     rankingAsset: {

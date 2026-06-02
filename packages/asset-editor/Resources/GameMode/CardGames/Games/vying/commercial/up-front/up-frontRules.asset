@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players control squads without a hex map. Cards define range, terrain, movement, attacks, and events, revealing battlefield positions through play.',
+    Player: 'Players control squads without a hex map. Cards define range, terrain, movement, attacks, and events, revealing battlefield positions through play.',
     objective: 'Complete the scenario objective by maneuvering squads and resolving card-driven combat.',
     gameplay: 'Players control squads without a hex map. Cards define range, terrain, movement, attacks, and events, revealing battlefield positions through play.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Complete the scenario objective by maneuvering squads and resolving card-driven combat.',
+      'Turn-flow example: Players control squads without a hex map. Cards define range, terrain, movement, attacks, and events, revealing battlefield positions through play.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'up-front.rules.objective',
+        title: 'Objective',
+        text: 'Complete the scenario objective by maneuvering squads and resolving card-driven combat.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'up-front.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players control squads without a hex map. Cards define range, terrain, movement, attacks, and events, revealing battlefield positions through play.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'up-front.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Up Front.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'up-front.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Up Front action and terrain card system',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'up-front.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Up Front action and terrain card system, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'up-front.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Up Front action and terrain card system and deal or lay out cards according to the documented Up Front rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'up-front.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'up-front.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'up-front.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Card-based wargame derived from Squad Leader concepts.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'up-front.rules.key.2',
+        title: 'Key rule 2',
+        text: 'No traditional hex map is used.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'up-front.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Scenario and card text drive legal actions.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'up-front.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'up-front.rules.objective',
+          'up-front.rules.gameplay',
+        ],
+      },
+      {
+        id: 'up-front.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'up-front.setup.players',
+          'up-front.setup.deck',
+          'up-front.setup.equipment',
+          'up-front.setup.dealing',
+        ],
+      },
+      {
+        id: 'up-front.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'up-front.rules.key.1',
+          'up-front.rules.key.2',
+          'up-front.rules.key.3',
+        ],
+      },
+      {
+        id: 'up-front.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'up-front.score.description',
+          'up-front.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'up-front.setup.dealing',
+        'up-front.rules.objective',
+      ],
+      play_card: [
+        'up-front.rules.gameplay',
+      ],
+    },
   },
 }

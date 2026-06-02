@@ -1,5 +1,6 @@
 import {
   DEFAULT_SELECTED_GAME_CONTENT_PLAN,
+  DEFAULT_SELECTED_GAME_TAB_ORDER,
   type SelectedGameContentPlan,
   type SelectedGamePresentation,
   type SelectedGamePresentationChunk,
@@ -44,23 +45,13 @@ const TAB_LABELS: Record<SelectedGameTabId, string> = {
   systems: 'Systems',
 };
 
-const TAB_TIPS: Record<SelectedGameTabId, string> = {
-  about: 'Start with the table goal, player count, and what creates pressure.',
-  rules: 'Read setup and turn flow first, then use edge cases when a move feels ambiguous.',
-  deck: 'Deck configuration controls what can appear at the table before any strategy matters.',
-  ranking: 'Ranking explains why one card is valuable, dangerous, or useful as a blocker.',
-  scoring: 'Check the formula and examples before deciding when a hand is ready.',
-  strategy: 'Use public information to read intent without overcommitting to blockers.',
-  systems: 'These assets describe what the runtime can execute, validate, and explain.',
-};
-
 function formatReleaseStatusLabel(value: string): string {
   return value.replace(/([a-z])([A-Z])/g, '$1 $2');
 }
 
 const EMPTY_PRESENTATION: SelectedGamePresentation = {
   hero: {
-    title: 'Game',
+    title: '',
     taglineLines: [],
     badges: [],
     media: [],
@@ -79,7 +70,7 @@ const EMPTY_PRESENTATION: SelectedGamePresentation = {
     strategy: [],
     systems: [],
   },
-  tip: TAB_TIPS,
+  tip: emptyTabTextMap(),
   actions: selectedGameActionsForReleaseStatus(),
 };
 
@@ -99,6 +90,7 @@ export function buildSelectedGamePresentation(input: BuildSelectedGamePresentati
   const validationFixtures = dataOf(input.validationFixtures);
   const images = dataOf(input.images);
   const releaseStatus = firstText(gameMode.releaseStatus);
+  const tip = contentPlanTips(contentPlan);
 
   const media = buildMedia(gameMode, gameInfo, images);
   const tabs = contentPlan.tabs
@@ -119,13 +111,13 @@ export function buildSelectedGamePresentation(input: BuildSelectedGamePresentati
         actions,
         validationFixtures,
       }).slice(0, tab.maxChunks),
-      tip: TAB_TIPS[tab.id],
+      tip: tab.tip,
     }));
 
   return {
     ...EMPTY_PRESENTATION,
     hero: {
-      title: firstText(asRecord(gameInfo.hero).title, gameMode.displayName, gameInfo.title, 'Game'),
+      title: firstText(asRecord(gameInfo.hero).title, gameMode.displayName, gameInfo.title),
       taglineLines: splitSentences(firstText(gameInfo.tagline, asRecord(gameInfo.hero).subtitle, gameMode.tagline, gameInfo.description)).slice(0, 2),
       badges: [
         releaseStatus ? formatReleaseStatusLabel(releaseStatus) : '',
@@ -148,7 +140,7 @@ export function buildSelectedGamePresentation(input: BuildSelectedGamePresentati
       strategy: quickInfoFor(tabs, 'strategy'),
       systems: quickInfoFor(tabs, 'systems'),
     },
-    tip: TAB_TIPS,
+    tip,
     actions: selectedGameActionsForReleaseStatus(releaseStatus),
   };
 }
@@ -357,9 +349,9 @@ function buildDeckChunks(gameMode: LooseRecord, rules: LooseRecord, deckModel: L
     line('Discard limit', firstText(discard.maxDiscardPerTurn, setup.discardLimitPerTurn)),
   ].filter(Boolean);
 
-  return [
-    chunk('deck-model', 'Deck Model', [firstText(deckModel.modelId, 'Asset-backed deck setup')], bullets, 'visual', 'Deck', refs),
-  ];
+  return bullets.length > 0 || refs.length > 0
+    ? [chunk('deck-model', 'Deck Model', [firstText(deckModel.modelId)], bullets, 'visual', 'Deck', refs)]
+    : [];
 }
 
 function buildRankingChunks(scoring: LooseRecord, deckModel: LooseRecord, ranking: LooseRecord, validationFixtures: LooseRecord): SelectedGamePresentationChunk[] {
@@ -396,11 +388,13 @@ function buildRankingChunks(scoring: LooseRecord, deckModel: LooseRecord, rankin
 
 function buildScoringChunks(scoring: LooseRecord, validationFixtures: LooseRecord): SelectedGamePresentationChunk[] {
   const chunks: SelectedGamePresentationChunk[] = [];
+  const scoringRules = asRecord(scoring.scoringRules);
   if (Object.keys(scoring).length > 0) {
-    chunks.push(chunk('scoring-formula', 'Scoring Model', splitSentences(firstText(scoring.description, scoring.scoringFormula)).slice(0, 2), [
+    chunks.push(chunk('scoring-formula', 'Scoring Model', splitSentences(firstText(scoring.description, scoringRules.summary, scoring.scoringFormula)).slice(0, 2), [
       line('Target score', firstText(scoring.targetScore, scoring.showdownMinimumFinalScore)),
-      line('Win condition', asText(scoring.winCondition)),
-      line('Direction', asText(scoring.scoringDirection)),
+      line('Win condition', firstText(scoring.winCondition, scoringRules.winCondition)),
+      line('Direction', firstText(scoring.scoringDirection, scoringRules.scoringDirection)),
+      line('Scoring policy', firstText(scoringRules.summary)),
     ].filter(Boolean), 'text', 'Formula'));
   }
 
@@ -408,6 +402,17 @@ function buildScoringChunks(scoring: LooseRecord, validationFixtures: LooseRecor
   const values = Object.entries(cardValues).map(([card, value]) => `${card}=${String(value)}`);
   if (values.length > 0) {
     chunks.push(chunk('scoring-card-values', 'Card Values', [], values, 'metric', 'Values'));
+  }
+
+  const nullReasons = asRecord(scoringRules.nullReasons);
+  const policyNotes = uniqueLines([
+    line('Target score', nullReasons.targetScore),
+    line('Scoring direction', nullReasons.scoringDirection),
+    line('Card values', nullReasons.cardValues),
+    line('Split rules', firstText(scoringRules.splitRules)),
+  ]);
+  if (policyNotes.length > 0) {
+    chunks.push(chunk('scoring-policy-notes', 'Scoring Notes', [], policyNotes, 'list', 'Policy'));
   }
 
   const examples = validationFixturesForPurposes(validationFixtures, ['scoring']);
@@ -497,11 +502,14 @@ function formatValidationFixture(fixture: LooseRecord): string {
 
 function buildStats(gameMode: LooseRecord, gameInfo: LooseRecord, rules: LooseRecord, scoring: LooseRecord, deckModel: LooseRecord): SelectedGamePresentationMetric[] {
   const playerCount = asRecord(rules.playerCount);
+  const deckLabel = firstText(deckModel.deckType, asRecord(rules.setup).deck, gameMode.deckType);
+  const targetScore = firstPositiveNumber(scoring.targetScore, scoring.showdownMinimumFinalScore, asRecord(rules.showdownRules).minimumFinalScore);
+  const timerSeconds = firstText(asRecord(rules.turnRules).timerSeconds, gameMode.turnDuration);
   return [
     metric('Players', formatRange(firstNumber(playerCount.min, gameInfo.minPlayers, gameMode.minPlayers), firstNumber(playerCount.max, gameInfo.maxPlayers, gameMode.maxPlayers)), '#'),
-    metric('Deck', firstText(deckModel.deckType, asRecord(rules.setup).deck, gameMode.deckType, 'Cards'), 'D'),
-    metric('Goal', `${firstText(scoring.targetScore, scoring.showdownMinimumFinalScore, asRecord(rules.showdownRules).minimumFinalScore) || '0'}+`, 'G'),
-    metric('Timer', `${firstText(asRecord(rules.turnRules).timerSeconds, gameMode.turnDuration) || '0'}s`, 'T'),
+    metric('Deck', deckLabel, 'D'),
+    metric('Goal', targetScore !== null ? `${targetScore}+` : '', 'G'),
+    metric('Timer', timerSeconds ? `${timerSeconds}s` : '', 'T'),
   ].filter((item) => item.value);
 }
 
@@ -510,7 +518,7 @@ function buildMedia(gameMode: LooseRecord, gameInfo: LooseRecord, images: LooseR
     .map(asRecord)
     .map((slide) => ({
       kind: 'image' as const,
-      label: firstText(slide.label, slide.alt, 'Game image'),
+      label: firstText(slide.label, slide.alt),
       imageHash: firstText(slide.imageHash),
     }))
     .filter((slide) => slide.imageHash);
@@ -533,8 +541,20 @@ function normalizeContentPlan(value: unknown): SelectedGameContentPlan {
       label: firstText(tab.label, TAB_LABELS[tab.id as SelectedGameTabId]),
       source: firstText(tab.source),
       maxChunks: firstNumber(tab.maxChunks) ?? 6,
+      tip: firstText(tab.tip, DEFAULT_SELECTED_GAME_CONTENT_PLAN.tabs.find((item) => item.id === tab.id)?.tip),
     }));
   return tabs.length > 0 ? { tabs } : DEFAULT_SELECTED_GAME_CONTENT_PLAN;
+}
+
+function contentPlanTips(contentPlan: SelectedGameContentPlan): Record<SelectedGameTabId, string> {
+  return Object.fromEntries(DEFAULT_SELECTED_GAME_TAB_ORDER.map((tabId) => [
+    tabId,
+    firstText(contentPlan.tabs.find((tab) => tab.id === tabId)?.tip),
+  ])) as Record<SelectedGameTabId, string>;
+}
+
+function emptyTabTextMap(): Record<SelectedGameTabId, string> {
+  return Object.fromEntries(DEFAULT_SELECTED_GAME_TAB_ORDER.map((tabId) => [tabId, ''])) as Record<SelectedGameTabId, string>;
 }
 
 function quickInfoFor(tabs: SelectedGamePresentationTab[], id: SelectedGameTabId): SelectedGamePresentationChunk[] {
@@ -625,6 +645,16 @@ function firstNumber(...values: unknown[]): number | null {
     }
     if (typeof value === 'string' && value.trim() && Number.isFinite(Number(value))) {
       return Number(value);
+    }
+  }
+  return null;
+}
+
+function firstPositiveNumber(...values: unknown[]): number | null {
+  for (const value of values) {
+    const numberValue = firstNumber(value);
+    if (numberValue !== null && numberValue > 0) {
+      return numberValue;
     }
   }
   return null;

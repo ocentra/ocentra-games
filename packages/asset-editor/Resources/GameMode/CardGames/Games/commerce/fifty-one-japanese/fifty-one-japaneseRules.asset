@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Fifty-One Japanese (Gojūichi). 2-5 players, 52-card deck. Deal: 5 cards per player, 5 in Market. Turn: Swap 1 with Market OR swap all 5 with Market OR call 'Stop' (gives others one final turn). Scoring: Highest single-suit total (max 51). Exact 51 = instant win. Win: Highest score when game stops.",
-    Player: "Welcome to Fifty-One Japanese (Gojūichi). Build a hand of 5 cards in the same suit, scoring up to 51 points. Exchange cards with the central Market: swap 1 card or your entire hand. When your hand is strong (45+), call 'Stop' to trigger final rounds for other players. Exact 51 = instant win!",
+    LLM: "Each turn (clockwise), a player MUST perform one of the following exchanges with the table:\n1. 1-for-1: Swap one card from your hand for one card from the table.\n2. 5-for-5: Swap your entire hand for all five cards on the table.\n3. Stop: If you have a high score (usually 40+), you may say 'Stop'. This triggers the final round.",
+    Player: "Each turn (clockwise), a player MUST perform one of the following exchanges with the table:\n1. 1-for-1: Swap one card from your hand for one card from the table.\n2. 5-for-5: Swap your entire hand for all five cards on the table.\n3. Stop: If you have a high score (usually 40+), you may say 'Stop'. This triggers the final round.",
     objective: 'Assemble a 5-card hand of the same suit that totals exactly or as close to 51 as possible.',
     gameplay: "Each turn (clockwise), a player MUST perform one of the following exchanges with the table:\n1. 1-for-1: Swap one card from your hand for one card from the table.\n2. 5-for-5: Swap your entire hand for all five cards on the table.\n3. Stop: If you have a high score (usually 40+), you may say 'Stop'. This triggers the final round.",
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: Collect 5 cards of same suit totaling as close to 51 as possible. Ace=11, K/Q/J=10, 2-10=face value. Exact 51 = instant win. Expected outcome: 51.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Assemble a 5-card hand of the same suit that totals exactly or as close to 51 as possible.',
+      "Turn-flow example: Each turn (clockwise), a player MUST perform one of the following exchanges with the table:\n1. 1-for-1: Swap one card from your hand for one card from the table.\n2. 5-for-5: Swap your entire hand for all five cards on the table.\n3. Stop: If you have a high score (usually 40+), you may say 'Stop'. This triggers the final round.",
+      'Scoring example: Collect 5 cards of same suit totaling as close to 51 as possible. Ace=11, K/Q/J=10, 2-10=face value. Exact 51 = instant win. Highest single-suit total when game stops (max 51). Exact 51 = instant win..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'fifty-one-japanese.rules.objective',
+        title: 'Objective',
+        text: 'Assemble a 5-card hand of the same suit that totals exactly or as close to 51 as possible.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'fifty-one-japanese.rules.gameplay',
+        title: 'Turn flow',
+        text: "Each turn (clockwise), a player MUST perform one of the following exchanges with the table:\n1. 1-for-1: Swap one card from your hand for one card from the table.\n2. 5-for-5: Swap your entire hand for all five cards on the table.\n3. Stop: If you have a high score (usually 40+), you may say 'Stop'. This triggers the final round.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'fifty-one-japanese.setup.players',
+        title: 'Players',
+        text: '2 to 5 players. Best with 3 or 4.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'fifty-one-japanese.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'fifty-one-japanese.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'fifty-one-japanese.setup.dealing',
+        title: 'Deal',
+        text: "Assign five cards to each player and place five cards face-up in the center of the table (the 'Market'). The remaining cards form the draw pile (used only when the table is cleared).",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'fifty-one-japanese.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest single-suit total when game stops (max 51). Exact 51 = instant win.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'fifty-one-japanese.score.description',
+        title: 'Scoring',
+        text: 'Collect 5 cards of same suit totaling as close to 51 as possible. Ace=11, K/Q/J=10, 2-10=face value. Exact 51 = instant win.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'fifty-one-japanese.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Matching Suit constraint: Your score is only the total of cards within the SAME suit. If you have cards of different suits, you only count the suit that gives you the highest total.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'fifty-one-japanese.rules.key.2',
+        title: 'Key rule 2',
+        text: "Empty Market: If a 5-for-5 swap occurs, the next player may choose to 'Refresh the Market' by clearing the discarded hand and dealing five fresh cards from the deck.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'fifty-one-japanese.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Assemble a 5-card hand of the same suit that totals exactly or as close to 51 as possible.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'fifty-one-japanese.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'fifty-one-japanese.rules.objective',
+          'fifty-one-japanese.rules.gameplay',
+        ],
+      },
+      {
+        id: 'fifty-one-japanese.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'fifty-one-japanese.setup.players',
+          'fifty-one-japanese.setup.deck',
+          'fifty-one-japanese.setup.equipment',
+          'fifty-one-japanese.setup.dealing',
+        ],
+      },
+      {
+        id: 'fifty-one-japanese.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'fifty-one-japanese.rules.key.1',
+          'fifty-one-japanese.rules.key.2',
+          'fifty-one-japanese.rules.key.3',
+        ],
+      },
+      {
+        id: 'fifty-one-japanese.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'fifty-one-japanese.score.description',
+          'fifty-one-japanese.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'fifty-one-japanese.setup.dealing',
+        'fifty-one-japanese.rules.objective',
+      ],
+      deal: [
+        'fifty-one-japanese.rules.gameplay',
+      ],
+      exchange_one_market: [
+        'fifty-one-japanese.rules.gameplay',
+      ],
+      exchange_all_market: [
+        'fifty-one-japanese.rules.gameplay',
+      ],
+      call_stop: [
+        'fifty-one-japanese.rules.gameplay',
+      ],
+    },
   },
 }

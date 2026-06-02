@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Calypso. 4 decks (208 cards). 4 players in partnerships. Each player has personal trump: N=Spades, E=Hearts, S=Diamonds, W=Clubs. Complete A-K-Q-J-10-9-8-7-6-5-4-3-2 in your trump = Calypso (500 first, 250 later). Tricks=20pts each. Partial trump cards=10pts.',
-    Player: "Your personal trump is Hearts. You've won: Aâ™¥, Kâ™¥, Qâ™¥, Jâ™¥, 10â™¥, 9â™¥ so far. You need 8â™¥, 7â™¥, 6â™¥, 5â™¥, 4â™¥, 3â™¥, 2â™¥ to complete your Calypso (worth 500 pts). Prioritise tricks that might contain these ranks.",
+    LLM: '1. Deal 13 each (4 decks = 208 cards). 2. Each player has personal trump (one suit). 3. Left of dealer leads. 4. Follow suit or trump. 5. Trump beats non-trump. 6. Build Calypsos (complete A-K of your trump) from won tricks. 7. Surplus trump cards in tricks = 10 pts each at game end. 8. 4 deals; first to target wins.',
+    Player: '1. Deal 13 each (4 decks = 208 cards). 2. Each player has personal trump (one suit). 3. Left of dealer leads. 4. Follow suit or trump. 5. Trump beats non-trump. 6. Build Calypsos (complete A-K of your trump) from won tricks. 7. Surplus trump cards in tricks = 10 pts each at game end. 8. 4 deals; first to target wins.',
     objective: 'Score points by winning tricks and building Calypsos (complete trump suit sequences). First partnership to reach target score wins.',
     gameplay: '1. Deal 13 each (4 decks = 208 cards). 2. Each player has personal trump (one suit). 3. Left of dealer leads. 4. Follow suit or trump. 5. Trump beats non-trump. 6. Build Calypsos (complete A-K of your trump) from won tricks. 7. Surplus trump cards in tricks = 10 pts each at game end. 8. 4 deals; first to target wins.',
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'Hand ends after 13 tricks; game after 4 deals.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 4 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before play_loop.',
-      'Scoring check: Complete Calypso = 500 (first) or 250 (subsequent). Tricks = 20 each. Partial Calypso cards = 10 each. Expected outcome: Highest score after 4 deals (one full game)..',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Score points by winning tricks and building Calypsos (complete trump suit sequences). First partnership to reach target score wins.',
+      'Turn-flow example: 1. Deal 13 each (4 decks = 208 cards). 2. Each player has personal trump (one suit). 3. Left of dealer leads. 4. Follow suit or trump. 5. Trump beats non-trump. 6. Build Calypsos (complete A-K of your trump) from won tricks. 7. Surplus trump cards in tricks = 10 pts each at game end. 8. 4 deals; first to target wins.',
+      'Scoring example: Complete Calypso = 500 (first) or 250 (subsequent). Tricks = 20 each. Partial Calypso cards = 10 each. Highest score after 4 deals (one full game)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'calypso.rules.objective',
+        title: 'Objective',
+        text: 'Score points by winning tricks and building Calypsos (complete trump suit sequences). First partnership to reach target score wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'calypso.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Deal 13 each (4 decks = 208 cards). 2. Each player has personal trump (one suit). 3. Left of dealer leads. 4. Follow suit or trump. 5. Trump beats non-trump. 6. Build Calypsos (complete A-K of your trump) from won tricks. 7. Surplus trump cards in tricks = 10 pts each at game end. 8. 4 deals; first to target wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'calypso.setup.players',
+        title: 'Players',
+        text: '4 in fixed partnerships (N-S vs E-W).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'calypso.setup.deck',
+        title: 'Deck',
+        text: '4 standard 52-card decks shuffled together (208 cards total).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'calypso.setup.equipment',
+        title: 'Equipment',
+        text: '4 standard 52-card decks. Score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'calypso.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 13 cards per deal. 4 deals per game.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'calypso.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest score after 4 deals (one full game).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'calypso.score.description',
+        title: 'Scoring',
+        text: 'Complete Calypso = 500 (first) or 250 (subsequent). Tricks = 20 each. Partial Calypso cards = 10 each.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'calypso.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Each player has their own personal trump suit.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'calypso.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Surplus duplicates of trump cards in hand cannot be added to a Calypso â€” only one of each rank needed.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'calypso.rules.key.3',
+        title: 'Key rule 3',
+        text: "Cards won in tricks that don't contribute to your Calypso are worth 10 pts each at game end.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'calypso.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'calypso.rules.objective',
+          'calypso.rules.gameplay',
+        ],
+      },
+      {
+        id: 'calypso.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'calypso.setup.players',
+          'calypso.setup.deck',
+          'calypso.setup.equipment',
+          'calypso.setup.dealing',
+        ],
+      },
+      {
+        id: 'calypso.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'calypso.rules.key.1',
+          'calypso.rules.key.2',
+          'calypso.rules.key.3',
+        ],
+      },
+      {
+        id: 'calypso.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'calypso.score.description',
+          'calypso.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'calypso.setup.dealing',
+        'calypso.rules.objective',
+      ],
+      deal: [
+        'calypso.rules.gameplay',
+      ],
+      play_card: [
+        'calypso.rules.gameplay',
+      ],
+      award_calypso: [
+        'calypso.rules.gameplay',
+      ],
+    },
   },
 }

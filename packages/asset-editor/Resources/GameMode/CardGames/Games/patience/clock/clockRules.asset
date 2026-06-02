@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Clock. Logic: Expose all cards before the fourth king appears in the centre.',
-    Player: 'Clock, also known as Sundial, is a luck-based solitaire laid out like a clock face.',
+    LLM: 'Turn the top card of the current pile, move to the pile matching that rank, and continue until all cards are exposed or the king pile blocks the game.',
+    Player: 'Turn the top card of the current pile, move to the pile matching that rank, and continue until all cards are exposed or the king pile blocks the game.',
     objective: 'Expose all cards before the fourth king appears in the centre.',
     gameplay: 'Turn the top card of the current pile, move to the pile matching that rank, and continue until all cards are exposed or the king pile blocks the game.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: Win by exposing all cards before the king pile ends play. Expected outcome: Expose all cards before the fourth king appears in the centre..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Expose all cards before the fourth king appears in the centre.',
+      'Turn-flow example: Turn the top card of the current pile, move to the pile matching that rank, and continue until all cards are exposed or the king pile blocks the game.',
+      'Scoring example: Win by exposing all cards before the king pile ends play. Expose all cards before the fourth king appears in the centre..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'clock.rules.objective',
+        title: 'Objective',
+        text: 'Expose all cards before the fourth king appears in the centre.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'clock.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Turn the top card of the current pile, move to the pile matching that rank, and continue until all cards are exposed or the king pile blocks the game.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'clock.setup.players',
+        title: 'Players',
+        text: '1 players use the table arrangement described for Clock.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'clock.setup.deck',
+        title: 'Deck',
+        text: '52-card standard pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'clock.setup.equipment',
+        title: 'Equipment',
+        text: '52-card standard pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'clock.setup.dealing',
+        title: 'Deal',
+        text: 'Deal cards into thirteen face-down piles: twelve clock positions and a central king pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'clock.score.win-condition',
+        title: 'Win condition',
+        text: 'Expose all cards before the fourth king appears in the centre.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'clock.score.description',
+        title: 'Scoring',
+        text: 'Win by exposing all cards before the king pile ends play.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'clock.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Thirteen piles are used.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'clock.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Ranks route play to the next pile.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'clock.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Kings route to the centre.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'clock.rules.key.4',
+        title: 'Key rule 4',
+        text: 'The fourth king usually ends the game as a loss.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'clock.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'clock.rules.objective',
+          'clock.rules.gameplay',
+        ],
+      },
+      {
+        id: 'clock.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'clock.setup.players',
+          'clock.setup.deck',
+          'clock.setup.equipment',
+          'clock.setup.dealing',
+        ],
+      },
+      {
+        id: 'clock.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'clock.rules.key.1',
+          'clock.rules.key.2',
+          'clock.rules.key.3',
+          'clock.rules.key.4',
+        ],
+      },
+      {
+        id: 'clock.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'clock.score.description',
+          'clock.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'clock.setup.dealing',
+        'clock.rules.objective',
+      ],
+      deal: [
+        'clock.rules.gameplay',
+      ],
+      play_card: [
+        'clock.rules.gameplay',
+      ],
+      draw: [
+        'clock.rules.gameplay',
+      ],
+    },
   },
 }

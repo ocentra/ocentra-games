@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Nine Card Brag. Type: Partition. Rules: 9 cards dealt, split into 3 hands of 3. Brag rankings apply. Hands compared sequentially. Win 2/3 to win the round.',
-    Player: "You were dealt a Prial of Aces and a Running Flush! But your third hand is junk. Do you split your power cards to ensure you win two comparisons, or go for the 'Crash' bonus by trying to sweep all three?",
+    LLM: '1. **Partition**: Players divide 9 cards into Hand 1, Hand 2, and Hand 3. 2. **Ordering**: Some variants require hands to be ordered from strongest to weakest. 3. **Comparison**: Hands are revealed one at a time. The winner of each comparison (e.g., Hand 1 vs. Hand 1) scores a point. 4. **Ranks**: Prial (3-3-3 is highest) > Running Flush > Run > Flush > Pair > High Card.',
+    Player: '1. **Partition**: Players divide 9 cards into Hand 1, Hand 2, and Hand 3. 2. **Ordering**: Some variants require hands to be ordered from strongest to weakest. 3. **Comparison**: Hands are revealed one at a time. The winner of each comparison (e.g., Hand 1 vs. Hand 1) scores a point. 4. **Ranks**: Prial (3-3-3 is highest) > Running Flush > Run > Flush > Pair > High Card.',
     objective: 'Win the majority of the three hand comparisons against your opponents.',
     gameplay: '1. **Partition**: Players divide 9 cards into Hand 1, Hand 2, and Hand 3. 2. **Ordering**: Some variants require hands to be ordered from strongest to weakest. 3. **Comparison**: Hands are revealed one at a time. The winner of each comparison (e.g., Hand 1 vs. Hand 1) scores a point. 4. **Ranks**: Prial (3-3-3 is highest) > Running Flush > Run > Flush > Pair > High Card.',
     keyRules: [
@@ -52,10 +52,174 @@
       go_out: 'The hand terminates only after all three comparisons have been performed by the system dealer.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 9 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in dealing; system may use deal_9_each before partition.',
-      'Scoring check: Points are awarded for each winning hand comparison. Bonus points for winning all three (the Crash). Expected outcome: Win the majority of hand comparisons in the round..',
+      'Setup example: 9 card(s) per player.',
+      'Rule example: Win the majority of the three hand comparisons against your opponents.',
+      'Turn-flow example: 1. **Partition**: Players divide 9 cards into Hand 1, Hand 2, and Hand 3. 2. **Ordering**: Some variants require hands to be ordered from strongest to weakest. 3. **Comparison**: Hands are revealed one at a time. The winner of each comparison (e.g., Hand 1 vs. Hand 1) scores a point. 4. **Ranks**: Prial (3-3-3 is highest) > Running Flush > Run > Flush > Pair > High Card.',
+      'Scoring example: Points are awarded for each winning hand comparison. Bonus points for winning all three (the Crash). Win the majority of hand comparisons in the round..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'brag-9-card.rules.objective',
+        title: 'Objective',
+        text: 'Win the majority of the three hand comparisons against your opponents.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'brag-9-card.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Partition**: Players divide 9 cards into Hand 1, Hand 2, and Hand 3. 2. **Ordering**: Some variants require hands to be ordered from strongest to weakest. 3. **Comparison**: Hands are revealed one at a time. The winner of each comparison (e.g., Hand 1 vs. Hand 1) scores a point. 4. **Ranks**: Prial (3-3-3 is highest) > Running Flush > Run > Flush > Pair > High Card.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'brag-9-card.setup.players',
+        title: 'Players',
+        text: '2 to 5 players playing individually.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'brag-9-card.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card French pack (No Jokers).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'brag-9-card.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, score pad or chips.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'brag-9-card.setup.dealing',
+        title: 'Deal',
+        text: 'Deal nine cards face-down to each player. Players then divide their hand into three separate 3-card Brag combinations.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'brag-9-card.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the majority of hand comparisons in the round.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'brag-9-card.score.description',
+        title: 'Scoring',
+        text: 'Points are awarded for each winning hand comparison. Bonus points for winning all three (the Crash).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'brag-9-card.rules.key.1',
+        title: 'Key rule 1',
+        text: 'All three hands must be valid Brag combinations.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'brag-9-card.rules.key.2',
+        title: 'Key rule 2',
+        text: "A player who wins all three comparisons is said to have 'Crashed' or 'Swept', often winning a bonus.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'brag-9-card.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Tied comparisons usually result in the point being carried over or shared.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'brag-9-card.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'brag-9-card.rules.objective',
+          'brag-9-card.rules.gameplay',
+        ],
+      },
+      {
+        id: 'brag-9-card.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'brag-9-card.setup.players',
+          'brag-9-card.setup.deck',
+          'brag-9-card.setup.equipment',
+          'brag-9-card.setup.dealing',
+        ],
+      },
+      {
+        id: 'brag-9-card.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'brag-9-card.rules.key.1',
+          'brag-9-card.rules.key.2',
+          'brag-9-card.rules.key.3',
+        ],
+      },
+      {
+        id: 'brag-9-card.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'brag-9-card.score.description',
+          'brag-9-card.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'brag-9-card.setup.dealing',
+        'brag-9-card.rules.objective',
+      ],
+      deal_9_each: [
+        'brag-9-card.rules.gameplay',
+      ],
+      split_9_into_three_hands: [
+        'brag-9-card.rules.gameplay',
+      ],
+      bet_blind: [
+        'brag-9-card.rules.gameplay',
+      ],
+      see_cards: [
+        'brag-9-card.rules.gameplay',
+      ],
+      bet_seeing: [
+        'brag-9-card.rules.gameplay',
+      ],
+      request_showdown: [
+        'brag-9-card.rules.gameplay',
+      ],
+      compare_hands_1: [
+        'brag-9-card.rules.gameplay',
+      ],
+      compare_hands_2: [
+        'brag-9-card.rules.gameplay',
+      ],
+      compare_hands_3: [
+        'brag-9-card.rules.gameplay',
+      ],
+      award_points: [
+        'brag-9-card.rules.gameplay',
+      ],
+    },
   },
 }

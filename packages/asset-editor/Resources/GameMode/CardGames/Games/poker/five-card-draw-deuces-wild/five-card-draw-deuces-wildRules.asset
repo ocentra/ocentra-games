@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Five Card Draw (Deuces Wild). Logic: See rules.objective and rules.gameplay.',
-    Player: 'Five Card Draw with all twos wild. Same deal and draw as standard; deuces substitute for any card. Best hand wins.',
+    LLM: 'As Five Card Draw: one betting round, draw (discard and replace), second betting round, showdown.',
+    Player: 'As Five Card Draw: one betting round, draw (discard and replace), second betting round, showdown.',
     objective: 'Form the best five-card hand; all four deuces are wild and substitute for any card. Five of a kind is the highest hand, beating a straight flush. Best hand at showdown wins the pot.',
     gameplay: 'As Five Card Draw: one betting round, draw (discard and replace), second betting round, showdown.',
     keyRules: [
@@ -51,10 +51,138 @@
       go_out: 'This game does not support go out.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Standard poker rankings; wild cards. Expected outcome: Best 5-card hand wins. Twos are wild..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Form the best five-card hand; all four deuces are wild and substitute for any card. Five of a kind is the highest hand, beating a straight flush. Best hand at showdown wins the pot.',
+      'Turn-flow example: As Five Card Draw: one betting round, draw (discard and replace), second betting round, showdown.',
+      'Scoring example: Standard poker rankings; wild cards. Best 5-card hand wins. Twos are wild..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'five-card-draw-deuces-wild.rules.objective',
+        title: 'Objective',
+        text: 'Form the best five-card hand; all four deuces are wild and substitute for any card. Five of a kind is the highest hand, beating a straight flush. Best hand at showdown wins the pot.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'five-card-draw-deuces-wild.rules.gameplay',
+        title: 'Turn flow',
+        text: 'As Five Card Draw: one betting round, draw (discard and replace), second betting round, showdown.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'five-card-draw-deuces-wild.setup.players',
+        title: 'Players',
+        text: 'Two to six players; six is often considered best. With seven or eight the deck may run out during the draw, so six is the usual maximum.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'five-card-draw-deuces-wild.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack. All four deuces (twos) act as wild cards; no joker is used.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'five-card-draw-deuces-wild.setup.equipment',
+        title: 'Equipment',
+        text: 'Chips.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'five-card-draw-deuces-wild.setup.dealing',
+        title: 'Deal',
+        text: '5 cards each; ante or blinds.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'five-card-draw-deuces-wild.score.win-condition',
+        title: 'Win condition',
+        text: 'Best 5-card hand wins. Twos are wild.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'five-card-draw-deuces-wild.score.description',
+        title: 'Scoring',
+        text: 'Standard poker rankings; wild cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'five-card-draw-deuces-wild.rules.key.1',
+        title: 'Key rule 1',
+        text: 'All 2s wild',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'five-card-draw-deuces-wild.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Same draw structure as base game',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'five-card-draw-deuces-wild.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'five-card-draw-deuces-wild.rules.objective',
+          'five-card-draw-deuces-wild.rules.gameplay',
+        ],
+      },
+      {
+        id: 'five-card-draw-deuces-wild.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'five-card-draw-deuces-wild.setup.players',
+          'five-card-draw-deuces-wild.setup.deck',
+          'five-card-draw-deuces-wild.setup.equipment',
+          'five-card-draw-deuces-wild.setup.dealing',
+        ],
+      },
+      {
+        id: 'five-card-draw-deuces-wild.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'five-card-draw-deuces-wild.rules.key.1',
+          'five-card-draw-deuces-wild.rules.key.2',
+        ],
+      },
+      {
+        id: 'five-card-draw-deuces-wild.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'five-card-draw-deuces-wild.score.description',
+          'five-card-draw-deuces-wild.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'five-card-draw-deuces-wild.setup.dealing',
+        'five-card-draw-deuces-wild.rules.objective',
+      ],
+      play_card: [
+        'five-card-draw-deuces-wild.rules.gameplay',
+      ],
+    },
   },
 }

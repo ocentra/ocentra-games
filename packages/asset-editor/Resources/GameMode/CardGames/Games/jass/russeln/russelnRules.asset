@@ -52,10 +52,168 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-5 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal, ante before bid.',
-      'Scoring check: Chips. 1/5 pot per trick. Ramsch wins pot + 5 each. Expected outcome: NA.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win tricks (play) or avoid (pass). Ramsch: take all 5.',
+      'Turn-flow example: 1. Bid: play, pass, ramsch. 2. Play: follow suit; trump if unable; head if possible. 3. 1/5 pot per trick. 4. Ramsch: take all 5 = pot + 5 from each. 5. Players may drop.',
+      'Scoring example: Chips. 1/5 pot per trick. Ramsch wins pot + 5 each. Chip accumulation..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'russeln.rules.objective',
+        title: 'Objective',
+        text: 'Win tricks (play) or avoid (pass). Ramsch: take all 5.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'russeln.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Bid: play, pass, ramsch. 2. Play: follow suit; trump if unable; head if possible. 3. 1/5 pot per trick. 4. Ramsch: take all 5 = pot + 5 from each. 5. Players may drop.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'russeln.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'russeln.setup.deck',
+        title: 'Deck',
+        text: '32-card German pack (four suits: Acorns, Leaves, Hearts, Bells; ranks 7 through Ace). Five cards each plus a widow; dealer antes 5.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'russeln.setup.equipment',
+        title: 'Equipment',
+        text: '32-card pack, chips.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'russeln.setup.dealing',
+        title: 'Deal',
+        text: '5 each; widow. Dealer antes 5.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'russeln.score.win-condition',
+        title: 'Win condition',
+        text: 'Chip accumulation.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'russeln.score.description',
+        title: 'Scoring',
+        text: 'Chips. 1/5 pot per trick. Ramsch wins pot + 5 each.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'russeln.rules.key.1',
+        title: 'Key rule 1',
+        text: '5 cards each. Widow.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'russeln.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Play/pass/ramsch. Follow suit; trump.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'russeln.rules.key.3',
+        title: 'Key rule 3',
+        text: '1/5 pot per trick. Ramsch bonus.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'russeln.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'russeln.rules.objective',
+          'russeln.rules.gameplay',
+        ],
+      },
+      {
+        id: 'russeln.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'russeln.setup.players',
+          'russeln.setup.deck',
+          'russeln.setup.equipment',
+          'russeln.setup.dealing',
+        ],
+      },
+      {
+        id: 'russeln.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'russeln.rules.key.1',
+          'russeln.rules.key.2',
+          'russeln.rules.key.3',
+        ],
+      },
+      {
+        id: 'russeln.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'russeln.score.description',
+          'russeln.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'russeln.setup.dealing',
+        'russeln.rules.objective',
+      ],
+      ante: [
+        'russeln.rules.gameplay',
+      ],
+      deal: [
+        'russeln.rules.gameplay',
+      ],
+      play_card: [
+        'russeln.rules.gameplay',
+      ],
+      pass: [
+        'russeln.rules.gameplay',
+      ],
+      play: [
+        'russeln.rules.gameplay',
+      ],
+      ramsch: [
+        'russeln.rules.gameplay',
+      ],
+      lead: [
+        'russeln.rules.gameplay',
+      ],
+      drop: [
+        'russeln.rules.gameplay',
+      ],
+    },
   },
 }

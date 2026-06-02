@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Batsford. Logic: Build all cards to foundations by suit from ace to king.',
-    Player: 'Batsford is a two-deck Klondike-style patience game with a single pass through the stock and a reserve space for one king.',
+    LLM: 'Build tableau piles in descending alternating colour, move available sequences where legal, use the stock only once, and use the king reserve to open a blocked line.',
+    Player: 'Build tableau piles in descending alternating colour, move available sequences where legal, use the stock only once, and use the king reserve to open a blocked line.',
     objective: 'Build all cards to foundations by suit from ace to king.',
     gameplay: 'Build tableau piles in descending alternating colour, move available sequences where legal, use the stock only once, and use the king reserve to open a blocked line.',
     keyRules: [
@@ -54,10 +54,171 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: A win is achieved when all cards are built to the foundations. Expected outcome: Build all cards to foundations by suit from ace to king..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Build all cards to foundations by suit from ace to king.',
+      'Turn-flow example: Build tableau piles in descending alternating colour, move available sequences where legal, use the stock only once, and use the king reserve to open a blocked line.',
+      'Scoring example: A win is achieved when all cards are built to the foundations. Build all cards to foundations by suit from ace to king..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'batsford.rules.objective',
+        title: 'Objective',
+        text: 'Build all cards to foundations by suit from ace to king.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'batsford.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Build tableau piles in descending alternating colour, move available sequences where legal, use the stock only once, and use the king reserve to open a blocked line.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'batsford.setup.players',
+        title: 'Players',
+        text: '1 players use the table arrangement described for Batsford.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'batsford.setup.deck',
+        title: 'Deck',
+        text: 'Two standard 52-card decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'batsford.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard 52-card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'batsford.setup.dealing',
+        title: 'Deal',
+        text: 'Deal a Klondike-like tableau using two decks, maintain foundations by suit, and allow a special reserve for a single king.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'batsford.score.win-condition',
+        title: 'Win condition',
+        text: 'Build all cards to foundations by suit from ace to king.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'batsford.score.description',
+        title: 'Scoring',
+        text: 'A win is achieved when all cards are built to the foundations.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'batsford.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two packs are used.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'batsford.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Foundations build up by suit.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'batsford.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Tableau builds down in alternating colours.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'batsford.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Only one pass through the stock is allowed.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'batsford.rules.key.5',
+        title: 'Key rule 5',
+        text: 'A reserve pile may hold one king.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'batsford.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'batsford.rules.objective',
+          'batsford.rules.gameplay',
+        ],
+      },
+      {
+        id: 'batsford.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'batsford.setup.players',
+          'batsford.setup.deck',
+          'batsford.setup.equipment',
+          'batsford.setup.dealing',
+        ],
+      },
+      {
+        id: 'batsford.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'batsford.rules.key.1',
+          'batsford.rules.key.2',
+          'batsford.rules.key.3',
+          'batsford.rules.key.4',
+          'batsford.rules.key.5',
+        ],
+      },
+      {
+        id: 'batsford.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'batsford.score.description',
+          'batsford.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'batsford.setup.dealing',
+        'batsford.rules.objective',
+      ],
+      deal: [
+        'batsford.rules.gameplay',
+      ],
+      play_card: [
+        'batsford.rules.gameplay',
+      ],
+      draw: [
+        'batsford.rules.gameplay',
+      ],
+    },
   },
 }

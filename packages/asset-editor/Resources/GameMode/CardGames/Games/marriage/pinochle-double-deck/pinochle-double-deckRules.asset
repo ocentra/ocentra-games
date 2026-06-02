@@ -54,10 +54,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 20 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in bid; each_player_clockwise may use bid, pass before meld.',
-      'Scoring check: Meld points plus trick points (counters) per hand; bidding team must make contract or is set (bid subtracted). First partnership to reach target (e.g. 1500) wins. Expected outcome: 1500.',
+      'Setup example: 20 card(s) per player.',
+      'Rule example: Partnerships bid for the right to name trump; the bidding team must meet their contract by combining meld points and trick points. First partnership to reach the agreed target score (e.g. 1500) wins.',
+      'Turn-flow example: Each hand has three phases: auction (players bid; high bidder declares trump), melding (all players show melds; points counted), and trick play (high bidder leads; follow suit; trump wins if unable to follow). Trick points plus meld must meet or exceed the bid or the team is set (bid subtracted).',
+      'Scoring example: Meld points plus trick points (counters) per hand; bidding team must make contract or is set (bid subtracted). First partnership to reach target (e.g. 1500) wins. First partnership to reach the agreed target score (commonly 1000 or 1500) wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pinochle-double-deck.rules.objective',
+        title: 'Objective',
+        text: 'Partnerships bid for the right to name trump; the bidding team must meet their contract by combining meld points and trick points. First partnership to reach the agreed target score (e.g. 1500) wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pinochle-double-deck.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Each hand has three phases: auction (players bid; high bidder declares trump), melding (all players show melds; points counted), and trick play (high bidder leads; follow suit; trump wins if unable to follow). Trick points plus meld must meet or exceed the bid or the team is set (bid subtracted).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pinochle-double-deck.setup.players',
+        title: 'Players',
+        text: 'Four players in two partnerships; partners sit opposite.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pinochle-double-deck.setup.deck',
+        title: 'Deck',
+        text: '80 cards (two 40-card packs).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pinochle-double-deck.setup.equipment',
+        title: 'Equipment',
+        text: '80 cards (two 40-card packs).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pinochle-double-deck.setup.dealing',
+        title: 'Deal',
+        text: 'All 80 cards dealt, 20 per player; typically in packets of four or five, clockwise from left of dealer.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pinochle-double-deck.score.win-condition',
+        title: 'Win condition',
+        text: 'First partnership to reach the agreed target score (commonly 1000 or 1500) wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pinochle-double-deck.score.description',
+        title: 'Scoring',
+        text: 'Meld points plus trick points (counters) per hand; bidding team must make contract or is set (bid subtracted). First partnership to reach target (e.g. 1500) wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pinochle-double-deck.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Double deck (80 cards, no nines)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pinochle-double-deck.rules.key.2',
+        title: 'Key rule 2',
+        text: '20 cards each',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pinochle-double-deck.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Minimum bid 500',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pinochle-double-deck.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Bid then meld then tricks',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'pinochle-double-deck.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Partnerships opposite',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pinochle-double-deck.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pinochle-double-deck.rules.objective',
+          'pinochle-double-deck.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pinochle-double-deck.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pinochle-double-deck.setup.players',
+          'pinochle-double-deck.setup.deck',
+          'pinochle-double-deck.setup.equipment',
+          'pinochle-double-deck.setup.dealing',
+        ],
+      },
+      {
+        id: 'pinochle-double-deck.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pinochle-double-deck.rules.key.1',
+          'pinochle-double-deck.rules.key.2',
+          'pinochle-double-deck.rules.key.3',
+          'pinochle-double-deck.rules.key.4',
+          'pinochle-double-deck.rules.key.5',
+        ],
+      },
+      {
+        id: 'pinochle-double-deck.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pinochle-double-deck.score.description',
+          'pinochle-double-deck.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pinochle-double-deck.setup.dealing',
+        'pinochle-double-deck.rules.objective',
+      ],
+      play_card: [
+        'pinochle-double-deck.rules.gameplay',
+      ],
+      pass: [
+        'pinochle-double-deck.rules.gameplay',
+      ],
+      bid: [
+        'pinochle-double-deck.rules.gameplay',
+      ],
+      meld: [
+        'pinochle-double-deck.rules.gameplay',
+      ],
+    },
   },
 }

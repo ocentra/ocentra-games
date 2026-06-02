@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Oh Hell. Logic: See rules.objective and rules.gameplay.',
-    Player: "Oh Hell (also known as Oh Hell!) is a classic trick-taking card game that emphasizes precision bidding over raw power. Unlike most trick-takers where you try to win as many tricks as possible, the goal is to win exactly the number of tricks you bid. It is famous for its 'River' structure, where hand sizes increase and decrease throughout the game, and its 'Hook' rule that prevents every player from being successful simultaneously.",
+    LLM: "Play starts with the player to the dealer's left leading any card. Players must follow suit if able; otherwise they may play any card including trump. Highest trump wins the trick, or if no trump was played, highest card of the led suit wins. The trick winner leads to the next trick; play continues until all tricks are complete.",
+    Player: "Play starts with the player to the dealer's left leading any card. Players must follow suit if able; otherwise they may play any card including trump. Highest trump wins the trick, or if no trump was played, highest card of the led suit wins. The trick winner leads to the next trick; play continues until all tricks are complete.",
     objective: 'Score the most points by winning EXACTLY the number of tricks you bid.',
     gameplay: "Play starts with the player to the dealer's left leading any card. Players must follow suit if able; otherwise they may play any card including trump. Highest trump wins the trick, or if no trump was played, highest card of the led suit wins. The trick winner leads to the next trick; play continues until all tricks are complete.",
     keyRules: [
@@ -53,7 +53,172 @@
       meld: 'This game has no meld action.',
       go_out: 'This game has no go-out action.',
     },
-    exampleHands: [],
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score the most points by winning EXACTLY the number of tricks you bid.',
+      "Turn-flow example: Play starts with the player to the dealer's left leading any card. Players must follow suit if able; otherwise they may play any card including trump. Highest trump wins the trick, or if no trump was played, highest card of the led suit wins. The trick winner leads to the next trick; play continues until all tricks are complete.",
+      'Scoring example: 10 points bonus for making your bid + 1 point per trick taken. If you miss your bid, you get 0 points (or 1 point per trick with no bonus). Score the most points by winning EXACTLY the number of tricks you bid..',
+    ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'oh-hell.rules.objective',
+        title: 'Objective',
+        text: 'Score the most points by winning EXACTLY the number of tricks you bid.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'oh-hell.rules.gameplay',
+        title: 'Turn flow',
+        text: "Play starts with the player to the dealer's left leading any card. Players must follow suit if able; otherwise they may play any card including trump. Highest trump wins the trick, or if no trump was played, highest card of the led suit wins. The trick winner leads to the next trick; play continues until all tricks are complete.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'oh-hell.setup.players',
+        title: 'Players',
+        text: 'From 3 to 7 people can play. The game is best when played with 4 to 6.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'oh-hell.setup.deck',
+        title: 'Deck',
+        text: '52 cards. Rank: A > K > Q > J > 10... > 2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'oh-hell.setup.equipment',
+        title: 'Equipment',
+        text: '52 cards. Rank: A > K > Q > J > 10... > 2.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'oh-hell.setup.dealing',
+        title: 'Deal',
+        text: 'Varies by round. Round 1: 1 card each. Round 2: 2 cards each. (Ascending up to 10 or 12, then descending back to 1).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'oh-hell.score.win-condition',
+        title: 'Win condition',
+        text: 'Score the most points by winning EXACTLY the number of tricks you bid.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'oh-hell.score.description',
+        title: 'Scoring',
+        text: '10 points bonus for making your bid + 1 point per trick taken. If you miss your bid, you get 0 points (or 1 point per trick with no bonus).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'oh-hell.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Bid the exact number of tricks you will take; scoring only for making the bid exactly.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'oh-hell.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Follow suit if able; if void, may play any card including trump.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'oh-hell.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trump is determined by the card turned after the deal; highest trump or highest of led suit wins the trick.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'oh-hell.rules.key.4',
+        title: 'Key rule 4',
+        text: 'The Hook: dealer may not bid so that total bids equal the number of tricks in the hand.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'oh-hell.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Hand sizes follow the River: start at 10 (or 8/7 by player count), decrease to 1, then increase back.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'oh-hell.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'oh-hell.rules.objective',
+          'oh-hell.rules.gameplay',
+        ],
+      },
+      {
+        id: 'oh-hell.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'oh-hell.setup.players',
+          'oh-hell.setup.deck',
+          'oh-hell.setup.equipment',
+          'oh-hell.setup.dealing',
+        ],
+      },
+      {
+        id: 'oh-hell.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'oh-hell.rules.key.1',
+          'oh-hell.rules.key.2',
+          'oh-hell.rules.key.3',
+          'oh-hell.rules.key.4',
+          'oh-hell.rules.key.5',
+        ],
+      },
+      {
+        id: 'oh-hell.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'oh-hell.score.description',
+          'oh-hell.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'oh-hell.setup.dealing',
+        'oh-hell.rules.objective',
+      ],
+      play_card: [
+        'oh-hell.rules.gameplay',
+      ],
+      bid: [
+        'oh-hell.rules.gameplay',
+      ],
+      deal_round: [
+        'oh-hell.rules.gameplay',
+      ],
+    },
   },
 }

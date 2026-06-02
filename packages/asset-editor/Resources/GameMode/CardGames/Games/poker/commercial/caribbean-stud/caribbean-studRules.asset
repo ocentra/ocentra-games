@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Caribbean Stud Poker. 52-card. Player vs dealer. 5 cards each (1 dealer card face-up). Player: fold (lose Ante) or raise (2Ã— Ante). Dealer qualifies with A-K+. Payouts by hand rank. Progressive jackpot side bet optional.',
-    Player: "Your hand: Aâ™ -Kâ™¦-Qâ™£-Jâ™¥-9â™ . Dealer shows Kâ™¥ face-up. You have A-K high. Optimal rule: raise if dealer's up-card (K) matches something in your hand â€” and you hold Kâ™¦. RAISE. Your A-K-Q-J-9 is strong; if dealer doesn't qualify you win Ante automatically.",
+    LLM: 'Ante. Deal 5 each (dealer 1 up). Player may fold (lose ante) or Raise (2× ante). Dealer reveals. Dealer must qualify (A-K or better). If qualified, compare hands; player wins 1:1 on ante, paytable on Raise. If not qualified, ante refunded, Raise push.',
+    Player: 'Ante. Deal 5 each (dealer 1 up). Player may fold (lose ante) or Raise (2× ante). Dealer reveals. Dealer must qualify (A-K or better). If qualified, compare hands; player wins 1:1 on ante, paytable on Raise. If not qualified, ante refunded, Raise push.',
     objective: "Beat the dealer's 5-card poker hand. Dealer must qualify (hold A-K or better) for the Raise bet to pay.",
     gameplay: 'Ante. Deal 5 each (dealer 1 up). Player may fold (lose ante) or Raise (2× ante). Dealer reveals. Dealer must qualify (A-K or better). If qualified, compare hands; player wins 1:1 on ante, paytable on Raise. If not qualified, ante refunded, Raise push.',
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'This action does not apply to this game.',
     },
     exampleHands: [
-      'Opening deal: 1-7 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      "Scoring check: Casino payouts based on hand rank. House edge ~5.2% on Ante. Expected outcome: Beat the dealer's qualifying hand..",
+      'Setup example: 5 card(s) per player.',
+      "Rule example: Beat the dealer's 5-card poker hand. Dealer must qualify (hold A-K or better) for the Raise bet to pay.",
+      'Turn-flow example: Ante. Deal 5 each (dealer 1 up). Player may fold (lose ante) or Raise (2× ante). Dealer reveals. Dealer must qualify (A-K or better). If qualified, compare hands; player wins 1:1 on ante, paytable on Raise. If not qualified, ante refunded, Raise push.',
+      "Scoring example: Casino payouts based on hand rank. House edge ~5.2% on Ante. Beat the dealer's qualifying hand..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'caribbean-stud.rules.objective',
+        title: 'Objective',
+        text: "Beat the dealer's 5-card poker hand. Dealer must qualify (hold A-K or better) for the Raise bet to pay.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'caribbean-stud.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Ante. Deal 5 each (dealer 1 up). Player may fold (lose ante) or Raise (2× ante). Dealer reveals. Dealer must qualify (A-K or better). If qualified, compare hands; player wins 1:1 on ante, paytable on Raise. If not qualified, ante refunded, Raise push.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'caribbean-stud.setup.players',
+        title: 'Players',
+        text: '1-7 players each playing individually against the dealer.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'caribbean-stud.setup.deck',
+        title: 'Deck',
+        text: '52 cards, standard.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'caribbean-stud.setup.equipment',
+        title: 'Equipment',
+        text: 'Casino table with betting spots. Optional progressive jackpot meter.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'caribbean-stud.setup.dealing',
+        title: 'Deal',
+        text: 'Each player places an Ante bet. Optional: $1 side bet for progressive jackpot. Dealer deals 5 cards to each player and 5 to self, with one dealer card face-up.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'caribbean-stud.score.win-condition',
+        title: 'Win condition',
+        text: "Beat the dealer's qualifying hand.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'caribbean-stud.score.description',
+        title: 'Scoring',
+        text: 'Casino payouts based on hand rank. House edge ~5.2% on Ante.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'caribbean-stud.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No drawing â€” hands are played as dealt (5-card stud).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'caribbean-stud.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players may NOT discuss hands with each other (house rules).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'caribbean-stud.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Dealer must qualify (A-K or better) for Raise bet to be in play.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'caribbean-stud.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'caribbean-stud.rules.objective',
+          'caribbean-stud.rules.gameplay',
+        ],
+      },
+      {
+        id: 'caribbean-stud.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'caribbean-stud.setup.players',
+          'caribbean-stud.setup.deck',
+          'caribbean-stud.setup.equipment',
+          'caribbean-stud.setup.dealing',
+        ],
+      },
+      {
+        id: 'caribbean-stud.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'caribbean-stud.rules.key.1',
+          'caribbean-stud.rules.key.2',
+          'caribbean-stud.rules.key.3',
+        ],
+      },
+      {
+        id: 'caribbean-stud.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'caribbean-stud.score.description',
+          'caribbean-stud.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'caribbean-stud.setup.dealing',
+        'caribbean-stud.rules.objective',
+      ],
+      deal: [
+        'caribbean-stud.rules.gameplay',
+      ],
+      fold: [
+        'caribbean-stud.rules.gameplay',
+      ],
+      bet: [
+        'caribbean-stud.rules.gameplay',
+      ],
+    },
   },
 }

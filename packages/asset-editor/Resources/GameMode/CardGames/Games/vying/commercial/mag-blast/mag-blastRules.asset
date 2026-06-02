@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Mag Blast. Logic: Destroy opposing command ships or satisfy the published space-battle victory condition.',
-    Player: 'Mag Blast is a commercial spaceship-themed strategy card game with fleets, sectors, and direct attacks.',
+    LLM: 'Players build fleets around command ships, play attack and defence cards, and use ship positions to target opponents across the table.',
+    Player: 'Players build fleets around command ships, play attack and defence cards, and use ship positions to target opponents across the table.',
     objective: 'Destroy opposing command ships or satisfy the published space-battle victory condition.',
     gameplay: 'Players build fleets around command ships, play attack and defence cards, and use ship positions to target opponents across the table.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Published scoring or victory conditions determine the winner. Expected outcome: Destroy opposing command ships or satisfy the published space-battle victory condition..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Destroy opposing command ships or satisfy the published space-battle victory condition.',
+      'Turn-flow example: Players build fleets around command ships, play attack and defence cards, and use ship positions to target opponents across the table.',
+      'Scoring example: Published scoring or victory conditions determine the winner. Destroy opposing command ships or satisfy the published space-battle victory condition..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'mag-blast.rules.objective',
+        title: 'Objective',
+        text: 'Destroy opposing command ships or satisfy the published space-battle victory condition.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mag-blast.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players build fleets around command ships, play attack and defence cards, and use ship positions to target opponents across the table.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mag-blast.setup.players',
+        title: 'Players',
+        text: '2-8 players use the table arrangement described for Mag Blast.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mag-blast.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Mag Blast spaceship cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mag-blast.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Mag Blast spaceship cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mag-blast.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare the dedicated Mag Blast cards and any shared table, score, or resource areas from the published rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mag-blast.score.win-condition',
+        title: 'Win condition',
+        text: 'Destroy opposing command ships or satisfy the published space-battle victory condition.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mag-blast.score.description',
+        title: 'Scoring',
+        text: 'Published scoring or victory conditions determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mag-blast.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dedicated commercial deck.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'mag-blast.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Two to eight players.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'mag-blast.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Spaceship combat theme.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'mag-blast.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Fleet positions matter.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'mag-blast.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Attacks and defences resolve by card effects.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mag-blast.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mag-blast.rules.objective',
+          'mag-blast.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mag-blast.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mag-blast.setup.players',
+          'mag-blast.setup.deck',
+          'mag-blast.setup.equipment',
+          'mag-blast.setup.dealing',
+        ],
+      },
+      {
+        id: 'mag-blast.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mag-blast.rules.key.1',
+          'mag-blast.rules.key.2',
+          'mag-blast.rules.key.3',
+          'mag-blast.rules.key.4',
+          'mag-blast.rules.key.5',
+        ],
+      },
+      {
+        id: 'mag-blast.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mag-blast.score.description',
+          'mag-blast.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mag-blast.setup.dealing',
+        'mag-blast.rules.objective',
+      ],
+      play_card: [
+        'mag-blast.rules.gameplay',
+      ],
+    },
   },
 }

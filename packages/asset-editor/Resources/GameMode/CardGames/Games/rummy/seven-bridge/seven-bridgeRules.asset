@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 7 Bridge. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Seven Bridge (7 Bridge) is a Japanese Rummy game. 2-5 players. 52-card deck. 7 cards each. Special rule: 7s need only 2-card melds (e.g., 7-7 or 6-7 is valid). Single 7 can be played as 1-card meld. Draw from stock (discard pile restricted). Lay off on any meld. Go out by melding all but last card + discard. All-at-once meld = double score.',
+    LLM: "Draw from stock (discard pile only if immediately melding). Meld sets (3-4 same rank) or runs (3+ sequential same suit). 7s special: only need 2 cards for meld (7-7 valid set, 6-7 valid run). Single 7 = 1-card meld. Lay off on any player's melds. Discard to end turn. All-at-once go-out = double score.",
+    Player: "Draw from stock (discard pile only if immediately melding). Meld sets (3-4 same rank) or runs (3+ sequential same suit). 7s special: only need 2 cards for meld (7-7 valid set, 6-7 valid run). Single 7 = 1-card meld. Lay off on any player's melds. Discard to end turn. All-at-once go-out = double score.",
     objective: 'Form melds (sets or sequences), lay off on existing melds, and be the first to go out by melding or laying off all cards except one and discarding that final card.',
     gameplay: "Draw from stock (discard pile only if immediately melding). Meld sets (3-4 same rank) or runs (3+ sequential same suit). 7s special: only need 2 cards for meld (7-7 valid set, 6-7 valid run). Single 7 = 1-card meld. Lay off on any player's melds. Discard to end turn. All-at-once go-out = double score.",
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      "Scoring check: Winner scores opponents' remaining cards: 7s=20pts, face cards=10pts, others=pip value. All-at-once = doubled. Expected outcome: Meld all cards and discard last card to go out..",
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Form melds (sets or sequences), lay off on existing melds, and be the first to go out by melding or laying off all cards except one and discarding that final card.',
+      "Turn-flow example: Draw from stock (discard pile only if immediately melding). Meld sets (3-4 same rank) or runs (3+ sequential same suit). 7s special: only need 2 cards for meld (7-7 valid set, 6-7 valid run). Single 7 = 1-card meld. Lay off on any player's melds. Discard to end turn. All-at-once go-out = double score.",
+      "Scoring example: Winner scores opponents' remaining cards: 7s=20pts, face cards=10pts, others=pip value. All-at-once = doubled. Meld all cards and discard last card to go out..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'seven-bridge.rules.objective',
+        title: 'Objective',
+        text: 'Form melds (sets or sequences), lay off on existing melds, and be the first to go out by melding or laying off all cards except one and discarding that final card.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'seven-bridge.rules.gameplay',
+        title: 'Turn flow',
+        text: "Draw from stock (discard pile only if immediately melding). Meld sets (3-4 same rank) or runs (3+ sequential same suit). 7s special: only need 2 cards for meld (7-7 valid set, 6-7 valid run). Single 7 = 1-card meld. Lay off on any player's melds. Discard to end turn. All-at-once go-out = double score.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'seven-bridge.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'seven-bridge.setup.deck',
+        title: 'Deck',
+        text: '52 cards. A low, K high. 7 each.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'seven-bridge.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'seven-bridge.setup.dealing',
+        title: 'Deal',
+        text: '7 each. Stock + discard pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'seven-bridge.score.win-condition',
+        title: 'Win condition',
+        text: 'Meld all cards and discard last card to go out.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'seven-bridge.score.description',
+        title: 'Scoring',
+        text: "Winner scores opponents' remaining cards: 7s=20pts, face cards=10pts, others=pip value. All-at-once = doubled.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'seven-bridge.rules.key.1',
+        title: 'Key rule 1',
+        text: '7s need only 2-card melds',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'seven-bridge.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Single 7 = valid meld',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'seven-bridge.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Discard pile restricted',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'seven-bridge.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Lay off on anyone',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'seven-bridge.rules.key.5',
+        title: 'Key rule 5',
+        text: 'All-at-once go-out doubles',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'seven-bridge.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'seven-bridge.rules.objective',
+          'seven-bridge.rules.gameplay',
+        ],
+      },
+      {
+        id: 'seven-bridge.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'seven-bridge.setup.players',
+          'seven-bridge.setup.deck',
+          'seven-bridge.setup.equipment',
+          'seven-bridge.setup.dealing',
+        ],
+      },
+      {
+        id: 'seven-bridge.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'seven-bridge.rules.key.1',
+          'seven-bridge.rules.key.2',
+          'seven-bridge.rules.key.3',
+          'seven-bridge.rules.key.4',
+          'seven-bridge.rules.key.5',
+        ],
+      },
+      {
+        id: 'seven-bridge.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'seven-bridge.score.description',
+          'seven-bridge.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'seven-bridge.setup.dealing',
+        'seven-bridge.rules.objective',
+      ],
+      play_card: [
+        'seven-bridge.rules.gameplay',
+      ],
+    },
   },
 }

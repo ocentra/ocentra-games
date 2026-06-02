@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Vatikan. Logic: See rules.objective and rules.gameplay.',
-    Player: "Vatikan is a Russian Rummy variant using double deck + 2 jokers (106 cards). 2-5 players, 13 each. Key feature: players can REARRANGE existing melds on the table to integrate new cards. First meld must be a sequence from hand. Jokers are wild but can't be moved between melds directly. Draw OR meld each turn (not both).",
+    LLM: "Draw OR meld (not both). Sets (3-4 same rank, different suits) and Runs (3+ sequential same suit). First meld = sequence from hand. REARRANGE existing table melds to add cards. Jokers wild but can't move directly between melds. Replace joker with actual card to free it.",
+    Player: "Draw OR meld (not both). Sets (3-4 same rank, different suits) and Runs (3+ sequential same suit). First meld = sequence from hand. REARRANGE existing table melds to add cards. Jokers wild but can't move directly between melds. Replace joker with actual card to free it.",
     objective: 'Be the first to get rid of all your cards by melding. There is no scoring; the first player out wins outright.',
     gameplay: "Draw OR meld (not both). Sets (3-4 same rank, different suits) and Runs (3+ sequential same suit). First meld = sequence from hand. REARRANGE existing table melds to add cards. Jokers wild but can't move directly between melds. Replace joker with actual card to free it.",
     keyRules: [
@@ -54,10 +54,177 @@
       go_out: 'Achieved by melding when hand becomes empty; no separate action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: First out wins. Expected outcome: Shed all cards via melding..',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Be the first to get rid of all your cards by melding. There is no scoring; the first player out wins outright.',
+      "Turn-flow example: Draw OR meld (not both). Sets (3-4 same rank, different suits) and Runs (3+ sequential same suit). First meld = sequence from hand. REARRANGE existing table melds to add cards. Jokers wild but can't move directly between melds. Replace joker with actual card to free it.",
+      'Scoring example: First out wins. Shed all cards via melding..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'vatikan.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to get rid of all your cards by melding. There is no scoring; the first player out wins outright.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'vatikan.rules.gameplay',
+        title: 'Turn flow',
+        text: "Draw OR meld (not both). Sets (3-4 same rank, different suits) and Runs (3+ sequential same suit). First meld = sequence from hand. REARRANGE existing table melds to add cards. Jokers wild but can't move directly between melds. Replace joker with actual card to free it.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'vatikan.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'vatikan.setup.deck',
+        title: 'Deck',
+        text: '106 cards (2x52 + 2 jokers). A can be high or low.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'vatikan.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'vatikan.setup.dealing',
+        title: 'Deal',
+        text: '13 cards each. Remaining cards form the stock; there is no discard pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'vatikan.score.win-condition',
+        title: 'Win condition',
+        text: 'Shed all cards via melding.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'vatikan.score.description',
+        title: 'Scoring',
+        text: 'First out wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'vatikan.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Draw OR meld per turn',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'vatikan.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Rearrange table melds',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'vatikan.rules.key.3',
+        title: 'Key rule 3',
+        text: 'First meld must be sequence',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'vatikan.rules.key.4',
+        title: 'Key rule 4',
+        text: "Jokers can't move directly",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'vatikan.rules.key.5',
+        title: 'Key rule 5',
+        text: 'A high or low (no wrap)',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'vatikan.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'vatikan.rules.objective',
+          'vatikan.rules.gameplay',
+        ],
+      },
+      {
+        id: 'vatikan.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'vatikan.setup.players',
+          'vatikan.setup.deck',
+          'vatikan.setup.equipment',
+          'vatikan.setup.dealing',
+        ],
+      },
+      {
+        id: 'vatikan.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'vatikan.rules.key.1',
+          'vatikan.rules.key.2',
+          'vatikan.rules.key.3',
+          'vatikan.rules.key.4',
+          'vatikan.rules.key.5',
+        ],
+      },
+      {
+        id: 'vatikan.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'vatikan.score.description',
+          'vatikan.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'vatikan.setup.dealing',
+        'vatikan.rules.objective',
+      ],
+      deal: [
+        'vatikan.rules.gameplay',
+      ],
+      draw: [
+        'vatikan.rules.gameplay',
+      ],
+      meld: [
+        'vatikan.rules.gameplay',
+      ],
+      go_out: [
+        'vatikan.rules.gameplay',
+      ],
+      finish_game: [
+        'vatikan.rules.gameplay',
+      ],
+    },
   },
 }

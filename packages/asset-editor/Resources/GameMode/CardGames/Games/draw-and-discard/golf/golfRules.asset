@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Golf. Objective: Have the lowest scoring layout at the end of each hole (hand).',
-    Player: 'Golf: play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: 'FOUR-CARD GOLF:\n1. Players arrange 4 cards face down in square; view 2 nearest cards once\n2. Player left of dealer starts\n3. On your turn, either: - Draw from stock, optionally replace a layout card (discard replaced card) - Take top discard, must use to replace layout card - Knock (ends play after others take one more turn)\n4. Cannot look at layout cards before deciding which to replace\n5. If you look at a face-down card, you must replace it SIX-CARD GOLF:\n1. 6 cards arranged 2x3, usually all face down initially\n2. Draw and replace as in 4-card\n3. Replacement cards placed face up\n4. Play ends when one player has all cards face up',
+    Player: 'FOUR-CARD GOLF:\n1. Players arrange 4 cards face down in square; view 2 nearest cards once\n2. Player left of dealer starts\n3. On your turn, either: - Draw from stock, optionally replace a layout card (discard replaced card) - Take top discard, must use to replace layout card - Knock (ends play after others take one more turn)\n4. Cannot look at layout cards before deciding which to replace\n5. If you look at a face-down card, you must replace it SIX-CARD GOLF:\n1. 6 cards arranged 2x3, usually all face down initially\n2. Draw and replace as in 4-card\n3. Replacement cards placed face up\n4. Play ends when one player has all cards face up',
     objective: 'Have the lowest scoring layout at the end of each hole (hand). Play 9 or 18 holes; lowest cumulative score wins.',
     gameplay: 'FOUR-CARD GOLF:\n1. Players arrange 4 cards face down in square; view 2 nearest cards once\n2. Player left of dealer starts\n3. On your turn, either: - Draw from stock, optionally replace a layout card (discard replaced card) - Take top discard, must use to replace layout card - Knock (ends play after others take one more turn)\n4. Cannot look at layout cards before deciding which to replace\n5. If you look at a face-down card, you must replace it SIX-CARD GOLF:\n1. 6 cards arranged 2x3, usually all face down initially\n2. Draw and replace as in 4-card\n3. Replacement cards placed face up\n4. Play ends when one player has all cards face up',
     keyRules: [
@@ -55,10 +55,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Layout is turned face-up at end of play. Numeral cards score face value (Ace=1, Two=2, etc.), Jack and Queen score 10 each, King scores zero. Lowest cumulative score after 9 or 18 deals wins. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Have the lowest scoring layout at the end of each hole (hand). Play 9 or 18 holes; lowest cumulative score wins.',
+      'Turn-flow example: FOUR-CARD GOLF:\n1. Players arrange 4 cards face down in square; view 2 nearest cards once\n2. Player left of dealer starts\n3. On your turn, either: - Draw from stock, optionally replace a layout card (discard replaced card) - Take top discard, must use to replace layout card - Knock (ends play after others take one more turn)\n4. Cannot look at layout cards before deciding which to replace\n5. If you look at a face-down card, you must replace it SIX-CARD GOLF:\n1. 6 cards arranged 2x3, usually all face down initially\n2. Draw and replace as in 4-card\n3. Replacement cards placed face up\n4. Play ends when one player has all cards face up',
+      'Scoring example: Layout is turned face-up at end of play. Numeral cards score face value (Ace=1, Two=2, etc.), Jack and Queen score 10 each, King scores zero. Lowest cumulative score after 9 or 18 deals wins. Lowest total score after 9 or 18 holes (deals) wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'golf.rules.objective',
+        title: 'Objective',
+        text: 'Have the lowest scoring layout at the end of each hole (hand). Play 9 or 18 holes; lowest cumulative score wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'golf.rules.gameplay',
+        title: 'Turn flow',
+        text: 'FOUR-CARD GOLF:\n1. Players arrange 4 cards face down in square; view 2 nearest cards once\n2. Player left of dealer starts\n3. On your turn, either: - Draw from stock, optionally replace a layout card (discard replaced card) - Take top discard, must use to replace layout card - Knock (ends play after others take one more turn)\n4. Cannot look at layout cards before deciding which to replace\n5. If you look at a face-down card, you must replace it SIX-CARD GOLF:\n1. 6 cards arranged 2x3, usually all face down initially\n2. Draw and replace as in 4-card\n3. Replacement cards placed face up\n4. Play ends when one player has all cards face up',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'golf.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 8 (use 2 decks for 8+ players)\nOptimal Players: 4\nPartnerships: No',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'golf.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card\nNumber of Decks: 1 (2 for 8+ players)\nJokers: Optional (variations)',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'golf.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck of cards\nScore sheet for tracking over multiple holes',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'golf.setup.dealing',
+        title: 'Deal',
+        text: '4-Card Golf: 4 cards each, arranged in square, 2 face-up to view\n6-Card Golf: 6 cards each, arranged 2x3, some variations start with all face down\n8-Card Golf: 8 cards each\nRemaining cards form stock pile; top card turned for discard pile',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'golf.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest total score after 9 or 18 holes (deals) wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'golf.score.description',
+        title: 'Scoring',
+        text: 'Layout is turned face-up at end of play. Numeral cards score face value (Ace=1, Two=2, etc.), Jack and Queen score 10 each, King scores zero. Lowest cumulative score after 9 or 18 deals wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'golf.rules.key.1',
+        title: 'Key rule 1',
+        text: 'You cannot look at your face-down cards before deciding which to replace',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'golf.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If you draw from stock, you may discard it without using it',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'golf.rules.key.3',
+        title: 'Key rule 3',
+        text: 'If you take the discard, you must use it to replace a card',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'golf.rules.key.4',
+        title: 'Key rule 4',
+        text: 'In 4-card, knocking ends the hand',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'golf.rules.key.5',
+        title: 'Key rule 5',
+        text: 'In 6-card, play ends when one player has all cards face up',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'golf.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Looking at a face-down card forces you to replace it',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'golf.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'golf.rules.objective',
+          'golf.rules.gameplay',
+        ],
+      },
+      {
+        id: 'golf.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'golf.setup.players',
+          'golf.setup.deck',
+          'golf.setup.equipment',
+          'golf.setup.dealing',
+        ],
+      },
+      {
+        id: 'golf.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'golf.rules.key.1',
+          'golf.rules.key.2',
+          'golf.rules.key.3',
+          'golf.rules.key.4',
+          'golf.rules.key.5',
+          'golf.rules.key.6',
+        ],
+      },
+      {
+        id: 'golf.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'golf.score.description',
+          'golf.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'golf.setup.dealing',
+        'golf.rules.objective',
+      ],
+      play_card: [
+        'golf.rules.gameplay',
+      ],
+    },
   },
 }

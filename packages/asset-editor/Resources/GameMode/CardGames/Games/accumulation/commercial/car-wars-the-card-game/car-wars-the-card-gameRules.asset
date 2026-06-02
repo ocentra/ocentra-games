@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Car Wars The Card Game. Logic: Survive the road combat and score best through damage, attacks, or scenario victory.',
-    Player: 'Car Wars The Card Game is a commercial card game adaptation of the Car Wars vehicle-combat setting.',
+    LLM: 'Players play manoeuvres and attack cards, respond with defences or events, and track damage or elimination through the proprietary card effects.',
+    Player: 'Players play manoeuvres and attack cards, respond with defences or events, and track damage or elimination through the proprietary card effects.',
     objective: 'Survive the road combat and score best through damage, attacks, or scenario victory.',
     gameplay: 'Players play manoeuvres and attack cards, respond with defences or events, and track damage or elimination through the proprietary card effects.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Scenario scoring, damage, or survival determines the winner. Expected outcome: Survive the road combat and score best through damage, attacks, or scenario victory..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Survive the road combat and score best through damage, attacks, or scenario victory.',
+      'Turn-flow example: Players play manoeuvres and attack cards, respond with defences or events, and track damage or elimination through the proprietary card effects.',
+      'Scoring example: Scenario scoring, damage, or survival determines the winner. Survive the road combat and score best through damage, attacks, or scenario victory..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'car-wars-the-card-game.rules.objective',
+        title: 'Objective',
+        text: 'Survive the road combat and score best through damage, attacks, or scenario victory.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'car-wars-the-card-game.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play manoeuvres and attack cards, respond with defences or events, and track damage or elimination through the proprietary card effects.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'car-wars-the-card-game.setup.players',
+        title: 'Players',
+        text: '2-6 players use the table arrangement described for Car Wars The Card Game.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'car-wars-the-card-game.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Car Wars card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'car-wars-the-card-game.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Car Wars card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'car-wars-the-card-game.setup.dealing',
+        title: 'Deal',
+        text: 'Deal vehicle, weapon, manoeuvre, and event cards from the dedicated deck according to the published rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'car-wars-the-card-game.score.win-condition',
+        title: 'Win condition',
+        text: 'Survive the road combat and score best through damage, attacks, or scenario victory.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'car-wars-the-card-game.score.description',
+        title: 'Scoring',
+        text: 'Scenario scoring, damage, or survival determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'car-wars-the-card-game.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dedicated commercial deck.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'car-wars-the-card-game.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Vehicle combat theme.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'car-wars-the-card-game.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Attack and defence cards resolve conflicts.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'car-wars-the-card-game.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Damage and survival determine success.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'car-wars-the-card-game.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'car-wars-the-card-game.rules.objective',
+          'car-wars-the-card-game.rules.gameplay',
+        ],
+      },
+      {
+        id: 'car-wars-the-card-game.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'car-wars-the-card-game.setup.players',
+          'car-wars-the-card-game.setup.deck',
+          'car-wars-the-card-game.setup.equipment',
+          'car-wars-the-card-game.setup.dealing',
+        ],
+      },
+      {
+        id: 'car-wars-the-card-game.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'car-wars-the-card-game.rules.key.1',
+          'car-wars-the-card-game.rules.key.2',
+          'car-wars-the-card-game.rules.key.3',
+          'car-wars-the-card-game.rules.key.4',
+        ],
+      },
+      {
+        id: 'car-wars-the-card-game.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'car-wars-the-card-game.score.description',
+          'car-wars-the-card-game.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'car-wars-the-card-game.setup.dealing',
+        'car-wars-the-card-game.rules.objective',
+      ],
+      play_card: [
+        'car-wars-the-card-game.rules.gameplay',
+      ],
+    },
   },
 }

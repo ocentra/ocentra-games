@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Nomination Whist (Oh Hell!). Type: Exact-bidding trick-taking. 2-7 players. 'Up and down' dealing. Bid tricks; dealer restricted. Score: exact=10+bid, miss=1 per trick (or 0).",
-    Player: "Play Nomination Whist (Oh Hell!)â€”bid exactly how many tricks you'll win. The dealer can't make the total equal the tricks available, so someone always fails!",
+    LLM: 'Player left of dealer leads. Must follow suit if possible; may trump or discard if void. Highest trump wins trick; otherwise highest of led suit wins. Winner leads to next trick.',
+    Player: 'Player left of dealer leads. Must follow suit if possible; may trump or discard if void. Highest trump wins trick; otherwise highest of led suit wins. Winner leads to next trick.',
     objective: 'Score the most points by making exactly the number of tricks bid.',
     gameplay: 'Player left of dealer leads. Must follow suit if possible; may trump or discard if void. Highest trump wins trick; otherwise highest of led suit wins. Winner leads to next trick.',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-7 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before bidding.',
-      'Scoring check: Exact bid: 10 + tricks bid. Miss bid: 1 per trick (or 0 in some variants). Expected outcome: Highest score after all rounds..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Score the most points by making exactly the number of tricks bid.',
+      'Turn-flow example: Player left of dealer leads. Must follow suit if possible; may trump or discard if void. Highest trump wins trick; otherwise highest of led suit wins. Winner leads to next trick.',
+      'Scoring example: Exact bid: 10 + tricks bid. Miss bid: 1 per trick (or 0 in some variants). Highest score after all rounds..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'nomination-whist.rules.objective',
+        title: 'Objective',
+        text: 'Score the most points by making exactly the number of tricks bid.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'nomination-whist.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Player left of dealer leads. Must follow suit if possible; may trump or discard if void. Highest trump wins trick; otherwise highest of led suit wins. Winner leads to next trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'nomination-whist.setup.players',
+        title: 'Players',
+        text: '2-7 players, each playing for themselves.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'nomination-whist.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack. Cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'nomination-whist.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, score pad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'nomination-whist.setup.dealing',
+        title: 'Deal',
+        text: "'Up and down the river': Deal 1 card each (round 1), then 2, 3, etc. up to maximum (typically 7-10 depending on players), then back down to 1. Total rounds = 2 Ã— max - 1.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'nomination-whist.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest score after all rounds.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'nomination-whist.score.description',
+        title: 'Scoring',
+        text: 'Exact bid: 10 + tricks bid. Miss bid: 1 per trick (or 0 in some variants).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'nomination-whist.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Exact bid required for 10-point bonus',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'nomination-whist.rules.key.2',
+        title: 'Key rule 2',
+        text: "Dealer's bid restrictedâ€”total cannot equal tricks available",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'nomination-whist.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trump suit determined by turning card after deal',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'nomination-whist.rules.key.4',
+        title: 'Key rule 4',
+        text: "'Up and down' dealing pattern",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'nomination-whist.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Follow suit if possible',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'nomination-whist.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'nomination-whist.rules.objective',
+          'nomination-whist.rules.gameplay',
+        ],
+      },
+      {
+        id: 'nomination-whist.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'nomination-whist.setup.players',
+          'nomination-whist.setup.deck',
+          'nomination-whist.setup.equipment',
+          'nomination-whist.setup.dealing',
+        ],
+      },
+      {
+        id: 'nomination-whist.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'nomination-whist.rules.key.1',
+          'nomination-whist.rules.key.2',
+          'nomination-whist.rules.key.3',
+          'nomination-whist.rules.key.4',
+          'nomination-whist.rules.key.5',
+        ],
+      },
+      {
+        id: 'nomination-whist.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'nomination-whist.score.description',
+          'nomination-whist.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'nomination-whist.setup.dealing',
+        'nomination-whist.rules.objective',
+      ],
+      deal: [
+        'nomination-whist.rules.gameplay',
+      ],
+      play_card: [
+        'nomination-whist.rules.gameplay',
+      ],
+      bid: [
+        'nomination-whist.rules.gameplay',
+      ],
+      update_score: [
+        'nomination-whist.rules.gameplay',
+      ],
+    },
   },
 }

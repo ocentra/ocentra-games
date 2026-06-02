@@ -55,10 +55,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Score points by capturing cards from the table and achieving specific combinations. The game is typically played to 11 points (or 21 points in some versions), with points awarded for most cards captured, most cards in the coins/diamonds suit, holding the seven of coins (settebello), and achieving sweeps (chkobba).',
+      "Turn-flow example: 1. Initial deal: 3 cards to each player, 4 cards face-up on table\n2. If 2+ Aces on table, reshuffle and redeal\n3. Players take turns counterclockwise playing one card\n4. Capture by matching a table card's value OR by playing a card whose value equals the sum of multiple table cards\n5. Captured cards are stored face-down in trick piles\n6. When all players have played their 3 cards, dealer deals 3 more cards to each player (no more table cards)\n7. Continue until all cards are played\n8. Last player to capture takes remaining table cards",
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'chkobba.rules.objective',
+        title: 'Objective',
+        text: 'Score points by capturing cards from the table and achieving specific combinations. The game is typically played to 11 points (or 21 points in some versions), with points awarded for most cards captured, most cards in the coins/diamonds suit, holding the seven of coins (settebello), and achieving sweeps (chkobba).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'chkobba.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Initial deal: 3 cards to each player, 4 cards face-up on table\n2. If 2+ Aces on table, reshuffle and redeal\n3. Players take turns counterclockwise playing one card\n4. Capture by matching a table card's value OR by playing a card whose value equals the sum of multiple table cards\n5. Captured cards are stored face-down in trick piles\n6. When all players have played their 3 cards, dealer deals 3 more cards to each player (no more table cards)\n7. Continue until all cards are played\n8. Last player to capture takes remaining table cards",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'chkobba.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 4\nOptimal Players: 2 or 4 (in partnerships)\nPartnerships: Optional for 4 players',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'chkobba.setup.deck',
+        title: 'Deck',
+        text: 'Type: Spanish 40-card deck (or Italian deck)\nNumber of Decks: 1\nJokers: Not included\nCard Values: Ace=1, 2-7=face value, Jack=8, Horse=9, King=10',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'chkobba.setup.equipment',
+        title: 'Equipment',
+        text: 'Spanish or Italian 40-card deck\nScore sheet\nTable space for layout',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'chkobba.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: 3 cards initially\nTable Cards: 4 cards dealt face-up to table\nDealing Pattern: Counterclockwise\nRedeal: If 2 or more Aces appear in initial table cards, cards are reshuffled and redealt',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'chkobba.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'chkobba.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'chkobba.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must capture if possible - cannot play a card that could capture without capturing',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'chkobba.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If a card can capture in multiple ways, player chooses which capture to make',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'chkobba.rules.key.3',
+        title: 'Key rule 3',
+        text: "When table cards sum to the played card's value, all those cards are captured together",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'chkobba.rules.key.4',
+        title: 'Key rule 4',
+        text: 'A sweep (chkobba) occurs when a play captures all cards on the table, leaving it empty',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'chkobba.rules.key.5',
+        title: 'Key rule 5',
+        text: 'The card used to make a sweep is turned face-up in the trick pile to mark the sweep',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'chkobba.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Last player to capture any cards takes remaining table cards at end of round',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'chkobba.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'chkobba.rules.objective',
+          'chkobba.rules.gameplay',
+        ],
+      },
+      {
+        id: 'chkobba.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'chkobba.setup.players',
+          'chkobba.setup.deck',
+          'chkobba.setup.equipment',
+          'chkobba.setup.dealing',
+        ],
+      },
+      {
+        id: 'chkobba.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'chkobba.rules.key.1',
+          'chkobba.rules.key.2',
+          'chkobba.rules.key.3',
+          'chkobba.rules.key.4',
+          'chkobba.rules.key.5',
+          'chkobba.rules.key.6',
+        ],
+      },
+      {
+        id: 'chkobba.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'chkobba.score.description',
+          'chkobba.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'chkobba.setup.dealing',
+        'chkobba.rules.objective',
+      ],
+      play_card: [
+        'chkobba.rules.gameplay',
+      ],
+    },
   },
 }

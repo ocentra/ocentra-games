@@ -10,7 +10,26 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: "Points based on opponent's remaining pips when a player dominoes or game blocks.",
+      winCondition: 'First player to reach 100 points loses (standard) or wins (variant). If both reach 100 in same round, lowest score wins.',
+      targetScore: 100,
+      scoringDirection: 'low_wins',
+      cardValues: {},
+      nullReasons: {
+        cardValues: "Scoring uses total pips in opponent's hand when round ends; no per-tile point values.",
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

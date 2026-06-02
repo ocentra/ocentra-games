@@ -16,6 +16,17 @@
     "familyKernel": "claim",
     "familyVariant": "hoarder",
     "executorId": "claim.hoarder.v1",
+    "objective": "Collect cards in one secretly declared suit, avoid negative off-suit liability, and call Showdown only when your final score is at least 27.",
+    "gameplay": "Each round deals three cards to every active player from one Standard 52-card French deck. On a turn, the active player may take at most one card from stock or discard, discard at most one card while keeping at least three cards, privately declare one suit once per round, end the turn, or call Showdown when declared and qualified. Acting while undeclared adds persistent debt equal to the highest card in hand. Showdown reveals all hands, scores declared-suit runs positive, scores off-suit or undeclared runs negative, subtracts debt, applies raw scores to bankrolls, and pays winner-difference bonuses when the top score is positive.",
+    "keyRules": [
+      "Claim is locked to exactly four active seats.",
+      "Each active player starts with three cards from one Standard 52-card French deck.",
+      "A player may declare one suit once per round, and the declaration remains secret until showdown.",
+      "Declared-suit cards score positive; off-suit cards and undeclared hands score negative.",
+      "If a player acts while undeclared and ends the turn, the highest-card debt persists even if that card is later discarded.",
+      "A player can call Showdown only when declared, holding at least three cards, and final score is at least 27."
+    ],
+    "turnFlow": "Run setup_round, then loop active-player turns until a qualified Showdown call or automatic exhaustion showdown. During a turn, the player may take once, discard once, declare once if eligible, end the turn, or call Showdown if declared with at least three cards and a final score of 27 or higher. Timeout safely advances the turn and applies undeclared debt only after an acted undeclared turn.",
     "ruleGroups": [
       {
         "id": "claim.rules.identity",

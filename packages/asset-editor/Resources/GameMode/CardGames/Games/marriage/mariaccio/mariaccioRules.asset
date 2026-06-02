@@ -50,10 +50,132 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card, declare before round end.',
-      'Scoring check: Card points from tricks (Ace 11, 3 10, King 4, Knight 3, Jack 2, 7-2 zero) plus Mariaccio bonuses (40 for trump marriage, 20 for non-trump). Expected outcome: 250.',
+      'Setup example: 5 card(s) per player.',
+      "Rule example: Score 250 points through tricks and 'Mariaccio' declarations.",
+      'Turn-flow example: Standard Briscola rules: No obligation to follow suit or trump. High card wins. Winner draws first, then loser, until deck is empty.',
+      'Scoring example: Card points from tricks (Ace 11, 3 10, King 4, Knight 3, Jack 2, 7-2 zero) plus Mariaccio bonuses (40 for trump marriage, 20 for non-trump). First player to reach 250 points wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'mariaccio.rules.objective',
+        title: 'Objective',
+        text: "Score 250 points through tricks and 'Mariaccio' declarations.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mariaccio.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Standard Briscola rules: No obligation to follow suit or trump. High card wins. Winner draws first, then loser, until deck is empty.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mariaccio.setup.players',
+        title: 'Players',
+        text: 'Two players. Five cards are dealt to each player; the eleventh card is placed face up on the table to determine the trump suit. The remaining stock is placed face down across the face-up trump. The non-dealer leads to the first trick.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mariaccio.setup.deck',
+        title: 'Deck',
+        text: '40 cards. Ranking: Ace, 3, King, Knight, Jack, 7, 6, 5, 4, 2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mariaccio.setup.equipment',
+        title: 'Equipment',
+        text: '40 cards. Ranking: Ace, 3, King, Knight, Jack, 7, 6, 5, 4, 2.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mariaccio.setup.dealing',
+        title: 'Deal',
+        text: "Each player receives 5 cards. A trump card is turned up to set the 'Briscola' suit.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mariaccio.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach 250 points wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mariaccio.score.description',
+        title: 'Scoring',
+        text: 'Card points from tricks (Ace 11, 3 10, King 4, Knight 3, Jack 2, 7-2 zero) plus Mariaccio bonuses (40 for trump marriage, 20 for non-trump).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mariaccio.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No obligation to follow suit or trump. High card of led suit wins, or highest trump if any. Winner of trick draws first from stock, then loser. Declare Mariaccio (King and Knight of same suit) when playing one of them for bonus points (40 trump, 20 non-trump). First to 250 points wins.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mariaccio.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mariaccio.rules.objective',
+          'mariaccio.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mariaccio.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mariaccio.setup.players',
+          'mariaccio.setup.deck',
+          'mariaccio.setup.equipment',
+          'mariaccio.setup.dealing',
+        ],
+      },
+      {
+        id: 'mariaccio.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mariaccio.rules.key.1',
+        ],
+      },
+      {
+        id: 'mariaccio.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mariaccio.score.description',
+          'mariaccio.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mariaccio.setup.dealing',
+        'mariaccio.rules.objective',
+      ],
+      declare: [
+        'mariaccio.rules.gameplay',
+      ],
+      play_card: [
+        'mariaccio.rules.gameplay',
+      ],
+    },
   },
 }

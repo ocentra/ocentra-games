@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Durak. Russian 36-card (6â†’A). Trump set by turned bottom card. Attack: play card(s); defender covers with higher same-suit or any trump. Fail to defend = take all. Draw to 6 after bouts. Last player = Durak.',
-    Player: "Trump is Hearts. You're attacking with 8â™  and 8â™¦ (a pair). Defender must beat BOTH. They have Qâ™  (beats 8â™  âœ“) but no Diamond higher than 8â™¦ and no Heart trump. They must either take all 4 cards or forfeit defense. Now throw in another 8 or a Q if you hold one!",
+    LLM: 'Attack with cards; defender beats or picks up. Refill to 6 from stock. Last with cards = Durak (loser).',
+    Player: 'Attack with cards; defender beats or picks up. Refill to 6 from stock. Last with cards = Durak (loser).',
     objective: 'Shed all of your cards before the talon is exhausted and play ends. The game has no winner—only a loser: the last player left holding cards is the durak (fool) and loses the hand; in partnership play the team left with cards loses.',
     gameplay: 'Attack with cards; defender beats or picks up. Refill to 6 from stock. Last with cards = Durak (loser).',
     keyRules: [
@@ -52,10 +52,180 @@
       go_out: 'Allowed only when hand-empty condition is satisfied.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_6_set_trump before play_loop.',
-      'Scoring check: Elimination game â€” last with cards is Fool. Expected outcome: 1.',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Shed all of your cards before the talon is exhausted and play ends. The game has no winner—only a loser: the last player left holding cards is the durak (fool) and loses the hand; in partnership play the team left with cards loses.',
+      'Turn-flow example: Attack with cards; defender beats or picks up. Refill to 6 from stock. Last with cards = Durak (loser).',
+      'Scoring example: Elimination game â€” last with cards is Fool. Empty your hand after stock is depleted..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'durak.rules.objective',
+        title: 'Objective',
+        text: 'Shed all of your cards before the talon is exhausted and play ends. The game has no winner—only a loser: the last player left holding cards is the durak (fool) and loses the hand; in partnership play the team left with cards loses.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'durak.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Attack with cards; defender beats or picks up. Refill to 6 from stock. Last with cards = Durak (loser).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'durak.setup.players',
+        title: 'Players',
+        text: "Two to six players. Best with four playing in partnerships (two against two, partners opposite). Can also be played by two to six as individuals, or six in two teams of three sitting alternately. The player to the dealer's left is the first defender; the attacker sits to the defender's right.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'durak.setup.deck',
+        title: 'Deck',
+        text: '36 cards: Ranks 6-7-8-9-10-J-Q-K-A in each of 4 suits.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'durak.setup.equipment',
+        title: 'Equipment',
+        text: '36-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'durak.setup.dealing',
+        title: 'Deal',
+        text: '6 cards each. Turn one card as trump indicator; place under stock (suit visible). Stock face-down on top.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'durak.score.win-condition',
+        title: 'Win condition',
+        text: 'Empty your hand after stock is depleted.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'durak.score.description',
+        title: 'Scoring',
+        text: 'Elimination game â€” last with cards is Fool.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'durak.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Cannot have more than 6 cards in your hand after a win. Refill back to 6 after each bout.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'durak.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Once stock is empty, no more drawing. Play out remaining cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'durak.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Last player with cards = Durak (Fool). Loser of the session.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'durak.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'durak.rules.objective',
+          'durak.rules.gameplay',
+        ],
+      },
+      {
+        id: 'durak.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'durak.setup.players',
+          'durak.setup.deck',
+          'durak.setup.equipment',
+          'durak.setup.dealing',
+        ],
+      },
+      {
+        id: 'durak.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'durak.rules.key.1',
+          'durak.rules.key.2',
+          'durak.rules.key.3',
+        ],
+      },
+      {
+        id: 'durak.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'durak.score.description',
+          'durak.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'durak.setup.dealing',
+        'durak.rules.objective',
+      ],
+      deal: [
+        'durak.rules.gameplay',
+      ],
+      declare: [
+        'durak.rules.gameplay',
+      ],
+      play_card: [
+        'durak.rules.gameplay',
+      ],
+      draw: [
+        'durak.rules.gameplay',
+      ],
+      pass: [
+        'durak.rules.gameplay',
+      ],
+      go_out: [
+        'durak.rules.gameplay',
+      ],
+      deal_6_set_trump: [
+        'durak.rules.gameplay',
+      ],
+      attack: [
+        'durak.rules.gameplay',
+      ],
+      throw_in: [
+        'durak.rules.gameplay',
+      ],
+      pass_attack: [
+        'durak.rules.gameplay',
+      ],
+      defend: [
+        'durak.rules.gameplay',
+      ],
+      take_cards: [
+        'durak.rules.gameplay',
+      ],
+    },
   },
 }

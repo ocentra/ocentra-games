@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Jjak-mat-chu-gi. Logic: See rules.objective and rules.gameplay.',
-    Player: "Jjak-mat-chu-gi (짝맞추기 - 'Making Pairs') is a traditional Korean domino game played with Gol-pae (bone tiles). Unlike Western dominoes where players match end-to-end, this is a 'pair-making' game where the objective is to form specific combinations (Civil and Military pairs). It is a draw-and-discard game similar in structure to Rummy but played with tiles.",
+    LLM: "1. Players draw a tile from the reserve and discard one into the center.\n2. A player can 'chow' (claim) an opponent's discard ONLY if it completes a pair.\n3. Pairs are laid face-down until the hand is won.",
+    Player: "1. Players draw a tile from the reserve and discard one into the center.\n2. A player can 'chow' (claim) an opponent's discard ONLY if it completes a pair.\n3. Pairs are laid face-down until the hand is won.",
     objective: 'Be the first to form three complete pairs in your hand.',
     gameplay: "1. Players draw a tile from the reserve and discard one into the center.\n2. A player can 'chow' (claim) an opponent's discard ONLY if it completes a pair.\n3. Pairs are laid face-down until the hand is won.",
     keyRules: [
@@ -52,10 +52,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before turn_loop.',
-      'Scoring check: Be the first to form three complete pairs in your hand. Expected outcome: Be the first to form three complete pairs in your hand..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first to form three complete pairs in your hand.',
+      "Turn-flow example: 1. Players draw a tile from the reserve and discard one into the center.\n2. A player can 'chow' (claim) an opponent's discard ONLY if it completes a pair.\n3. Pairs are laid face-down until the hand is won.",
+      'Scoring example: Be the first to form three complete pairs in your hand. Be the first to form three complete pairs in your hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'jjak-mat-chu-gi.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to form three complete pairs in your hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'jjak-mat-chu-gi.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Players draw a tile from the reserve and discard one into the center.\n2. A player can 'chow' (claim) an opponent's discard ONLY if it completes a pair.\n3. Pairs are laid face-down until the hand is won.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'jjak-mat-chu-gi.setup.players',
+        title: 'Players',
+        text: '2 to 4 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'jjak-mat-chu-gi.setup.deck',
+        title: 'Deck',
+        text: "32 tiles: 11 'Civil' pairs (matching) and 10 'Military' tiles (unique, paired by total spots).",
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'jjak-mat-chu-gi.setup.equipment',
+        title: 'Equipment',
+        text: "32 tiles: 11 'Civil' pairs (matching) and 10 'Military' tiles (unique, paired by total spots).",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'jjak-mat-chu-gi.setup.dealing',
+        title: 'Deal',
+        text: 'First player draws 6 tiles, others 5 each. Remaining tiles form a face-down reserve. First player is chosen by draw (tile 2-5 or highest spots plays first).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'jjak-mat-chu-gi.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first to form three complete pairs in your hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'jjak-mat-chu-gi.score.description',
+        title: 'Scoring',
+        text: 'Be the first to form three complete pairs in your hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'jjak-mat-chu-gi.rules.key.1',
+        title: 'Key rule 1',
+        text: "Each turn: either claim the previous player's discard to complete a pair, or draw one from the reserve.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'jjak-mat-chu-gi.rules.key.2',
+        title: 'Key rule 2',
+        text: 'After acquiring a tile, lay down any completed pairs face down, then discard one tile face up.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'jjak-mat-chu-gi.rules.key.3',
+        title: 'Key rule 3',
+        text: 'First to complete three pairs wins. With 2 or 3 players, 6-6 cannot be the third pair; with 4 players it can.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'jjak-mat-chu-gi.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'jjak-mat-chu-gi.rules.objective',
+          'jjak-mat-chu-gi.rules.gameplay',
+        ],
+      },
+      {
+        id: 'jjak-mat-chu-gi.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'jjak-mat-chu-gi.setup.players',
+          'jjak-mat-chu-gi.setup.deck',
+          'jjak-mat-chu-gi.setup.equipment',
+          'jjak-mat-chu-gi.setup.dealing',
+        ],
+      },
+      {
+        id: 'jjak-mat-chu-gi.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'jjak-mat-chu-gi.rules.key.1',
+          'jjak-mat-chu-gi.rules.key.2',
+          'jjak-mat-chu-gi.rules.key.3',
+        ],
+      },
+      {
+        id: 'jjak-mat-chu-gi.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'jjak-mat-chu-gi.score.description',
+          'jjak-mat-chu-gi.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'jjak-mat-chu-gi.setup.dealing',
+        'jjak-mat-chu-gi.rules.objective',
+      ],
+      deal: [
+        'jjak-mat-chu-gi.rules.gameplay',
+      ],
+      draw: [
+        'jjak-mat-chu-gi.rules.gameplay',
+      ],
+      discard: [
+        'jjak-mat-chu-gi.rules.gameplay',
+      ],
+      meld: [
+        'jjak-mat-chu-gi.rules.gameplay',
+      ],
+      claim_discard: [
+        'jjak-mat-chu-gi.rules.gameplay',
+      ],
+    },
   },
 }

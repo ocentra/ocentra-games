@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Perevodnoy Durak. Transfer by equal rank. 36 cards. 2-6p.',
-    Player: 'Perevodnoy Durak: transfer attack by playing same rank. Else as Podkidnoy. Last with cards = Fool.',
+    LLM: 'As Podkidnoy Durak, except: defender with card of SAME RANK as first attack card can TRANSFER: play it, attack passes to next player with both cards. New defender can add same rank, transfer again. Cannot transfer if new defender has too few cards to defend. Alternative: beat or pick up.',
+    Player: 'As Podkidnoy Durak, except: defender with card of SAME RANK as first attack card can TRANSFER: play it, attack passes to next player with both cards. New defender can add same rank, transfer again. Cannot transfer if new defender has too few cards to defend. Alternative: beat or pick up.',
     objective: 'Get rid of all your cards. The last player holding cards at the end of the game is the Durak (Fool) and loses.',
     gameplay: 'As Podkidnoy Durak, except: defender with card of SAME RANK as first attack card can TRANSFER: play it, attack passes to next player with both cards. New defender can add same rank, transfer again. Cannot transfer if new defender has too few cards to defend. Alternative: beat or pick up.',
     keyRules: [
@@ -54,10 +54,180 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before attack.',
-      'Scoring check: Last with cards = Durak (Fool). Expected outcome: 1.',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Get rid of all your cards. The last player holding cards at the end of the game is the Durak (Fool) and loses.',
+      'Turn-flow example: As Podkidnoy Durak, except: defender with card of SAME RANK as first attack card can TRANSFER: play it, attack passes to next player with both cards. New defender can add same rank, transfer again. Cannot transfer if new defender has too few cards to defend. Alternative: beat or pick up.',
+      'Scoring example: Last with cards = Durak (Fool). Empty hand when stock exhausted..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'perevodnoy-durak.rules.objective',
+        title: 'Objective',
+        text: 'Get rid of all your cards. The last player holding cards at the end of the game is the Durak (Fool) and loses.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'perevodnoy-durak.rules.gameplay',
+        title: 'Turn flow',
+        text: 'As Podkidnoy Durak, except: defender with card of SAME RANK as first attack card can TRANSFER: play it, attack passes to next player with both cards. New defender can add same rank, transfer again. Cannot transfer if new defender has too few cards to defend. Alternative: beat or pick up.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'perevodnoy-durak.setup.players',
+        title: 'Players',
+        text: '2-6. Individuals (no partnerships).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'perevodnoy-durak.setup.deck',
+        title: 'Deck',
+        text: '36 cards. Rank A-K-Q-J-10-9-8-7-6.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'perevodnoy-durak.setup.equipment',
+        title: 'Equipment',
+        text: '36-card pack.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'perevodnoy-durak.setup.dealing',
+        title: 'Deal',
+        text: '6 each. Turn one for trump. Stock face-down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'perevodnoy-durak.score.win-condition',
+        title: 'Win condition',
+        text: 'Empty hand when stock exhausted.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'perevodnoy-durak.score.description',
+        title: 'Scoring',
+        text: 'Last with cards = Durak (Fool).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'perevodnoy-durak.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Transfer: play equal rank to pass attack to next player.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'perevodnoy-durak.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Transfer adds your card to attack; next must defend or transfer.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'perevodnoy-durak.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Cannot transfer if new defender cannot defend (e.g. only 1 card vs 2-card attack).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'perevodnoy-durak.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Once a card beaten, transfer no longer possible for that bout.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'perevodnoy-durak.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Otherwise as Podkidnoy: attack, defend, throw in, draw to 6.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'perevodnoy-durak.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'perevodnoy-durak.rules.objective',
+          'perevodnoy-durak.rules.gameplay',
+        ],
+      },
+      {
+        id: 'perevodnoy-durak.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'perevodnoy-durak.setup.players',
+          'perevodnoy-durak.setup.deck',
+          'perevodnoy-durak.setup.equipment',
+          'perevodnoy-durak.setup.dealing',
+        ],
+      },
+      {
+        id: 'perevodnoy-durak.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'perevodnoy-durak.rules.key.1',
+          'perevodnoy-durak.rules.key.2',
+          'perevodnoy-durak.rules.key.3',
+          'perevodnoy-durak.rules.key.4',
+          'perevodnoy-durak.rules.key.5',
+        ],
+      },
+      {
+        id: 'perevodnoy-durak.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'perevodnoy-durak.score.description',
+          'perevodnoy-durak.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'perevodnoy-durak.setup.dealing',
+        'perevodnoy-durak.rules.objective',
+      ],
+      deal: [
+        'perevodnoy-durak.rules.gameplay',
+      ],
+      draw: [
+        'perevodnoy-durak.rules.gameplay',
+      ],
+      attack: [
+        'perevodnoy-durak.rules.gameplay',
+      ],
+      beat: [
+        'perevodnoy-durak.rules.gameplay',
+      ],
+      transfer: [
+        'perevodnoy-durak.rules.gameplay',
+      ],
+      pick_up: [
+        'perevodnoy-durak.rules.gameplay',
+      ],
+    },
   },
 }

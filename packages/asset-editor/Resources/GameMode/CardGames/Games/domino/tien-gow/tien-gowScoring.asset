@@ -10,7 +10,29 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Points are awarded to the winner of the 8th trick. Bonuses for capture of high-ranking pairs or triplets.',
+      winCondition: 'Highest point total after 4 rounds (North, East, South, West) wins.',
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {
+        Heaven_Pair: '10',
+        Gee_Joon: '9',
+      },
+      nullReasons: {
+        targetScore: 'No fixed target score; play by game rules.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],
@@ -19,7 +41,7 @@
       Heaven_Pair: 10,
       Gee_Joon: 9,
     },
-    penalties: '{\n  "Discarding_High": "Potential loss of defensive power"\n}',
+    penalties: '{"Discarding_High":"Potential loss of defensive power"}',
     targetScore: null,
     scoringDirection: 'high_wins',
     rankingAsset: {

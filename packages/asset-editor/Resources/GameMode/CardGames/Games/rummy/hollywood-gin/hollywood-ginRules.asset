@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Hollywood Gin. Objective: Win the majority of the three games being played simultaneously.',
-    Player: 'Hollywood Gin: play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: "Play follows standard Gin Rummy: each turn a player draws one card from the stock or the top of the discard pile, then discards one card (if drawing from discard, must discard a different card). Players form melds (sets of equal rank or runs in the same suit) and reduce deadwood. A player may knock when deadwood is 10 or less by discarding face down and exposing their hand; the opponent may lay off cards on the knocker's melds unless the knocker went gin. Scoring: knocker scores the difference in deadwood, or the opponent scores the difference plus 10 for an undercut; going gin scores 20 plus the opponent's deadwood. Hollywood scoring: three games are tracked on one score sheet. The first hand won is recorded in Game 1 only; the second win in Games 1 and 2; the third and all subsequent wins in all three games. Each game runs to 100 points then receives game and box bonuses; when all three games are finished the totals are summed for the match score.",
+    Player: "Play follows standard Gin Rummy: each turn a player draws one card from the stock or the top of the discard pile, then discards one card (if drawing from discard, must discard a different card). Players form melds (sets of equal rank or runs in the same suit) and reduce deadwood. A player may knock when deadwood is 10 or less by discarding face down and exposing their hand; the opponent may lay off cards on the knocker's melds unless the knocker went gin. Scoring: knocker scores the difference in deadwood, or the opponent scores the difference plus 10 for an undercut; going gin scores 20 plus the opponent's deadwood. Hollywood scoring: three games are tracked on one score sheet. The first hand won is recorded in Game 1 only; the second win in Games 1 and 2; the third and all subsequent wins in all three games. Each game runs to 100 points then receives game and box bonuses; when all three games are finished the totals are summed for the match score.",
     objective: 'Win the majority of the three games being played simultaneously.',
     gameplay: "Play follows standard Gin Rummy: each turn a player draws one card from the stock or the top of the discard pile, then discards one card (if drawing from discard, must discard a different card). Players form melds (sets of equal rank or runs in the same suit) and reduce deadwood. A player may knock when deadwood is 10 or less by discarding face down and exposing their hand; the opponent may lay off cards on the knocker's melds unless the knocker went gin. Scoring: knocker scores the difference in deadwood, or the opponent scores the difference plus 10 for an undercut; going gin scores 20 plus the opponent's deadwood. Hollywood scoring: three games are tracked on one score sheet. The first hand won is recorded in Game 1 only; the second win in Games 1 and 2; the third and all subsequent wins in all three games. Each game runs to 100 points then receives game and box bonuses; when all three games are finished the totals are summed for the match score.",
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Each player counts the total value of their unmatched cards. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win the majority of the three games being played simultaneously.',
+      "Turn-flow example: Play follows standard Gin Rummy: each turn a player draws one card from the stock or the top of the discard pile, then discards one card (if drawing from discard, must discard a different card). Players form melds (sets of equal rank or runs in the same suit) and reduce deadwood. A player may knock when deadwood is 10 or less by discarding face down and exposing their hand; the opponent may lay off cards on the knocker's melds unless the knocker went gin. Scoring: knocker scores the difference in deadwood, or the opponent scores the difference plus 10 for an undercut; going gin scores 20 plus the opponent's deadwood. Hollywood scoring: three games are tracked on one score sheet. The first hand won is recorded in Game 1 only; the second win in Games 1 and 2; the third and all subsequent wins in all three games. Each game runs to 100 points then receives game and box bonuses; when all three games are finished the totals are summed for the match score.",
+      'Scoring example: Each player counts the total value of their unmatched cards. Each player counts the total value of their unmatched cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hollywood-gin.rules.objective',
+        title: 'Objective',
+        text: 'Win the majority of the three games being played simultaneously.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hollywood-gin.rules.gameplay',
+        title: 'Turn flow',
+        text: "Play follows standard Gin Rummy: each turn a player draws one card from the stock or the top of the discard pile, then discards one card (if drawing from discard, must discard a different card). Players form melds (sets of equal rank or runs in the same suit) and reduce deadwood. A player may knock when deadwood is 10 or less by discarding face down and exposing their hand; the opponent may lay off cards on the knocker's melds unless the knocker went gin. Scoring: knocker scores the difference in deadwood, or the opponent scores the difference plus 10 for an undercut; going gin scores 20 plus the opponent's deadwood. Hollywood scoring: three games are tracked on one score sheet. The first hand won is recorded in Game 1 only; the second win in Games 1 and 2; the third and all subsequent wins in all three games. Each game runs to 100 points then receives game and box bonuses; when all three games are finished the totals are summed for the match score.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hollywood-gin.setup.players',
+        title: 'Players',
+        text: 'Two players. Each receives ten cards per hand. The first dealer is chosen by drawing from the shuffled pack (lower card deals); thereafter the winner of the previous hand deals. In serious play both players shuffle and the non-dealer cuts.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hollywood-gin.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Ranking: K-Q-J-10...A (Aces are always low).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hollywood-gin.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. Ranking: K-Q-J-10...A (Aces are always low).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hollywood-gin.setup.dealing',
+        title: 'Deal',
+        text: 'The first dealer is chosen randomly by drawing cards from the shuffled pack - the player who draws the lower card deals.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hollywood-gin.score.win-condition',
+        title: 'Win condition',
+        text: 'Each player counts the total value of their unmatched cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hollywood-gin.score.description',
+        title: 'Scoring',
+        text: 'Each player counts the total value of their unmatched cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hollywood-gin.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Hollywood Gin.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hollywood-gin.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: Scoring summary: Scoring follows the game-specific point or pot rules.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hollywood-gin.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Win the majority of the three games being played simultaneously.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hollywood-gin.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hollywood-gin.rules.objective',
+          'hollywood-gin.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hollywood-gin.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hollywood-gin.setup.players',
+          'hollywood-gin.setup.deck',
+          'hollywood-gin.setup.equipment',
+          'hollywood-gin.setup.dealing',
+        ],
+      },
+      {
+        id: 'hollywood-gin.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hollywood-gin.rules.key.1',
+          'hollywood-gin.rules.key.2',
+          'hollywood-gin.rules.key.3',
+        ],
+      },
+      {
+        id: 'hollywood-gin.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hollywood-gin.score.description',
+          'hollywood-gin.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hollywood-gin.setup.dealing',
+        'hollywood-gin.rules.objective',
+      ],
+      play_card: [
+        'hollywood-gin.rules.gameplay',
+      ],
+    },
   },
 }

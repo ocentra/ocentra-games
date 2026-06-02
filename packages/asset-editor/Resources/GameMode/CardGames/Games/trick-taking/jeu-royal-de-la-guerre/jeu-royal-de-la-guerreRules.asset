@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kaiserspiel. Logic: Win the tricks, card points, or contract result required by the local form of the game.',
-    Player: 'Kaiserspiel is a traditional trick-taking card game using 40 or 48-card Swiss Kaiserspiel deck for 2, 4, or 6 players. It uses one chosen suit and belongs to the Karnöffel environment.',
+    LLM: 'Players ante, receive hands from the dedicated pack, and resolve immediate effects from special suitless cards such as Death, Force, Army General, and Prisoner of War. The remaining suited cards are then played to tricks under the documented rule.',
+    Player: 'Players ante, receive hands from the dedicated pack, and resolve immediate effects from special suitless cards such as Death, Force, Army General, and Prisoner of War. The remaining suited cards are then played to tricks under the documented rule.',
     objective: 'Win the money or counters attached to the deal by navigating tricks and the special suitless card effects.',
     gameplay: 'Players ante, receive hands from the dedicated pack, and resolve immediate effects from special suitless cards such as Death, Force, Army General, and Prisoner of War. The remaining suited cards are then played to tricks under the documented rule.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-12 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Tricks, card points, or contract success determine scoring. Expected outcome: 1.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win the money or counters attached to the deal by navigating tricks and the special suitless card effects.',
+      'Turn-flow example: Players ante, receive hands from the dedicated pack, and resolve immediate effects from special suitless cards such as Death, Force, Army General, and Prisoner of War. The remaining suited cards are then played to tricks under the documented rule.',
+      'Scoring example: Tricks, card points, or contract success determine scoring. Win the tricks, card points, or contract result required by the local form of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'jeu-royal-de-la-guerre.rules.objective',
+        title: 'Objective',
+        text: 'Win the money or counters attached to the deal by navigating tricks and the special suitless card effects.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'jeu-royal-de-la-guerre.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players ante, receive hands from the dedicated pack, and resolve immediate effects from special suitless cards such as Death, Force, Army General, and Prisoner of War. The remaining suited cards are then played to tricks under the documented rule.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'jeu-royal-de-la-guerre.setup.players',
+        title: 'Players',
+        text: '2-12 players use the table arrangement described for Jeu Royal de la Guerre.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'jeu-royal-de-la-guerre.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated historical 40-card war-themed pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'jeu-royal-de-la-guerre.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated historical 40-card war-themed pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'jeu-royal-de-la-guerre.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated historical 40-card war-themed pack and deal or lay out cards according to the documented Jeu Royal de la Guerre rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'jeu-royal-de-la-guerre.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'jeu-royal-de-la-guerre.score.description',
+        title: 'Scoring',
+        text: 'Tricks, card points, or contract success determine scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'jeu-royal-de-la-guerre.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The pack has 36 suited cards plus four suitless special cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'jeu-royal-de-la-guerre.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The special cards create immediate effects outside ordinary trick play.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'jeu-royal-de-la-guerre.rules.key.3',
+        title: 'Key rule 3',
+        text: "Suits largely do not matter for the game's central novelty.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'jeu-royal-de-la-guerre.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'jeu-royal-de-la-guerre.rules.objective',
+          'jeu-royal-de-la-guerre.rules.gameplay',
+        ],
+      },
+      {
+        id: 'jeu-royal-de-la-guerre.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'jeu-royal-de-la-guerre.setup.players',
+          'jeu-royal-de-la-guerre.setup.deck',
+          'jeu-royal-de-la-guerre.setup.equipment',
+          'jeu-royal-de-la-guerre.setup.dealing',
+        ],
+      },
+      {
+        id: 'jeu-royal-de-la-guerre.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'jeu-royal-de-la-guerre.rules.key.1',
+          'jeu-royal-de-la-guerre.rules.key.2',
+          'jeu-royal-de-la-guerre.rules.key.3',
+        ],
+      },
+      {
+        id: 'jeu-royal-de-la-guerre.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'jeu-royal-de-la-guerre.score.description',
+          'jeu-royal-de-la-guerre.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'jeu-royal-de-la-guerre.setup.dealing',
+        'jeu-royal-de-la-guerre.rules.objective',
+      ],
+      play_card: [
+        'jeu-royal-de-la-guerre.rules.gameplay',
+      ],
+      discard: [
+        'jeu-royal-de-la-guerre.rules.gameplay',
+      ],
+      pass: [
+        'jeu-royal-de-la-guerre.rules.gameplay',
+      ],
+      bid: [
+        'jeu-royal-de-la-guerre.rules.gameplay',
+      ],
+    },
   },
 }

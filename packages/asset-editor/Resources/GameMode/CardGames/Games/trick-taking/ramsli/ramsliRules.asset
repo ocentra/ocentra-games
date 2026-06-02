@@ -52,10 +52,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before bid.',
-      'Scoring check: Rams-style. Declarer success/fail. Expected outcome: Target score..',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Declarer makes bid; defenders try to prevent. Rams-style trick play.',
+      'Turn-flow example: As Rams/Raub: deal 4 each, turn trump, bidding, declarer vs defenders, play 4 tricks. See Rick Heli Donauschwaben for full rules.',
+      'Scoring example: Rams-style. Declarer success/fail. Target score..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'ramsli.rules.objective',
+        title: 'Objective',
+        text: 'Declarer makes bid; defenders try to prevent. Rams-style trick play.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'ramsli.rules.gameplay',
+        title: 'Turn flow',
+        text: 'As Rams/Raub: deal 4 each, turn trump, bidding, declarer vs defenders, play 4 tricks. See Rick Heli Donauschwaben for full rules.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'ramsli.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'ramsli.setup.deck',
+        title: 'Deck',
+        text: 'A 32-card pack with French suits and ranks from 7 to Ace, as used in the Rams group; one card is turned for trump.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'ramsli.setup.equipment',
+        title: 'Equipment',
+        text: '32-card pack.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'ramsli.setup.dealing',
+        title: 'Deal',
+        text: '4 each; turn trump.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'ramsli.score.win-condition',
+        title: 'Win condition',
+        text: 'Target score.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'ramsli.score.description',
+        title: 'Scoring',
+        text: 'Rams-style. Declarer success/fail.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'ramsli.rules.key.1',
+        title: 'Key rule 1',
+        text: '4-card hands. Rams group.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'ramsli.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Declarer vs defenders.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'ramsli.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Related to Raub. Hungarian Rams.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'ramsli.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'ramsli.rules.objective',
+          'ramsli.rules.gameplay',
+        ],
+      },
+      {
+        id: 'ramsli.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'ramsli.setup.players',
+          'ramsli.setup.deck',
+          'ramsli.setup.equipment',
+          'ramsli.setup.dealing',
+        ],
+      },
+      {
+        id: 'ramsli.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'ramsli.rules.key.1',
+          'ramsli.rules.key.2',
+          'ramsli.rules.key.3',
+        ],
+      },
+      {
+        id: 'ramsli.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'ramsli.score.description',
+          'ramsli.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'ramsli.setup.dealing',
+        'ramsli.rules.objective',
+      ],
+      deal: [
+        'ramsli.rules.gameplay',
+      ],
+      play_card: [
+        'ramsli.rules.gameplay',
+      ],
+      pass: [
+        'ramsli.rules.gameplay',
+      ],
+      bid: [
+        'ramsli.rules.gameplay',
+      ],
+      lead: [
+        'ramsli.rules.gameplay',
+      ],
+    },
   },
 }

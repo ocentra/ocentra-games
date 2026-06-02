@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Canadian Salad. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Canadian Salad is a North American compendium trick-taking game where six hands are played in sequence with different objectives. In each hand, players try to avoid winning certain cards or tricks that bring penalty points. Also known as Wisconsin Scramble.',
+    LLM: 'Six hands played in fixed order: 1. No tricks - each trick = 10 pts (130 total). 2. No hearts - each heart = 10 pts (130 total). 3. No queens - each queen = 25 pts (100 total). 4. No king of spades - Kâ™  = 100 pts. 5. No last trick - last trick = 100 pts. 6. Combination - all above penalties apply (560 total). Player left of dealer leads. Must follow suit if possible; if cannot, may play any card. Highest card of led suit wins trick. No trumps. Winner leads to next trick.',
+    Player: 'Six hands played in fixed order: 1. No tricks - each trick = 10 pts (130 total). 2. No hearts - each heart = 10 pts (130 total). 3. No queens - each queen = 25 pts (100 total). 4. No king of spades - Kâ™  = 100 pts. 5. No last trick - last trick = 100 pts. 6. Combination - all above penalties apply (560 total). Player left of dealer leads. Must follow suit if possible; if cannot, may play any card. Highest card of led suit wins trick. No trumps. Winner leads to next trick.',
     objective: 'Avoid winning cards and tricks that score penalty points. Six hands played in sequence with different objectives. Lowest total score after six hands wins.',
     gameplay: 'Six hands played in fixed order: 1. No tricks - each trick = 10 pts (130 total). 2. No hearts - each heart = 10 pts (130 total). 3. No queens - each queen = 25 pts (100 total). 4. No king of spades - Kâ™  = 100 pts. 5. No last trick - last trick = 100 pts. 6. Combination - all above penalties apply (560 total). Player left of dealer leads. Must follow suit if possible; if cannot, may play any card. Highest card of led suit wins trick. No trumps. Winner leads to next trick.',
     keyRules: [
@@ -59,10 +59,213 @@
       go_out: 'No go-out; hand ends when all tricks are played.',
     },
     exampleHands: [
-      'Opening deal: 3-6 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: Penalty points recorded after each hand. Hand 1: 10 pts per trick. Hand 2: 10 pts per heart. Hand 3: 25 pts per queen. Hand 4: 100 pts for Kâ™ . Hand 5: 100 pts for last trick. Hand 6: All penalties combined. Example: Last trick in hand 6 containing 8â™¥, 9â™¥, Qâ™¥, Kâ™¥ scores 175 pts: 40 (4 hearts) + 10 (trick) + 25 (queen) + 100 (last trick). Grand total of all scores = 1120. Player with lowest score wins. Expected outcome: Avoid winning cards and tricks that score penalty points. Six hands played in sequence with different objectives. Lowest total score after six hands wins..',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Avoid winning cards and tricks that score penalty points. Six hands played in sequence with different objectives. Lowest total score after six hands wins.',
+      'Turn-flow example: Six hands played in fixed order: 1. No tricks - each trick = 10 pts (130 total). 2. No hearts - each heart = 10 pts (130 total). 3. No queens - each queen = 25 pts (100 total). 4. No king of spades - Kâ™  = 100 pts. 5. No last trick - last trick = 100 pts. 6. Combination - all above penalties apply (560 total). Player left of dealer leads. Must follow suit if possible; if cannot, may play any card. Highest card of led suit wins trick. No trumps. Winner leads to next trick.',
+      'Scoring example: Penalty points recorded after each hand. Hand 1: 10 pts per trick. Hand 2: 10 pts per heart. Hand 3: 25 pts per queen. Hand 4: 100 pts for Kâ™ . Hand 5: 100 pts for last trick. Hand 6: All penalties combined. Example: Last trick in hand 6 containing 8â™¥, 9â™¥, Qâ™¥, Kâ™¥ scores 175 pts: 40 (4 hearts) + 10 (trick) + 25 (queen) + 100 (last trick). Grand total of all scores = 1120. Player with lowest score wins. Avoid winning cards and tricks that score penalty points. Six hands played in sequence with different objectives. Lowest total score after six hands wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'canadian-salad.rules.objective',
+        title: 'Objective',
+        text: 'Avoid winning cards and tricks that score penalty points. Six hands played in sequence with different objectives. Lowest total score after six hands wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'canadian-salad.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Six hands played in fixed order: 1. No tricks - each trick = 10 pts (130 total). 2. No hearts - each heart = 10 pts (130 total). 3. No queens - each queen = 25 pts (100 total). 4. No king of spades - Kâ™  = 100 pts. 5. No last trick - last trick = 100 pts. 6. Combination - all above penalties apply (560 total). Player left of dealer leads. Must follow suit if possible; if cannot, may play any card. Highest card of led suit wins trick. No trumps. Winner leads to next trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'canadian-salad.setup.players',
+        title: 'Players',
+        text: '3-6 players (4 is optimal)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'canadian-salad.setup.deck',
+        title: 'Deck',
+        text: '52-card standard deck. For 3 players: remove 2â™£ (17 cards each). For 5 players: remove 2â™£, 2â™¦ (10 cards each). For 6 players: remove 2â™£, 3â™£, 2â™¦, 3â™¦ (8 cards each). For 4 players: 13 cards each.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'canadian-salad.setup.equipment',
+        title: 'Equipment',
+        text: '52-card deck, score sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'canadian-salad.setup.dealing',
+        title: 'Deal',
+        text: 'All cards dealt evenly. Deal and play clockwise. First dealer chosen by cutting cards (highest deals). Turn to deal passes left after each hand.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'canadian-salad.score.win-condition',
+        title: 'Win condition',
+        text: 'Avoid winning cards and tricks that score penalty points. Six hands played in sequence with different objectives. Lowest total score after six hands wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'canadian-salad.score.description',
+        title: 'Scoring',
+        text: 'Penalty points recorded after each hand. Hand 1: 10 pts per trick. Hand 2: 10 pts per heart. Hand 3: 25 pts per queen. Hand 4: 100 pts for Kâ™ . Hand 5: 100 pts for last trick. Hand 6: All penalties combined. Example: Last trick in hand 6 containing 8â™¥, 9â™¥, Qâ™¥, Kâ™¥ scores 175 pts: 40 (4 hearts) + 10 (trick) + 25 (queen) + 100 (last trick). Grand total of all scores = 1120. Player with lowest score wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'canadian-salad.rules.key.1',
+        title: 'Key rule 1',
+        text: '3-6 players, 52-card deck (adjusted for player count)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'canadian-salad.rules.key.2',
+        title: 'Key rule 2',
+        text: '6 hands played in fixed sequence',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'canadian-salad.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Hand 1: No tricks (10 pts each)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'canadian-salad.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Hand 2: No hearts (10 pts each)',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'canadian-salad.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Hand 3: No queens (25 pts each)',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'canadian-salad.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Hand 4: No king of spades (100 pts)',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'canadian-salad.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Hand 5: No last trick (100 pts)',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+      {
+        id: 'canadian-salad.rules.key.8',
+        title: 'Key rule 8',
+        text: 'Hand 6: All penalties combined',
+        sourceFields: [
+          'rules.keyRules.7',
+        ],
+      },
+      {
+        id: 'canadian-salad.rules.key.9',
+        title: 'Key rule 9',
+        text: 'Must follow suit, no trumps',
+        sourceFields: [
+          'rules.keyRules.8',
+        ],
+      },
+      {
+        id: 'canadian-salad.rules.key.10',
+        title: 'Key rule 10',
+        text: 'Lowest total score wins',
+        sourceFields: [
+          'rules.keyRules.9',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'canadian-salad.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'canadian-salad.rules.objective',
+          'canadian-salad.rules.gameplay',
+        ],
+      },
+      {
+        id: 'canadian-salad.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'canadian-salad.setup.players',
+          'canadian-salad.setup.deck',
+          'canadian-salad.setup.equipment',
+          'canadian-salad.setup.dealing',
+        ],
+      },
+      {
+        id: 'canadian-salad.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'canadian-salad.rules.key.1',
+          'canadian-salad.rules.key.2',
+          'canadian-salad.rules.key.3',
+          'canadian-salad.rules.key.4',
+          'canadian-salad.rules.key.5',
+          'canadian-salad.rules.key.6',
+          'canadian-salad.rules.key.7',
+          'canadian-salad.rules.key.8',
+          'canadian-salad.rules.key.9',
+          'canadian-salad.rules.key.10',
+        ],
+      },
+      {
+        id: 'canadian-salad.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'canadian-salad.score.description',
+          'canadian-salad.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'canadian-salad.setup.dealing',
+        'canadian-salad.rules.objective',
+      ],
+      deal: [
+        'canadian-salad.rules.gameplay',
+      ],
+      play_card: [
+        'canadian-salad.rules.gameplay',
+      ],
+    },
   },
 }

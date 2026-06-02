@@ -11,12 +11,40 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Points are accumulated based on cards captured. High and low scorers lose life points.',
+      winCondition: 'Be the last player with Life points remaining.',
+      targetScore: null,
+      scoringDirection: null,
+      cardValues: {
         Ace: '3 points',
         '3, 2, King, Knight, Jack': '1 point each',
         'Last trick': '3 points',
         'Other cards': '0 points',
       },
+      sourceCardValues: {
+        raw: {
+          Ace: '3 points',
+          '3, 2, King, Knight, Jack': '1 point each',
+          'Last trick': '3 points',
+          'Other cards': '0 points',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        targetScore: 'No fixed target score; play by game rules.',
+        scoringDirection: 'Scoring direction is not applicable; winner is determined by game rules.',
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: '',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,

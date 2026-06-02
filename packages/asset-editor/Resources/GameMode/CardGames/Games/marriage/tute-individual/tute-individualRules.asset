@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tute individual. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Tute for two players; no partnerships. Same 40-card Spanish deck, Cantes, Tute (4 Kings/4 Knights). First to 101 points wins.',
+    LLM: "Dealer deals 10 cards each; next card is trump, rest form stock. Player to dealer's right leads. Follow suit; must beat led suit if possible; if void must trump if possible. Trick winner draws first from stock, then opponent. After winning a trick you may declare one Cante (King+Horse of same suit: 40 in trumps, 20 in other). Declaring Tute (all four Kings or all four Horses) wins the deal. Last trick scores 10 extra. Most points wins the deal.",
+    Player: "Dealer deals 10 cards each; next card is trump, rest form stock. Player to dealer's right leads. Follow suit; must beat led suit if possible; if void must trump if possible. Trick winner draws first from stock, then opponent. After winning a trick you may declare one Cante (King+Horse of same suit: 40 in trumps, 20 in other). Declaring Tute (all four Kings or all four Horses) wins the deal. Last trick scores 10 extra. Most points wins the deal.",
     objective: 'Score the most points in the deal (card points, Cantes, last trick). Follow suit and overtake when possible; trump if void. Declare 40 or 20 after winning a trick; Tute (4 Kings or 4 Knights) wins the deal outright.',
     gameplay: "Dealer deals 10 cards each; next card is trump, rest form stock. Player to dealer's right leads. Follow suit; must beat led suit if possible; if void must trump if possible. Trick winner draws first from stock, then opponent. After winning a trick you may declare one Cante (King+Horse of same suit: 40 in trumps, 20 in other). Declaring Tute (all four Kings or all four Horses) wins the deal. Last trick scores 10 extra. Most points wins the deal.",
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_counterclockwise may use play_card before round end.',
-      'Scoring check: A=11,3=10,K=4,Kt=3,J=2; Cantes 40/20; last trick 10 Expected outcome: Most points in the deal wins (card points, Cantes, last trick 10). Tute (4 Kings or 4 Knights) declared after winning a trick wins the deal outright..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Score the most points in the deal (card points, Cantes, last trick). Follow suit and overtake when possible; trump if void. Declare 40 or 20 after winning a trick; Tute (4 Kings or 4 Knights) wins the deal outright.',
+      "Turn-flow example: Dealer deals 10 cards each; next card is trump, rest form stock. Player to dealer's right leads. Follow suit; must beat led suit if possible; if void must trump if possible. Trick winner draws first from stock, then opponent. After winning a trick you may declare one Cante (King+Horse of same suit: 40 in trumps, 20 in other). Declaring Tute (all four Kings or all four Horses) wins the deal. Last trick scores 10 extra. Most points wins the deal.",
+      'Scoring example: A=11,3=10,K=4,Kt=3,J=2; Cantes 40/20; last trick 10 Most points in the deal wins (card points, Cantes, last trick 10). Tute (4 Kings or 4 Knights) declared after winning a trick wins the deal outright..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tute-individual.rules.objective',
+        title: 'Objective',
+        text: 'Score the most points in the deal (card points, Cantes, last trick). Follow suit and overtake when possible; trump if void. Declare 40 or 20 after winning a trick; Tute (4 Kings or 4 Knights) wins the deal outright.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tute-individual.rules.gameplay',
+        title: 'Turn flow',
+        text: "Dealer deals 10 cards each; next card is trump, rest form stock. Player to dealer's right leads. Follow suit; must beat led suit if possible; if void must trump if possible. Trick winner draws first from stock, then opponent. After winning a trick you may declare one Cante (King+Horse of same suit: 40 in trumps, 20 in other). Declaring Tute (all four Kings or all four Horses) wins the deal. Last trick scores 10 extra. Most points wins the deal.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tute-individual.setup.players',
+        title: 'Players',
+        text: 'Two players (or three).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tute-individual.setup.deck',
+        title: 'Deck',
+        text: 'Standard Spanish pack of 40 cards: four suits (Swords/espadas, Batons/bastos, Cups/copas, Coins/oros). Ranks and point values: Ace 11, Three 10, King 4, Horse 3, Jack 2; Seven through Two count zero. One suit is trump each deal, determined by the face-up card.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tute-individual.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tute-individual.setup.dealing',
+        title: 'Deal',
+        text: '10 each, next card face up for trump, remainder as stock; after each trick winner draws first then others anticlockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tute-individual.score.win-condition',
+        title: 'Win condition',
+        text: 'Most points in the deal wins (card points, Cantes, last trick 10). Tute (4 Kings or 4 Knights) declared after winning a trick wins the deal outright.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tute-individual.score.description',
+        title: 'Scoring',
+        text: 'A=11,3=10,K=4,Kt=3,J=2; Cantes 40/20; last trick 10',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tute-individual.rules.key.1',
+        title: 'Key rule 1',
+        text: '2 or 3 players, no partnerships',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tute-individual.rules.key.2',
+        title: 'Key rule 2',
+        text: '10 cards each, stock, face-up trump',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tute-individual.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Follow suit and overtake; trump when void',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tute-individual.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Cantes 40/20 after winning trick; Tute wins deal',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'tute-individual.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Last trick 10 points',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tute-individual.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tute-individual.rules.objective',
+          'tute-individual.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tute-individual.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tute-individual.setup.players',
+          'tute-individual.setup.deck',
+          'tute-individual.setup.equipment',
+          'tute-individual.setup.dealing',
+        ],
+      },
+      {
+        id: 'tute-individual.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tute-individual.rules.key.1',
+          'tute-individual.rules.key.2',
+          'tute-individual.rules.key.3',
+          'tute-individual.rules.key.4',
+          'tute-individual.rules.key.5',
+        ],
+      },
+      {
+        id: 'tute-individual.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tute-individual.score.description',
+          'tute-individual.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tute-individual.setup.dealing',
+        'tute-individual.rules.objective',
+      ],
+      play_card: [
+        'tute-individual.rules.gameplay',
+      ],
+    },
   },
 }

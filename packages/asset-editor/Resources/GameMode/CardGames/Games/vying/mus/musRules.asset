@@ -54,10 +54,180 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in betting; current_player may use pass, bet, call, raise, fold, ordago before round end.',
-      'Scoring check: Points scored for winning each category. Special combinations score extra. First to 40 points wins the game. Expected outcome: 40.',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Be the first team to reach 40 points (winning a game). Win two games to win the match.',
+      'Turn-flow example: Deal 4 cards each. Optional Mus phase: all four may agree to discard one to four cards and receive replacements. Four betting rounds follow in order (Grande, Chica, Pares, Juego); mano may pass or bet; opponents may fold, see, or raise. Órdago stakes the whole game on one category. Showdown: compare hands in each category; first team to 40 points wins the game.',
+      'Scoring example: Points scored for winning each category. Special combinations score extra. First to 40 points wins the game. First team to 40 points wins the game. Win two games to win the match..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'mus.rules.objective',
+        title: 'Objective',
+        text: 'Be the first team to reach 40 points (winning a game). Win two games to win the match.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mus.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Deal 4 cards each. Optional Mus phase: all four may agree to discard one to four cards and receive replacements. Four betting rounds follow in order (Grande, Chica, Pares, Juego); mano may pass or bet; opponents may fold, see, or raise. Órdago stakes the whole game on one category. Showdown: compare hands in each category; first team to 40 points wins the game.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mus.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships, partners sitting opposite each other.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mus.setup.deck',
+        title: 'Deck',
+        text: '40-card Spanish pack. Suits: Swords, Batons, Cups, Coins. Cards: Rey (King), Caballo (Horse/Queen), Sota (Jack), 7, 6, 5, 4, 3, 2, Ace. Note: 3s are equivalent to Kings, 2s are equivalent to Aces.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mus.setup.equipment',
+        title: 'Equipment',
+        text: '40-card Spanish deck, small stones or counters (piedras) for scoring.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mus.setup.dealing',
+        title: 'Deal',
+        text: "4 cards to each player, one at a time, anticlockwise. The player to dealer's right is the 'mano' (first to speak in betting).",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mus.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to 40 points wins the game. Win two games to win the match.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mus.score.description',
+        title: 'Scoring',
+        text: 'Points scored for winning each category. Special combinations score extra. First to 40 points wins the game.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mus.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Four categories: Grande, Chica, Pares, Juego',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'mus.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Mus allows card exchange before play',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'mus.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Betting on each category in order',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'mus.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Partners use secret signals',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'mus.rules.key.5',
+        title: 'Key rule 5',
+        text: 'First to 40 points wins the game',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mus.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mus.rules.objective',
+          'mus.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mus.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mus.setup.players',
+          'mus.setup.deck',
+          'mus.setup.equipment',
+          'mus.setup.dealing',
+        ],
+      },
+      {
+        id: 'mus.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mus.rules.key.1',
+          'mus.rules.key.2',
+          'mus.rules.key.3',
+          'mus.rules.key.4',
+          'mus.rules.key.5',
+        ],
+      },
+      {
+        id: 'mus.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mus.score.description',
+          'mus.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mus.setup.dealing',
+        'mus.rules.objective',
+      ],
+      fold: [
+        'mus.rules.gameplay',
+      ],
+      call: [
+        'mus.rules.gameplay',
+      ],
+      bet: [
+        'mus.rules.gameplay',
+      ],
+      raise: [
+        'mus.rules.gameplay',
+      ],
+      pass: [
+        'mus.rules.gameplay',
+      ],
+      ordago: [
+        'mus.rules.gameplay',
+      ],
+    },
   },
 }

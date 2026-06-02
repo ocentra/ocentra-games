@@ -52,10 +52,147 @@
       go_out: 'Hand-end detection is round logic.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be first to empty your hand or finish with the strongest blocked-hand outcome by remaining pips.',
+      'Turn-flow example: Players place legal matching tiles to open ends of the layout. If blocked, they follow draw-or-pass handling defined by the table profile. The deal ends on first empty hand or complete block.',
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'big-game-dominoes.rules.objective',
+        title: 'Objective',
+        text: 'Be first to empty your hand or finish with the strongest blocked-hand outcome by remaining pips.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'big-game-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players place legal matching tiles to open ends of the layout. If blocked, they follow draw-or-pass handling defined by the table profile. The deal ends on first empty hand or complete block.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'big-game-dominoes.setup.players',
+        title: 'Players',
+        text: '2 to 6 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'big-game-dominoes.setup.deck',
+        title: 'Deck',
+        text: 'One double-8 domino set.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'big-game-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'Domino set and score tracking if playing match format.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'big-game-dominoes.setup.dealing',
+        title: 'Deal',
+        text: 'Tiles are dealt by player count; remaining tiles may form a boneyard under table profile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'big-game-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'big-game-dominoes.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'big-game-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Tiles must match legal open ends.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'big-game-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Blocked turns are resolved by the active draw-or-pass profile.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'big-game-dominoes.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Hand end is either first-out or full block resolution.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'big-game-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'big-game-dominoes.rules.objective',
+          'big-game-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: 'big-game-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'big-game-dominoes.setup.players',
+          'big-game-dominoes.setup.deck',
+          'big-game-dominoes.setup.equipment',
+          'big-game-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: 'big-game-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'big-game-dominoes.rules.key.1',
+          'big-game-dominoes.rules.key.2',
+          'big-game-dominoes.rules.key.3',
+        ],
+      },
+      {
+        id: 'big-game-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'big-game-dominoes.score.description',
+          'big-game-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'big-game-dominoes.setup.dealing',
+        'big-game-dominoes.rules.objective',
+      ],
+      play_card: [
+        'big-game-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

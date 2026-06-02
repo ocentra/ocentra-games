@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'AI is analyzing the pile for slap conditions and preparing its reaction time.',
-    Player: 'Do you want to slap the pile? Cards on table: watch for pairs, sandwiches, sequences, doubles.',
+    LLM: 'Players take turns playing one card face-up to the center pile. When a face card or Ace is played, the next player must play a face card within a set number of turns or forfeit their pile to the face-card player:\n- Ace: 4 chances\n- King: 3 chances\n- Queen: 2 chances\n- Jack: 1 chance\nIf they play a face card: the challenge passes forward.',
+    Player: 'Players take turns playing one card face-up to the center pile. When a face card or Ace is played, the next player must play a face card within a set number of turns or forfeit their pile to the face-card player:\n- Ace: 4 chances\n- King: 3 chances\n- Queen: 2 chances\n- Jack: 1 chance\nIf they play a face card: the challenge passes forward.',
     objective: 'Collect all 52 cards by winning the central pile through valid slaps (on doubles, sandwiches, sequences, etc.) and by claiming the pile when opponents fail to counter face-card challenges.',
     gameplay: 'Players take turns playing one card face-up to the center pile. When a face card or Ace is played, the next player must play a face card within a set number of turns or forfeit their pile to the face-card player:\n- Ace: 4 chances\n- King: 3 chances\n- Queen: 2 chances\n- Jack: 1 chance\nIf they play a face card: the challenge passes forward.',
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'Game ends when one player collects all cards',
     },
     exampleHands: [
-      'Opening deal: 2-7 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play_loop.',
-      'Scoring check: The first player to collect all 52 cards wins the game. Expected outcome: Hold all 52 cards..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Collect all 52 cards by winning the central pile through valid slaps (on doubles, sandwiches, sequences, etc.) and by claiming the pile when opponents fail to counter face-card challenges.',
+      'Turn-flow example: Players take turns playing one card face-up to the center pile. When a face card or Ace is played, the next player must play a face card within a set number of turns or forfeit their pile to the face-card player:\n- Ace: 4 chances\n- King: 3 chances\n- Queen: 2 chances\n- Jack: 1 chance\nIf they play a face card: the challenge passes forward.',
+      'Scoring example: The first player to collect all 52 cards wins the game. Hold all 52 cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'egyptian-ratscrew.rules.objective',
+        title: 'Objective',
+        text: 'Collect all 52 cards by winning the central pile through valid slaps (on doubles, sandwiches, sequences, etc.) and by claiming the pile when opponents fail to counter face-card challenges.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'egyptian-ratscrew.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players take turns playing one card face-up to the center pile. When a face card or Ace is played, the next player must play a face card within a set number of turns or forfeit their pile to the face-card player:\n- Ace: 4 chances\n- King: 3 chances\n- Queen: 2 chances\n- Jack: 1 chance\nIf they play a face card: the challenge passes forward.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'egyptian-ratscrew.setup.players',
+        title: 'Players',
+        text: "Two or more players; typically 2 to 7. The number of players is limited only by each participant's ability to reach the central pile. Cards are dealt as evenly as possible.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'egyptian-ratscrew.setup.deck',
+        title: 'Deck',
+        text: '52 standard cards.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'egyptian-ratscrew.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards. Flat surface. Fast reflexes.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'egyptian-ratscrew.setup.dealing',
+        title: 'Deal',
+        text: 'Deal entire deck evenly. Players do not look at their cards; hold them face-down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'egyptian-ratscrew.score.win-condition',
+        title: 'Win condition',
+        text: 'Hold all 52 cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'egyptian-ratscrew.score.description',
+        title: 'Scoring',
+        text: 'The first player to collect all 52 cards wins the game.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'egyptian-ratscrew.rules.key.1',
+        title: 'Key rule 1',
+        text: 'When a player runs out of cards, they may still slap back in.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'egyptian-ratscrew.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If a player false-slaps and has fewer than 2 cards, they are eliminated.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'egyptian-ratscrew.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Only designated slap conditions are valid (house rules vary widely).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'egyptian-ratscrew.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'egyptian-ratscrew.rules.objective',
+          'egyptian-ratscrew.rules.gameplay',
+        ],
+      },
+      {
+        id: 'egyptian-ratscrew.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'egyptian-ratscrew.setup.players',
+          'egyptian-ratscrew.setup.deck',
+          'egyptian-ratscrew.setup.equipment',
+          'egyptian-ratscrew.setup.dealing',
+        ],
+      },
+      {
+        id: 'egyptian-ratscrew.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'egyptian-ratscrew.rules.key.1',
+          'egyptian-ratscrew.rules.key.2',
+          'egyptian-ratscrew.rules.key.3',
+        ],
+      },
+      {
+        id: 'egyptian-ratscrew.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'egyptian-ratscrew.score.description',
+          'egyptian-ratscrew.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'egyptian-ratscrew.setup.dealing',
+        'egyptian-ratscrew.rules.objective',
+      ],
+      deal: [
+        'egyptian-ratscrew.rules.gameplay',
+      ],
+      play_card: [
+        'egyptian-ratscrew.rules.gameplay',
+      ],
+      slap: [
+        'egyptian-ratscrew.rules.gameplay',
+      ],
+    },
   },
 }

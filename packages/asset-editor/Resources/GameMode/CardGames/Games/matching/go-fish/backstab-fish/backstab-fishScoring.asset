@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Simple tally of completed sets.',
+      winCondition: 'Highest number of books at the end of the stock.',
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: 'No fixed target; game ends when stock is empty and play finishes; most sets of four wins.',
+        cardValues: 'All cards of the same rank are equivalent; only completed books of four count, so individual card values are not needed.',
+      },
+      splitRules: "If points are tied, the player with the most 'Natural' (no Joker) books wins.",
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

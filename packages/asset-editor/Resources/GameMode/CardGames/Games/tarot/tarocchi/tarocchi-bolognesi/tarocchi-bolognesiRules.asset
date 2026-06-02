@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tarocchi Bolognesi. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Tarocchi Bolognesi (or Tarocchino Bolognese) refers to the family of games played with the specific 62-card Tarot deck from Bologna. The most common variant is Ottocento, but the term covers the deck and system itself. The deck removes ranks 2-5 from each suit of a standard Tarot pack.',
+    LLM: 'General mechanics: Must follow suit. Trumps win. Matto is an Excuse. High trumps (Angel, World, BÃ©gato) and Moors (1-4) have special status.',
+    Player: 'General mechanics: Must follow suit. Trumps win. Matto is an Excuse. High trumps (Angel, World, BÃ©gato) and Moors (1-4) have special status.',
     objective: 'In the main variant Ottocento, the objective is to score points from card values and declared combinations; the first partnership to reach 800 points wins the rubber. Other variants (e.g. Terziglio, Millone) have their own targets.',
     gameplay: 'General mechanics: Must follow suit. Trumps win. Matto is an Excuse. High trumps (Angel, World, BÃ©gato) and Moors (1-4) have special status.',
     keyRules: [
@@ -50,10 +50,129 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Standard tarot values (Kings/Tarocchi=5, etc.). Expected outcome: See Ottocento or Terziglio rules..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: In the main variant Ottocento, the objective is to score points from card values and declared combinations; the first partnership to reach 800 points wins the rubber. Other variants (e.g. Terziglio, Millone) have their own targets.',
+      'Turn-flow example: General mechanics: Must follow suit. Trumps win. Matto is an Excuse. High trumps (Angel, World, BÃ©gato) and Moors (1-4) have special status.',
+      'Scoring example: Standard tarot values (Kings/Tarocchi=5, etc.). See Ottocento or Terziglio rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tarocchi-bolognesi.rules.objective',
+        title: 'Objective',
+        text: 'In the main variant Ottocento, the objective is to score points from card values and declared combinations; the first partnership to reach 800 points wins the rubber. Other variants (e.g. Terziglio, Millone) have their own targets.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tarocchi-bolognesi.rules.gameplay',
+        title: 'Turn flow',
+        text: 'General mechanics: Must follow suit. Trumps win. Matto is an Excuse. High trumps (Angel, World, BÃ©gato) and Moors (1-4) have special status.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tarocchi-bolognesi.setup.players',
+        title: 'Players',
+        text: 'Two to six depending on variant; Ottocento (the main game) is for four players in fixed partnerships, two against two.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tarocchi-bolognesi.setup.deck',
+        title: 'Deck',
+        text: '62 cards: Trumps 0-20 + Matto. 4 Suits (10 cards each).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tarocchi-bolognesi.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tarocchi-bolognesi.setup.dealing',
+        title: 'Deal',
+        text: 'Depends on variant.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tarocchi-bolognesi.score.win-condition',
+        title: 'Win condition',
+        text: 'See Ottocento or Terziglio rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tarocchi-bolognesi.score.description',
+        title: 'Scoring',
+        text: 'Standard tarot values (Kings/Tarocchi=5, etc.).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tarocchi-bolognesi.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Use Tarocchi Bolognesi Ottocento for specific rules',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tarocchi-bolognesi.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tarocchi-bolognesi.rules.objective',
+          'tarocchi-bolognesi.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tarocchi-bolognesi.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tarocchi-bolognesi.setup.players',
+          'tarocchi-bolognesi.setup.deck',
+          'tarocchi-bolognesi.setup.equipment',
+          'tarocchi-bolognesi.setup.dealing',
+        ],
+      },
+      {
+        id: 'tarocchi-bolognesi.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tarocchi-bolognesi.rules.key.1',
+        ],
+      },
+      {
+        id: 'tarocchi-bolognesi.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tarocchi-bolognesi.score.description',
+          'tarocchi-bolognesi.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tarocchi-bolognesi.setup.dealing',
+        'tarocchi-bolognesi.rules.objective',
+      ],
+      play_card: [
+        'tarocchi-bolognesi.rules.gameplay',
+      ],
+    },
   },
 }

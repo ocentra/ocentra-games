@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tod und Leben. Logic: See rules.objective and rules.gameplay.',
-    Player: "Tod und Leben (Death and Life) is a simple German card game for two players, similar to War. It is distinct in that players have their own draw piles and must win cards to stay 'alive'. The game ends when one player loses all their cards (Death) and the other has all of them (Life).",
+    LLM: 'Simultaneous reveal of top card. Higher card wins both. Winner puts cards at bottom of their pile. Ties: War mechanism (play one down, one up, compare).',
+    Player: 'Simultaneous reveal of top card. Higher card wins both. Winner puts cards at bottom of their pile. Ties: War mechanism (play one down, one up, compare).',
     objective: 'Collect all 32 cards by winning battles: each player reveals the top card of their pile simultaneously; the higher rank takes both cards to the bottom of their pile. On ties, war: each plays one face-down then one face-up; higher face-up wins all. The last player with cards wins (Life); the other loses (Death).',
     gameplay: 'Simultaneous reveal of top card. Higher card wins both. Winner puts cards at bottom of their pile. Ties: War mechanism (play one down, one up, compare).',
     keyRules: [
@@ -51,10 +51,141 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 16 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_initial before battle.',
-      'Scoring check: No scoring. Win = all cards. Expected outcome: Win all cards..',
+      'Setup example: 16 card(s) per player.',
+      'Rule example: Collect all 32 cards by winning battles: each player reveals the top card of their pile simultaneously; the higher rank takes both cards to the bottom of their pile. On ties, war: each plays one face-down then one face-up; higher face-up wins all. The last player with cards wins (Life); the other loses (Death).',
+      'Turn-flow example: Simultaneous reveal of top card. Higher card wins both. Winner puts cards at bottom of their pile. Ties: War mechanism (play one down, one up, compare).',
+      'Scoring example: No scoring. Win = all cards. Win all cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tod-und-leben-life-and-death.rules.objective',
+        title: 'Objective',
+        text: 'Collect all 32 cards by winning battles: each player reveals the top card of their pile simultaneously; the higher rank takes both cards to the bottom of their pile. On ties, war: each plays one face-down then one face-up; higher face-up wins all. The last player with cards wins (Life); the other loses (Death).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tod-und-leben-life-and-death.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Simultaneous reveal of top card. Higher card wins both. Winner puts cards at bottom of their pile. Ties: War mechanism (play one down, one up, compare).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tod-und-leben-life-and-death.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tod-und-leben-life-and-death.setup.deck',
+        title: 'Deck',
+        text: '32 cards (A, K, Q, J, 10, 9, 8, 7).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tod-und-leben-life-and-death.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tod-und-leben-life-and-death.setup.dealing',
+        title: 'Deal',
+        text: 'Deal all cards (16 each) into two face-down piles.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tod-und-leben-life-and-death.score.win-condition',
+        title: 'Win condition',
+        text: 'Win all cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tod-und-leben-life-and-death.score.description',
+        title: 'Scoring',
+        text: 'No scoring. Win = all cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tod-und-leben-life-and-death.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Higher rank wins',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tod-und-leben-life-and-death.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Win all cards to win game',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tod-und-leben-life-and-death.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tod-und-leben-life-and-death.rules.objective',
+          'tod-und-leben-life-and-death.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tod-und-leben-life-and-death.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tod-und-leben-life-and-death.setup.players',
+          'tod-und-leben-life-and-death.setup.deck',
+          'tod-und-leben-life-and-death.setup.equipment',
+          'tod-und-leben-life-and-death.setup.dealing',
+        ],
+      },
+      {
+        id: 'tod-und-leben-life-and-death.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tod-und-leben-life-and-death.rules.key.1',
+          'tod-und-leben-life-and-death.rules.key.2',
+        ],
+      },
+      {
+        id: 'tod-und-leben-life-and-death.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tod-und-leben-life-and-death.score.description',
+          'tod-und-leben-life-and-death.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tod-und-leben-life-and-death.setup.dealing',
+        'tod-und-leben-life-and-death.rules.objective',
+      ],
+      play_card: [
+        'tod-und-leben-life-and-death.rules.gameplay',
+      ],
+      deal_initial: [
+        'tod-und-leben-life-and-death.rules.gameplay',
+      ],
+    },
   },
 }

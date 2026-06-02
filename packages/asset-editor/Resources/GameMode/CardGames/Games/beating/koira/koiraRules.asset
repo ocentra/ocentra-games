@@ -52,10 +52,150 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in phase1; each_player_clockwise may use play_card before phase2.',
-      'Scoring check: Last player with cards loses. Expected outcome: NA.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Avoid being the last player left with cards in your hand at the end of Phase Two.',
+      'Turn-flow example: Phase 1: All players play one card to each trick; highest rank wins the trick. If there is a tie for highest, the tied players play again until the tie is broken. After each play, players draw from the stock to keep three cards until the stock is empty. The last card of the stock sets the trump suit for Phase 2. When the stock is exhausted, play continues without drawing until the player whose turn it is has no card to play; then Phase 2 begins. Phase 2: The holder of the trump card leads. You must either beat the previous card or sequence (higher same suit or any trump) or pick up the lowest card or sequence from the trick. The last player left with cards loses and is the Dog.',
+      'Scoring example: Last player with cards loses. The last player left with cards in hand loses and is called the Dog; all other players win..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'koira.rules.objective',
+        title: 'Objective',
+        text: 'Avoid being the last player left with cards in your hand at the end of Phase Two.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'koira.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Phase 1: All players play one card to each trick; highest rank wins the trick. If there is a tie for highest, the tied players play again until the tie is broken. After each play, players draw from the stock to keep three cards until the stock is empty. The last card of the stock sets the trump suit for Phase 2. When the stock is exhausted, play continues without drawing until the player whose turn it is has no card to play; then Phase 2 begins. Phase 2: The holder of the trump card leads. You must either beat the previous card or sequence (higher same suit or any trump) or pick up the lowest card or sequence from the trick. The last player left with cards loses and is the Dog.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'koira.setup.players',
+        title: 'Players',
+        text: '3 players is the classic competitive format.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'koira.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Ace is high, 2 is low.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'koira.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. Ace is high, 2 is low.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'koira.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 3 cards. The rest form a stock pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'koira.score.win-condition',
+        title: 'Win condition',
+        text: 'The last player left with cards in hand loses and is called the Dog; all other players win.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'koira.score.description',
+        title: 'Scoring',
+        text: 'Last player with cards loses.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'koira.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Phase 1: All play one card per trick; no follow suit; highest rank wins; ties broken by replay.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'koira.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Phase 2: Trump from last card of stock; beat by higher same suit or any trump, or pick up lowest card or sequence from trick.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'koira.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Last player left with cards loses and is called the Dog.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'koira.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'koira.rules.objective',
+          'koira.rules.gameplay',
+        ],
+      },
+      {
+        id: 'koira.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'koira.setup.players',
+          'koira.setup.deck',
+          'koira.setup.equipment',
+          'koira.setup.dealing',
+        ],
+      },
+      {
+        id: 'koira.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'koira.rules.key.1',
+          'koira.rules.key.2',
+          'koira.rules.key.3',
+        ],
+      },
+      {
+        id: 'koira.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'koira.score.description',
+          'koira.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'koira.setup.dealing',
+        'koira.rules.objective',
+      ],
+      play_card: [
+        'koira.rules.gameplay',
+      ],
+      pick_up: [
+        'koira.rules.gameplay',
+      ],
+    },
   },
 }

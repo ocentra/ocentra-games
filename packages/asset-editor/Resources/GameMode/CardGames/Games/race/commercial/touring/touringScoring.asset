@@ -10,7 +10,31 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Winner determined by first player/team to place all 4 marbles in Home Base.',
+      winCondition: 'First player or team to move all 4 marbles from Holding Pen, around the track, and into Home Base.',
+      targetScore: 1,
+      scoringDirection: 'high_wins',
+      cardValues: {
+        A: '1',
+        K: '13',
+        Q: '12',
+        J: '11',
+      },
+      nullReasons: {
+        targetScore: 'Game does not use target score mechanic.',
+      },
+      splitRules: '7s can be split between two marbles (e.g., move one marble 3 spaces and another 4 spaces).',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],
@@ -21,7 +45,7 @@
       Q: 12,
       J: 11,
     },
-    penalties: '{\n  "Bumped": "Marble returns to Holding Pen, losing all forward progress.",\n  "Blocked": "Cannot move forward through own marble; must choose different marble."\n}',
+    penalties: '{"Bumped":"Marble returns to Holding Pen, losing all forward progress.","Blocked":"Cannot move forward through own marble; must choose different marble."}',
     targetScore: 1,
     scoringDirection: 'high_wins',
     rankingAsset: {

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 99. Logic: See rules.objective and rules.gameplay.',
-    Player: '99 (adding game): play cards to a central pile; A=1 or 11, 2-9=face, 10=-10, J/Q=0, K=99 or reset. Avoid exceeding 99; first to push over loses. Similar to 98. USA/UK.',
+    LLM: 'Play one card; add value to pile (A=1/11, 10=-10, K=99 or 0, etc.). Announce total; over 99 loses.',
+    Player: 'Play one card; add value to pile (A=1/11, 10=-10, K=99 or 0, etc.). Announce total; over 99 loses.',
     objective: 'Avoid being the player who pushes the total over 99.',
     gameplay: 'Play one card; add value to pile (A=1/11, 10=-10, K=99 or 0, etc.). Announce total; over 99 loses.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-7 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Elimination; last player wins. Expected outcome: Avoid being the player who pushes the total over 99..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Avoid being the player who pushes the total over 99.',
+      'Turn-flow example: Play one card; add value to pile (A=1/11, 10=-10, K=99 or 0, etc.). Announce total; over 99 loses.',
+      'Scoring example: Elimination; last player wins. Avoid being the player who pushes the total over 99..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '99.rules.objective',
+        title: 'Objective',
+        text: 'Avoid being the player who pushes the total over 99.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '99.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Play one card; add value to pile (A=1/11, 10=-10, K=99 or 0, etc.). Announce total; over 99 loses.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '99.setup.players',
+        title: 'Players',
+        text: 'Standard: 2-7\nOptimal: 2 players',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '99.setup.deck',
+        title: 'Deck',
+        text: 'Deck type: 52 cards\nCard rankings: Standard (Ace high or low depending on variant)',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '99.setup.equipment',
+        title: 'Equipment',
+        text: 'Deck type: 52 cards\nCard rankings: Standard (Ace high or low depending on variant)',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '99.setup.dealing',
+        title: 'Deal',
+        text: 'Cards dealt to reach 99 points or closest without busting.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '99.score.win-condition',
+        title: 'Win condition',
+        text: 'Avoid being the player who pushes the total over 99.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '99.score.description',
+        title: 'Scoring',
+        text: 'Elimination; last player wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '99.rules.key.1',
+        title: 'Key rule 1',
+        text: 'A=1 or 11, 2-9=face value, 10=-10, J/Q=0, K=99 or reset',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '99.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Play one card per turn; announce new total',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '99.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Going over 99 loses (elimination)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '99.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '99.rules.objective',
+          '99.rules.gameplay',
+        ],
+      },
+      {
+        id: '99.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '99.setup.players',
+          '99.setup.deck',
+          '99.setup.equipment',
+          '99.setup.dealing',
+        ],
+      },
+      {
+        id: '99.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '99.rules.key.1',
+          '99.rules.key.2',
+          '99.rules.key.3',
+        ],
+      },
+      {
+        id: '99.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '99.score.description',
+          '99.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '99.setup.dealing',
+        '99.rules.objective',
+      ],
+      play_card: [
+        '99.rules.gameplay',
+      ],
+    },
   },
 }

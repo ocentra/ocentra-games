@@ -52,10 +52,177 @@
       go_out: 'Allowed only when hand-empty condition is satisfied.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before main_play.',
-      'Scoring check: Scoring uses the documented rules for Domino Twenty-One and determines round or match winners accordingly. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Achieve a total pip count closer to 21 than the banker, without exceeding 21.',
+      "Turn-flow example: 1. Betting: Every tile in hand has a 'price'. Players pay for hits based on the current number of tiles they hold.\n2. Hitting: Players choose to 'Stand' or 'Hit' (draw a tile). Every time a player takes a hit, they must expose one of their face-down tiles to the table, ensuring they always have two face-down tiles.\n3. Banker's Turn: The banker plays last and chooses when to stand or hit.\n4. Bust: If pips exceed 21, the player loses immediately.",
+      'Scoring example: Scoring uses the documented rules for Domino Twenty-One and determines round or match winners accordingly. Achieve a total pip count closer to 21 than the banker, without exceeding 21..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'domino-twenty-one.rules.objective',
+        title: 'Objective',
+        text: 'Achieve a total pip count closer to 21 than the banker, without exceeding 21.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'domino-twenty-one.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Betting: Every tile in hand has a 'price'. Players pay for hits based on the current number of tiles they hold.\n2. Hitting: Players choose to 'Stand' or 'Hit' (draw a tile). Every time a player takes a hit, they must expose one of their face-down tiles to the table, ensuring they always have two face-down tiles.\n3. Banker's Turn: The banker plays last and chooses when to stand or hit.\n4. Bust: If pips exceed 21, the player loses immediately.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'domino-twenty-one.setup.players',
+        title: 'Players',
+        text: '2 to 5 players. One player is the Banker.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'domino-twenty-one.setup.deck',
+        title: 'Deck',
+        text: 'Standard 28 double-six dominoes.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'domino-twenty-one.setup.equipment',
+        title: 'Equipment',
+        text: 'Dominoes, betting chips or coins.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'domino-twenty-one.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 2 tiles face-down. Remaining tiles stay in the boneyard.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'domino-twenty-one.score.win-condition',
+        title: 'Win condition',
+        text: 'Achieve a total pip count closer to 21 than the banker, without exceeding 21.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'domino-twenty-one.score.description',
+        title: 'Scoring',
+        text: 'Scoring uses the documented rules for Domino Twenty-One and determines round or match winners accordingly.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'domino-twenty-one.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The banker wins all ties.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'domino-twenty-one.rules.key.2',
+        title: 'Key rule 2',
+        text: 'A hand of 9 tiles is the maximum possible hand that can stay under 21.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'domino-twenty-one.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Payouts are often scaled by the number of tiles held (e.g., winning with 5 tiles pays more than with 2).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'domino-twenty-one.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'domino-twenty-one.rules.objective',
+          'domino-twenty-one.rules.gameplay',
+        ],
+      },
+      {
+        id: 'domino-twenty-one.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'domino-twenty-one.setup.players',
+          'domino-twenty-one.setup.deck',
+          'domino-twenty-one.setup.equipment',
+          'domino-twenty-one.setup.dealing',
+        ],
+      },
+      {
+        id: 'domino-twenty-one.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'domino-twenty-one.rules.key.1',
+          'domino-twenty-one.rules.key.2',
+          'domino-twenty-one.rules.key.3',
+        ],
+      },
+      {
+        id: 'domino-twenty-one.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'domino-twenty-one.score.description',
+          'domino-twenty-one.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'domino-twenty-one.setup.dealing',
+        'domino-twenty-one.rules.objective',
+      ],
+      ante: [
+        'domino-twenty-one.rules.gameplay',
+      ],
+      deal: [
+        'domino-twenty-one.rules.gameplay',
+      ],
+      fold: [
+        'domino-twenty-one.rules.gameplay',
+      ],
+      check: [
+        'domino-twenty-one.rules.gameplay',
+      ],
+      call: [
+        'domino-twenty-one.rules.gameplay',
+      ],
+      bet: [
+        'domino-twenty-one.rules.gameplay',
+      ],
+      raise: [
+        'domino-twenty-one.rules.gameplay',
+      ],
+      award_pot: [
+        'domino-twenty-one.rules.gameplay',
+      ],
+      play_card: [
+        'domino-twenty-one.rules.gameplay',
+      ],
+      draw: [
+        'domino-twenty-one.rules.gameplay',
+      ],
+      go_out: [
+        'domino-twenty-one.rules.gameplay',
+      ],
+    },
   },
 }

@@ -11,7 +11,11 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Winner of a round scores 0. Losers score points for cards left in hand.',
+      winCondition: 'Game continues until all but one player have been eliminated by exceeding 150 penalty points. The last surviving player wins the pool.',
+      targetScore: 150,
+      scoringDirection: 'low_wins',
+      cardValues: {
         Joker: '15 points',
         Ace: '11 points',
         King: '10 points',
@@ -20,6 +24,29 @@
         Ten: '10 points',
         '2-9': '5',
       },
+      sourceCardValues: {
+        raw: {
+          Joker: '15 points',
+          Ace: '11 points',
+          King: '10 points',
+          Queen: '10 points',
+          Jack: '10 points',
+          Ten: '10 points',
+          '2-9': '5',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {},
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,
@@ -28,7 +55,7 @@
     cardValues: {
       '2-9': 5,
     },
-    penalties: '{\n  "Elimination": "Players exceeding 150 penalty points are eliminated unless they buy back in by paying a new stake"\n}',
+    penalties: '{"Elimination":"Players exceeding 150 penalty points are eliminated unless they buy back in by paying a new stake"}',
     targetScore: 150,
     scoringDirection: 'low_wins',
     rankingAsset: {

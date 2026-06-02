@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Four-Two-Three. Objective: Decide whether to stay in, then have the best five-card hand from your four hole cards plus three community cards to win the pot.',
-    Player: 'Four-Two-Three: declare in or out after receiving four cards; after three community cards are dealt, best five-card hand wins the pot; losers who stayed in match the pot.',
+    LLM: 'Four cards dealt to each player. Players declare in or out simultaneously (e.g. coin in closed fist; those with a coin are in). Dealer deals three common cards face up. Each player in forms best five-card hand from four hole cards plus three board cards (seven cards total). Best hand wins pot; all others who stayed in match the pot. If only one stays in, that player wins the pot without showing. Game ends when one player wins the whole pot by being the only one in.',
+    Player: 'Four cards dealt to each player. Players declare in or out simultaneously (e.g. coin in closed fist; those with a coin are in). Dealer deals three common cards face up. Each player in forms best five-card hand from four hole cards plus three board cards (seven cards total). Best hand wins pot; all others who stayed in match the pot. If only one stays in, that player wins the pot without showing. Game ends when one player wins the whole pot by being the only one in.',
     objective: 'Win the pot by having the best five-card poker hand among those who stayed in, or win without contest if you are the only player in.',
     gameplay: 'Four cards dealt to each player. Players declare in or out simultaneously (e.g. coin in closed fist; those with a coin are in). Dealer deals three common cards face up. Each player in forms best five-card hand from four hole cards plus three board cards (seven cards total). Best hand wins pot; all others who stayed in match the pot. If only one stays in, that player wins the pot without showing. Game ends when one player wins the whole pot by being the only one in.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Players who stay in form the best five-card poker hand from four hole cards plus three community cards; the best hand wins the pot. All who stayed in and lost must each match the pot. Expected outcome: Win the pot by having the best five-card hand among those who stayed in, or win without contest if you are the only player in..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win the pot by having the best five-card poker hand among those who stayed in, or win without contest if you are the only player in.',
+      'Turn-flow example: Four cards dealt to each player. Players declare in or out simultaneously (e.g. coin in closed fist; those with a coin are in). Dealer deals three common cards face up. Each player in forms best five-card hand from four hole cards plus three board cards (seven cards total). Best hand wins pot; all others who stayed in match the pot. If only one stays in, that player wins the pot without showing. Game ends when one player wins the whole pot by being the only one in.',
+      'Scoring example: Players who stay in form the best five-card poker hand from four hole cards plus three community cards; the best hand wins the pot. All who stayed in and lost must each match the pot. Win the pot by having the best five-card hand among those who stayed in, or win without contest if you are the only player in..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '4-2-3.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the best five-card poker hand among those who stayed in, or win without contest if you are the only player in.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '4-2-3.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Four cards dealt to each player. Players declare in or out simultaneously (e.g. coin in closed fist; those with a coin are in). Dealer deals three common cards face up. Each player in forms best five-card hand from four hole cards plus three board cards (seven cards total). Best hand wins pot; all others who stayed in match the pot. If only one stays in, that player wins the pot without showing. Game ends when one player wins the whole pot by being the only one in.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '4-2-3.setup.players',
+        title: 'Players',
+        text: 'Two to ten players; Guts-style games typically work best with around five to ten. All agree ante and optional maximum loss per deal before play.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '4-2-3.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack, no jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '4-2-3.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, chips or money for ante and pot, optional coin for simultaneous declare.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '4-2-3.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer shuffles and deals four cards face-down to each player. After declarations, dealer deals three common cards face up in the center.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '4-2-3.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the pot by having the best five-card hand among those who stayed in, or win without contest if you are the only player in.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '4-2-3.score.description',
+        title: 'Scoring',
+        text: 'Players who stay in form the best five-card poker hand from four hole cards plus three community cards; the best hand wins the pot. All who stayed in and lost must each match the pot.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '4-2-3.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Four cards each, then simultaneous declare in or out',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '4-2-3.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Three common cards dealt after declare',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '4-2-3.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Best five-card poker hand from seven cards wins',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: '4-2-3.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Losers who stayed in each match the pot',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '4-2-3.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '4-2-3.rules.objective',
+          '4-2-3.rules.gameplay',
+        ],
+      },
+      {
+        id: '4-2-3.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '4-2-3.setup.players',
+          '4-2-3.setup.deck',
+          '4-2-3.setup.equipment',
+          '4-2-3.setup.dealing',
+        ],
+      },
+      {
+        id: '4-2-3.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '4-2-3.rules.key.1',
+          '4-2-3.rules.key.2',
+          '4-2-3.rules.key.3',
+          '4-2-3.rules.key.4',
+        ],
+      },
+      {
+        id: '4-2-3.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '4-2-3.score.description',
+          '4-2-3.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '4-2-3.setup.dealing',
+        '4-2-3.rules.objective',
+      ],
+      play_card: [
+        '4-2-3.rules.gameplay',
+      ],
+    },
   },
 }

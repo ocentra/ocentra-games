@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Baccarat Punto Banco. Type: Fixed-Rule Banking. Rules: 8 decks. Natural 8/9 ends hand. Player draws on 0-5. Banker draws based on specific matrix. Winning Banker pays 1:1 minus 5% commission.',
-    Player: 'Welcome to the Baccarat table. The shoe is fresh. Will you back the Player or the Banker? Remember, the Banker has the edge, but the house takes its cut.',
+    LLM: "1. Players place wagers on Player, Banker, or Tie. 2. Dealer deals two cards to Player and two to Banker. 3. If either has 8 or 9 (natural), both stand and hands are compared. 4. Otherwise: Player draws on 0-5, stands on 6-7. 5. Banker follows fixed Third Card Matrix based on Player's third card (if any). 6. Compare final totals; closest to 9 wins. Tie returns all wagers. Banker wins: 1:1 minus 5% commission.",
+    Player: "1. Players place wagers on Player, Banker, or Tie. 2. Dealer deals two cards to Player and two to Banker. 3. If either has 8 or 9 (natural), both stand and hands are compared. 4. Otherwise: Player draws on 0-5, stands on 6-7. 5. Banker follows fixed Third Card Matrix based on Player's third card (if any). 6. Compare final totals; closest to 9 wins. Tie returns all wagers. Banker wins: 1:1 minus 5% commission.",
     objective: 'Predict which of the two hands (Player or Banker) will have a total closest to 9.',
     gameplay: "1. Players place wagers on Player, Banker, or Tie. 2. Dealer deals two cards to Player and two to Banker. 3. If either has 8 or 9 (natural), both stand and hands are compared. 4. Otherwise: Player draws on 0-5, stands on 6-7. 5. Banker follows fixed Third Card Matrix based on Player's third card (if any). 6. Compare final totals; closest to 9 wins. Tie returns all wagers. Banker wins: 1:1 minus 5% commission.",
     keyRules: [
@@ -52,10 +52,186 @@
       go_out: 'Round ends by comparing totals; no go-out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 1-14 player(s), 2 card(s) per player, 8 deck(s), initial visibility face_up.',
-      'Opening flow: start in betting; current_player may use bet_punto, bet_banco, bet_tie before initial_deal.',
-      'Scoring check: Standard casino payoffs. Expected outcome: 9.',
+      'Setup example: 2 card(s) per player.',
+      'Rule example: Predict which of the two hands (Player or Banker) will have a total closest to 9.',
+      "Turn-flow example: 1. Players place wagers on Player, Banker, or Tie. 2. Dealer deals two cards to Player and two to Banker. 3. If either has 8 or 9 (natural), both stand and hands are compared. 4. Otherwise: Player draws on 0-5, stands on 6-7. 5. Banker follows fixed Third Card Matrix based on Player's third card (if any). 6. Compare final totals; closest to 9 wins. Tie returns all wagers. Banker wins: 1:1 minus 5% commission.",
+      'Scoring example: Standard casino payoffs. Closest to 9..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'baccarat-punto-banco.rules.objective',
+        title: 'Objective',
+        text: 'Predict which of the two hands (Player or Banker) will have a total closest to 9.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'baccarat-punto-banco.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Players place wagers on Player, Banker, or Tie. 2. Dealer deals two cards to Player and two to Banker. 3. If either has 8 or 9 (natural), both stand and hands are compared. 4. Otherwise: Player draws on 0-5, stands on 6-7. 5. Banker follows fixed Third Card Matrix based on Player's third card (if any). 6. Compare final totals; closest to 9 wins. Tie returns all wagers. Banker wins: 1:1 minus 5% commission.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'baccarat-punto-banco.setup.players',
+        title: 'Players',
+        text: "Up to 14 players at a 'Big Table' or 7 at a 'Mini' table.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'baccarat-punto-banco.setup.deck',
+        title: 'Deck',
+        text: '8 decks shuffled into a single shoe.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'baccarat-punto-banco.setup.equipment',
+        title: 'Equipment',
+        text: 'Baccarat table with Punto (Player) and Banco (Banker) betting areas, shoe, indicator markers, and scorecards (Roadmaps).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'baccarat-punto-banco.setup.dealing',
+        title: 'Deal',
+        text: "Two cards are dealt face-up (or face-down to be squeezed) for 'Player' and 'Banker'.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'baccarat-punto-banco.score.win-condition',
+        title: 'Win condition',
+        text: 'Closest to 9.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'baccarat-punto-banco.score.description',
+        title: 'Scoring',
+        text: 'Standard casino payoffs.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'baccarat-punto-banco.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The Banker bet wins slightly more often than the Player bet.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'baccarat-punto-banco.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Tie bets pay 8:1 (or 9:1 in some venues).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'baccarat-punto-banco.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning Banker bets are subject to a 5% commission payable to the house.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'baccarat-punto-banco.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'baccarat-punto-banco.rules.objective',
+          'baccarat-punto-banco.rules.gameplay',
+        ],
+      },
+      {
+        id: 'baccarat-punto-banco.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'baccarat-punto-banco.setup.players',
+          'baccarat-punto-banco.setup.deck',
+          'baccarat-punto-banco.setup.equipment',
+          'baccarat-punto-banco.setup.dealing',
+        ],
+      },
+      {
+        id: 'baccarat-punto-banco.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'baccarat-punto-banco.rules.key.1',
+          'baccarat-punto-banco.rules.key.2',
+          'baccarat-punto-banco.rules.key.3',
+        ],
+      },
+      {
+        id: 'baccarat-punto-banco.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'baccarat-punto-banco.score.description',
+          'baccarat-punto-banco.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'baccarat-punto-banco.setup.dealing',
+        'baccarat-punto-banco.rules.objective',
+      ],
+      deal: [
+        'baccarat-punto-banco.rules.gameplay',
+      ],
+      bet: [
+        'baccarat-punto-banco.rules.gameplay',
+      ],
+      reveal_hand: [
+        'baccarat-punto-banco.rules.gameplay',
+      ],
+      award_pot: [
+        'baccarat-punto-banco.rules.gameplay',
+      ],
+      bet_punto: [
+        'baccarat-punto-banco.rules.gameplay',
+      ],
+      bet_banco: [
+        'baccarat-punto-banco.rules.gameplay',
+      ],
+      bet_tie: [
+        'baccarat-punto-banco.rules.gameplay',
+      ],
+      deal_two_pairs: [
+        'baccarat-punto-banco.rules.gameplay',
+      ],
+      determine_natural_win: [
+        'baccarat-punto-banco.rules.gameplay',
+      ],
+      draw_if_0_5: [
+        'baccarat-punto-banco.rules.gameplay',
+      ],
+      stand_if_6_7: [
+        'baccarat-punto-banco.rules.gameplay',
+      ],
+      apply_banker_matrix: [
+        'baccarat-punto-banco.rules.gameplay',
+      ],
+      distribute_winnings: [
+        'baccarat-punto-banco.rules.gameplay',
+      ],
+      track_commission: [
+        'baccarat-punto-banco.rules.gameplay',
+      ],
+    },
   },
 }

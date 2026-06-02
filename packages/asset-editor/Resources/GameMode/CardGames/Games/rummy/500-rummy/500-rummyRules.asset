@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 500 Rummy. Logic: See rules.objective and rules.gameplay.',
-    Player: '500 Rummy: first to 500 points wins. Melds (sets and runs) score positive; unmelded cards in hand count negative. Key twist: you may draw any card from the discard pile but must take all cards above it and meld the drawn card immediately. 2-8 players; 52 cards plus 2 jokers.',
+    LLM: 'Draw one from stock or take from discard (must take all above chosen card and meld that card). Lay melds; add to existing melds. Discard one. Go out by melding all; unmelded cards count negative. Jokers wild.',
+    Player: 'Draw one from stock or take from discard (must take all above chosen card and meld that card). Lay melds; add to existing melds. Discard one. Go out by melding all; unmelded cards count negative. Jokers wild.',
     objective: 'First to 500 points wins. Melds (sets and runs) score positive; unmelded cards in hand count negative. You may take any card from the discard pile but must take all cards above it and meld the drawn card immediately.',
     gameplay: 'Draw one from stock or take from discard (must take all above chosen card and meld that card). Lay melds; add to existing melds. Discard one. Go out by melding all; unmelded cards count negative. Jokers wild.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Melds score positive (face value; jokers 0 or as specified); unmelded in hand negative. First to 500 wins. Expected outcome: 500.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: First to 500 points wins. Melds (sets and runs) score positive; unmelded cards in hand count negative. You may take any card from the discard pile but must take all cards above it and meld the drawn card immediately.',
+      'Turn-flow example: Draw one from stock or take from discard (must take all above chosen card and meld that card). Lay melds; add to existing melds. Discard one. Go out by melding all; unmelded cards count negative. Jokers wild.',
+      'Scoring example: Melds score positive (face value; jokers 0 or as specified); unmelded in hand negative. First to 500 wins. First to 500 points wins. Melds (sets and runs) score positive; unmelded cards in hand count negative. You may take any card from the discard pile but must take all cards above it and meld the drawn card immediately..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '500-rummy.rules.objective',
+        title: 'Objective',
+        text: 'First to 500 points wins. Melds (sets and runs) score positive; unmelded cards in hand count negative. You may take any card from the discard pile but must take all cards above it and meld the drawn card immediately.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '500-rummy.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Draw one from stock or take from discard (must take all above chosen card and meld that card). Lay melds; add to existing melds. Discard one. Go out by melding all; unmelded cards count negative. Jokers wild.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '500-rummy.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '500-rummy.setup.deck',
+        title: 'Deck',
+        text: '52 cards plus 2 jokers',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '500-rummy.setup.equipment',
+        title: 'Equipment',
+        text: 'Deck, score sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '500-rummy.setup.dealing',
+        title: 'Deal',
+        text: 'Seven cards each (2 players) down to five (5+ players); rest stock; one discard pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '500-rummy.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 500 points wins. Melds (sets and runs) score positive; unmelded cards in hand count negative. You may take any card from the discard pile but must take all cards above it and meld the drawn card immediately.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '500-rummy.score.description',
+        title: 'Scoring',
+        text: 'Melds score positive (face value; jokers 0 or as specified); unmelded in hand negative. First to 500 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '500-rummy.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Draw from stock or take from discard (take all above, meld the taken card)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '500-rummy.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Sets and runs; jokers wild',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '500-rummy.rules.key.3',
+        title: 'Key rule 3',
+        text: 'First to 500 points wins',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '500-rummy.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '500-rummy.rules.objective',
+          '500-rummy.rules.gameplay',
+        ],
+      },
+      {
+        id: '500-rummy.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '500-rummy.setup.players',
+          '500-rummy.setup.deck',
+          '500-rummy.setup.equipment',
+          '500-rummy.setup.dealing',
+        ],
+      },
+      {
+        id: '500-rummy.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '500-rummy.rules.key.1',
+          '500-rummy.rules.key.2',
+          '500-rummy.rules.key.3',
+        ],
+      },
+      {
+        id: '500-rummy.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '500-rummy.score.description',
+          '500-rummy.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '500-rummy.setup.dealing',
+        '500-rummy.rules.objective',
+      ],
+      play_card: [
+        '500-rummy.rules.gameplay',
+      ],
+    },
   },
 }

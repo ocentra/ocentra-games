@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Partnerships score matchsticks for winning at least five of the nine tricks in a deal and for successful daring and striking of the matador cards, tracking a running total of points. Expected outcome: 12.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the first player to achieve the winning condition through strategic play of cards.',
+      'Turn-flow example: 1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
+      'Scoring example: Partnerships score matchsticks for winning at least five of the nine tricks in a deal and for successful daring and striking of the matador cards, tracking a running total of points. The first partnership to reach at least 12 points (matchsticks) through tricks and daring/striking matadors wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'bruus-north-friesland.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to achieve the winning condition through strategic play of cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bruus-north-friesland.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bruus-north-friesland.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bruus-north-friesland.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bruus-north-friesland.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bruus-north-friesland.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bruus-north-friesland.score.win-condition',
+        title: 'Win condition',
+        text: 'The first partnership to reach at least 12 points (matchsticks) through tricks and daring/striking matadors wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bruus-north-friesland.score.description',
+        title: 'Scoring',
+        text: 'Partnerships score matchsticks for winning at least five of the nine tricks in a deal and for successful daring and striking of the matador cards, tracking a running total of points.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bruus-north-friesland.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Play proceeds in turn order with only legal actions allowed.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bruus-north-friesland.rules.key.2',
+        title: 'Key rule 2',
+        text: "Round resolution follows the variant's scoring and bonus conditions.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bruus-north-friesland.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Match winner is determined by agreed target score or elimination condition.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bruus-north-friesland.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bruus-north-friesland.rules.objective',
+          'bruus-north-friesland.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bruus-north-friesland.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bruus-north-friesland.setup.players',
+          'bruus-north-friesland.setup.deck',
+          'bruus-north-friesland.setup.equipment',
+          'bruus-north-friesland.setup.dealing',
+        ],
+      },
+      {
+        id: 'bruus-north-friesland.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bruus-north-friesland.rules.key.1',
+          'bruus-north-friesland.rules.key.2',
+          'bruus-north-friesland.rules.key.3',
+        ],
+      },
+      {
+        id: 'bruus-north-friesland.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bruus-north-friesland.score.description',
+          'bruus-north-friesland.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bruus-north-friesland.setup.dealing',
+        'bruus-north-friesland.rules.objective',
+      ],
+      play_card: [
+        'bruus-north-friesland.rules.gameplay',
+      ],
+    },
   },
 }

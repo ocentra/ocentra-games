@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kille. Logic: Win the tricks, card points, or contract result required by the local form of the game.',
-    Player: 'Kille is a traditional trick-taking card game using 42-card Kille deck for 3-13 players. It belongs to the Cuckoo group and uses a dedicated Swedish Kille pack.',
+    LLM: 'Players lead to tricks, follow suit when able, and compare the led suit, trumps, or special ranking to decide the winner of each trick.',
+    Player: 'Players lead to tricks, follow suit when able, and compare the led suit, trumps, or special ranking to decide the winner of each trick.',
     objective: 'Win the tricks, card points, or contract result required by the local form of the game.',
     gameplay: 'Players lead to tricks, follow suit when able, and compare the led suit, trumps, or special ranking to decide the winner of each trick.',
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-13 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Tricks, card points, or contract success determine scoring. Expected outcome: Win the tricks, card points, or contract result required by the local form of the game..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win the tricks, card points, or contract result required by the local form of the game.',
+      'Turn-flow example: Players lead to tricks, follow suit when able, and compare the led suit, trumps, or special ranking to decide the winner of each trick.',
+      'Scoring example: Tricks, card points, or contract success determine scoring. Win the tricks, card points, or contract result required by the local form of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'kille.rules.objective',
+        title: 'Objective',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kille.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players lead to tricks, follow suit when able, and compare the led suit, trumps, or special ranking to decide the winner of each trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kille.setup.players',
+        title: 'Players',
+        text: '3-13 players use the table arrangement described for Kille.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kille.setup.deck',
+        title: 'Deck',
+        text: '42-card Kille deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kille.setup.equipment',
+        title: 'Equipment',
+        text: '42-card Kille deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kille.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 42-card Kille deck to 3-13 players according to the local rules before trick play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kille.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kille.score.description',
+        title: 'Scoring',
+        text: 'Tricks, card points, or contract success determine scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kille.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trick-taking structure.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kille.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Follow suit when able.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kille.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trump or rank hierarchy controls trick winners.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kille.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Captured tricks or card points decide the hand.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kille.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kille.rules.objective',
+          'kille.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kille.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kille.setup.players',
+          'kille.setup.deck',
+          'kille.setup.equipment',
+          'kille.setup.dealing',
+        ],
+      },
+      {
+        id: 'kille.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kille.rules.key.1',
+          'kille.rules.key.2',
+          'kille.rules.key.3',
+          'kille.rules.key.4',
+        ],
+      },
+      {
+        id: 'kille.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kille.score.description',
+          'kille.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kille.setup.dealing',
+        'kille.rules.objective',
+      ],
+      play_card: [
+        'kille.rules.gameplay',
+      ],
+      discard: [
+        'kille.rules.gameplay',
+      ],
+      pass: [
+        'kille.rules.gameplay',
+      ],
+      bid: [
+        'kille.rules.gameplay',
+      ],
+    },
   },
 }

@@ -11,6 +11,7 @@ import {
 } from './publicSeo';
 import { catalogSeoGames, findCatalogSeoGame, type CatalogSeoGameEntry } from './generated/catalogSeoData';
 import { PublicRouteKey, buildPublicCategoryPath, buildPublicRulesPath } from '@ocentra/endpoint-domain/constants/public-routes';
+import { repairDisplayText, repairDisplayValue } from '../utils/displayTextRepair';
 
 export interface SeoRenderOptions {
   siteOrigin?: string;
@@ -59,7 +60,7 @@ interface CatalogSeoCategoryEntry {
 }
 
 function escapeHtml(value: string): string {
-  return value
+  return repairDisplayText(value)
     .replace(/&/g, '&amp;')
     .replace(/"/g, '&quot;')
     .replace(/</g, '&lt;')
@@ -67,7 +68,7 @@ function escapeHtml(value: string): string {
 }
 
 function escapeJsonForHtml(value: SeoStructuredData): string {
-  return JSON.stringify(value).replace(/</g, '\\u003c');
+  return JSON.stringify(repairDisplayValue(value)).replace(/</g, '\\u003c');
 }
 
 function insertBeforeClosingHead(html: string, value: string): string {

@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Standard Poker hand rankings apply unless the chosen variant specifies otherwise (e.g., Lowball, Badugi ranking).',
+      winCondition: 'Highest/Lowest hand or successfully bluffing the table.',
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: "Dealer's Choice is typically session-based with independent hands rather than fixed target scoring.",
+        cardValues: 'Poker uses hand rankings, not per-card point values; cardValues does not apply.',
+      },
+      splitRules: '',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'poker_ranking',
     patternMultipliers: null,
     priorityOrder: [],

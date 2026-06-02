@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Badeucy. Type: Triple Draw Split-Pot Poker. Rules: Half pot for best 4-card Badugi; Half pot for best 5-card 2-to-7 Lowball. 3 draws. Aces High. Straights/Flushes count against low.',
-    Player: "The blinds are posted. You've got five cards in front of you. Remember: Aces are the enemy here, and a straight will break your low. Look for mixed suits and low ranks from 2 to 7. Ready for your first draw?",
+    LLM: '1. **Blinds**: Initial stakes. 2. **Deal**: 5 cards. 3. **Betting**. 4. **Three Draws**: Discard/draw rounds punctuated by betting. 5. **Showdown**: Split resolution.',
+    Player: '1. **Blinds**: Initial stakes. 2. **Deal**: 5 cards. 3. **Betting**. 4. **Three Draws**: Discard/draw rounds punctuated by betting. 5. **Showdown**: Split resolution.',
     objective: 'Win half the pot with the best 4-card Badugi and half with the best 5-card Deuce-to-Seven low.',
     gameplay: '1. **Blinds**: Initial stakes. 2. **Deal**: 5 cards. 3. **Betting**. 4. **Three Draws**: Discard/draw rounds punctuated by betting. 5. **Showdown**: Split resolution.',
     keyRules: [
@@ -52,10 +52,186 @@
       go_out: 'Hand ends after final betting and showdown; no go-out declaration.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in blinds; current_player may use post_blind before deal.',
-      'Scoring check: Standard Poker pot logic. Expected outcome: Lowest 5-card low (A high) + Lowest 4-card Badugi (A high)..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win half the pot with the best 4-card Badugi and half with the best 5-card Deuce-to-Seven low.',
+      'Turn-flow example: 1. **Blinds**: Initial stakes. 2. **Deal**: 5 cards. 3. **Betting**. 4. **Three Draws**: Discard/draw rounds punctuated by betting. 5. **Showdown**: Split resolution.',
+      'Scoring example: Standard Poker pot logic. Lowest 5-card low (A high) + Lowest 4-card Badugi (A high)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'badeucy.rules.objective',
+        title: 'Objective',
+        text: 'Win half the pot with the best 4-card Badugi and half with the best 5-card Deuce-to-Seven low.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'badeucy.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Blinds**: Initial stakes. 2. **Deal**: 5 cards. 3. **Betting**. 4. **Three Draws**: Discard/draw rounds punctuated by betting. 5. **Showdown**: Split resolution.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'badeucy.setup.players',
+        title: 'Players',
+        text: 'Two to six players. All players make an ante bet; the dealer gives each player five cards face down, then a round of betting and three draw-and-bet cycles before the final betting and split-pot showdown.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'badeucy.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'badeucy.setup.equipment',
+        title: 'Equipment',
+        text: 'Poker chips, Dealer button, Small/Big Blind markers.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'badeucy.setup.dealing',
+        title: 'Deal',
+        text: '5 cards face down to each player. 3 draw phases follow.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'badeucy.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest 5-card low (A high) + Lowest 4-card Badugi (A high).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'badeucy.score.description',
+        title: 'Scoring',
+        text: 'Standard Poker pot logic.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'badeucy.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Aces count as high (above Kings) and are essentially useless in a winning hand.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'badeucy.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Straights and Flushes are active: if you hold 2-3-4-5-6 of mixed suits, you have a straight (bad for low), but you have a 4-card Badugi (2-3-4-5).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'badeucy.rules.key.3',
+        title: 'Key rule 3',
+        text: 'If you hold five hearts, your Lowball half is a Flush and will lose to almost any non-flush hand.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'badeucy.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'badeucy.rules.objective',
+          'badeucy.rules.gameplay',
+        ],
+      },
+      {
+        id: 'badeucy.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'badeucy.setup.players',
+          'badeucy.setup.deck',
+          'badeucy.setup.equipment',
+          'badeucy.setup.dealing',
+        ],
+      },
+      {
+        id: 'badeucy.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'badeucy.rules.key.1',
+          'badeucy.rules.key.2',
+          'badeucy.rules.key.3',
+        ],
+      },
+      {
+        id: 'badeucy.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'badeucy.score.description',
+          'badeucy.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'badeucy.setup.dealing',
+        'badeucy.rules.objective',
+      ],
+      ante: [
+        'badeucy.rules.gameplay',
+      ],
+      deal: [
+        'badeucy.rules.gameplay',
+      ],
+      fold: [
+        'badeucy.rules.gameplay',
+      ],
+      check: [
+        'badeucy.rules.gameplay',
+      ],
+      call: [
+        'badeucy.rules.gameplay',
+      ],
+      bet: [
+        'badeucy.rules.gameplay',
+      ],
+      raise: [
+        'badeucy.rules.gameplay',
+      ],
+      discard: [
+        'badeucy.rules.gameplay',
+      ],
+      post_blind: [
+        'badeucy.rules.gameplay',
+      ],
+      deal_hole_cards: [
+        'badeucy.rules.gameplay',
+      ],
+      discard_and_draw: [
+        'badeucy.rules.gameplay',
+      ],
+      evaluate_badugi: [
+        'badeucy.rules.gameplay',
+      ],
+      evaluate_2_to_7_low: [
+        'badeucy.rules.gameplay',
+      ],
+      payout: [
+        'badeucy.rules.gameplay',
+      ],
+    },
   },
 }

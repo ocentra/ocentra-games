@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Five Hundred. 4 players, 2 partnerships (opposite seating). 44-card deck (7-A + Joker). Deal: 10 per player, 3-card kitty (widow). Bidding: 6-10 tricks, clockwise from left of dealer. High bidder takes kitty, discards 3 (face-down), declares trump (or No Trump/Misere/Open Misere). Play: 10 tricks. Trump rankings: Joker > Right Bower (Jack of trump) > Left Bower (Jack of same color) > A > K > Q > 10 > 9 > 8 > 7. Non-trump: A > K > Q > J > 10 > 9 > 8 > 7. Must follow suit. Scoring: If bid made, contractors score contract points; if failed, negative points + opponents score 10 per trick. First to 500 points wins.',
-    Player: 'Welcome to Five Hundred, the national game of Australia. You play in partnerships. Bid the tricks you can win. If high bidder, take the kitty and declare trump. Make your bid and score points toward 500. Work with your partnerâ€”your bids communicate your hand strength.',
+    LLM: "1. **Bidding Phase**: Starting with player left of dealer, each player bids the number of tricks they believe they can win (6-10) and optionally names trump or passes. Bids increase; last bid stands (highest wins). Player may bid only once. 2. **Kitty Discovery**: Winning bidder takes the 3-card kitty, examines it, and discards 3 cards face-down (kitty discards are never revealed). 3. **Trump Declaration**: High bidder announces trump suit OR 'No Trumps' (or 'Misere' / 'Open Misere' if their contract value supports it). 4. **Play Phase**: High bidder leads the first trick. Each player must follow suit if able. Trick won by highest trump or highest card of led suit. Trick winner leads next. 5. **Scoring**: After all 10 tricks, count tricks won by high bidder's partnership. If bid made: partners score the contract points. If failed: partners score negative points; opponents score 10 per trick won. 6. **Next Deal**: Deal passes left after each hand.",
+    Player: "1. **Bidding Phase**: Starting with player left of dealer, each player bids the number of tricks they believe they can win (6-10) and optionally names trump or passes. Bids increase; last bid stands (highest wins). Player may bid only once. 2. **Kitty Discovery**: Winning bidder takes the 3-card kitty, examines it, and discards 3 cards face-down (kitty discards are never revealed). 3. **Trump Declaration**: High bidder announces trump suit OR 'No Trumps' (or 'Misere' / 'Open Misere' if their contract value supports it). 4. **Play Phase**: High bidder leads the first trick. Each player must follow suit if able. Trick won by highest trump or highest card of led suit. Trick winner leads next. 5. **Scoring**: After all 10 tricks, count tricks won by high bidder's partnership. If bid made: partners score the contract points. If failed: partners score negative points; opponents score 10 per trick won. 6. **Next Deal**: Deal passes left after each hand.",
     objective: 'First partnership to score 500+ points wins the game. Points are earned by making bid contracts.',
     gameplay: "1. **Bidding Phase**: Starting with player left of dealer, each player bids the number of tricks they believe they can win (6-10) and optionally names trump or passes. Bids increase; last bid stands (highest wins). Player may bid only once. 2. **Kitty Discovery**: Winning bidder takes the 3-card kitty, examines it, and discards 3 cards face-down (kitty discards are never revealed). 3. **Trump Declaration**: High bidder announces trump suit OR 'No Trumps' (or 'Misere' / 'Open Misere' if their contract value supports it). 4. **Play Phase**: High bidder leads the first trick. Each player must follow suit if able. Trick won by highest trump or highest card of led suit. Trick winner leads next. 5. **Scoring**: After all 10 tricks, count tricks won by high bidder's partnership. If bid made: partners score the contract points. If failed: partners score negative points; opponents score 10 per trick won. 6. **Next Deal**: Deal passes left after each hand.",
     keyRules: [
@@ -56,10 +56,192 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Scoring based on contract value and tricks won. First partnership to 500+ points wins. Expected outcome: First partnership to reach 500 or more cumulative points wins the game..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: First partnership to score 500+ points wins the game. Points are earned by making bid contracts.',
+      "Turn-flow example: 1. **Bidding Phase**: Starting with player left of dealer, each player bids the number of tricks they believe they can win (6-10) and optionally names trump or passes. Bids increase; last bid stands (highest wins). Player may bid only once. 2. **Kitty Discovery**: Winning bidder takes the 3-card kitty, examines it, and discards 3 cards face-down (kitty discards are never revealed). 3. **Trump Declaration**: High bidder announces trump suit OR 'No Trumps' (or 'Misere' / 'Open Misere' if their contract value supports it). 4. **Play Phase**: High bidder leads the first trick. Each player must follow suit if able. Trick won by highest trump or highest card of led suit. Trick winner leads next. 5. **Scoring**: After all 10 tricks, count tricks won by high bidder's partnership. If bid made: partners score the contract points. If failed: partners score negative points; opponents score 10 per trick won. 6. **Next Deal**: Deal passes left after each hand.",
+      'Scoring example: Scoring based on contract value and tricks won. First partnership to 500+ points wins. First partnership to reach 500 or more cumulative points wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'five-hundred.rules.objective',
+        title: 'Objective',
+        text: 'First partnership to score 500+ points wins the game. Points are earned by making bid contracts.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'five-hundred.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Bidding Phase**: Starting with player left of dealer, each player bids the number of tricks they believe they can win (6-10) and optionally names trump or passes. Bids increase; last bid stands (highest wins). Player may bid only once. 2. **Kitty Discovery**: Winning bidder takes the 3-card kitty, examines it, and discards 3 cards face-down (kitty discards are never revealed). 3. **Trump Declaration**: High bidder announces trump suit OR 'No Trumps' (or 'Misere' / 'Open Misere' if their contract value supports it). 4. **Play Phase**: High bidder leads the first trick. Each player must follow suit if able. Trick won by highest trump or highest card of led suit. Trick winner leads next. 5. **Scoring**: After all 10 tricks, count tricks won by high bidder's partnership. If bid made: partners score the contract points. If failed: partners score negative points; opponents score 10 per trick won. 6. **Next Deal**: Deal passes left after each hand.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'five-hundred.setup.players',
+        title: 'Players',
+        text: 'Exactly 4 players in 2 fixed partnerships (seated opposite each other).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'five-hundred.setup.deck',
+        title: 'Deck',
+        text: '43-card deck: Remove all 2s, 3s, 4s, 5s, 6s from a standard 52-card deck, keeping 7-A in all suits. Add 1 Joker. Total: 43 cards + 1 Joker = 44 cards.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'five-hundred.setup.equipment',
+        title: 'Equipment',
+        text: 'Deck, scoresheet, pencil, dealer button (optional).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'five-hundred.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer shuffles and right-hand player cuts. Dealer distributes: 3 cards to each player, then 3 cards to the kitty (widow), then 4 more cards to each player. Final distribution: each player holds 10 cards; 3-card kitty placed in center.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'five-hundred.score.win-condition',
+        title: 'Win condition',
+        text: 'First partnership to reach 500 or more cumulative points wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'five-hundred.score.description',
+        title: 'Scoring',
+        text: 'Scoring based on contract value and tricks won. First partnership to 500+ points wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'five-hundred.rules.key.1',
+        title: 'Key rule 1',
+        text: '**Card Rankings**: In trump suit: Joker (highest) > Right Bower (jack of trump) > Left Bower (jack of same color) > A > K > Q > 10 > 9 > 8 > 7. Non-trump: A > K > Q > J > 10 > 9 > 8 > 7.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'five-hundred.rules.key.2',
+        title: 'Key rule 2',
+        text: '**Bowers**: The jack of trump suit (Right Bower) and the jack of the same color as trump (Left Bower) are the two highest-ranking cards in trump.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'five-hundred.rules.key.3',
+        title: 'Key rule 3',
+        text: '**No Trumps**: All suits rank normally (A-K-Q-J-10...7). Joker is a nominate card (player specifies which suit it belongs to before play) or unsuit card (playable only when void in led suit).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'five-hundred.rules.key.4',
+        title: 'Key rule 4',
+        text: '**Misere**: Contractor must lose all 10 tricks. Partners never score points; only contractors lose (if successful, they score 250 points; if failed, negative points). Joker and bowers irrelevant.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'five-hundred.rules.key.5',
+        title: 'Key rule 5',
+        text: "**Open Misere**: Misere with contractor's hand exposed after first trick. Scores 500 points if successful.",
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'five-hundred.rules.key.6',
+        title: 'Key rule 6',
+        text: '**Trick Management**: Must follow suit if able; otherwise, any card may be played. No forced trump.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'five-hundred.rules.key.7',
+        title: 'Key rule 7',
+        text: "**Kitty Discard**: High bidder's three discarded cards are never revealed and are not counted in scoring.",
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'five-hundred.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'five-hundred.rules.objective',
+          'five-hundred.rules.gameplay',
+        ],
+      },
+      {
+        id: 'five-hundred.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'five-hundred.setup.players',
+          'five-hundred.setup.deck',
+          'five-hundred.setup.equipment',
+          'five-hundred.setup.dealing',
+        ],
+      },
+      {
+        id: 'five-hundred.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'five-hundred.rules.key.1',
+          'five-hundred.rules.key.2',
+          'five-hundred.rules.key.3',
+          'five-hundred.rules.key.4',
+          'five-hundred.rules.key.5',
+          'five-hundred.rules.key.6',
+          'five-hundred.rules.key.7',
+        ],
+      },
+      {
+        id: 'five-hundred.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'five-hundred.score.description',
+          'five-hundred.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'five-hundred.setup.dealing',
+        'five-hundred.rules.objective',
+      ],
+      play_card: [
+        'five-hundred.rules.gameplay',
+      ],
+      discard: [
+        'five-hundred.rules.gameplay',
+      ],
+      pass: [
+        'five-hundred.rules.gameplay',
+      ],
+      bid: [
+        'five-hundred.rules.gameplay',
+      ],
+    },
   },
 }

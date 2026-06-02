@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Cassino. 52-card fishing game. Capture by pair or sum. Builds must be announced. Big Cassino 10â™¦=2pts, Little Cassino 2â™ =1pt, Aces=1pt each, Most Cards=3pts, Most Spades=1pt, Sweeps=1pt each. Target: 11 points.',
-    Player: "The tableau shows 3â™¦, 5â™£, 9â™¥. You hold 8â™ , 2â™¦ (Little Cassino). You can: play 8â™  to capture 3â™¦+5â™£ (sum=8), OR play a pairing trail. But firstâ€”can you capture 2â™¦ and the existing 2â™  if it's also on the table? Always capture Little Cassino first.",
+    LLM: "On your turn, play exactly one card from your hand by:\n1. Pairing: If your card matches a table card's rank, capture both.\n2. Combining: If your card equals the arithmetic sum of 2+ table cards, capture them all.\n3. Building: Lay your hand card with table cards, announce the intended total. Another player cannot steal the build unless they match it first.\n4. Trailing: If you can't or won't capture/build, simply lay a card face-up on the table.",
+    Player: "On your turn, play exactly one card from your hand by:\n1. Pairing: If your card matches a table card's rank, capture both.\n2. Combining: If your card equals the arithmetic sum of 2+ table cards, capture them all.\n3. Building: Lay your hand card with table cards, announce the intended total. Another player cannot steal the build unless they match it first.\n4. Trailing: If you can't or won't capture/build, simply lay a card face-up on the table.",
     objective: 'Score 11 points (or 21) before opponents. Points come from special cards, counting cards, and spades.',
     gameplay: "On your turn, play exactly one card from your hand by:\n1. Pairing: If your card matches a table card's rank, capture both.\n2. Combining: If your card equals the arithmetic sum of 2+ table cards, capture them all.\n3. Building: Lay your hand card with table cards, announce the intended total. Another player cannot steal the build unless they match it first.\n4. Trailing: If you can't or won't capture/build, simply lay a card face-up on the table.",
     keyRules: [
@@ -52,7 +52,160 @@
       meld: 'This action does not apply to this game.',
       go_out: 'This action does not apply to this game.',
     },
-    exampleHands: [],
+    exampleHands: [
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Score 11 points (or 21) before opponents. Points come from special cards, counting cards, and spades.',
+      "Turn-flow example: On your turn, play exactly one card from your hand by:\n1. Pairing: If your card matches a table card's rank, capture both.\n2. Combining: If your card equals the arithmetic sum of 2+ table cards, capture them all.\n3. Building: Lay your hand card with table cards, announce the intended total. Another player cannot steal the build unless they match it first.\n4. Trailing: If you can't or won't capture/build, simply lay a card face-up on the table.",
+      'Scoring example: Point awards for special cards, most cards, most spades, and sweeps. First to 11 points (some play to 21)..',
+    ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'cassino.rules.objective',
+        title: 'Objective',
+        text: 'Score 11 points (or 21) before opponents. Points come from special cards, counting cards, and spades.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'cassino.rules.gameplay',
+        title: 'Turn flow',
+        text: "On your turn, play exactly one card from your hand by:\n1. Pairing: If your card matches a table card's rank, capture both.\n2. Combining: If your card equals the arithmetic sum of 2+ table cards, capture them all.\n3. Building: Lay your hand card with table cards, announce the intended total. Another player cannot steal the build unless they match it first.\n4. Trailing: If you can't or won't capture/build, simply lay a card face-up on the table.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'cassino.setup.players',
+        title: 'Players',
+        text: '2, 3, or 4 (4 often as 2v2 partnerships).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'cassino.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52 cards.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'cassino.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards. Score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'cassino.setup.dealing',
+        title: 'Deal',
+        text: "4 cards each; 4 cards face-up on table (the 'tableau'). Rest is stock. Redeal 4 each when hands empty until stock gone.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'cassino.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 11 points (some play to 21).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'cassino.score.description',
+        title: 'Scoring',
+        text: 'Point awards for special cards, most cards, most spades, and sweeps.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'cassino.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Face cards (J, Q, K) have no numeric value for combining; they can only pair.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'cassino.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Aces = 1 (or 14 in Royal Cassino variant).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'cassino.rules.key.3',
+        title: 'Key rule 3',
+        text: "A 'sweep' (clearing entire tableau) earns 1 bonus point. The sweeping card is turned face-up to track sweeps.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'cassino.rules.key.4',
+        title: 'Key rule 4',
+        text: 'All table cards not captured go to the last player who made any capture.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'cassino.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'cassino.rules.objective',
+          'cassino.rules.gameplay',
+        ],
+      },
+      {
+        id: 'cassino.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'cassino.setup.players',
+          'cassino.setup.deck',
+          'cassino.setup.equipment',
+          'cassino.setup.dealing',
+        ],
+      },
+      {
+        id: 'cassino.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'cassino.rules.key.1',
+          'cassino.rules.key.2',
+          'cassino.rules.key.3',
+          'cassino.rules.key.4',
+        ],
+      },
+      {
+        id: 'cassino.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'cassino.score.description',
+          'cassino.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'cassino.setup.dealing',
+        'cassino.rules.objective',
+      ],
+      deal: [
+        'cassino.rules.gameplay',
+      ],
+      play_card: [
+        'cassino.rules.gameplay',
+      ],
+    },
   },
 }

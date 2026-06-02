@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Catan Card Game. Logic: Build the stronger principality and reach the required victory point total first.',
-    Player: 'Catan Card Game is a commercial two-player card adaptation of Catan focused on building settlements, roads, and resources through cards.',
+    LLM: 'Players generate resources, build roads and settlements, play development cards, and improve their principality while managing event effects.',
+    Player: 'Players generate resources, build roads and settlements, play development cards, and improve their principality while managing event effects.',
     objective: 'Build the stronger principality and reach the required victory point total first.',
     gameplay: 'Players generate resources, build roads and settlements, play development cards, and improve their principality while managing event effects.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: First player to the published victory point target wins. Expected outcome: 12.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Build the stronger principality and reach the required victory point total first.',
+      'Turn-flow example: Players generate resources, build roads and settlements, play development cards, and improve their principality while managing event effects.',
+      'Scoring example: First player to the published victory point target wins. Build the stronger principality and reach the required victory point total first..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'catan-card-game.rules.objective',
+        title: 'Objective',
+        text: 'Build the stronger principality and reach the required victory point total first.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'catan-card-game.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players generate resources, build roads and settlements, play development cards, and improve their principality while managing event effects.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'catan-card-game.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Catan Card Game.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'catan-card-game.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Catan Card Game deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'catan-card-game.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Catan Card Game deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'catan-card-game.setup.dealing',
+        title: 'Deal',
+        text: 'Each player sets up a small principality with settlement, road, and resource cards, then draws from development decks.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'catan-card-game.score.win-condition',
+        title: 'Win condition',
+        text: 'Build the stronger principality and reach the required victory point total first.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'catan-card-game.score.description',
+        title: 'Scoring',
+        text: 'First player to the published victory point target wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'catan-card-game.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two-player Catan adaptation.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'catan-card-game.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Resource cards support building.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'catan-card-game.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Settlements and city improvements score points.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'catan-card-game.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Event cards change the state.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'catan-card-game.rules.key.5',
+        title: 'Key rule 5',
+        text: 'First to the victory point target wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'catan-card-game.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'catan-card-game.rules.objective',
+          'catan-card-game.rules.gameplay',
+        ],
+      },
+      {
+        id: 'catan-card-game.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'catan-card-game.setup.players',
+          'catan-card-game.setup.deck',
+          'catan-card-game.setup.equipment',
+          'catan-card-game.setup.dealing',
+        ],
+      },
+      {
+        id: 'catan-card-game.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'catan-card-game.rules.key.1',
+          'catan-card-game.rules.key.2',
+          'catan-card-game.rules.key.3',
+          'catan-card-game.rules.key.4',
+          'catan-card-game.rules.key.5',
+        ],
+      },
+      {
+        id: 'catan-card-game.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'catan-card-game.score.description',
+          'catan-card-game.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'catan-card-game.setup.dealing',
+        'catan-card-game.rules.objective',
+      ],
+      play_card: [
+        'catan-card-game.rules.gameplay',
+      ],
+    },
   },
 }

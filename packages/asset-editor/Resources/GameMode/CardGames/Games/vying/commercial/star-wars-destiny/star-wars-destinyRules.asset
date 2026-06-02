@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players build teams and decks, roll associated dice, spend resources, and resolve card and die effects. The official rules and card text define combat timing.',
+    Player: 'Players build teams and decks, roll associated dice, spend resources, and resolve card and die effects. The official rules and card text define combat timing.',
     objective: 'Defeat opposing characters by combining card play with matching character dice.',
     gameplay: 'Players build teams and decks, roll associated dice, spend resources, and resolve card and die effects. The official rules and card text define combat timing.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Defeat opposing characters by combining card play with matching character dice.',
+      'Turn-flow example: Players build teams and decks, roll associated dice, spend resources, and resolve card and die effects. The official rules and card text define combat timing.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'star-wars-destiny.rules.objective',
+        title: 'Objective',
+        text: 'Defeat opposing characters by combining card play with matching character dice.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'star-wars-destiny.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players build teams and decks, roll associated dice, spend resources, and resolve card and die effects. The official rules and card text define combat timing.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'star-wars-destiny.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Star Wars Destiny.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'star-wars-destiny.setup.deck',
+        title: 'Deck',
+        text: 'Constructed Star Wars Destiny decks with dice',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'star-wars-destiny.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed Star Wars Destiny decks with dice, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'star-wars-destiny.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Constructed Star Wars Destiny decks with dice and deal or lay out cards according to the documented Star Wars Destiny rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'star-wars-destiny.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'star-wars-destiny.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'star-wars-destiny.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Uses both collectible cards and custom dice.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'star-wars-destiny.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Two-player constructed format is the core mode.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'star-wars-destiny.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Licensed Star Wars content is protected.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'star-wars-destiny.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'star-wars-destiny.rules.objective',
+          'star-wars-destiny.rules.gameplay',
+        ],
+      },
+      {
+        id: 'star-wars-destiny.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'star-wars-destiny.setup.players',
+          'star-wars-destiny.setup.deck',
+          'star-wars-destiny.setup.equipment',
+          'star-wars-destiny.setup.dealing',
+        ],
+      },
+      {
+        id: 'star-wars-destiny.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'star-wars-destiny.rules.key.1',
+          'star-wars-destiny.rules.key.2',
+          'star-wars-destiny.rules.key.3',
+        ],
+      },
+      {
+        id: 'star-wars-destiny.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'star-wars-destiny.score.description',
+          'star-wars-destiny.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'star-wars-destiny.setup.dealing',
+        'star-wars-destiny.rules.objective',
+      ],
+      play_card: [
+        'star-wars-destiny.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Game, Flip, Flop. 3-5 players, five cards each, dealer exposes a flip card. Flip pot goes to lowest card in flip suit; flop pot goes to lowest card in the other suit of the same color; claims happen before initial draw. Main game follows tonk-style draw/discard meld play with sets and runs, drop option, and double-game-pot outcomes for 50, tunk out, or caught drop.',
-    Player: 'Game, Flip, Flop is a Dayton rummy variant with three pots. Reveal lowest cards to chase flip/flop before drawing, then play draw-discard rummy and try to win the game pot by tunking out, dropping safely, or finishing with the lowest hand.',
+    LLM: "1. Players reveal cards to claim Flip/Flop pots immediately.\n2. Standard Draw/Discard Rummy play ensues.\n3. Melds: Sets (3+ of a kind) or Runs (3+ sequential in suit).\n4. Dropping: At the start of your turn, you can place your cards face-up to 'Drop' (Knock). If you have the lowest point total, you win the Game Pot. If someone has lower/equal, you lose double ('Caught').",
+    Player: "1. Players reveal cards to claim Flip/Flop pots immediately.\n2. Standard Draw/Discard Rummy play ensues.\n3. Melds: Sets (3+ of a kind) or Runs (3+ sequential in suit).\n4. Dropping: At the start of your turn, you can place your cards face-up to 'Drop' (Knock). If you have the lowest point total, you win the Game Pot. If someone has lower/equal, you lose double ('Caught').",
     objective: "Win the 'Game' pot by having the lowest points or going out, and win the 'Flip/Flop' pots by holding low cards.",
     gameplay: "1. Players reveal cards to claim Flip/Flop pots immediately.\n2. Standard Draw/Discard Rummy play ensues.\n3. Melds: Sets (3+ of a kind) or Runs (3+ sequential in suit).\n4. Dropping: At the start of your turn, you can place your cards face-up to 'Drop' (Knock). If you have the lowest point total, you win the Game Pot. If someone has lower/equal, you lose double ('Caught').",
     keyRules: [
@@ -52,10 +52,168 @@
       go_out: 'Can be achieved with final discard or by laying all cards if legal.',
     },
     exampleHands: [
-      'Opening deal: 3-5 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in stakes_and_deal; dealer may use ante, deal before claim_flip_flop.',
-      'Scoring check: Three-pot betting system: game pot, flip pot, and flop pot with claims based on the original dealt cards. Expected outcome: NA.',
+      'Setup example: 5 card(s) per player.',
+      "Rule example: Win the 'Game' pot by having the lowest points or going out, and win the 'Flip/Flop' pots by holding low cards.",
+      "Turn-flow example: 1. Players reveal cards to claim Flip/Flop pots immediately.\n2. Standard Draw/Discard Rummy play ensues.\n3. Melds: Sets (3+ of a kind) or Runs (3+ sequential in suit).\n4. Dropping: At the start of your turn, you can place your cards face-up to 'Drop' (Knock). If you have the lowest point total, you win the Game Pot. If someone has lower/equal, you lose double ('Caught').",
+      'Scoring example: Three-pot betting system: game pot, flip pot, and flop pot with claims based on the original dealt cards. Flip pot goes to lowest card in flip suit; flop pot goes to lowest card in the other suit of same color if present. Game pot is won by valid drop, tunk out, or lowest hand when stock ends; double-game-pot outcomes apply for 50, tunk out, and caught drops..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'game-flip-flop.rules.objective',
+        title: 'Objective',
+        text: "Win the 'Game' pot by having the lowest points or going out, and win the 'Flip/Flop' pots by holding low cards.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'game-flip-flop.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Players reveal cards to claim Flip/Flop pots immediately.\n2. Standard Draw/Discard Rummy play ensues.\n3. Melds: Sets (3+ of a kind) or Runs (3+ sequential in suit).\n4. Dropping: At the start of your turn, you can place your cards face-up to 'Drop' (Knock). If you have the lowest point total, you win the Game Pot. If someone has lower/equal, you lose double ('Caught').",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'game-flip-flop.setup.players',
+        title: 'Players',
+        text: '3 to 5 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'game-flip-flop.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck (Aces are low, 1 point).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'game-flip-flop.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck (Aces are low, 1 point).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'game-flip-flop.setup.dealing',
+        title: 'Deal',
+        text: "Deal 5 cards to each player. turn the next card (Dealer's last card) FACE-UP. This is the FLIP CARD.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'game-flip-flop.score.win-condition',
+        title: 'Win condition',
+        text: 'Flip pot goes to lowest card in flip suit; flop pot goes to lowest card in the other suit of same color if present. Game pot is won by valid drop, tunk out, or lowest hand when stock ends; double-game-pot outcomes apply for 50, tunk out, and caught drops.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'game-flip-flop.score.description',
+        title: 'Scoring',
+        text: 'Three-pot betting system: game pot, flip pot, and flop pot with claims based on the original dealt cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'game-flip-flop.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No Jokers.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'game-flip-flop.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Aces are always low (1).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'game-flip-flop.rules.key.3',
+        title: 'Key rule 3',
+        text: "Pay to Play: You can't win a pot you didn't contribute to.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'game-flip-flop.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'game-flip-flop.rules.objective',
+          'game-flip-flop.rules.gameplay',
+        ],
+      },
+      {
+        id: 'game-flip-flop.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'game-flip-flop.setup.players',
+          'game-flip-flop.setup.deck',
+          'game-flip-flop.setup.equipment',
+          'game-flip-flop.setup.dealing',
+        ],
+      },
+      {
+        id: 'game-flip-flop.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'game-flip-flop.rules.key.1',
+          'game-flip-flop.rules.key.2',
+          'game-flip-flop.rules.key.3',
+        ],
+      },
+      {
+        id: 'game-flip-flop.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'game-flip-flop.score.description',
+          'game-flip-flop.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'game-flip-flop.setup.dealing',
+        'game-flip-flop.rules.objective',
+      ],
+      ante: [
+        'game-flip-flop.rules.gameplay',
+      ],
+      deal: [
+        'game-flip-flop.rules.gameplay',
+      ],
+      declare: [
+        'game-flip-flop.rules.gameplay',
+      ],
+      award_pot: [
+        'game-flip-flop.rules.gameplay',
+      ],
+      draw: [
+        'game-flip-flop.rules.gameplay',
+      ],
+      discard: [
+        'game-flip-flop.rules.gameplay',
+      ],
+      meld: [
+        'game-flip-flop.rules.gameplay',
+      ],
+      go_out: [
+        'game-flip-flop.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 7-Truf. Logic: See rules.objective and rules.gameplay.',
-    Player: '7-Truf (Sieben-Truf): Germanic trick-taking game; seven as permanent or key trump (Truf = trump). Follow suit; trump when unable. Point or trick count to win. Central European.',
+    LLM: 'Follow suit; trump when unable. Seven (Truf) ranks as trump. Highest trump or highest card of led suit wins the trick. Scoring varies by regional variant.',
+    Player: 'Follow suit; trump when unable. Seven (Truf) ranks as trump. Highest trump or highest card of led suit wins the trick. Scoring varies by regional variant.',
     objective: 'Win tricks; the seven (Truf) is trump or key card. Point or trick count to win the round/game.',
     gameplay: 'Follow suit; trump when unable. Seven (Truf) ranks as trump. Highest trump or highest card of led suit wins the trick. Scoring varies by regional variant.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Points for tricks or card values; target score or most tricks wins. Expected outcome: Win tricks; the seven (Truf) is trump or key card. Point or trick count to win the round/game..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win tricks; the seven (Truf) is trump or key card. Point or trick count to win the round/game.',
+      'Turn-flow example: Follow suit; trump when unable. Seven (Truf) ranks as trump. Highest trump or highest card of led suit wins the trick. Scoring varies by regional variant.',
+      'Scoring example: Points for tricks or card values; target score or most tricks wins. Win tricks; the seven (Truf) is trump or key card. Point or trick count to win the round/game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '7-truf.rules.objective',
+        title: 'Objective',
+        text: 'Win tricks; the seven (Truf) is trump or key card. Point or trick count to win the round/game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '7-truf.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Follow suit; trump when unable. Seven (Truf) ranks as trump. Highest trump or highest card of led suit wins the trick. Scoring varies by regional variant.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '7-truf.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '7-truf.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '7-truf.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '7-truf.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '7-truf.score.win-condition',
+        title: 'Win condition',
+        text: 'Win tricks; the seven (Truf) is trump or key card. Point or trick count to win the round/game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '7-truf.score.description',
+        title: 'Scoring',
+        text: 'Points for tricks or card values; target score or most tricks wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '7-truf.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow suit; may trump if void',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '7-truf.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Seven (Truf) = trump or key card',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '7-truf.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trick-taking; point or trick count',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '7-truf.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '7-truf.rules.objective',
+          '7-truf.rules.gameplay',
+        ],
+      },
+      {
+        id: '7-truf.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '7-truf.setup.players',
+          '7-truf.setup.deck',
+          '7-truf.setup.equipment',
+          '7-truf.setup.dealing',
+        ],
+      },
+      {
+        id: '7-truf.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '7-truf.rules.key.1',
+          '7-truf.rules.key.2',
+          '7-truf.rules.key.3',
+        ],
+      },
+      {
+        id: '7-truf.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '7-truf.score.description',
+          '7-truf.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '7-truf.setup.dealing',
+        '7-truf.rules.objective',
+      ],
+      play_card: [
+        '7-truf.rules.gameplay',
+      ],
+    },
   },
 }

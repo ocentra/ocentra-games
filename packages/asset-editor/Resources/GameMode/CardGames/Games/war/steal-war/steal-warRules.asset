@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Steal War. Logic: See rules.',
-    Player: 'War variant where players can steal cards from opponents. More strategic than classic War.',
+    LLM: "War variant: each player has a face-down packet and a face-up capture pile. Turn your top card; higher card wins the battle and takes the cards to your capture pile (winner chooses which card goes on top). Equal cards trigger a war: three face down, one face up; higher of the face-up cards wins all. If your card's rank matches the top of an opponent's capture pile you may steal that pile instead of playing to the battle. When your packet is empty, shuffle your capture pile to form a new packet.",
+    Player: "War variant: each player has a face-down packet and a face-up capture pile. Turn your top card; higher card wins the battle and takes the cards to your capture pile (winner chooses which card goes on top). Equal cards trigger a war: three face down, one face up; higher of the face-up cards wins all. If your card's rank matches the top of an opponent's capture pile you may steal that pile instead of playing to the battle. When your packet is empty, shuffle your capture pile to form a new packet.",
     objective: 'Win all the cards. A player who runs out of cards during a war loses immediately.',
     gameplay: "War variant: each player has a face-down packet and a face-up capture pile. Turn your top card; higher card wins the battle and takes the cards to your capture pile (winner chooses which card goes on top). Equal cards trigger a war: three face down, one face up; higher of the face-up cards wins all. If your card's rank matches the top of an opponent's capture pile you may steal that pile instead of playing to the battle. When your packet is empty, shuffle your capture pile to form a new packet.",
     keyRules: [
@@ -54,10 +54,168 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 27 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card, steal_pile before round end.',
-      'Scoring check: Winner is the player who collects all the cards; a player who runs out of cards during a war loses immediately. Expected outcome: Collect all the cards; running out of cards during a war means immediate loss..',
+      'Setup example: 27 card(s) per player.',
+      'Rule example: Win all the cards. A player who runs out of cards during a war loses immediately.',
+      "Turn-flow example: War variant: each player has a face-down packet and a face-up capture pile. Turn your top card; higher card wins the battle and takes the cards to your capture pile (winner chooses which card goes on top). Equal cards trigger a war: three face down, one face up; higher of the face-up cards wins all. If your card's rank matches the top of an opponent's capture pile you may steal that pile instead of playing to the battle. When your packet is empty, shuffle your capture pile to form a new packet.",
+      'Scoring example: Winner is the player who collects all the cards; a player who runs out of cards during a war loses immediately. Collect all the cards; running out of cards during a war means immediate loss..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'steal-war.rules.objective',
+        title: 'Objective',
+        text: 'Win all the cards. A player who runs out of cards during a war loses immediately.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'steal-war.rules.gameplay',
+        title: 'Turn flow',
+        text: "War variant: each player has a face-down packet and a face-up capture pile. Turn your top card; higher card wins the battle and takes the cards to your capture pile (winner chooses which card goes on top). Equal cards trigger a war: three face down, one face up; higher of the face-up cards wins all. If your card's rank matches the top of an opponent's capture pile you may steal that pile instead of playing to the battle. When your packet is empty, shuffle your capture pile to form a new packet.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'steal-war.setup.players',
+        title: 'Players',
+        text: "Two players. Each has a face-down packet of 27 cards (half the deck); no hand is held. Both look at the top card before playing and may use it to battle or to steal the opponent's face-up capture pile if the rank matches.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'steal-war.setup.deck',
+        title: 'Deck',
+        text: '52 cards plus 2 jokers',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'steal-war.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards or tiles',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'steal-war.setup.dealing',
+        title: 'Deal',
+        text: 'Deal out all cards evenly so each player has 27 cards in a face-down packet.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'steal-war.score.win-condition',
+        title: 'Win condition',
+        text: 'Collect all the cards; running out of cards during a war means immediate loss.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'steal-war.score.description',
+        title: 'Scoring',
+        text: 'Winner is the player who collects all the cards; a player who runs out of cards during a war loses immediately.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'steal-war.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Deck has two jokers; they are the highest cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'steal-war.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Won cards go on your face-up capture pile; winner may choose which new card is on top.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'steal-war.rules.key.3',
+        title: 'Key rule 3',
+        text: "Matching rank to opponent's pile top allows stealing that pile instead of playing to battle.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'steal-war.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Card played and released cannot be used to steal; playing a card that matches your own pile top protects your pile from being stolen that turn.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'steal-war.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Running out of cards during a war means immediate loss.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'steal-war.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'steal-war.rules.objective',
+          'steal-war.rules.gameplay',
+        ],
+      },
+      {
+        id: 'steal-war.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'steal-war.setup.players',
+          'steal-war.setup.deck',
+          'steal-war.setup.equipment',
+          'steal-war.setup.dealing',
+        ],
+      },
+      {
+        id: 'steal-war.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'steal-war.rules.key.1',
+          'steal-war.rules.key.2',
+          'steal-war.rules.key.3',
+          'steal-war.rules.key.4',
+          'steal-war.rules.key.5',
+        ],
+      },
+      {
+        id: 'steal-war.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'steal-war.score.description',
+          'steal-war.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'steal-war.setup.dealing',
+        'steal-war.rules.objective',
+      ],
+      play_card: [
+        'steal-war.rules.gameplay',
+      ],
+      steal_pile: [
+        'steal-war.rules.gameplay',
+      ],
+    },
   },
 }

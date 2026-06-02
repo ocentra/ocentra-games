@@ -55,10 +55,177 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card, draw before round end.',
-      "Scoring check: When one player dominoes, they score the total pips on tiles in opponents' hands. If the game blocks, the player with the lowest total wins and scores the sum of the others' pips minus their own. Game is played to 60 points (or more by agreement). Expected outcome: 60.",
+      'Setup example: 7 card(s) per player.',
+      "Rule example: Be the first player to play all your tiles (domino). Score the total pips remaining in opponents' hands.",
+      'Turn-flow example: The player with the highest double sets it as the spinner. Going clockwise, each player must play a tile matching the spinner until four tiles are around it (phase one). A player unable to play draws one tile from the boneyard; if it can play they set it, otherwise they keep it and pass. Once four arms are started, each player must add a double to the end of any arm (crosswise); all four arms must be completed (phase two). After that, doubles are played crosswise and non-doubles in line from the ends of the arms. Play continues until one player dominoes or the game blocks.',
+      "Scoring example: When one player dominoes, they score the total pips on tiles in opponents' hands. If the game blocks, the player with the lowest total wins and scores the sum of the others' pips minus their own. Game is played to 60 points (or more by agreement). First to play all tiles (domino) scores pips in opponents' hands; first to 60 points wins the game. If blocked, lowest total wins the round and scores (others minus own)..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'maltese-cross.rules.objective',
+        title: 'Objective',
+        text: "Be the first player to play all your tiles (domino). Score the total pips remaining in opponents' hands.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'maltese-cross.rules.gameplay',
+        title: 'Turn flow',
+        text: 'The player with the highest double sets it as the spinner. Going clockwise, each player must play a tile matching the spinner until four tiles are around it (phase one). A player unable to play draws one tile from the boneyard; if it can play they set it, otherwise they keep it and pass. Once four arms are started, each player must add a double to the end of any arm (crosswise); all four arms must be completed (phase two). After that, doubles are played crosswise and non-doubles in line from the ends of the arms. Play continues until one player dominoes or the game blocks.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'maltese-cross.setup.players',
+        title: 'Players',
+        text: '2-4 players, individually or in partnerships',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'maltese-cross.setup.deck',
+        title: 'Deck',
+        text: 'Standard double-six domino set (28 tiles). For 2 players: 7 tiles each. For 3-4 players: 5-6 tiles each.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'maltese-cross.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard double-six domino set (28 tiles). For 2 players: 7 tiles each. For 3-4 players: 5-6 tiles each.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'maltese-cross.setup.dealing',
+        title: 'Deal',
+        text: 'Tiles are dealt evenly. Remaining tiles form the boneyard.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'maltese-cross.score.win-condition',
+        title: 'Win condition',
+        text: "First to play all tiles (domino) scores pips in opponents' hands; first to 60 points wins the game. If blocked, lowest total wins the round and scores (others minus own).",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'maltese-cross.score.description',
+        title: 'Scoring',
+        text: "When one player dominoes, they score the total pips on tiles in opponents' hands. If the game blocks, the player with the lowest total wins and scores the sum of the others' pips minus their own. Game is played to 60 points (or more by agreement).",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'maltese-cross.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Highest double starts as spinner in center',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'maltese-cross.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Phase one: four tiles around spinner, matching the spinner; draw from boneyard if unable to play',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'maltese-cross.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Phase two: add one double to end of each arm (crosswise); all four arms must be completed before free play',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'maltese-cross.rules.key.4',
+        title: 'Key rule 4',
+        text: 'After phase two: doubles played crosswise, non-doubles in line from arm ends',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'maltese-cross.rules.key.5',
+        title: 'Key rule 5',
+        text: "First to play all tiles (domino) scores sum of pips in opponents' hands",
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'maltese-cross.rules.key.6',
+        title: 'Key rule 6',
+        text: 'If blocked, player with lowest total wins and scores (sum of others minus own); game to 60 points',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'maltese-cross.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'maltese-cross.rules.objective',
+          'maltese-cross.rules.gameplay',
+        ],
+      },
+      {
+        id: 'maltese-cross.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'maltese-cross.setup.players',
+          'maltese-cross.setup.deck',
+          'maltese-cross.setup.equipment',
+          'maltese-cross.setup.dealing',
+        ],
+      },
+      {
+        id: 'maltese-cross.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'maltese-cross.rules.key.1',
+          'maltese-cross.rules.key.2',
+          'maltese-cross.rules.key.3',
+          'maltese-cross.rules.key.4',
+          'maltese-cross.rules.key.5',
+          'maltese-cross.rules.key.6',
+        ],
+      },
+      {
+        id: 'maltese-cross.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'maltese-cross.score.description',
+          'maltese-cross.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'maltese-cross.setup.dealing',
+        'maltese-cross.rules.objective',
+      ],
+      play_card: [
+        'maltese-cross.rules.gameplay',
+      ],
+      draw: [
+        'maltese-cross.rules.gameplay',
+      ],
+    },
   },
 }

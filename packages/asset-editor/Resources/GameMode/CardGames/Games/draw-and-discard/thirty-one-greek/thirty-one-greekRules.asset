@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Thirty-One (Greek). Logic: See rules.objective and rules.gameplay.',
-    Player: "Thirty-One (often called '31' or 'H τριανταμία' in Greek) is a simple draw-and-discard game popular in Greece and worldwide. Players try to collect a hand of three cards in the same suit totaling 31 points (Ace=11, Face=10). The player with the lowest score loses a life.",
+    LLM: 'Turn: Draw one card from Stock or Discard pile, then discard one card. Try to improve suit sum. Knocking: If a player thinks they have high enough score, they knock. Everyone else gets one last turn. Scoring: A=11, K/Q/J=10, Num=Face. 3 of a kind (30pts) is a special rule in some variants.',
+    Player: 'Turn: Draw one card from Stock or Discard pile, then discard one card. Try to improve suit sum. Knocking: If a player thinks they have high enough score, they knock. Everyone else gets one last turn. Scoring: A=11, K/Q/J=10, Num=Face. 3 of a kind (30pts) is a special rule in some variants.',
     objective: 'Get a hand totaling 31 points in one suit, or have a higher score than the lowest player.',
     gameplay: 'Turn: Draw one card from Stock or Discard pile, then discard one card. Try to improve suit sum. Knocking: If a player thinks they have high enough score, they knock. Everyone else gets one last turn. Scoring: A=11, K/Q/J=10, Num=Face. 3 of a kind (30pts) is a special rule in some variants.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-9 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Lowest score loses a life. If doing 31 exactly (Blitz), round ends immediately and everyone else loses a life. Expected outcome: Get a hand totaling 31 points in one suit, or have a higher score than the lowest player..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Get a hand totaling 31 points in one suit, or have a higher score than the lowest player.',
+      'Turn-flow example: Turn: Draw one card from Stock or Discard pile, then discard one card. Try to improve suit sum. Knocking: If a player thinks they have high enough score, they knock. Everyone else gets one last turn. Scoring: A=11, K/Q/J=10, Num=Face. 3 of a kind (30pts) is a special rule in some variants.',
+      'Scoring example: Lowest score loses a life. If doing 31 exactly (Blitz), round ends immediately and everyone else loses a life. Get a hand totaling 31 points in one suit, or have a higher score than the lowest player..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'thirty-one-greek.rules.objective',
+        title: 'Objective',
+        text: 'Get a hand totaling 31 points in one suit, or have a higher score than the lowest player.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'thirty-one-greek.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Turn: Draw one card from Stock or Discard pile, then discard one card. Try to improve suit sum. Knocking: If a player thinks they have high enough score, they knock. Everyone else gets one last turn. Scoring: A=11, K/Q/J=10, Num=Face. 3 of a kind (30pts) is a special rule in some variants.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'thirty-one-greek.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'thirty-one-greek.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'thirty-one-greek.setup.equipment',
+        title: 'Equipment',
+        text: 'Tokens (lives) - usually 3 per player.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'thirty-one-greek.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 3 cards to each player. Place one card face up (or three) to start discard pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'thirty-one-greek.score.win-condition',
+        title: 'Win condition',
+        text: 'Get a hand totaling 31 points in one suit, or have a higher score than the lowest player.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'thirty-one-greek.score.description',
+        title: 'Scoring',
+        text: 'Lowest score loses a life. If doing 31 exactly (Blitz), round ends immediately and everyone else loses a life.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'thirty-one-greek.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Suits matters (points must be same suit)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'thirty-one-greek.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Ace = 11',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'thirty-one-greek.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Knocking ends the round (after 1 orbit)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'thirty-one-greek.rules.key.4',
+        title: 'Key rule 4',
+        text: '31 is instant win',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'thirty-one-greek.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'thirty-one-greek.rules.objective',
+          'thirty-one-greek.rules.gameplay',
+        ],
+      },
+      {
+        id: 'thirty-one-greek.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'thirty-one-greek.setup.players',
+          'thirty-one-greek.setup.deck',
+          'thirty-one-greek.setup.equipment',
+          'thirty-one-greek.setup.dealing',
+        ],
+      },
+      {
+        id: 'thirty-one-greek.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'thirty-one-greek.rules.key.1',
+          'thirty-one-greek.rules.key.2',
+          'thirty-one-greek.rules.key.3',
+          'thirty-one-greek.rules.key.4',
+        ],
+      },
+      {
+        id: 'thirty-one-greek.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'thirty-one-greek.score.description',
+          'thirty-one-greek.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'thirty-one-greek.setup.dealing',
+        'thirty-one-greek.rules.objective',
+      ],
+      play_card: [
+        'thirty-one-greek.rules.gameplay',
+      ],
+    },
   },
 }

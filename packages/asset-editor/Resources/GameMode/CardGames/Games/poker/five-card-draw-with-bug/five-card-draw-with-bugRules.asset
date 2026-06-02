@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Five Card Draw With a Bug. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Five Card Draw with one Joker as Bug: counts as Ace or completes straight or flush only.',
+    LLM: "Before the deal each player posts an agreed ante. Dealer deals five cards face down to each player. First betting round starts with the player to dealer's left. If more than one player remains, the draw: each active player in turn (from dealer's left) may discard 0 to 3 cards face down and receive that many replacements from the stock (standing pat means discard zero). Second betting round, opened by the opener of the first round; stakes often double. Showdown: best five-card hand wins; five aces (A-A-A-A-Bug) is highest. If everyone checks in the first round, hands are thrown in, deal passes left, everyone antes again.",
+    Player: "Before the deal each player posts an agreed ante. Dealer deals five cards face down to each player. First betting round starts with the player to dealer's left. If more than one player remains, the draw: each active player in turn (from dealer's left) may discard 0 to 3 cards face down and receive that many replacements from the stock (standing pat means discard zero). Second betting round, opened by the opener of the first round; stakes often double. Showdown: best five-card hand wins; five aces (A-A-A-A-Bug) is highest. If everyone checks in the first round, hands are thrown in, deal passes left, everyone antes again.",
     objective: 'Best hand. Bug is Ace or straight flush filler only.',
     gameplay: "Before the deal each player posts an agreed ante. Dealer deals five cards face down to each player. First betting round starts with the player to dealer's left. If more than one player remains, the draw: each active player in turn (from dealer's left) may discard 0 to 3 cards face down and receive that many replacements from the stock (standing pat means discard zero). Second betting round, opened by the opener of the first round; stakes often double. Showdown: best five-card hand wins; five aces (A-A-A-A-Bug) is highest. If everyone checks in the first round, hands are thrown in, deal passes left, everyone antes again.",
     keyRules: [
@@ -50,10 +50,159 @@
       go_out: 'This game does not support go out.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; each_player_clockwise may use ante before deal.',
-      'Scoring check: Standard Expected outcome: Best hand. Bug is Ace or straight flush filler only..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Best hand. Bug is Ace or straight flush filler only.',
+      "Turn-flow example: Before the deal each player posts an agreed ante. Dealer deals five cards face down to each player. First betting round starts with the player to dealer's left. If more than one player remains, the draw: each active player in turn (from dealer's left) may discard 0 to 3 cards face down and receive that many replacements from the stock (standing pat means discard zero). Second betting round, opened by the opener of the first round; stakes often double. Showdown: best five-card hand wins; five aces (A-A-A-A-Bug) is highest. If everyone checks in the first round, hands are thrown in, deal passes left, everyone antes again.",
+      'Scoring example: Standard Best hand. Bug is Ace or straight flush filler only..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'five-card-draw-with-bug.rules.objective',
+        title: 'Objective',
+        text: 'Best hand. Bug is Ace or straight flush filler only.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'five-card-draw-with-bug.rules.gameplay',
+        title: 'Turn flow',
+        text: "Before the deal each player posts an agreed ante. Dealer deals five cards face down to each player. First betting round starts with the player to dealer's left. If more than one player remains, the draw: each active player in turn (from dealer's left) may discard 0 to 3 cards face down and receive that many replacements from the stock (standing pat means discard zero). Second betting round, opened by the opener of the first round; stakes often double. Showdown: best five-card hand wins; five aces (A-A-A-A-Bug) is highest. If everyone checks in the first round, hands are thrown in, deal passes left, everyone antes again.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'five-card-draw-with-bug.setup.players',
+        title: 'Players',
+        text: 'Two to six players; six makes the best game. With seven or eight the deck may run out during the draw, so six is normally the maximum.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'five-card-draw-with-bug.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack plus one joker (53 cards total). The joker is used as the Bug, a limited wild that may represent an ace or complete a straight or flush only.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'five-card-draw-with-bug.setup.equipment',
+        title: 'Equipment',
+        text: 'Chips',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'five-card-draw-with-bug.setup.dealing',
+        title: 'Deal',
+        text: 'After shuffle and cut, the dealer deals five cards face down to each player, one at a time clockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'five-card-draw-with-bug.score.win-condition',
+        title: 'Win condition',
+        text: 'Best hand. Bug is Ace or straight flush filler only.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'five-card-draw-with-bug.score.description',
+        title: 'Scoring',
+        text: 'Standard',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'five-card-draw-with-bug.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Bug limited wild',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'five-card-draw-with-bug.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'five-card-draw-with-bug.rules.objective',
+          'five-card-draw-with-bug.rules.gameplay',
+        ],
+      },
+      {
+        id: 'five-card-draw-with-bug.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'five-card-draw-with-bug.setup.players',
+          'five-card-draw-with-bug.setup.deck',
+          'five-card-draw-with-bug.setup.equipment',
+          'five-card-draw-with-bug.setup.dealing',
+        ],
+      },
+      {
+        id: 'five-card-draw-with-bug.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'five-card-draw-with-bug.rules.key.1',
+        ],
+      },
+      {
+        id: 'five-card-draw-with-bug.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'five-card-draw-with-bug.score.description',
+          'five-card-draw-with-bug.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'five-card-draw-with-bug.setup.dealing',
+        'five-card-draw-with-bug.rules.objective',
+      ],
+      ante: [
+        'five-card-draw-with-bug.rules.gameplay',
+      ],
+      deal: [
+        'five-card-draw-with-bug.rules.gameplay',
+      ],
+      fold: [
+        'five-card-draw-with-bug.rules.gameplay',
+      ],
+      check: [
+        'five-card-draw-with-bug.rules.gameplay',
+      ],
+      call: [
+        'five-card-draw-with-bug.rules.gameplay',
+      ],
+      bet: [
+        'five-card-draw-with-bug.rules.gameplay',
+      ],
+      raise: [
+        'five-card-draw-with-bug.rules.gameplay',
+      ],
+      reveal_hand: [
+        'five-card-draw-with-bug.rules.gameplay',
+      ],
+      award_pot: [
+        'five-card-draw-with-bug.rules.gameplay',
+      ],
+      draw: [
+        'five-card-draw-with-bug.rules.gameplay',
+      ],
+      discard: [
+        'five-card-draw-with-bug.rules.gameplay',
+      ],
+    },
   },
 }

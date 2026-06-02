@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Pyramide. Logic: See rules.objective and rules.gameplay.',
-    Player: "Pyramide (The Pyramid) is a popular French social card game, often played in festive or party settings. It is a game of memory, deduction, and high-stakes bluffing. Players are dealt a private hand of cards which they must mÃ©morise and then place face-down. A central 'Pyramid' of cards is then revealed layer-by-layer. If a player claims to have a card matching a revealed one, they can penalize an opponentâ€”but if they're caught bluffing, the penalty is doubled. It is a game of 'Who can keep a poker face while forgetting their own hand?'",
+    LLM: 'A pyramid of cards is built face-down (6-5-4-3-2-1). Each player receives cards face-down, looks once to memorise them, then may not look again. Cards are revealed from the pyramid one by one (bottom row left to right, then next row). When a card is revealed, any player may claim to hold the same face value and assign a penalty (drinks) to another player; that player may accept or call bluff. If bluff is called and the claimer had the card, the assigned player drinks double; if the claimer was bluffing, the claimer drinks double. Number of drinks often equals the pyramid row (e.g. row 3 = 3 drinks). Game ends when the pyramid is fully revealed.',
+    Player: 'A pyramid of cards is built face-down (6-5-4-3-2-1). Each player receives cards face-down, looks once to memorise them, then may not look again. Cards are revealed from the pyramid one by one (bottom row left to right, then next row). When a card is revealed, any player may claim to hold the same face value and assign a penalty (drinks) to another player; that player may accept or call bluff. If bluff is called and the claimer had the card, the assigned player drinks double; if the claimer was bluffing, the claimer drinks double. Number of drinks often equals the pyramid row (e.g. row 3 = 3 drinks). Game ends when the pyramid is fully revealed.',
     objective: 'Avoid penalties by remembering your cards and successfully bluffing your opponents.',
     gameplay: 'A pyramid of cards is built face-down (6-5-4-3-2-1). Each player receives cards face-down, looks once to memorise them, then may not look again. Cards are revealed from the pyramid one by one (bottom row left to right, then next row). When a card is revealed, any player may claim to hold the same face value and assign a penalty (drinks) to another player; that player may accept or call bluff. If bluff is called and the claimer had the card, the assigned player drinks double; if the claimer was bluffing, the claimer drinks double. Number of drinks often equals the pyramid row (e.g. row 3 = 3 drinks). Game ends when the pyramid is fully revealed.',
     keyRules: [
@@ -53,10 +53,177 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-10 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use perform_initial_deal before build_pyramid.',
-      'Scoring check: Avoid penalties by remembering your cards and successfully bluffing your opponents. Expected outcome: Avoid penalties by remembering your cards and successfully bluffing your opponents..',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Avoid penalties by remembering your cards and successfully bluffing your opponents.',
+      'Turn-flow example: A pyramid of cards is built face-down (6-5-4-3-2-1). Each player receives cards face-down, looks once to memorise them, then may not look again. Cards are revealed from the pyramid one by one (bottom row left to right, then next row). When a card is revealed, any player may claim to hold the same face value and assign a penalty (drinks) to another player; that player may accept or call bluff. If bluff is called and the claimer had the card, the assigned player drinks double; if the claimer was bluffing, the claimer drinks double. Number of drinks often equals the pyramid row (e.g. row 3 = 3 drinks). Game ends when the pyramid is fully revealed.',
+      'Scoring example: Avoid penalties by remembering your cards and successfully bluffing your opponents. Avoid penalties by remembering your cards and successfully bluffing your opponents..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pyramide-french-drinking.rules.objective',
+        title: 'Objective',
+        text: 'Avoid penalties by remembering your cards and successfully bluffing your opponents.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pyramide-french-drinking.rules.gameplay',
+        title: 'Turn flow',
+        text: 'A pyramid of cards is built face-down (6-5-4-3-2-1). Each player receives cards face-down, looks once to memorise them, then may not look again. Cards are revealed from the pyramid one by one (bottom row left to right, then next row). When a card is revealed, any player may claim to hold the same face value and assign a penalty (drinks) to another player; that player may accept or call bluff. If bluff is called and the claimer had the card, the assigned player drinks double; if the claimer was bluffing, the claimer drinks double. Number of drinks often equals the pyramid row (e.g. row 3 = 3 drinks). Game ends when the pyramid is fully revealed.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pyramide-french-drinking.setup.players',
+        title: 'Players',
+        text: "4-6 is the 'Sweet spot' for memory tension.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pyramide-french-drinking.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52 cards.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pyramide-french-drinking.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52 cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pyramide-french-drinking.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 4 cards face-down. They have 10 seconds to mÃ©morise them and then cannot look at them again.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pyramide-french-drinking.score.win-condition',
+        title: 'Win condition',
+        text: 'Avoid penalties by remembering your cards and successfully bluffing your opponents.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pyramide-french-drinking.score.description',
+        title: 'Scoring',
+        text: 'Avoid penalties by remembering your cards and successfully bluffing your opponents.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pyramide-french-drinking.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Memorise your hand once; no looking again.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pyramide-french-drinking.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Match revealed pyramid card by face value to assign penalty to an opponent.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pyramide-french-drinking.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Target may accept the penalty or call bluff; wrong call doubles the penalty.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pyramide-french-drinking.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Optional: summit (top) card may count for more; wrong card when called costs double.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pyramide-french-drinking.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pyramide-french-drinking.rules.objective',
+          'pyramide-french-drinking.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pyramide-french-drinking.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pyramide-french-drinking.setup.players',
+          'pyramide-french-drinking.setup.deck',
+          'pyramide-french-drinking.setup.equipment',
+          'pyramide-french-drinking.setup.dealing',
+        ],
+      },
+      {
+        id: 'pyramide-french-drinking.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pyramide-french-drinking.rules.key.1',
+          'pyramide-french-drinking.rules.key.2',
+          'pyramide-french-drinking.rules.key.3',
+          'pyramide-french-drinking.rules.key.4',
+        ],
+      },
+      {
+        id: 'pyramide-french-drinking.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pyramide-french-drinking.score.description',
+          'pyramide-french-drinking.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pyramide-french-drinking.setup.dealing',
+        'pyramide-french-drinking.rules.objective',
+      ],
+      pass: [
+        'pyramide-french-drinking.rules.gameplay',
+      ],
+      perform_initial_deal: [
+        'pyramide-french-drinking.rules.gameplay',
+      ],
+      build_pyramid_layout: [
+        'pyramide-french-drinking.rules.gameplay',
+      ],
+      reveal_pyramid_card: [
+        'pyramide-french-drinking.rules.gameplay',
+      ],
+      claim_match_assign_drink: [
+        'pyramide-french-drinking.rules.gameplay',
+      ],
+      accept_drink: [
+        'pyramide-french-drinking.rules.gameplay',
+      ],
+      call_bluff: [
+        'pyramide-french-drinking.rules.gameplay',
+      ],
+      acknowledge_end: [
+        'pyramide-french-drinking.rules.gameplay',
+      ],
+    },
   },
 }

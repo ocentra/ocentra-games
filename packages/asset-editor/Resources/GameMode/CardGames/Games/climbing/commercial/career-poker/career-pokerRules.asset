@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Big Two. Type: Climbing. Rules: 2-A-K...3 rank. Spades > Hearts > Clubs > Diamonds. Singles, Pairs, Triples, 5-card Poker hands. Goal: Empty hand.',
-    Player: 'You have the 2 of Spades—the highest single in the game. An opponent just played an Ace. Regain control of the lead with your 2, then dump that troublesome pair of 4s!',
+    LLM: 'Deal thirteen cards to each player. The leader plays a single card or a matching set, optionally completed with wild cards. Later players may pass or play the same number of cards at a higher rank. When everyone passes, the last successful raiser clears the table and leads the next combination. Play continues until players empty their hands and receive ranks.',
+    Player: 'Deal thirteen cards to each player. The leader plays a single card or a matching set, optionally completed with wild cards. Later players may pass or play the same number of cards at a higher rank. When everyone passes, the last successful raiser clears the table and leads the next combination. Play continues until players empty their hands and receive ranks.',
     objective: 'Empty your hand before the other players and gain the highest table rank for the next round.',
     gameplay: 'Deal thirteen cards to each player. The leader plays a single card or a matching set, optionally completed with wild cards. Later players may pass or play the same number of cards at a higher rank. When everyone passes, the last successful raiser clears the table and leads the next combination. Play continues until players empty their hands and receive ranks.',
     keyRules: [
@@ -52,10 +52,159 @@
       go_out: 'A player wins the round automatically upon playing their final combination from hand.',
     },
     exampleHands: [
-      'Opening deal: 4-8 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in dealing; system may use deal_13_each before climbing.',
-      'Scoring check: Losers receive penalty points based on remaining cards (1x, 2x, or 3x multipliers). Expected outcome: 1000.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Empty your hand before the other players and gain the highest table rank for the next round.',
+      'Turn-flow example: Deal thirteen cards to each player. The leader plays a single card or a matching set, optionally completed with wild cards. Later players may pass or play the same number of cards at a higher rank. When everyone passes, the last successful raiser clears the table and leads the next combination. Play continues until players empty their hands and receive ranks.',
+      'Scoring example: Losers receive penalty points based on remaining cards (1x, 2x, or 3x multipliers). First player to empty their hand wins the round..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'career-poker.rules.objective',
+        title: 'Objective',
+        text: 'Empty your hand before the other players and gain the highest table rank for the next round.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'career-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Deal thirteen cards to each player. The leader plays a single card or a matching set, optionally completed with wild cards. Later players may pass or play the same number of cards at a higher rank. When everyone passes, the last successful raiser clears the table and leads the next combination. Play continues until players empty their hands and receive ranks.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'career-poker.setup.players',
+        title: 'Players',
+        text: '4-8 players use the table arrangement described for Career Poker.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'career-poker.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated deck with 8 suits of 13 cards plus four wild cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'career-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated deck with 8 suits of 13 cards plus four wild cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'career-poker.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated deck with 8 suits of 13 cards plus four wild cards and deal or lay out cards according to the documented Career Poker rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'career-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to empty their hand wins the round.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'career-poker.score.description',
+        title: 'Scoring',
+        text: 'Losers receive penalty points based on remaining cards (1x, 2x, or 3x multipliers).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'career-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Players must match the size of the previous combination when raising.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'career-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Wild cards can complete sets and are highest when played alone.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'career-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'End-of-round order assigns table status, creating advantages and disadvantages in the next deal.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'career-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'career-poker.rules.objective',
+          'career-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'career-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'career-poker.setup.players',
+          'career-poker.setup.deck',
+          'career-poker.setup.equipment',
+          'career-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'career-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'career-poker.rules.key.1',
+          'career-poker.rules.key.2',
+          'career-poker.rules.key.3',
+        ],
+      },
+      {
+        id: 'career-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'career-poker.score.description',
+          'career-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'career-poker.setup.dealing',
+        'career-poker.rules.objective',
+      ],
+      play_card: [
+        'career-poker.rules.gameplay',
+      ],
+      pass: [
+        'career-poker.rules.gameplay',
+      ],
+      deal_13_each: [
+        'career-poker.rules.gameplay',
+      ],
+      play_combination: [
+        'career-poker.rules.gameplay',
+      ],
+      calculate_penalties: [
+        'career-poker.rules.gameplay',
+      ],
+    },
   },
 }

@@ -11,12 +11,38 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Players score points by capturing cards and completing sweeps (Hurrikans). First to 16 wins.',
+      winCondition: 'First player to 16 points wins match.',
+      targetScore: 16,
+      scoringDirection: 'high_wins',
+      cardValues: {
         'Most Cards': '1 point',
         'Most Hearts': '1 point',
         'Seven of Hearts': '1 point',
         'Hurrikan (sweep)': '1 point each',
       },
+      sourceCardValues: {
+        raw: {
+          'Most Cards': '1 point',
+          'Most Hearts': '1 point',
+          'Seven of Hearts': '1 point',
+          'Hurrikan (sweep)': '1 point each',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,

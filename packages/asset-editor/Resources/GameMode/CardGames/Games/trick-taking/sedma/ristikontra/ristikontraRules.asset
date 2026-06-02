@@ -52,10 +52,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: 61+ = 1 game point. 120 = 2. Tie = abeyance. Expected outcome: 7.',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Take tricks containing point cards (A, 10, K, Q, J). Score at least 61 card points (more than half of 120) to win 1 game point; take all 120 to score 2 game points. First team to the target (usually 7) wins the match.',
+      "Turn-flow example: 1. Trick won by last card of same rank as led. 2. Draw from stock after each trick. 3. May play top stock 'in the dark'. 4. Cannot lead same rank four tricks in a row. 5. 60-60 = abeyance.",
+      'Scoring example: 61+ = 1 game point. 120 = 2. Tie = abeyance. First to 7 game points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'ristikontra.rules.objective',
+        title: 'Objective',
+        text: 'Take tricks containing point cards (A, 10, K, Q, J). Score at least 61 card points (more than half of 120) to win 1 game point; take all 120 to score 2 game points. First team to the target (usually 7) wins the match.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'ristikontra.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Trick won by last card of same rank as led. 2. Draw from stock after each trick. 3. May play top stock 'in the dark'. 4. Cannot lead same rank four tricks in a row. 5. 60-60 = abeyance.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'ristikontra.setup.players',
+        title: 'Players',
+        text: '4 in partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'ristikontra.setup.deck',
+        title: 'Deck',
+        text: '52 cards. No ranking; suits irrelevant.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'ristikontra.setup.equipment',
+        title: 'Equipment',
+        text: 'Deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'ristikontra.setup.dealing',
+        title: 'Deal',
+        text: '6 each; rest stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'ristikontra.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 7 game points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'ristikontra.score.description',
+        title: 'Scoring',
+        text: '61+ = 1 game point. 120 = 2. Tie = abeyance.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'ristikontra.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Last same-rank wins. Suits irrelevant.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'ristikontra.rules.key.2',
+        title: 'Key rule 2',
+        text: 'A=11, 10=10, K=4, Q=3, J=2.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'ristikontra.rules.key.3',
+        title: 'Key rule 3',
+        text: '61+ = 1 pt; 120 = 2; target 7.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'ristikontra.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'ristikontra.rules.objective',
+          'ristikontra.rules.gameplay',
+        ],
+      },
+      {
+        id: 'ristikontra.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'ristikontra.setup.players',
+          'ristikontra.setup.deck',
+          'ristikontra.setup.equipment',
+          'ristikontra.setup.dealing',
+        ],
+      },
+      {
+        id: 'ristikontra.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'ristikontra.rules.key.1',
+          'ristikontra.rules.key.2',
+          'ristikontra.rules.key.3',
+        ],
+      },
+      {
+        id: 'ristikontra.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'ristikontra.score.description',
+          'ristikontra.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'ristikontra.setup.dealing',
+        'ristikontra.rules.objective',
+      ],
+      deal: [
+        'ristikontra.rules.gameplay',
+      ],
+      play_card: [
+        'ristikontra.rules.gameplay',
+      ],
+      lead: [
+        'ristikontra.rules.gameplay',
+      ],
+      play_dark: [
+        'ristikontra.rules.gameplay',
+      ],
+    },
   },
 }

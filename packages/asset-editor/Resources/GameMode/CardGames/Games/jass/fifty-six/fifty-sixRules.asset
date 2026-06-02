@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Fifty-Six (Ambathiyaaru). Logic: See rules.objective and rules.gameplay.',
-    Player: "Fifty-Six (56), known locally as 'Ambathiyaaru', is a complex and highly strategic trick-taking card game popular in the Kerala region of India. An expansion of the simpler game '28', it is played with a double deck of cards and a specialized point-count system from the Jass family. The game is known for its intense bidding phase and the use of 'tables' (physical cards from the unused portion of the deck) to keep track of match scores. It is a partnership game that demands precise card counting and team-wide tactical coordination.",
+    LLM: "1. Lead: The player to the dealer's right leads the first card.\n2. Must Follow Suit: Players must follow the suit led. If they cannot, they may play any card.\n3. Trumps: Trumps are only active once the hidden trump card is revealed. A player who cannot follow suit may ask to 'Reveal Trumps'.",
+    Player: "1. Lead: The player to the dealer's right leads the first card.\n2. Must Follow Suit: Players must follow the suit led. If they cannot, they may play any card.\n3. Trumps: Trumps are only active once the hidden trump card is revealed. A player who cannot follow suit may ask to 'Reveal Trumps'.",
     objective: 'Win tricks to capture card points. The bidding team must reach their declared point total to win the round.',
     gameplay: "1. Lead: The player to the dealer's right leads the first card.\n2. Must Follow Suit: Players must follow the suit led. If they cannot, they may play any card.\n3. Trumps: Trumps are only active once the hidden trump card is revealed. A player who cannot follow suit may ask to 'Reveal Trumps'.",
     keyRules: [
@@ -52,10 +52,162 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 4-8 player(s), 12 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_56_batches before bidding.',
-      'Scoring check: Win tricks to capture card points. The bidding team must reach their declared point total to win the round. Expected outcome: Win tricks to capture card points. The bidding team must reach their declared point total to win the round..',
+      'Setup example: 12 card(s) per player.',
+      'Rule example: Win tricks to capture card points. The bidding team must reach their declared point total to win the round.',
+      "Turn-flow example: 1. Lead: The player to the dealer's right leads the first card.\n2. Must Follow Suit: Players must follow the suit led. If they cannot, they may play any card.\n3. Trumps: Trumps are only active once the hidden trump card is revealed. A player who cannot follow suit may ask to 'Reveal Trumps'.",
+      'Scoring example: Win tricks to capture card points. The bidding team must reach their declared point total to win the round. Win tricks to capture card points. The bidding team must reach their declared point total to win the round..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'fifty-six.rules.objective',
+        title: 'Objective',
+        text: 'Win tricks to capture card points. The bidding team must reach their declared point total to win the round.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'fifty-six.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Lead: The player to the dealer's right leads the first card.\n2. Must Follow Suit: Players must follow the suit led. If they cannot, they may play any card.\n3. Trumps: Trumps are only active once the hidden trump card is revealed. A player who cannot follow suit may ask to 'Reveal Trumps'.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'fifty-six.setup.players',
+        title: 'Players',
+        text: '4, 6, or 8 players in two fixed teams. Partners sit alternately.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'fifty-six.setup.deck',
+        title: 'Deck',
+        text: 'Two standard decks stripped of all cards below 9. Total 48 cards (A, K, Q, J, 10, 9 of each suit, twice). For 8 players, Sevens and Eights are added (Total 64).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'fifty-six.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard decks stripped of all cards below 9. Total 48 cards (A, K, Q, J, 10, 9 of each suit, twice). For 8 players, Sevens and Eights are added (Total 64).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'fifty-six.setup.dealing',
+        title: 'Deal',
+        text: 'Cards are dealt in three rounds: 8 cards per player initially. Bidding occurs during the dealing process.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'fifty-six.score.win-condition',
+        title: 'Win condition',
+        text: 'Win tricks to capture card points. The bidding team must reach their declared point total to win the round.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'fifty-six.score.description',
+        title: 'Scoring',
+        text: 'Win tricks to capture card points. The bidding team must reach their declared point total to win the round.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'fifty-six.rules.key.1',
+        title: 'Key rule 1',
+        text: "No Trump revealed: Until revealed, cards of the 'secret' trump suit have no special power.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'fifty-six.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Thani: A bid where a player promises to win every single trick alone.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'fifty-six.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Tables: Match scoring is tracked by transferring low-value cards (2, 3, 4...) between teams.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'fifty-six.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'fifty-six.rules.objective',
+          'fifty-six.rules.gameplay',
+        ],
+      },
+      {
+        id: 'fifty-six.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'fifty-six.setup.players',
+          'fifty-six.setup.deck',
+          'fifty-six.setup.equipment',
+          'fifty-six.setup.dealing',
+        ],
+      },
+      {
+        id: 'fifty-six.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'fifty-six.rules.key.1',
+          'fifty-six.rules.key.2',
+          'fifty-six.rules.key.3',
+        ],
+      },
+      {
+        id: 'fifty-six.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'fifty-six.score.description',
+          'fifty-six.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'fifty-six.setup.dealing',
+        'fifty-six.rules.objective',
+      ],
+      play_card: [
+        'fifty-six.rules.gameplay',
+      ],
+      pass: [
+        'fifty-six.rules.gameplay',
+      ],
+      bid: [
+        'fifty-six.rules.gameplay',
+      ],
+      deal_56_batches: [
+        'fifty-six.rules.gameplay',
+      ],
+      double_bid: [
+        'fifty-six.rules.gameplay',
+      ],
+      redouble_bid: [
+        'fifty-six.rules.gameplay',
+      ],
+    },
   },
 }

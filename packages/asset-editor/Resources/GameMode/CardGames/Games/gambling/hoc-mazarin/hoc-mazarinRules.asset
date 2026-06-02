@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Basset. Logic: Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
-    Player: 'Basset is a historical Italian gambling card game in which players bet against a banker on ranks that may appear from the pack.',
+    LLM: 'Players contribute stakes, receive hands, and compete first for combination stakes such as point, sequence, and tricon. The second stage plays as a Hoc stops game in which players try to shed cards in the required order.',
+    Player: 'Players contribute stakes, receive hands, and compete first for combination stakes such as point, sequence, and tricon. The second stage plays as a Hoc stops game in which players try to shed cards in the required order.',
     objective: 'Win the stakes attached to point, sequence, tricon, and the Hoc-style shedding phase.',
     gameplay: 'Players contribute stakes, receive hands, and compete first for combination stakes such as point, sequence, and tricon. The second stage plays as a Hoc stops game in which players try to shed cards in the required order.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-3 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Bets are paid or lost against the bank according to the exposed-card result. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the stakes attached to point, sequence, tricon, and the Hoc-style shedding phase.',
+      'Turn-flow example: Players contribute stakes, receive hands, and compete first for combination stakes such as point, sequence, and tricon. The second stage plays as a Hoc stops game in which players try to shed cards in the required order.',
+      'Scoring example: Bets are paid or lost against the bank according to the exposed-card result. Win stakes by backing ranks that appear in the favourable positions of the banked deal..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hoc-mazarin.rules.objective',
+        title: 'Objective',
+        text: 'Win the stakes attached to point, sequence, tricon, and the Hoc-style shedding phase.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hoc-mazarin.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players contribute stakes, receive hands, and compete first for combination stakes such as point, sequence, and tricon. The second stage plays as a Hoc stops game in which players try to shed cards in the required order.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hoc-mazarin.setup.players',
+        title: 'Players',
+        text: '2-3 players use the table arrangement described for Hoc Mazarin.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hoc-mazarin.setup.deck',
+        title: 'Deck',
+        text: 'Standard French-suited pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hoc-mazarin.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard French-suited pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hoc-mazarin.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Standard French-suited pack and deal or lay out cards according to the documented Hoc Mazarin rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hoc-mazarin.score.win-condition',
+        title: 'Win condition',
+        text: 'Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hoc-mazarin.score.description',
+        title: 'Scoring',
+        text: 'Bets are paid or lost against the bank according to the exposed-card result.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hoc-mazarin.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Hoc Mazarin has multiple stakes rather than a single pot.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hoc-mazarin.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The first stage rewards card combinations.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hoc-mazarin.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The second stage is a stops-style race to shed the hand.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hoc-mazarin.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hoc-mazarin.rules.objective',
+          'hoc-mazarin.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hoc-mazarin.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hoc-mazarin.setup.players',
+          'hoc-mazarin.setup.deck',
+          'hoc-mazarin.setup.equipment',
+          'hoc-mazarin.setup.dealing',
+        ],
+      },
+      {
+        id: 'hoc-mazarin.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hoc-mazarin.rules.key.1',
+          'hoc-mazarin.rules.key.2',
+          'hoc-mazarin.rules.key.3',
+        ],
+      },
+      {
+        id: 'hoc-mazarin.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hoc-mazarin.score.description',
+          'hoc-mazarin.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hoc-mazarin.setup.dealing',
+        'hoc-mazarin.rules.objective',
+      ],
+      play_card: [
+        'hoc-mazarin.rules.gameplay',
+      ],
+    },
   },
 }

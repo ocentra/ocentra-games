@@ -11,7 +11,11 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Points are tallied after all 26 tricks. First to reach 80 points wins the match.',
+      winCondition: 'First player to reach 80 points.',
+      targetScore: 80,
+      scoringDirection: 'high_wins',
+      cardValues: {
         Nine: '9 points',
         'Five (Don)': '5 points',
         Ace: '4 points',
@@ -19,6 +23,31 @@
         Queen: '2 points',
         Jack: '1 point',
       },
+      sourceCardValues: {
+        raw: {
+          Nine: '9 points',
+          'Five (Don)': '5 points',
+          Ace: '4 points',
+          King: '3 points',
+          Queen: '2 points',
+          Jack: '1 point',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        nullReasons: 'Not applicable.',
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: 'None; only one player wins the match.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,

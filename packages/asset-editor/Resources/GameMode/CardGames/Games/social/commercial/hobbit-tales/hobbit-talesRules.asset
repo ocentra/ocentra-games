@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Hobbit Tales. Logic: Tell the most successful tale by playing story cards while surviving opponents hazard interruptions.',
-    Player: 'Hobbit Tales is a commercial storytelling card game set in Middle-earth where players build tales and interrupt each other with hazards.',
+    LLM: 'Players play story cards to continue a tale, others interrupt with hazard cards, and die or card resolution determines whether the story succeeds and scores.',
+    Player: 'Players play story cards to continue a tale, others interrupt with hazard cards, and die or card resolution determines whether the story succeeds and scores.',
     objective: 'Tell the most successful tale by playing story cards while surviving opponents hazard interruptions.',
     gameplay: 'Players play story cards to continue a tale, others interrupt with hazard cards, and die or card resolution determines whether the story succeeds and scores.',
     keyRules: [
@@ -54,10 +54,168 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: Published endgame scoring or victory conditions determine the winner. Expected outcome: Tell the most successful tale by playing story cards while surviving opponents hazard interruptions..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Tell the most successful tale by playing story cards while surviving opponents hazard interruptions.',
+      'Turn-flow example: Players play story cards to continue a tale, others interrupt with hazard cards, and die or card resolution determines whether the story succeeds and scores.',
+      'Scoring example: Published endgame scoring or victory conditions determine the winner. Tell the most successful tale by playing story cards while surviving opponents hazard interruptions..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hobbit-tales.rules.objective',
+        title: 'Objective',
+        text: 'Tell the most successful tale by playing story cards while surviving opponents hazard interruptions.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hobbit-tales.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play story cards to continue a tale, others interrupt with hazard cards, and die or card resolution determines whether the story succeeds and scores.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hobbit-tales.setup.players',
+        title: 'Players',
+        text: '2-5 players use the table arrangement described for Hobbit Tales.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hobbit-tales.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Hobbit Tales story and hazard cards plus die',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hobbit-tales.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Hobbit Tales story and hazard cards plus die, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hobbit-tales.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare the dedicated Hobbit Tales deck and any shared scoring, resource, or tableau area described by the rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hobbit-tales.score.win-condition',
+        title: 'Win condition',
+        text: 'Tell the most successful tale by playing story cards while surviving opponents hazard interruptions.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hobbit-tales.score.description',
+        title: 'Scoring',
+        text: 'Published endgame scoring or victory conditions determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hobbit-tales.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dedicated licensed story deck.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hobbit-tales.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players build tales from cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hobbit-tales.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Opponents play hazards.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'hobbit-tales.rules.key.4',
+        title: 'Key rule 4',
+        text: 'A special die supports resolution.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'hobbit-tales.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Story success scores.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hobbit-tales.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hobbit-tales.rules.objective',
+          'hobbit-tales.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hobbit-tales.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hobbit-tales.setup.players',
+          'hobbit-tales.setup.deck',
+          'hobbit-tales.setup.equipment',
+          'hobbit-tales.setup.dealing',
+        ],
+      },
+      {
+        id: 'hobbit-tales.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hobbit-tales.rules.key.1',
+          'hobbit-tales.rules.key.2',
+          'hobbit-tales.rules.key.3',
+          'hobbit-tales.rules.key.4',
+          'hobbit-tales.rules.key.5',
+        ],
+      },
+      {
+        id: 'hobbit-tales.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hobbit-tales.score.description',
+          'hobbit-tales.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hobbit-tales.setup.dealing',
+        'hobbit-tales.rules.objective',
+      ],
+      play_card: [
+        'hobbit-tales.rules.gameplay',
+      ],
+      flip_top_card: [
+        'hobbit-tales.rules.gameplay',
+      ],
+    },
   },
 }

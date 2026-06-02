@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Four Corners. Logic: Build all cards from the two-deck corner tableau onto the foundations.',
-    Player: 'Four Corners is a two-deck patience also known as Les Quatre Coins, Cornerstones, or Corner Patience.',
+    LLM: 'Move exposed cards through the tableau, reserve, stock, waste, or foundations according to the layout rules until all cards are cleared or the position blocks.',
+    Player: 'Move exposed cards through the tableau, reserve, stock, waste, or foundations according to the layout rules until all cards are cleared or the position blocks.',
     objective: 'Build all cards from the two-deck corner tableau onto the foundations.',
     gameplay: 'Move exposed cards through the tableau, reserve, stock, waste, or foundations according to the layout rules until all cards are cleared or the position blocks.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: The game is won when the patience objective is completed. Expected outcome: Build all cards from the two-deck corner tableau onto the foundations..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Build all cards from the two-deck corner tableau onto the foundations.',
+      'Turn-flow example: Move exposed cards through the tableau, reserve, stock, waste, or foundations according to the layout rules until all cards are cleared or the position blocks.',
+      'Scoring example: The game is won when the patience objective is completed. Build all cards from the two-deck corner tableau onto the foundations..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'four-corners.rules.objective',
+        title: 'Objective',
+        text: 'Build all cards from the two-deck corner tableau onto the foundations.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'four-corners.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Move exposed cards through the tableau, reserve, stock, waste, or foundations according to the layout rules until all cards are cleared or the position blocks.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'four-corners.setup.players',
+        title: 'Players',
+        text: '1 players use the table arrangement described for Four Corners.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'four-corners.setup.deck',
+        title: 'Deck',
+        text: 'Two standard 52-card decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'four-corners.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard 52-card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'four-corners.setup.dealing',
+        title: 'Deal',
+        text: 'Lay out Four Corners according to its patience tableau, reserve, stock, or foundation structure before beginning play.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'four-corners.score.win-condition',
+        title: 'Win condition',
+        text: 'Build all cards from the two-deck corner tableau onto the foundations.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'four-corners.score.description',
+        title: 'Scoring',
+        text: 'The game is won when the patience objective is completed.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'four-corners.rules.key.1',
+        title: 'Key rule 1',
+        text: 'One-player patience game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'four-corners.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Uses a fixed tableau or layout.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'four-corners.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Foundations or discard goals define progress.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'four-corners.rules.key.4',
+        title: 'Key rule 4',
+        text: 'The main puzzle is preserving access to blocked cards.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'four-corners.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'four-corners.rules.objective',
+          'four-corners.rules.gameplay',
+        ],
+      },
+      {
+        id: 'four-corners.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'four-corners.setup.players',
+          'four-corners.setup.deck',
+          'four-corners.setup.equipment',
+          'four-corners.setup.dealing',
+        ],
+      },
+      {
+        id: 'four-corners.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'four-corners.rules.key.1',
+          'four-corners.rules.key.2',
+          'four-corners.rules.key.3',
+          'four-corners.rules.key.4',
+        ],
+      },
+      {
+        id: 'four-corners.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'four-corners.score.description',
+          'four-corners.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'four-corners.setup.dealing',
+        'four-corners.rules.objective',
+      ],
+      deal: [
+        'four-corners.rules.gameplay',
+      ],
+      play_card: [
+        'four-corners.rules.gameplay',
+      ],
+      draw: [
+        'four-corners.rules.gameplay',
+      ],
+    },
   },
 }

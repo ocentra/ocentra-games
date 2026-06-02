@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Chratze. Logic: Win tricks and pot shares while avoiding costly failed participation.',
-    Player: 'Chratze is a Swiss Rams-group trick-taking game for two to seven players using Swiss Jass cards and pot play.',
+    LLM: 'Players may enter or drop, exchange cards, then play tricks anticlockwise with a trump suit and pot-based scoring.',
+    Player: 'Players may enter or drop, exchange cards, then play tricks anticlockwise with a trump suit and pot-based scoring.',
     objective: 'Win tricks and pot shares while avoiding costly failed participation.',
     gameplay: 'Players may enter or drop, exchange cards, then play tricks anticlockwise with a trump suit and pot-based scoring.',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-7 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: The pot is won or lost through trick results and participation risk. Expected outcome: Win tricks and pot shares while avoiding costly failed participation..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win tricks and pot shares while avoiding costly failed participation.',
+      'Turn-flow example: Players may enter or drop, exchange cards, then play tricks anticlockwise with a trump suit and pot-based scoring.',
+      'Scoring example: The pot is won or lost through trick results and participation risk. Win tricks and pot shares while avoiding costly failed participation..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'chratze.rules.objective',
+        title: 'Objective',
+        text: 'Win tricks and pot shares while avoiding costly failed participation.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'chratze.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players may enter or drop, exchange cards, then play tricks anticlockwise with a trump suit and pot-based scoring.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'chratze.setup.players',
+        title: 'Players',
+        text: '2-7, best with 4-5 players use the table arrangement described for Chratze.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'chratze.setup.deck',
+        title: 'Deck',
+        text: '36-card Swiss Jass deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'chratze.setup.equipment',
+        title: 'Equipment',
+        text: '36-card Swiss Jass deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'chratze.setup.dealing',
+        title: 'Deal',
+        text: 'Deal four-card hands from a 36-card Swiss deck, establish the pot, and allow exchange or participation choices under local rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'chratze.score.win-condition',
+        title: 'Win condition',
+        text: 'Win tricks and pot shares while avoiding costly failed participation.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'chratze.score.description',
+        title: 'Scoring',
+        text: 'The pot is won or lost through trick results and participation risk.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'chratze.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two to seven players.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'chratze.rules.key.2',
+        title: 'Key rule 2',
+        text: '36-card Swiss deck.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'chratze.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Four-card hands.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'chratze.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Pot and exchange are central.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'chratze.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Players may face risk for entering.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'chratze.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'chratze.rules.objective',
+          'chratze.rules.gameplay',
+        ],
+      },
+      {
+        id: 'chratze.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'chratze.setup.players',
+          'chratze.setup.deck',
+          'chratze.setup.equipment',
+          'chratze.setup.dealing',
+        ],
+      },
+      {
+        id: 'chratze.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'chratze.rules.key.1',
+          'chratze.rules.key.2',
+          'chratze.rules.key.3',
+          'chratze.rules.key.4',
+          'chratze.rules.key.5',
+        ],
+      },
+      {
+        id: 'chratze.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'chratze.score.description',
+          'chratze.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'chratze.setup.dealing',
+        'chratze.rules.objective',
+      ],
+      play_card: [
+        'chratze.rules.gameplay',
+      ],
+      discard: [
+        'chratze.rules.gameplay',
+      ],
+      pass: [
+        'chratze.rules.gameplay',
+      ],
+      bid: [
+        'chratze.rules.gameplay',
+      ],
+    },
   },
 }

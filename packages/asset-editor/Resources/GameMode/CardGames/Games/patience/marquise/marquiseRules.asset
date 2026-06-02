@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Marquise (Solitaire). Logic: See rules.objective and rules.gameplay.',
-    Player: 'Marquise (often associated with the Marquise de Pompadour) is an elegant, historical French solitaire game played with a 32-card piquet deck. It is a game of patience and careful sequence building, reflecting the aristocratic pastimes of the 18th-century French court. Unlike modern Klondike, it is a tighter, more deterministic puzzle due to the smaller deck size and specific building constraints.',
+    LLM: '1. **Ace Start**: As soon as an Ace appears in the tableau or from the stock, move it to the foundation area.\n2. **Building**: You can move a card from the Tableau to the Foundations if it is the next card in sequence and same suit (e.g., 8 on 7, 9 on 8... Jack on 10).\n3. **Reserve**: If a space is cleared in the Tableau, it is immediately filled by the top card of the Stock.\n4. **The Draw**: When no more moves are possible in the Tableau, deal cards from the stock one by one to see if they can be played to the foundations or placed in an empty tableau spot.',
+    Player: '1. **Ace Start**: As soon as an Ace appears in the tableau or from the stock, move it to the foundation area.\n2. **Building**: You can move a card from the Tableau to the Foundations if it is the next card in sequence and same suit (e.g., 8 on 7, 9 on 8... Jack on 10).\n3. **Reserve**: If a space is cleared in the Tableau, it is immediately filled by the top card of the Stock.\n4. **The Draw**: When no more moves are possible in the Tableau, deal cards from the stock one by one to see if they can be played to the foundations or placed in an empty tableau spot.',
     objective: 'Build four foundation piles by suit, from Ace up to King.',
     gameplay: '1. **Ace Start**: As soon as an Ace appears in the tableau or from the stock, move it to the foundation area.\n2. **Building**: You can move a card from the Tableau to the Foundations if it is the next card in sequence and same suit (e.g., 8 on 7, 9 on 8... Jack on 10).\n3. **Reserve**: If a space is cleared in the Tableau, it is immediately filled by the top card of the Stock.\n4. **The Draw**: When no more moves are possible in the Tableau, deal cards from the stock one by one to see if they can be played to the foundations or placed in an empty tableau spot.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: Build four foundation piles by suit, from Ace up to King. Expected outcome: Build four foundation piles by suit, from Ace up to King..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Build four foundation piles by suit, from Ace up to King.',
+      'Turn-flow example: 1. **Ace Start**: As soon as an Ace appears in the tableau or from the stock, move it to the foundation area.\n2. **Building**: You can move a card from the Tableau to the Foundations if it is the next card in sequence and same suit (e.g., 8 on 7, 9 on 8... Jack on 10).\n3. **Reserve**: If a space is cleared in the Tableau, it is immediately filled by the top card of the Stock.\n4. **The Draw**: When no more moves are possible in the Tableau, deal cards from the stock one by one to see if they can be played to the foundations or placed in an empty tableau spot.',
+      'Scoring example: Build four foundation piles by suit, from Ace up to King. Build four foundation piles by suit, from Ace up to King..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'marquise.rules.objective',
+        title: 'Objective',
+        text: 'Build four foundation piles by suit, from Ace up to King.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'marquise.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Ace Start**: As soon as an Ace appears in the tableau or from the stock, move it to the foundation area.\n2. **Building**: You can move a card from the Tableau to the Foundations if it is the next card in sequence and same suit (e.g., 8 on 7, 9 on 8... Jack on 10).\n3. **Reserve**: If a space is cleared in the Tableau, it is immediately filled by the top card of the Stock.\n4. **The Draw**: When no more moves are possible in the Tableau, deal cards from the stock one by one to see if they can be played to the foundations or placed in an empty tableau spot.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'marquise.setup.players',
+        title: 'Players',
+        text: 'One player only. Marquise is a solitaire (patience) game for a single player; the player works against the layout, building four foundation piles by suit and managing the tableau and stock.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'marquise.setup.deck',
+        title: 'Deck',
+        text: '32 cards (Hearts, Diamonds, Clubs, Spades).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'marquise.setup.equipment',
+        title: 'Equipment',
+        text: '32 cards (Hearts, Diamonds, Clubs, Spades).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'marquise.setup.dealing',
+        title: 'Deal',
+        text: 'Deal according to solitaire layout; reserve and tableau as per rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'marquise.score.win-condition',
+        title: 'Win condition',
+        text: 'Build four foundation piles by suit, from Ace up to King.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'marquise.score.description',
+        title: 'Scoring',
+        text: 'Build four foundation piles by suit, from Ace up to King.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'marquise.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Aces move to foundation as soon as they appear in tableau or from stock.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'marquise.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Build foundations in same suit ascending (7 on Ace, 8 on 7, through King).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'marquise.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Empty tableau slot is filled immediately from the top of the stock.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'marquise.rules.key.4',
+        title: 'Key rule 4',
+        text: 'When no moves are possible, turn cards from the stock one at a time; each may be played to foundation or to an empty tableau slot.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'marquise.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'marquise.rules.objective',
+          'marquise.rules.gameplay',
+        ],
+      },
+      {
+        id: 'marquise.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'marquise.setup.players',
+          'marquise.setup.deck',
+          'marquise.setup.equipment',
+          'marquise.setup.dealing',
+        ],
+      },
+      {
+        id: 'marquise.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'marquise.rules.key.1',
+          'marquise.rules.key.2',
+          'marquise.rules.key.3',
+          'marquise.rules.key.4',
+        ],
+      },
+      {
+        id: 'marquise.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'marquise.score.description',
+          'marquise.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'marquise.setup.dealing',
+        'marquise.rules.objective',
+      ],
+      deal: [
+        'marquise.rules.gameplay',
+      ],
+      play_card: [
+        'marquise.rules.gameplay',
+      ],
+      turn_stock: [
+        'marquise.rules.gameplay',
+      ],
+    },
   },
 }

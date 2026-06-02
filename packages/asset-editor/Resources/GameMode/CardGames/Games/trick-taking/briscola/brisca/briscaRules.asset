@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Brisca. Spanish 40-card. Ranking: A(11)>3(10)>K(4)>Q(3)>J(2)>others(0). No follow-suit. Trump=Brisca. Target: 61 points.',
-    Player: 'Trump is Coins. You hold Ace of Coins (11pts), 5 of Swords (0pts), 7 of Cups (0pts). The Ace of Coins is certain to win 1 trick. Use low cards to probeâ€”save the Ace for when the opponent leads their high Cups or Swords cards.',
+    LLM: 'Lead any card (no follow-suit obligation). Opponent plays any card. Highest Brisca (trump) wins. If no trump played, highest of led suit wins. Winner draws first from stock; loser draws second. Winner leads next trick.',
+    Player: 'Lead any card (no follow-suit obligation). Opponent plays any card. Highest Brisca (trump) wins. If no trump played, highest of led suit wins. Winner draws first from stock; loser draws second. Winner leads next trick.',
     objective: 'To win, a player or team must earn more card points than the opponent(s). The deck has 120 points in total; the first side to exceed 60 points wins the deal. If both sides tie at 60, the side with more cards wins.',
     gameplay: 'Lead any card (no follow-suit obligation). Opponent plays any card. Highest Brisca (trump) wins. If no trump played, highest of led suit wins. Winner draws first from stock; loser draws second. Winner leads next trick.',
     keyRules: [
@@ -53,10 +53,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_3_turn_trump before play_loop.',
-      'Scoring check: Card points from taken tricks. Expected outcome: 61.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: To win, a player or team must earn more card points than the opponent(s). The deck has 120 points in total; the first side to exceed 60 points wins the deal. If both sides tie at 60, the side with more cards wins.',
+      'Turn-flow example: Lead any card (no follow-suit obligation). Opponent plays any card. Highest Brisca (trump) wins. If no trump played, highest of led suit wins. Winner draws first from stock; loser draws second. Winner leads next trick.',
+      'Scoring example: Card points from taken tricks. First to 61 card points wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'brisca.rules.objective',
+        title: 'Objective',
+        text: 'To win, a player or team must earn more card points than the opponent(s). The deck has 120 points in total; the first side to exceed 60 points wins the deal. If both sides tie at 60, the side with more cards wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'brisca.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Lead any card (no follow-suit obligation). Opponent plays any card. Highest Brisca (trump) wins. If no trump played, highest of led suit wins. Winner draws first from stock; loser draws second. Winner leads next trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'brisca.setup.players',
+        title: 'Players',
+        text: '2 or 4 (4 in 2v2 partnerships).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'brisca.setup.deck',
+        title: 'Deck',
+        text: '40-card Spanish deck (baraja espaÃ±ola). OR: French 52-card deck stripped of 8s, 9s, 10s.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'brisca.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'brisca.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 3 cards each. Turn one card face-up beside stock to indicate trump (Brisca) suit.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'brisca.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 61 card points wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'brisca.score.description',
+        title: 'Scoring',
+        text: 'Card points from taken tricks.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'brisca.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No follow-suit obligationâ€”ever.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'brisca.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Trump beats all off-suit cards regardless of rank.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'brisca.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Last stock card taken is the trump indicator card.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'brisca.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Target: 61 of 120 total points.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'brisca.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'brisca.rules.objective',
+          'brisca.rules.gameplay',
+        ],
+      },
+      {
+        id: 'brisca.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'brisca.setup.players',
+          'brisca.setup.deck',
+          'brisca.setup.equipment',
+          'brisca.setup.dealing',
+        ],
+      },
+      {
+        id: 'brisca.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'brisca.rules.key.1',
+          'brisca.rules.key.2',
+          'brisca.rules.key.3',
+          'brisca.rules.key.4',
+        ],
+      },
+      {
+        id: 'brisca.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'brisca.score.description',
+          'brisca.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'brisca.setup.dealing',
+        'brisca.rules.objective',
+      ],
+      deal_3_turn_trump: [
+        'brisca.rules.gameplay',
+      ],
+      play_any_card: [
+        'brisca.rules.gameplay',
+      ],
+    },
   },
 }

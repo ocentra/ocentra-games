@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Longana. Cuban dominoes, double-nine set (55 tiles). 2-4 players. Deal 8 each (4 players) or 10 each (2-3). Highest double leads = spinner. Each player has own arm. Play on your arm only. If cannot play, open your armâ€”others can then play on it. Close arm by playing on it. Winner scores opponents' pips. First to 100 wins.",
-    Player: "Welcome to Longana! Build your personal 'arm' extending from the central spinner. If you can't play, you must OPEN your armâ€”then anyone can dump tiles on it! Close your arm by playing on it again. First to empty their hand wins the round and scores opponents' remaining pips. First to 100 wins!",
+    LLM: "1. **Starting**: The player with the highest double leads. This double is the 'Spinner'. 2. **Individual Arms**: Each player has an 'arm' extending from the spinner. You can normally only play on your own arm. 3. **Opening an Arm**: If you cannot play a tile, you must 'Open' your arm (often marked with a coin). 4. **Public Access**: Any player can play on an 'Open' arm. The owner of the arm 'Closes' it as soon as they are able to make a play on it again. 5. **Doubles**: Doubles are played sideways and do not branch (traditional Cuban style).",
+    Player: "1. **Starting**: The player with the highest double leads. This double is the 'Spinner'. 2. **Individual Arms**: Each player has an 'arm' extending from the spinner. You can normally only play on your own arm. 3. **Opening an Arm**: If you cannot play a tile, you must 'Open' your arm (often marked with a coin). 4. **Public Access**: Any player can play on an 'Open' arm. The owner of the arm 'Closes' it as soon as they are able to make a play on it again. 5. **Doubles**: Doubles are played sideways and do not branch (traditional Cuban style).",
     objective: 'Be the first to play all tiles (Domino!) or have the lowest pip-count when the game is blocked. 100 points wins.',
     gameplay: "1. **Starting**: The player with the highest double leads. This double is the 'Spinner'. 2. **Individual Arms**: Each player has an 'arm' extending from the spinner. You can normally only play on your own arm. 3. **Opening an Arm**: If you cannot play a tile, you must 'Open' your arm (often marked with a coin). 4. **Public Access**: Any player can play on an 'Open' arm. The owner of the arm 'Closes' it as soon as they are able to make a play on it again. 5. **Doubles**: Doubles are played sideways and do not branch (traditional Cuban style).",
     keyRules: [
@@ -56,10 +56,213 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 8 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before determine_lead.',
-      "Scoring check: Winner scores total pips remaining in opponents' hands. Expected outcome: 100.",
+      'Setup example: 8 card(s) per player.',
+      'Rule example: Be the first to play all tiles (Domino!) or have the lowest pip-count when the game is blocked. 100 points wins.',
+      "Turn-flow example: 1. **Starting**: The player with the highest double leads. This double is the 'Spinner'. 2. **Individual Arms**: Each player has an 'arm' extending from the spinner. You can normally only play on your own arm. 3. **Opening an Arm**: If you cannot play a tile, you must 'Open' your arm (often marked with a coin). 4. **Public Access**: Any player can play on an 'Open' arm. The owner of the arm 'Closes' it as soon as they are able to make a play on it again. 5. **Doubles**: Doubles are played sideways and do not branch (traditional Cuban style).",
+      "Scoring example: Winner scores total pips remaining in opponents' hands. First player to reach 100 points wins..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'longana.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to play all tiles (Domino!) or have the lowest pip-count when the game is blocked. 100 points wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'longana.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Starting**: The player with the highest double leads. This double is the 'Spinner'. 2. **Individual Arms**: Each player has an 'arm' extending from the spinner. You can normally only play on your own arm. 3. **Opening an Arm**: If you cannot play a tile, you must 'Open' your arm (often marked with a coin). 4. **Public Access**: Any player can play on an 'Open' arm. The owner of the arm 'Closes' it as soon as they are able to make a play on it again. 5. **Doubles**: Doubles are played sideways and do not branch (traditional Cuban style).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'longana.setup.players',
+        title: 'Players',
+        text: '4 players individually (can be played with 2 or 3).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'longana.setup.deck',
+        title: 'Deck',
+        text: '55 tiles (0-0 to 9-9).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'longana.setup.equipment',
+        title: 'Equipment',
+        text: 'Double-nine domino set and flat surface.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'longana.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 8 tiles (for 4 players) or 10 tiles (for 2-3 players). The rest form the boneyard.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'longana.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach 100 points wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'longana.score.description',
+        title: 'Scoring',
+        text: "Winner scores total pips remaining in opponents' hands.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'longana.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Highest double leads and becomes the Spinner.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'longana.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Each player has their own arm extending from the spinner.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'longana.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Can normally only play on your own arm.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'longana.rules.key.4',
+        title: 'Key rule 4',
+        text: "If cannot play, must 'Open' your armâ€”others can then play on it.",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'longana.rules.key.5',
+        title: 'Key rule 5',
+        text: "Owner 'Closes' arm when they play on it again.",
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'longana.rules.key.6',
+        title: 'Key rule 6',
+        text: "Winner scores total pips in opponents' hands.",
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'longana.rules.key.7',
+        title: 'Key rule 7',
+        text: 'First to 100 points wins.',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'longana.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'longana.rules.objective',
+          'longana.rules.gameplay',
+        ],
+      },
+      {
+        id: 'longana.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'longana.setup.players',
+          'longana.setup.deck',
+          'longana.setup.equipment',
+          'longana.setup.dealing',
+        ],
+      },
+      {
+        id: 'longana.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'longana.rules.key.1',
+          'longana.rules.key.2',
+          'longana.rules.key.3',
+          'longana.rules.key.4',
+          'longana.rules.key.5',
+          'longana.rules.key.6',
+          'longana.rules.key.7',
+        ],
+      },
+      {
+        id: 'longana.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'longana.score.description',
+          'longana.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'longana.setup.dealing',
+        'longana.rules.objective',
+      ],
+      deal: [
+        'longana.rules.gameplay',
+      ],
+      play_card: [
+        'longana.rules.gameplay',
+      ],
+      draw: [
+        'longana.rules.gameplay',
+      ],
+      pass: [
+        'longana.rules.gameplay',
+      ],
+      identify_highest_double: [
+        'longana.rules.gameplay',
+      ],
+      play_tile: [
+        'longana.rules.gameplay',
+      ],
+      open_arm: [
+        'longana.rules.gameplay',
+      ],
+      domino: [
+        'longana.rules.gameplay',
+      ],
+      blocked: [
+        'longana.rules.gameplay',
+      ],
+      continue: [
+        'longana.rules.gameplay',
+      ],
+      calculate: [
+        'longana.rules.gameplay',
+      ],
+    },
   },
 }

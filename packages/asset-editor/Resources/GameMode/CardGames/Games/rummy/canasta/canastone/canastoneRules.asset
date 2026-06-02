@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Canastone. Objective: Score points by forming melds and canastas.',
-    Player: 'Canastone: play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: "Red 3s: placed face up before play, replaced with new cards. Opening (team's first meld): Can only be done at START of turn before drawing. Requirements: 50+ pts if team score <3000; 90+ pts if 3000-5000; 120+ pts if >5000. Opening player continues with normal turn. Before opening: draw 2 from stock, meld any red 3s drawn (replaced), discard 1 to end turn. After opening: draw either (a) 2 from stock, OR (b) entire discard pile + 1 from stock. Then may meld, then discard. Melds: 3+ cards same rank. Natural melds: max 2 wild cards (must have more naturals than wilds). Canasta: 7+ card meld. Clean (pulito): no wilds. Dirty (sporco): has wilds. Wild card meld: commits team to complete 7+ wild canasta; cannot use wilds elsewhere until completed. Special canastas: Wild canasta clean = all 2s or all 6 jokers+1 two; dirty = 1-5 jokers+2s. Ace canasta: 7+ aces. Threes: red 3s score separately; black 3s can only be discarded, never melded. Frozen pile: if has wild or black 3 on top, can only take if have 2 natural cards of same rank as top card in hand.",
+    Player: "Red 3s: placed face up before play, replaced with new cards. Opening (team's first meld): Can only be done at START of turn before drawing. Requirements: 50+ pts if team score <3000; 90+ pts if 3000-5000; 120+ pts if >5000. Opening player continues with normal turn. Before opening: draw 2 from stock, meld any red 3s drawn (replaced), discard 1 to end turn. After opening: draw either (a) 2 from stock, OR (b) entire discard pile + 1 from stock. Then may meld, then discard. Melds: 3+ cards same rank. Natural melds: max 2 wild cards (must have more naturals than wilds). Canasta: 7+ card meld. Clean (pulito): no wilds. Dirty (sporco): has wilds. Wild card meld: commits team to complete 7+ wild canasta; cannot use wilds elsewhere until completed. Special canastas: Wild canasta clean = all 2s or all 6 jokers+1 two; dirty = 1-5 jokers+2s. Ace canasta: 7+ aces. Threes: red 3s score separately; black 3s can only be discarded, never melded. Frozen pile: if has wild or black 3 on top, can only take if have 2 natural cards of same rank as top card in hand.",
     objective: 'Score points by forming melds and canastas. Special bonuses for wild card canastas and Ace canastas. Be first team to complete required canastas and go out.',
     gameplay: "Red 3s: placed face up before play, replaced with new cards. Opening (team's first meld): Can only be done at START of turn before drawing. Requirements: 50+ pts if team score <3000; 90+ pts if 3000-5000; 120+ pts if >5000. Opening player continues with normal turn. Before opening: draw 2 from stock, meld any red 3s drawn (replaced), discard 1 to end turn. After opening: draw either (a) 2 from stock, OR (b) entire discard pile + 1 from stock. Then may meld, then discard. Melds: 3+ cards same rank. Natural melds: max 2 wild cards (must have more naturals than wilds). Canasta: 7+ card meld. Clean (pulito): no wilds. Dirty (sporco): has wilds. Wild card meld: commits team to complete 7+ wild canasta; cannot use wilds elsewhere until completed. Special canastas: Wild canasta clean = all 2s or all 6 jokers+1 two; dirty = 1-5 jokers+2s. Ace canasta: 7+ aces. Threes: red 3s score separately; black 3s can only be discarded, never melded. Frozen pile: if has wild or black 3 on top, can only take if have 2 natural cards of same rank as top card in hand.",
     keyRules: [
@@ -60,10 +60,225 @@
       go_out: 'Going out is by melding all and discarding last; no separate action.',
     },
     exampleHands: [
-      'Opening deal: 4-6 player(s), 15 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use draw, meld, discard before round end.',
-      'Scoring check: When the play ends, each team scores positive points for the cards they have melded and negative points for any cards remaining in their hands. Expected outcome: 12000.',
+      'Setup example: 15 card(s) per player.',
+      'Rule example: Score points by forming melds and canastas. Special bonuses for wild card canastas and Ace canastas. Be first team to complete required canastas and go out.',
+      "Turn-flow example: Red 3s: placed face up before play, replaced with new cards. Opening (team's first meld): Can only be done at START of turn before drawing. Requirements: 50+ pts if team score <3000; 90+ pts if 3000-5000; 120+ pts if >5000. Opening player continues with normal turn. Before opening: draw 2 from stock, meld any red 3s drawn (replaced), discard 1 to end turn. After opening: draw either (a) 2 from stock, OR (b) entire discard pile + 1 from stock. Then may meld, then discard. Melds: 3+ cards same rank. Natural melds: max 2 wild cards (must have more naturals than wilds). Canasta: 7+ card meld. Clean (pulito): no wilds. Dirty (sporco): has wilds. Wild card meld: commits team to complete 7+ wild canasta; cannot use wilds elsewhere until completed. Special canastas: Wild canasta clean = all 2s or all 6 jokers+1 two; dirty = 1-5 jokers+2s. Ace canasta: 7+ aces. Threes: red 3s score separately; black 3s can only be discarded, never melded. Frozen pile: if has wild or black 3 on top, can only take if have 2 natural cards of same rank as top card in hand.",
+      'Scoring example: When the play ends, each team scores positive points for the cards they have melded and negative points for any cards remaining in their hands. When the play ends, each team scores positive points for the cards they have melded and negative points for any cards remaining in their hands..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'canastone.rules.objective',
+        title: 'Objective',
+        text: 'Score points by forming melds and canastas. Special bonuses for wild card canastas and Ace canastas. Be first team to complete required canastas and go out.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'canastone.rules.gameplay',
+        title: 'Turn flow',
+        text: "Red 3s: placed face up before play, replaced with new cards. Opening (team's first meld): Can only be done at START of turn before drawing. Requirements: 50+ pts if team score <3000; 90+ pts if 3000-5000; 120+ pts if >5000. Opening player continues with normal turn. Before opening: draw 2 from stock, meld any red 3s drawn (replaced), discard 1 to end turn. After opening: draw either (a) 2 from stock, OR (b) entire discard pile + 1 from stock. Then may meld, then discard. Melds: 3+ cards same rank. Natural melds: max 2 wild cards (must have more naturals than wilds). Canasta: 7+ card meld. Clean (pulito): no wilds. Dirty (sporco): has wilds. Wild card meld: commits team to complete 7+ wild canasta; cannot use wilds elsewhere until completed. Special canastas: Wild canasta clean = all 2s or all 6 jokers+1 two; dirty = 1-5 jokers+2s. Ace canasta: 7+ aces. Threes: red 3s score separately; black 3s can only be discarded, never melded. Frozen pile: if has wild or black 3 on top, can only take if have 2 natural cards of same rank as top card in hand.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'canastone.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships (partners opposite); can be played with 6 (two teams of 3)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'canastone.setup.deck',
+        title: 'Deck',
+        text: '162 cards: three standard 52-card packs plus six jokers. Only colors (red/black) matter, not specific suits. Wild cards: jokers (mattoni) and 2s (pinelle). Natural cards: A, K, Q, J, 10, 9, 8, 7, 6, 5, 4. Threes have special functions.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'canastone.setup.equipment',
+        title: 'Equipment',
+        text: '162-card deck (or special Canastone cards with red/black discs), score sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'canastone.setup.dealing',
+        title: 'Deal',
+        text: 'Partnerships by drawing cards (highest vs lowest). Dealer gives 15 cards each. Next card turned up starts discard pile (pozzo). If 3 or wild, keep turning until natural found. If first 3 all wild/3s, redeal. Dealer adds face-down packet to discard pile: size = rank of face-up card (Ace=14, King=13, ..., Four=4). If face-up 2 or joker, pile is frozen (turned sideways). Stock pile (tallone) is remaining cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'canastone.score.win-condition',
+        title: 'Win condition',
+        text: 'When the play ends, each team scores positive points for the cards they have melded and negative points for any cards remaining in their hands.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'canastone.score.description',
+        title: 'Scoring',
+        text: 'When the play ends, each team scores positive points for the cards they have melded and negative points for any cards remaining in their hands.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'canastone.rules.key.1',
+        title: 'Key rule 1',
+        text: '162 cards: 3 decks + 6 jokers',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'canastone.rules.key.2',
+        title: 'Key rule 2',
+        text: '4 players in partnerships (or 6 in two teams of 3)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'canastone.rules.key.3',
+        title: 'Key rule 3',
+        text: '15 cards dealt each',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'canastone.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Discard pile starts with variable face-down cards (4-14 based on turned card)',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'canastone.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Opening meld only at start of turn',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'canastone.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Draw: 2 from stock OR discard pile + 1 from stock',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'canastone.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Wild card meld commits team to complete it',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+      {
+        id: 'canastone.rules.key.8',
+        title: 'Key rule 8',
+        text: 'Special canastas: Wild (clean/dirty), Aces',
+        sourceFields: [
+          'rules.keyRules.7',
+        ],
+      },
+      {
+        id: 'canastone.rules.key.9',
+        title: 'Key rule 9',
+        text: 'Red 3s placed before play; black 3s only discards',
+        sourceFields: [
+          'rules.keyRules.8',
+        ],
+      },
+      {
+        id: 'canastone.rules.key.10',
+        title: 'Key rule 10',
+        text: 'Frozen pile requires 2 naturals to take',
+        sourceFields: [
+          'rules.keyRules.9',
+        ],
+      },
+      {
+        id: 'canastone.rules.key.11',
+        title: 'Key rule 11',
+        text: 'Target: 10000 points',
+        sourceFields: [
+          'rules.keyRules.10',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'canastone.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'canastone.rules.objective',
+          'canastone.rules.gameplay',
+        ],
+      },
+      {
+        id: 'canastone.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'canastone.setup.players',
+          'canastone.setup.deck',
+          'canastone.setup.equipment',
+          'canastone.setup.dealing',
+        ],
+      },
+      {
+        id: 'canastone.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'canastone.rules.key.1',
+          'canastone.rules.key.2',
+          'canastone.rules.key.3',
+          'canastone.rules.key.4',
+          'canastone.rules.key.5',
+          'canastone.rules.key.6',
+          'canastone.rules.key.7',
+          'canastone.rules.key.8',
+          'canastone.rules.key.9',
+          'canastone.rules.key.10',
+          'canastone.rules.key.11',
+        ],
+      },
+      {
+        id: 'canastone.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'canastone.score.description',
+          'canastone.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'canastone.setup.dealing',
+        'canastone.rules.objective',
+      ],
+      draw: [
+        'canastone.rules.gameplay',
+      ],
+      discard: [
+        'canastone.rules.gameplay',
+      ],
+      meld: [
+        'canastone.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Brandeln. Logic: As bidder, win the announced number of tricks; as defenders, stop the bidder.',
-    Player: 'Brandeln is a historical German Nap-like trick-taking game in which the bidder plays alone against the other players.',
+    LLM: 'The successful bidder plays alone. Players follow suit when able, trump where legal, and compare tricks against the bid.',
+    Player: 'The successful bidder plays alone. Players follow suit when able, trump where legal, and compare tricks against the bid.',
     objective: 'As bidder, win the announced number of tricks; as defenders, stop the bidder.',
     gameplay: 'The successful bidder plays alone. Players follow suit when able, trump where legal, and compare tricks against the bid.',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: The bidder wins or loses stakes or points according to whether the announced trick goal is made. Expected outcome: As bidder, win the announced number of tricks; as defenders, stop the bidder..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: As bidder, win the announced number of tricks; as defenders, stop the bidder.',
+      'Turn-flow example: The successful bidder plays alone. Players follow suit when able, trump where legal, and compare tricks against the bid.',
+      'Scoring example: The bidder wins or loses stakes or points according to whether the announced trick goal is made. As bidder, win the announced number of tricks; as defenders, stop the bidder..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'brandeln.rules.objective',
+        title: 'Objective',
+        text: 'As bidder, win the announced number of tricks; as defenders, stop the bidder.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'brandeln.rules.gameplay',
+        title: 'Turn flow',
+        text: 'The successful bidder plays alone. Players follow suit when able, trump where legal, and compare tricks against the bid.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'brandeln.setup.players',
+        title: 'Players',
+        text: '3-4 players use the table arrangement described for Brandeln.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'brandeln.setup.deck',
+        title: 'Deck',
+        text: '28-card French or German pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'brandeln.setup.equipment',
+        title: 'Equipment',
+        text: '28-card French or German pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'brandeln.setup.dealing',
+        title: 'Deal',
+        text: 'Deal from a 28-card pack, then allow players to bid for the right to name the contract or trump.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'brandeln.score.win-condition',
+        title: 'Win condition',
+        text: 'As bidder, win the announced number of tricks; as defenders, stop the bidder.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'brandeln.score.description',
+        title: 'Scoring',
+        text: 'The bidder wins or loses stakes or points according to whether the announced trick goal is made.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'brandeln.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Three or four players.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'brandeln.rules.key.2',
+        title: 'Key rule 2',
+        text: '28-card pack.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'brandeln.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning bidder plays alone.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'brandeln.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Defenders cooperate against the bidder.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'brandeln.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Bid success depends on tricks won.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'brandeln.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'brandeln.rules.objective',
+          'brandeln.rules.gameplay',
+        ],
+      },
+      {
+        id: 'brandeln.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'brandeln.setup.players',
+          'brandeln.setup.deck',
+          'brandeln.setup.equipment',
+          'brandeln.setup.dealing',
+        ],
+      },
+      {
+        id: 'brandeln.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'brandeln.rules.key.1',
+          'brandeln.rules.key.2',
+          'brandeln.rules.key.3',
+          'brandeln.rules.key.4',
+          'brandeln.rules.key.5',
+        ],
+      },
+      {
+        id: 'brandeln.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'brandeln.score.description',
+          'brandeln.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'brandeln.setup.dealing',
+        'brandeln.rules.objective',
+      ],
+      play_card: [
+        'brandeln.rules.gameplay',
+      ],
+      discard: [
+        'brandeln.rules.gameplay',
+      ],
+      pass: [
+        'brandeln.rules.gameplay',
+      ],
+      bid: [
+        'brandeln.rules.gameplay',
+      ],
+    },
   },
 }

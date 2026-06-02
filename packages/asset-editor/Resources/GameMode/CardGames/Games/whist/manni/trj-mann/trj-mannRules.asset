@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Trjámann. Logic: See rules.objective and rules.gameplay.',
-    Player: "Trjámann is an Icelandic trick-taking game for 3 players using a 48-card deck (no 2s). Features 4 contract types (Nullo, Grand, Spades, Other) chosen in rotation. The contract chooser exchanges with a 4-card 'Manni' (widow). Each player must play all 4 contracts once over 12 rounds. First to 10+ points wins.",
+    LLM: 'Choose contract: Nullo (avoid tricks, no trump), Grand (win tricks, no trump), Spades (trumps=spades), Other (choose trump). Contracted player: quota 8 tricks (or 4 in Nullo). Others: 4 tricks (or 6 in Nullo). +1/-1 per trick above/below quota. Exchange with Manni optional.',
+    Player: 'Choose contract: Nullo (avoid tricks, no trump), Grand (win tricks, no trump), Spades (trumps=spades), Other (choose trump). Contracted player: quota 8 tricks (or 4 in Nullo). Others: 4 tricks (or 6 in Nullo). +1/-1 per trick above/below quota. Exchange with Manni optional.',
     objective: 'Reach 10 or more points over 12 rounds by making your trick quota in each contract; each player plays each of the four contracts (Nullo, Grand, Spades, Other) once.',
     gameplay: 'Choose contract: Nullo (avoid tricks, no trump), Grand (win tricks, no trump), Spades (trumps=spades), Other (choose trump). Contracted player: quota 8 tricks (or 4 in Nullo). Others: 4 tricks (or 6 in Nullo). +1/-1 per trick above/below quota. Exchange with Manni optional.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 16 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: +1 per trick above quota. -1 per below. Nullo inverted. Expected outcome: 10.',
+      'Setup example: 16 card(s) per player.',
+      'Rule example: Reach 10 or more points over 12 rounds by making your trick quota in each contract; each player plays each of the four contracts (Nullo, Grand, Spades, Other) once.',
+      'Turn-flow example: Choose contract: Nullo (avoid tricks, no trump), Grand (win tricks, no trump), Spades (trumps=spades), Other (choose trump). Contracted player: quota 8 tricks (or 4 in Nullo). Others: 4 tricks (or 6 in Nullo). +1/-1 per trick above/below quota. Exchange with Manni optional.',
+      'Scoring example: +1 per trick above quota. -1 per below. Nullo inverted. First to 10+ points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'trj-mann.rules.objective',
+        title: 'Objective',
+        text: 'Reach 10 or more points over 12 rounds by making your trick quota in each contract; each player plays each of the four contracts (Nullo, Grand, Spades, Other) once.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'trj-mann.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Choose contract: Nullo (avoid tricks, no trump), Grand (win tricks, no trump), Spades (trumps=spades), Other (choose trump). Contracted player: quota 8 tricks (or 4 in Nullo). Others: 4 tricks (or 6 in Nullo). +1/-1 per trick above/below quota. Exchange with Manni optional.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'trj-mann.setup.players',
+        title: 'Players',
+        text: "Three players. The player to dealer's left is the declarer for each deal and chooses one of the four contracts (Nullo, Grand, Spades, Other). Each player must choose each contract once over the twelve deals.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'trj-mann.setup.deck',
+        title: 'Deck',
+        text: '48 cards (remove 2s). 16 each + 4 Manni.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'trj-mann.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, score sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'trj-mann.setup.dealing',
+        title: 'Deal',
+        text: '16 cards each. 4 card Manni face down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'trj-mann.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 10+ points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'trj-mann.score.description',
+        title: 'Scoring',
+        text: '+1 per trick above quota. -1 per below. Nullo inverted.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'trj-mann.rules.key.1',
+        title: 'Key rule 1',
+        text: '4 contract types',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'trj-mann.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Each player uses each contract once',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'trj-mann.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Manni exchange',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'trj-mann.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Positional quotas',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'trj-mann.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'trj-mann.rules.objective',
+          'trj-mann.rules.gameplay',
+        ],
+      },
+      {
+        id: 'trj-mann.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'trj-mann.setup.players',
+          'trj-mann.setup.deck',
+          'trj-mann.setup.equipment',
+          'trj-mann.setup.dealing',
+        ],
+      },
+      {
+        id: 'trj-mann.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'trj-mann.rules.key.1',
+          'trj-mann.rules.key.2',
+          'trj-mann.rules.key.3',
+          'trj-mann.rules.key.4',
+        ],
+      },
+      {
+        id: 'trj-mann.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'trj-mann.score.description',
+          'trj-mann.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'trj-mann.setup.dealing',
+        'trj-mann.rules.objective',
+      ],
+      play_card: [
+        'trj-mann.rules.gameplay',
+      ],
+    },
   },
 }

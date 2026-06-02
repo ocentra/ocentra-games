@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Twenty-Four. Logic: See rules.objective and rules.gameplay.',
-    Player: '24 is a mathematical card game: use four numbers (from four cards) and only +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· (and parentheses) to make exactly 24. All four numbers must be used once. First to call a correct solution wins the four cards (or they go to opponent); play until one player has no cards. Popular in China since at least the 1960s (Shanghai); also played in North America.',
+    LLM: 'Two players manage resources and starship systems through cards. Encounters, upgrades, trade, and mission rewards build toward the victory point target.',
+    Player: 'Two players manage resources and starship systems through cards. Encounters, upgrades, trade, and mission rewards build toward the victory point target.',
     objective: 'Earn victory points by exploring, trading, upgrading, and completing missions.',
     gameplay: 'Two players manage resources and starship systems through cards. Encounters, upgrades, trade, and mission rewards build toward the victory point target.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: None; win = other player has no cards. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Earn victory points by exploring, trading, upgrading, and completing missions.',
+      'Turn-flow example: Two players manage resources and starship systems through cards. Encounters, upgrades, trade, and mission rewards build toward the victory point target.',
+      "Scoring example: None; win = other player has no cards. Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'starship-catan.rules.objective',
+        title: 'Objective',
+        text: 'Earn victory points by exploring, trading, upgrading, and completing missions.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'starship-catan.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Two players manage resources and starship systems through cards. Encounters, upgrades, trade, and mission rewards build toward the victory point target.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'starship-catan.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Starship Catan.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'starship-catan.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Starship Catan card set',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'starship-catan.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Starship Catan card set, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'starship-catan.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Starship Catan card set and deal or lay out cards according to the documented Starship Catan rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'starship-catan.score.win-condition',
+        title: 'Win condition',
+        text: "Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'starship-catan.score.description',
+        title: 'Scoring',
+        text: 'None; win = other player has no cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'starship-catan.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two-player standalone card game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'starship-catan.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Loosely based on Starfarers of Catan.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'starship-catan.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Uses dedicated Catan-family cards and proprietary presentation.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'starship-catan.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'starship-catan.rules.objective',
+          'starship-catan.rules.gameplay',
+        ],
+      },
+      {
+        id: 'starship-catan.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'starship-catan.setup.players',
+          'starship-catan.setup.deck',
+          'starship-catan.setup.equipment',
+          'starship-catan.setup.dealing',
+        ],
+      },
+      {
+        id: 'starship-catan.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'starship-catan.rules.key.1',
+          'starship-catan.rules.key.2',
+          'starship-catan.rules.key.3',
+        ],
+      },
+      {
+        id: 'starship-catan.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'starship-catan.score.description',
+          'starship-catan.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'starship-catan.setup.dealing',
+        'starship-catan.rules.objective',
+      ],
+      play_card: [
+        'starship-catan.rules.gameplay',
+      ],
+    },
   },
 }

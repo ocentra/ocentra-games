@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Stortok. Logic: See rules.objective and rules.gameplay.',
-    Player: "Stortok (Swedish: 'Big Fool') is a Swedish card game related to the Russian game Durak. The primary goal is to get rid of all your cards. The winner is the first player out, and the last player holding cards is the 'Stortok' (Fool). It features attacking and defending mechanics, but with fewer complex card interactions than Durak.",
+    LLM: 'Forehand (left of dealer) leads any card to start the play pile. Each player in turn must beat the top card (same suit higher, or any trump on non-trump, or high trump on low trump) or pick up the whole play pile. When everyone has beaten, the trick is complete and the last player to play leads the next. When a player picks up, the player to their right (who played the highest card in the incomplete trick) leads. So long as the stock has cards, after each card played the player draws one from the stock. When the stock is exhausted, play continues until one player remains with cards; that player is the Stortok (loser).',
+    Player: 'Forehand (left of dealer) leads any card to start the play pile. Each player in turn must beat the top card (same suit higher, or any trump on non-trump, or high trump on low trump) or pick up the whole play pile. When everyone has beaten, the trick is complete and the last player to play leads the next. When a player picks up, the player to their right (who played the highest card in the incomplete trick) leads. So long as the stock has cards, after each card played the player draws one from the stock. When the stock is exhausted, play continues until one player remains with cards; that player is the Stortok (loser).',
     objective: "To get rid of all one's cards. The last player left with cards is the loser and is called the Great Fool (Stortok).",
     gameplay: 'Forehand (left of dealer) leads any card to start the play pile. Each player in turn must beat the top card (same suit higher, or any trump on non-trump, or high trump on low trump) or pick up the whole play pile. When everyone has beaten, the trick is complete and the last player to play leads the next. When a player picks up, the player to their right (who played the highest card in the incomplete trick) leads. So long as the stock has cards, after each card played the player draws one from the stock. When the stock is exhausted, play continues until one player remains with cards; that player is the Stortok (loser).',
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_5_set_trump before play.',
-      'Scoring check: Shed all cards. Expected outcome: Shed all cards..',
+      'Setup example: 5 card(s) per player.',
+      "Rule example: To get rid of all one's cards. The last player left with cards is the loser and is called the Great Fool (Stortok).",
+      'Turn-flow example: Forehand (left of dealer) leads any card to start the play pile. Each player in turn must beat the top card (same suit higher, or any trump on non-trump, or high trump on low trump) or pick up the whole play pile. When everyone has beaten, the trick is complete and the last player to play leads the next. When a player picks up, the player to their right (who played the highest card in the incomplete trick) leads. So long as the stock has cards, after each card played the player draws one from the stock. When the stock is exhausted, play continues until one player remains with cards; that player is the Stortok (loser).',
+      'Scoring example: Shed all cards. Shed all cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'stortok.rules.objective',
+        title: 'Objective',
+        text: "To get rid of all one's cards. The last player left with cards is the loser and is called the Great Fool (Stortok).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'stortok.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Forehand (left of dealer) leads any card to start the play pile. Each player in turn must beat the top card (same suit higher, or any trump on non-trump, or high trump on low trump) or pick up the whole play pile. When everyone has beaten, the trick is complete and the last player to play leads the next. When a player picks up, the player to their right (who played the highest card in the incomplete trick) leads. So long as the stock has cards, after each card played the player draws one from the stock. When the stock is exhausted, play continues until one player remains with cards; that player is the Stortok (loser).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'stortok.setup.players',
+        title: 'Players',
+        text: 'Two to five players. The game is for 2 to 5 players; deal and play are clockwise.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'stortok.setup.deck',
+        title: 'Deck',
+        text: '36-card pack: from a standard 52-card pack remove the cards below 6; ranks A (high) down to 6 (low) in each suit.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'stortok.setup.equipment',
+        title: 'Equipment',
+        text: '36-card pack: from a standard 52-card pack remove the cards below 6; ranks A (high) down to 6 (low) in each suit.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'stortok.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 5 cards to each player. Top card of remaining deck turned for Trump. Remainder forms Talon.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'stortok.score.win-condition',
+        title: 'Win condition',
+        text: 'Shed all cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'stortok.score.description',
+        title: 'Scoring',
+        text: 'Shed all cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'stortok.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Same suit: higher rank beats. Non-trump beaten by any low or high trump. Low trump beaten by any high trump.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'stortok.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Pick up the whole play pile if unable or unwilling to beat the top card.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'stortok.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Draw one from stock after each play while stock has cards.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'stortok.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Last player with cards is the Stortok (Great Fool).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'stortok.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'stortok.rules.objective',
+          'stortok.rules.gameplay',
+        ],
+      },
+      {
+        id: 'stortok.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'stortok.setup.players',
+          'stortok.setup.deck',
+          'stortok.setup.equipment',
+          'stortok.setup.dealing',
+        ],
+      },
+      {
+        id: 'stortok.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'stortok.rules.key.1',
+          'stortok.rules.key.2',
+          'stortok.rules.key.3',
+          'stortok.rules.key.4',
+        ],
+      },
+      {
+        id: 'stortok.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'stortok.score.description',
+          'stortok.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'stortok.setup.dealing',
+        'stortok.rules.objective',
+      ],
+      play_card: [
+        'stortok.rules.gameplay',
+      ],
+      draw: [
+        'stortok.rules.gameplay',
+      ],
+      deal_5_set_trump: [
+        'stortok.rules.gameplay',
+      ],
+      take_pile: [
+        'stortok.rules.gameplay',
+      ],
+    },
   },
 }

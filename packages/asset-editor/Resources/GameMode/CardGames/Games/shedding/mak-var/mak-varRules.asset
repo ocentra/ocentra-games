@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: MakaÃ³ (Hungarian Shedding). Logic: See rules.objective and rules.gameplay.',
-    Player: "MakaÃ³ (often referred to as 'Mak-Var' in regional contexts) is the most popular shedding card game in Hungary and much of Central Europe. It is the tactical ancestor of games like Uno and Crazy Eights. Using a standard 32-card or 52-card deck, players attempt to discard all their cards while using powerful action cards to penalize opponents. The game's name comes from the requirement to shout 'MakaÃ³!' when one card remains.",
+    LLM: '1. Play a card that matches either the **suit** or the **rank** of the top card on the pile.\n2. If you cannot play, draw one card from the deck.',
+    Player: '1. Play a card that matches either the **suit** or the **rank** of the top card on the pile.\n2. If you cannot play, draw one card from the deck.',
     objective: 'Be the first player to discard all cards from your hand.',
     gameplay: '1. Play a card that matches either the **suit** or the **rank** of the top card on the pile.\n2. If you cannot play, draw one card from the deck.',
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before starter_card.',
-      'Scoring check: Be the first player to discard all cards from your hand. Expected outcome: 500.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first player to discard all cards from your hand.',
+      'Turn-flow example: 1. Play a card that matches either the **suit** or the **rank** of the top card on the pile.\n2. If you cannot play, draw one card from the deck.',
+      'Scoring example: Be the first player to discard all cards from your hand. Be the first player to discard all cards from your hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'mak-var.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mak-var.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Play a card that matches either the **suit** or the **rank** of the top card on the pile.\n2. If you cannot play, draw one card from the deck.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mak-var.setup.players',
+        title: 'Players',
+        text: '2-10 players. Best with 4-5.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mak-var.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52 cards (for many players) or 32 cards (for few).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mak-var.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52 cards (for many players) or 32 cards (for few).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mak-var.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 5 cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mak-var.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mak-var.score.description',
+        title: 'Scoring',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mak-var.rules.key.1',
+        title: 'Key rule 1',
+        text: "Play a card matching the top card's suit or rank; Ace and Joker are wild.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'mak-var.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If you cannot play, draw one card from the deck.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'mak-var.rules.key.3',
+        title: 'Key rule 3',
+        text: "When down to one card you must call 'Makaó'; if an opponent calls first you draw 5.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'mak-var.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Action cards: 2 (next draws 2, stackable), 3 (next draws 3, stackable), 4 (next misses a turn, stackable), Jack (call a value), King Spades/Hearts (draw 5 or stack), Joker (reverse direction), Ace (call new suit).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mak-var.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mak-var.rules.objective',
+          'mak-var.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mak-var.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mak-var.setup.players',
+          'mak-var.setup.deck',
+          'mak-var.setup.equipment',
+          'mak-var.setup.dealing',
+        ],
+      },
+      {
+        id: 'mak-var.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mak-var.rules.key.1',
+          'mak-var.rules.key.2',
+          'mak-var.rules.key.3',
+          'mak-var.rules.key.4',
+        ],
+      },
+      {
+        id: 'mak-var.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mak-var.score.description',
+          'mak-var.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mak-var.setup.dealing',
+        'mak-var.rules.objective',
+      ],
+      deal: [
+        'mak-var.rules.gameplay',
+      ],
+      play_card: [
+        'mak-var.rules.gameplay',
+      ],
+      draw: [
+        'mak-var.rules.gameplay',
+      ],
+      reveal_starter: [
+        'mak-var.rules.gameplay',
+      ],
+    },
   },
 }

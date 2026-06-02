@@ -10,7 +10,26 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Bidder scores trick points if total ≥ bid, else loses the bid amount. Bid of 60 = win all tricks: score 60 or lose 60. Others score for their tricks. First to 110 wins; if two reach it in the same deal, order of tricks determines winner.',
+      winCondition: 'Be the first player (or team) to reach 110 points. Each trick is worth 5 points; the holder of the highest trump in play gets an extra 5 points.',
+      targetScore: 110,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        cardValues: 'Trick points are fixed at 5 per trick plus a 5-point bonus for the highest trump in play; there are no additional per-card point values beyond this.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: The winner collects stakes from all other players. In some variants, points are awarded based on tricks won. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win at least 3 of the 5 tricks to win the game and collect stakes from opponents.',
+      "Turn-flow example: Player to dealer's left leads. Players must follow suit if able. The highest trump or highest card of led suit wins the trick. Winner leads to next trick.",
+      'Scoring example: The winner collects stakes from all other players. In some variants, points are awarded based on tricks won. Win 3 of the 5 tricks to win the game and collect the pot..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'maw.rules.objective',
+        title: 'Objective',
+        text: 'Win at least 3 of the 5 tricks to win the game and collect stakes from opponents.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'maw.rules.gameplay',
+        title: 'Turn flow',
+        text: "Player to dealer's left leads. Players must follow suit if able. The highest trump or highest card of led suit wins the trick. Winner leads to next trick.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'maw.setup.players',
+        title: 'Players',
+        text: '2-10 players (best with 5-7). Can be played individually or in partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'maw.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. In trump suits, cards rank: 5 (highest), J, A, K, Q, 10, 9, 8, 7, 6, 4, 3, 2. In non-trump suits: K (high), Q, J, 10, 9, 8, 7, 6, 5, 4, 3, 2, A (low).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'maw.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, chips or counters for scoring.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'maw.setup.dealing',
+        title: 'Deal',
+        text: '5 cards to each player, dealt in packets. Remaining cards form the stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'maw.score.win-condition',
+        title: 'Win condition',
+        text: 'Win 3 of the 5 tricks to win the game and collect the pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'maw.score.description',
+        title: 'Scoring',
+        text: 'The winner collects stakes from all other players. In some variants, points are awarded based on tricks won.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'maw.rules.key.1',
+        title: 'Key rule 1',
+        text: '5 of trumps is always highest trump',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'maw.rules.key.2',
+        title: 'Key rule 2',
+        text: '9 of trumps is second highest trump',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'maw.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Must follow suit unless reneging is permitted',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'maw.rules.key.4',
+        title: 'Key rule 4',
+        text: 'First to win 3 tricks wins the game',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'maw.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Special reneging rules apply with certain cards',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'maw.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'maw.rules.objective',
+          'maw.rules.gameplay',
+        ],
+      },
+      {
+        id: 'maw.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'maw.setup.players',
+          'maw.setup.deck',
+          'maw.setup.equipment',
+          'maw.setup.dealing',
+        ],
+      },
+      {
+        id: 'maw.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'maw.rules.key.1',
+          'maw.rules.key.2',
+          'maw.rules.key.3',
+          'maw.rules.key.4',
+          'maw.rules.key.5',
+        ],
+      },
+      {
+        id: 'maw.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'maw.score.description',
+          'maw.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'maw.setup.dealing',
+        'maw.rules.objective',
+      ],
+      play_card: [
+        'maw.rules.gameplay',
+      ],
+    },
   },
 }

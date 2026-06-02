@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Belote Découverte. Type: Open Info. Rules: 2 players. 6 stacks of 2 (1 up/1 down) + 4 in hand. J>9>A. Mechanics: Playing Tableau Card flips underlying card.',
-    Player: "You see the Jack of Trumps on your opponent's tableau, covering a face-down card. If you lead a small trump, they MUST play it! Force it out early so your 9 becomes the boss.",
+    LLM: '1. **Trump Selection**: A bidding round occurs to Establish the trump suit. 2. **Play**: Non-dealer leads. 3. **The Cards**: You can play any card from your hand or any face-up card on your tableau. 4. **Uncovering**: When a face-up card is played from the tableau, the face-down card underneath it is immediately turned face up and becomes available for the next trick.',
+    Player: '1. **Trump Selection**: A bidding round occurs to Establish the trump suit. 2. **Play**: Non-dealer leads. 3. **The Cards**: You can play any card from your hand or any face-up card on your tableau. 4. **Uncovering**: When a face-up card is played from the tableau, the face-down card underneath it is immediately turned face up and becomes available for the next trick.',
     objective: 'Score more points than the opponent. Standard Belote scoring applies (162 total).',
     gameplay: '1. **Trump Selection**: A bidding round occurs to Establish the trump suit. 2. **Play**: Non-dealer leads. 3. **The Cards**: You can play any card from your hand or any face-up card on your tableau. 4. **Uncovering**: When a face-up card is played from the tableau, the face-down card underneath it is immediately turned face up and becomes available for the next trick.',
     keyRules: [
@@ -53,10 +53,180 @@
       go_out: 'The hand terminates automatically once all cards from the tableau and hands have been played.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 4 card(s) per player, 1 deck(s), initial visibility mixed.',
-      'Opening flow: start in dealing; system may use deal_tableau before auction.',
-      'Scoring check: Standard Belote ranking/values apply to all captured tricks. Expected outcome: 500.',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Score more points than the opponent. Standard Belote scoring applies (162 total).',
+      'Turn-flow example: 1. **Trump Selection**: A bidding round occurs to Establish the trump suit. 2. **Play**: Non-dealer leads. 3. **The Cards**: You can play any card from your hand or any face-up card on your tableau. 4. **Uncovering**: When a face-up card is played from the tableau, the face-down card underneath it is immediately turned face up and becomes available for the next trick.',
+      'Scoring example: Standard Belote ranking/values apply to all captured tricks. Usually played to 500 or 1000 total points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'belote-decouverte.rules.objective',
+        title: 'Objective',
+        text: 'Score more points than the opponent. Standard Belote scoring applies (162 total).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'belote-decouverte.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Trump Selection**: A bidding round occurs to Establish the trump suit. 2. **Play**: Non-dealer leads. 3. **The Cards**: You can play any card from your hand or any face-up card on your tableau. 4. **Uncovering**: When a face-up card is played from the tableau, the face-down card underneath it is immediately turned face up and becomes available for the next trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'belote-decouverte.setup.players',
+        title: 'Players',
+        text: 'Two players only. Belote Découverte is the two-player open-cards variant: each player has a tableau of face-up and face-down cards plus a private hand; play is head-to-head with no partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'belote-decouverte.setup.deck',
+        title: 'Deck',
+        text: '32 cards (A-10-K-Q-J-9-8-7).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'belote-decouverte.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 32-card French pack (Piquet deck).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'belote-decouverte.setup.dealing',
+        title: 'Deal',
+        text: "Each player receives 16 cards, but not all in hand. 1. Deal 6 cards to each player FACE DOWN in a row. 2. Deal 6 cards FACE UP on top of the face-down cards. 3. Deal the remaining 4 cards to each player's HAND (concealed).",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'belote-decouverte.score.win-condition',
+        title: 'Win condition',
+        text: 'Usually played to 500 or 1000 total points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'belote-decouverte.score.description',
+        title: 'Scoring',
+        text: 'Standard Belote ranking/values apply to all captured tricks.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'belote-decouverte.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if possible.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'belote-decouverte.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must trump if void in led suit.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'belote-decouverte.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Must over-trump if trumps are played.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'belote-decouverte.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Face-down cards are blocked until the covering card is played.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'belote-decouverte.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'belote-decouverte.rules.objective',
+          'belote-decouverte.rules.gameplay',
+        ],
+      },
+      {
+        id: 'belote-decouverte.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'belote-decouverte.setup.players',
+          'belote-decouverte.setup.deck',
+          'belote-decouverte.setup.equipment',
+          'belote-decouverte.setup.dealing',
+        ],
+      },
+      {
+        id: 'belote-decouverte.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'belote-decouverte.rules.key.1',
+          'belote-decouverte.rules.key.2',
+          'belote-decouverte.rules.key.3',
+          'belote-decouverte.rules.key.4',
+        ],
+      },
+      {
+        id: 'belote-decouverte.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'belote-decouverte.score.description',
+          'belote-decouverte.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'belote-decouverte.setup.dealing',
+        'belote-decouverte.rules.objective',
+      ],
+      declare: [
+        'belote-decouverte.rules.gameplay',
+      ],
+      play_card: [
+        'belote-decouverte.rules.gameplay',
+      ],
+      pass: [
+        'belote-decouverte.rules.gameplay',
+      ],
+      meld: [
+        'belote-decouverte.rules.gameplay',
+      ],
+      deal_tableau: [
+        'belote-decouverte.rules.gameplay',
+      ],
+      take_trump: [
+        'belote-decouverte.rules.gameplay',
+      ],
+      play_from_hand: [
+        'belote-decouverte.rules.gameplay',
+      ],
+      play_from_tableau: [
+        'belote-decouverte.rules.gameplay',
+      ],
+      calculate_game_points: [
+        'belote-decouverte.rules.gameplay',
+      ],
+    },
   },
 }

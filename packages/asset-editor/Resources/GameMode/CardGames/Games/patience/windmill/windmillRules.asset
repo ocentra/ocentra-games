@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Aces and Kings. Logic: Complete all eight foundations, four building up from ace to king and four building down from king to ace, without regard to suit.',
-    Player: 'Aces and Kings is a difficult two-deck solitaire in which eight foundations build both upward from aces and downward from kings without regard to suit.',
+    LLM: 'An ace is placed at the center and eight reserve cards around it like sails. Corner gaps are reserved for kings that form secondary foundations, while the central foundation is built upward.',
+    Player: 'An ace is placed at the center and eight reserve cards around it like sails. Corner gaps are reserved for kings that form secondary foundations, while the central foundation is built upward.',
     objective: 'Build the central foundation up to king and fill secondary king foundations.',
     gameplay: 'An ace is placed at the center and eight reserve cards around it like sails. Corner gaps are reserved for kings that form secondary foundations, while the central foundation is built upward.',
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: The game is won only by completing all foundations; otherwise the deal is lost when the stock is exhausted. Expected outcome: 1.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Build the central foundation up to king and fill secondary king foundations.',
+      'Turn-flow example: An ace is placed at the center and eight reserve cards around it like sails. Corner gaps are reserved for kings that form secondary foundations, while the central foundation is built upward.',
+      'Scoring example: The game is won only by completing all foundations; otherwise the deal is lost when the stock is exhausted. Complete all eight foundations, four building up from ace to king and four building down from king to ace, without regard to suit..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'windmill.rules.objective',
+        title: 'Objective',
+        text: 'Build the central foundation up to king and fill secondary king foundations.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'windmill.rules.gameplay',
+        title: 'Turn flow',
+        text: 'An ace is placed at the center and eight reserve cards around it like sails. Corner gaps are reserved for kings that form secondary foundations, while the central foundation is built upward.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'windmill.setup.players',
+        title: 'Players',
+        text: '1 players use the table arrangement described for Windmill.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'windmill.setup.deck',
+        title: 'Deck',
+        text: 'Two standard 52-card packs',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'windmill.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard 52-card packs, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'windmill.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Two standard 52-card packs and deal or lay out cards according to the documented Windmill rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'windmill.score.win-condition',
+        title: 'Win condition',
+        text: 'Complete all eight foundations, four building up from ace to king and four building down from king to ace, without regard to suit.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'windmill.score.description',
+        title: 'Scoring',
+        text: 'The game is won only by completing all foundations; otherwise the deal is lost when the stock is exhausted.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'windmill.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Distinctive layout resembles windmill sails.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'windmill.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Central foundation starts with an ace.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'windmill.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Secondary foundations start with kings.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'windmill.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'windmill.rules.objective',
+          'windmill.rules.gameplay',
+        ],
+      },
+      {
+        id: 'windmill.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'windmill.setup.players',
+          'windmill.setup.deck',
+          'windmill.setup.equipment',
+          'windmill.setup.dealing',
+        ],
+      },
+      {
+        id: 'windmill.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'windmill.rules.key.1',
+          'windmill.rules.key.2',
+          'windmill.rules.key.3',
+        ],
+      },
+      {
+        id: 'windmill.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'windmill.score.description',
+          'windmill.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'windmill.setup.dealing',
+        'windmill.rules.objective',
+      ],
+      deal: [
+        'windmill.rules.gameplay',
+      ],
+      play_card: [
+        'windmill.rules.gameplay',
+      ],
+      draw: [
+        'windmill.rules.gameplay',
+      ],
+    },
   },
 }

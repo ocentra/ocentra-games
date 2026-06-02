@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Archie Poker. Triple draw high-low split. Qualifiers: high pair 9+, low 8 or better ace-to-five. Pot split or scoop.',
-    Player: 'Welcome to Archie Poker. Five cards each, three draws, four betting rounds. Win the high half with a pair of 9s or better, or the low half with an 8-or-better low.',
+    LLM: 'Initial bet (small limit). First draw: discard 0â€“5, receive replacements; bet (small). Second draw: discard 0â€“5; bet (big). Third draw: discard 0â€“5; bet (big). Showdown. High: best hand with pair of 9s or better (or 6s, house rule). Low: best ace-to-five low, 8 or better. Pot split; if only one side qualifies, that side scoops. No qualifiers: split among remaining or best hand (house rule).',
+    Player: 'Initial bet (small limit). First draw: discard 0â€“5, receive replacements; bet (small). Second draw: discard 0â€“5; bet (big). Third draw: discard 0â€“5; bet (big). Showdown. High: best hand with pair of 9s or better (or 6s, house rule). Low: best ace-to-five low, 8 or better. Pot split; if only one side qualifies, that side scoops. No qualifiers: split among remaining or best hand (house rule).',
     objective: 'Win the high half and/or low half of the pot with qualifying hands.',
     gameplay: 'Initial bet (small limit). First draw: discard 0â€“5, receive replacements; bet (small). Second draw: discard 0â€“5; bet (big). Third draw: discard 0â€“5; bet (big). Showdown. High: best hand with pair of 9s or better (or 6s, house rule). Low: best ace-to-five low, 8 or better. Pot split; if only one side qualifies, that side scoops. No qualifiers: split among remaining or best hand (house rule).',
     keyRules: [
@@ -52,10 +52,168 @@
       go_out: 'Going out is not a mechanic in Archie Poker; the hand ends at showdown.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_five_face_down before betting_1.',
-      'Scoring check: Pot is split between best qualifying high hand and best qualifying low hand. Expected outcome: NA.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the high half and/or low half of the pot with qualifying hands.',
+      'Turn-flow example: Initial bet (small limit). First draw: discard 0â€“5, receive replacements; bet (small). Second draw: discard 0â€“5; bet (big). Third draw: discard 0â€“5; bet (big). Showdown. High: best hand with pair of 9s or better (or 6s, house rule). Low: best ace-to-five low, 8 or better. Pot split; if only one side qualifies, that side scoops. No qualifiers: split among remaining or best hand (house rule).',
+      'Scoring example: Pot is split between best qualifying high hand and best qualifying low hand. Win the high half and/or low half of the pot with qualifying hands..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'archie-poker.rules.objective',
+        title: 'Objective',
+        text: 'Win the high half and/or low half of the pot with qualifying hands.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'archie-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Initial bet (small limit). First draw: discard 0â€“5, receive replacements; bet (small). Second draw: discard 0â€“5; bet (big). Third draw: discard 0â€“5; bet (big). Showdown. High: best hand with pair of 9s or better (or 6s, house rule). Low: best ace-to-five low, 8 or better. Pot split; if only one side qualifies, that side scoops. No qualifiers: split among remaining or best hand (house rule).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'archie-poker.setup.players',
+        title: 'Players',
+        text: '2â€“6 (typically 6 max). Blinds. No partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'archie-poker.setup.deck',
+        title: 'Deck',
+        text: '52 cards. Standard high hand ranking; low = ace-to-five (8 or better to qualify).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'archie-poker.setup.equipment',
+        title: 'Equipment',
+        text: '52-card deck, chips.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'archie-poker.setup.dealing',
+        title: 'Deal',
+        text: 'Five cards each, face down. Bet â€“ draw â€“ bet (small) â€“ draw â€“ bet (big) â€“ draw â€“ bet (big) â€“ showdown.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'archie-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the high half and/or low half of the pot with qualifying hands.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'archie-poker.score.description',
+        title: 'Scoring',
+        text: 'Pot is split between best qualifying high hand and best qualifying low hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'archie-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Triple draw; 0â€“5 cards per draw; four betting rounds (small, small, big, big)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'archie-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'High qualify: pair 9+ (or 6+); low qualify: 8 or better ace-to-five',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'archie-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Split pot; scoop if only one qualifies',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'archie-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'archie-poker.rules.objective',
+          'archie-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'archie-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'archie-poker.setup.players',
+          'archie-poker.setup.deck',
+          'archie-poker.setup.equipment',
+          'archie-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'archie-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'archie-poker.rules.key.1',
+          'archie-poker.rules.key.2',
+          'archie-poker.rules.key.3',
+        ],
+      },
+      {
+        id: 'archie-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'archie-poker.score.description',
+          'archie-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'archie-poker.setup.dealing',
+        'archie-poker.rules.objective',
+      ],
+      fold: [
+        'archie-poker.rules.gameplay',
+      ],
+      check: [
+        'archie-poker.rules.gameplay',
+      ],
+      call: [
+        'archie-poker.rules.gameplay',
+      ],
+      bet: [
+        'archie-poker.rules.gameplay',
+      ],
+      raise: [
+        'archie-poker.rules.gameplay',
+      ],
+      deal_five_face_down: [
+        'archie-poker.rules.gameplay',
+      ],
+      discard_and_draw: [
+        'archie-poker.rules.gameplay',
+      ],
+      split_pot_high_low: [
+        'archie-poker.rules.gameplay',
+      ],
+    },
   },
 }

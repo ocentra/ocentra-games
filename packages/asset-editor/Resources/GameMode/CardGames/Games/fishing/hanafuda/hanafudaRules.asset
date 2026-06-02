@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Hanafuda (花札). Logic: See rules.objective and rules.gameplay.',
-    Player: "Hanafuda (花札, 'flower cards') are traditional Japanese playing cards comprising a 48-card deck divided into 12 suits, each representing a month and featuring a specific flower or plant. Hanafuda is not a single game but a family of games, most commonly fishing/capture games where players match cards from their hand with cards on the field. Popular games include Koi-Koi, Hachi-Hachi, and Hana-Awase. Cards are categorized as Brights, Animals, Ribbons, and Plains, with varying point values.",
+    LLM: 'Varies by game. In fishing games players match hand cards with table cards to capture. In Koi-Koi players form point combinations (yaku) and choose to continue or stop.',
+    Player: 'Varies by game. In fishing games players match hand cards with table cards to capture. In Koi-Koi players form point combinations (yaku) and choose to continue or stop.',
     objective: 'Varies by game; in fishing games capture matching cards; in Koi-Koi form yaku and decide to continue or stop for points.',
     gameplay: 'Varies by game. In fishing games players match hand cards with table cards to capture. In Koi-Koi players form point combinations (yaku) and choose to continue or stop.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: See rules for scoring. Expected outcome: See rules..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Varies by game; in fishing games capture matching cards; in Koi-Koi form yaku and decide to continue or stop for points.',
+      'Turn-flow example: Varies by game. In fishing games players match hand cards with table cards to capture. In Koi-Koi players form point combinations (yaku) and choose to continue or stop.',
+      'Scoring example: See rules for scoring. See rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hanafuda.rules.objective',
+        title: 'Objective',
+        text: 'Varies by game; in fishing games capture matching cards; in Koi-Koi form yaku and decide to continue or stop for points.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hanafuda.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Varies by game. In fishing games players match hand cards with table cards to capture. In Koi-Koi players form point combinations (yaku) and choose to continue or stop.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hanafuda.setup.players',
+        title: 'Players',
+        text: '2 to 6 players depending on the specific Hanafuda game (e.g. Koi-Koi typically 2).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hanafuda.setup.deck',
+        title: 'Deck',
+        text: '48 cards divided into 12 suits (months):\n- January (Pine), February (Plum), March (Cherry), April (Wisteria), May (Iris), June (Peony), July (Bush Clover), August (Pampas Grass), September (Chrysanthemum), October (Maple), November (Willow), December (Paulownia).\n\nEach suit has 4 cards, categorized as:\n- **Brights** (20 points): Special high-value cards.\n- **Animals** (10 points): Cards featuring animals.\n- **Ribbons** (5 points): Cards with ribbons or poetry.\n- **Plains/Chaff** (1 point): Simple flower cards.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hanafuda.setup.equipment',
+        title: 'Equipment',
+        text: 'Hanafuda deck (48 cards).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hanafuda.setup.dealing',
+        title: 'Deal',
+        text: 'Varies by game; typically dealer distributes cards to hands and table.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hanafuda.score.win-condition',
+        title: 'Win condition',
+        text: 'See rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hanafuda.score.description',
+        title: 'Scoring',
+        text: 'See rules for scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hanafuda.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Hanafuda is a family of games; each variant has its own rules.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hanafuda.rules.key.2',
+        title: 'Key rule 2',
+        text: '48 cards in 12 suits (months), 4 cards per suit.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hanafuda.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Card types: Brights, Animals, Ribbons, Plains.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hanafuda.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hanafuda.rules.objective',
+          'hanafuda.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hanafuda.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hanafuda.setup.players',
+          'hanafuda.setup.deck',
+          'hanafuda.setup.equipment',
+          'hanafuda.setup.dealing',
+        ],
+      },
+      {
+        id: 'hanafuda.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hanafuda.rules.key.1',
+          'hanafuda.rules.key.2',
+          'hanafuda.rules.key.3',
+        ],
+      },
+      {
+        id: 'hanafuda.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hanafuda.score.description',
+          'hanafuda.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hanafuda.setup.dealing',
+        'hanafuda.rules.objective',
+      ],
+      play_card: [
+        'hanafuda.rules.gameplay',
+      ],
+    },
   },
 }

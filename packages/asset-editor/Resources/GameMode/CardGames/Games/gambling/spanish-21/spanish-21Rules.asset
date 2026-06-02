@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Spanish 21. Logic: See rules.objective and rules.gameplay.',
-    Player: "Spanish 21 (known internationally as Pontoon in Australia, not UK classic Pontoon) is a variant of Blackjack played with 'Spanish' decks (48 cards, removing the 10s). The removal of 10s increases the house edge, but this is compensated by extremely player-friendly rules such as 'Player 21 always wins', 'Surrender after Double', and special bonus payouts for specific 21 combinations (6-7-8, 7-7-7). It is highly popular in casinos.",
+    LLM: 'Players place a bet. Dealer gives two cards to each player and two to himself (one dealer card face-up). Players act in turn: hit (draw), stand (pass), double down, split pairs, or surrender. Player 21 always wins. Player blackjack beats dealer blackjack. Late surrender and double-after-split are allowed. Dealer then plays according to house rules (hit or stand on soft 17). Hands are compared; higher total without busting wins. Bonuses pay for 6-7-8, 7-7-7, and multi-card 21.',
+    Player: 'Players place a bet. Dealer gives two cards to each player and two to himself (one dealer card face-up). Players act in turn: hit (draw), stand (pass), double down, split pairs, or surrender. Player 21 always wins. Player blackjack beats dealer blackjack. Late surrender and double-after-split are allowed. Dealer then plays according to house rules (hit or stand on soft 17). Hands are compared; higher total without busting wins. Bonuses pay for 6-7-8, 7-7-7, and multi-card 21.',
     objective: "Beat the dealer's hand total without going over 21. A hand total of 21 is best; player 21 always wins, including against dealer blackjack.",
     gameplay: 'Players place a bet. Dealer gives two cards to each player and two to himself (one dealer card face-up). Players act in turn: hit (draw), stand (pass), double down, split pairs, or surrender. Player 21 always wins. Player blackjack beats dealer blackjack. Late surrender and double-after-split are allowed. Dealer then plays according to house rules (hit or stand on soft 17). Hands are compared; higher total without busting wins. Bonuses pay for 6-7-8, 7-7-7, and multi-card 21.',
     keyRules: [
@@ -55,10 +55,204 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-7 player(s), 2 card(s) per player, 6 deck(s), initial visibility face_down.',
-      'Opening flow: start in place_bet; each_player_clockwise may use bet before deal.',
-      "Scoring check: Beat dealer's total without busting. 21 is best. Expected outcome: Beat dealer's total without busting. 21 is best..",
+      'Setup example: 2 card(s) per player.',
+      "Rule example: Beat the dealer's hand total without going over 21. A hand total of 21 is best; player 21 always wins, including against dealer blackjack.",
+      'Turn-flow example: Players place a bet. Dealer gives two cards to each player and two to himself (one dealer card face-up). Players act in turn: hit (draw), stand (pass), double down, split pairs, or surrender. Player 21 always wins. Player blackjack beats dealer blackjack. Late surrender and double-after-split are allowed. Dealer then plays according to house rules (hit or stand on soft 17). Hands are compared; higher total without busting wins. Bonuses pay for 6-7-8, 7-7-7, and multi-card 21.',
+      "Scoring example: Beat dealer's total without busting. 21 is best. Beat dealer's total without busting. 21 is best..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'spanish-21.rules.objective',
+        title: 'Objective',
+        text: "Beat the dealer's hand total without going over 21. A hand total of 21 is best; player 21 always wins, including against dealer blackjack.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'spanish-21.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players place a bet. Dealer gives two cards to each player and two to himself (one dealer card face-up). Players act in turn: hit (draw), stand (pass), double down, split pairs, or surrender. Player 21 always wins. Player blackjack beats dealer blackjack. Late surrender and double-after-split are allowed. Dealer then plays according to house rules (hit or stand on soft 17). Hands are compared; higher total without busting wins. Bonuses pay for 6-7-8, 7-7-7, and multi-card 21.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'spanish-21.setup.players',
+        title: 'Players',
+        text: 'One to seven players at the table, each playing independently against the dealer. Standard blackjack layout; six or eight Spanish decks in a shoe.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'spanish-21.setup.deck',
+        title: 'Deck',
+        text: 'Spanish Deck (No 10s).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'spanish-21.setup.equipment',
+        title: 'Equipment',
+        text: 'Spanish Deck (No 10s).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'spanish-21.setup.dealing',
+        title: 'Deal',
+        text: 'Standard Blackjack deal. 2 cards each. Dealer gets hole card.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'spanish-21.score.win-condition',
+        title: 'Win condition',
+        text: "Beat dealer's total without busting. 21 is best.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'spanish-21.score.description',
+        title: 'Scoring',
+        text: "Beat dealer's total without busting. 21 is best.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'spanish-21.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Spanish deck: 48 cards (no 10s); face cards count 10.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'spanish-21.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Late surrender allowed. Double after split and re-split aces allowed.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'spanish-21.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Player may double on any number of cards. Hit and double after splitting aces (where offered).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'spanish-21.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Surrender after doubling (double down rescue) forfeits original bet.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'spanish-21.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Five-card 21 pays 3:2; six-card 21 pays 2:1; seven-plus-card 21 pays 3:1.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'spanish-21.rules.key.6',
+        title: 'Key rule 6',
+        text: '6-7-8 or 7-7-7 mixed suits 3:2; same suit 2:1; spades 3:1. Suited 7-7-7 vs dealer 7 pays Super Bonus.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'spanish-21.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'spanish-21.rules.objective',
+          'spanish-21.rules.gameplay',
+        ],
+      },
+      {
+        id: 'spanish-21.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'spanish-21.setup.players',
+          'spanish-21.setup.deck',
+          'spanish-21.setup.equipment',
+          'spanish-21.setup.dealing',
+        ],
+      },
+      {
+        id: 'spanish-21.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'spanish-21.rules.key.1',
+          'spanish-21.rules.key.2',
+          'spanish-21.rules.key.3',
+          'spanish-21.rules.key.4',
+          'spanish-21.rules.key.5',
+          'spanish-21.rules.key.6',
+        ],
+      },
+      {
+        id: 'spanish-21.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'spanish-21.score.description',
+          'spanish-21.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'spanish-21.setup.dealing',
+        'spanish-21.rules.objective',
+      ],
+      bet: [
+        'spanish-21.rules.gameplay',
+      ],
+      draw: [
+        'spanish-21.rules.gameplay',
+      ],
+      pass: [
+        'spanish-21.rules.gameplay',
+      ],
+      deal_2_each: [
+        'spanish-21.rules.gameplay',
+      ],
+      reveal_hole_card: [
+        'spanish-21.rules.gameplay',
+      ],
+      dealer_play_to_17: [
+        'spanish-21.rules.gameplay',
+      ],
+      compare_hands: [
+        'spanish-21.rules.gameplay',
+      ],
+      award_bets: [
+        'spanish-21.rules.gameplay',
+      ],
+      double_down: [
+        'spanish-21.rules.gameplay',
+      ],
+      split: [
+        'spanish-21.rules.gameplay',
+      ],
+      surrender: [
+        'spanish-21.rules.gameplay',
+      ],
+    },
   },
 }

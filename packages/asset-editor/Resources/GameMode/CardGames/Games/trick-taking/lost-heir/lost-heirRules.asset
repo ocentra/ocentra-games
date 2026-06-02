@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Lost Heir. 2-6 players, partnerships. Custom city deck (New York, Philadelphia, Chicago, Boston). Bid to name Trump city. Trick play: must follow suit. Special cards: Lost Heir (+5), Wrong Boy (-3), Blank (negates). Each trick = 1 point. First to 40 points wins.',
-    Player: 'Welcome to Lost Heir! Bid to name your Trump city, then play tricks to score points. Watch for the Lost Heir (+5 points) and avoid the Wrong Boy (-3 points)! Use Blank cards to negate bonus/penalty points. First team to 40 wins!',
+    LLM: '1. **Bidding**: Players bid for the right to choose the Trump city. The bid is the number of tricks they expect to win (plus bonus cards). 2. **Special Cards**: The Lost Heir (highest trump, +5 points), The Wrong Boy (penalty card, -3 points), Blank City Cards (can negate points). 3. **Trick Play**: Must follow suit. If unable, play any card (including trump). Highest card of led suit wins, or highest trump. Each trick = 1 point.',
+    Player: '1. **Bidding**: Players bid for the right to choose the Trump city. The bid is the number of tricks they expect to win (plus bonus cards). 2. **Special Cards**: The Lost Heir (highest trump, +5 points), The Wrong Boy (penalty card, -3 points), Blank City Cards (can negate points). 3. **Trick Play**: Must follow suit. If unable, play any card (including trump). Highest card of led suit wins, or highest trump. Each trick = 1 point.',
     objective: 'Be the first player or partnership to reach the agreed target score (25 in original McLoughlin rules, or 40 in many editions) by winning tricks and scoring points from the Lost Heir card (+5) while avoiding the Wrong Boy penalty (-3); blank cards cancel the Heir or Wrong Boy when played to the same trick.',
     gameplay: '1. **Bidding**: Players bid for the right to choose the Trump city. The bid is the number of tricks they expect to win (plus bonus cards). 2. **Special Cards**: The Lost Heir (highest trump, +5 points), The Wrong Boy (penalty card, -3 points), Blank City Cards (can negate points). 3. **Trick Play**: Must follow suit. If unable, play any card (including trump). Highest card of led suit wins, or highest trump. Each trick = 1 point.',
     keyRules: [
@@ -55,10 +55,186 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before bidding.',
-      'Scoring check: Points from tricks plus bonus/penalty cards. Expected outcome: 40.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the first player or partnership to reach the agreed target score (25 in original McLoughlin rules, or 40 in many editions) by winning tricks and scoring points from the Lost Heir card (+5) while avoiding the Wrong Boy penalty (-3); blank cards cancel the Heir or Wrong Boy when played to the same trick.',
+      'Turn-flow example: 1. **Bidding**: Players bid for the right to choose the Trump city. The bid is the number of tricks they expect to win (plus bonus cards). 2. **Special Cards**: The Lost Heir (highest trump, +5 points), The Wrong Boy (penalty card, -3 points), Blank City Cards (can negate points). 3. **Trick Play**: Must follow suit. If unable, play any card (including trump). Highest card of led suit wins, or highest trump. Each trick = 1 point.',
+      'Scoring example: Points from tricks plus bonus/penalty cards. First team to reach 40 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'lost-heir.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player or partnership to reach the agreed target score (25 in original McLoughlin rules, or 40 in many editions) by winning tricks and scoring points from the Lost Heir card (+5) while avoiding the Wrong Boy penalty (-3); blank cards cancel the Heir or Wrong Boy when played to the same trick.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'lost-heir.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Bidding**: Players bid for the right to choose the Trump city. The bid is the number of tricks they expect to win (plus bonus cards). 2. **Special Cards**: The Lost Heir (highest trump, +5 points), The Wrong Boy (penalty card, -3 points), Blank City Cards (can negate points). 3. **Trick Play**: Must follow suit. If unable, play any card (including trump). Highest card of led suit wins, or highest trump. Each trick = 1 point.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'lost-heir.setup.players',
+        title: 'Players',
+        text: '4 players in two partnerships (Standard).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'lost-heir.setup.deck',
+        title: 'Deck',
+        text: '48 cards (typically). Suits: New York, Philadelphia, Chicago, Boston. Ranks: Mayor (High), Judge, Policeman, etc.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'lost-heir.setup.equipment',
+        title: 'Equipment',
+        text: 'Custom deck and score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'lost-heir.setup.dealing',
+        title: 'Deal',
+        text: 'Cards are dealt out; a bidding phase follows.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'lost-heir.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to reach 40 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'lost-heir.score.description',
+        title: 'Scoring',
+        text: 'Points from tricks plus bonus/penalty cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'lost-heir.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Bid for right to choose Trump city.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'lost-heir.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Lost Heir = +5 points (highest trump).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'lost-heir.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Wrong Boy = -3 points (penalty card).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'lost-heir.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Blank City Cards can negate Heir/Boy points.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'lost-heir.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Each trick = 1 point.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'lost-heir.rules.key.6',
+        title: 'Key rule 6',
+        text: 'First to 40 points wins.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'lost-heir.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'lost-heir.rules.objective',
+          'lost-heir.rules.gameplay',
+        ],
+      },
+      {
+        id: 'lost-heir.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'lost-heir.setup.players',
+          'lost-heir.setup.deck',
+          'lost-heir.setup.equipment',
+          'lost-heir.setup.dealing',
+        ],
+      },
+      {
+        id: 'lost-heir.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'lost-heir.rules.key.1',
+          'lost-heir.rules.key.2',
+          'lost-heir.rules.key.3',
+          'lost-heir.rules.key.4',
+          'lost-heir.rules.key.5',
+          'lost-heir.rules.key.6',
+        ],
+      },
+      {
+        id: 'lost-heir.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'lost-heir.score.description',
+          'lost-heir.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'lost-heir.setup.dealing',
+        'lost-heir.rules.objective',
+      ],
+      deal: [
+        'lost-heir.rules.gameplay',
+      ],
+      play_card: [
+        'lost-heir.rules.gameplay',
+      ],
+      pass: [
+        'lost-heir.rules.gameplay',
+      ],
+      bid: [
+        'lost-heir.rules.gameplay',
+      ],
+      calculate: [
+        'lost-heir.rules.gameplay',
+      ],
+    },
   },
 }

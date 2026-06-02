@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: The player with the most figures captured loses, or the last player in mura loses. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Avoid winning tricks that contain figures (Aces, Kings, Overs, Unders). Winning tricks with only numeral cards (X, IX, VIII, VII) is safe. The player with the fewest figures captured wins.',
+      'Turn-flow example: No trumps. Must follow suit if possible. Highest card of led suit wins the trick. The winner of a trick leads to the next.',
+      'Scoring example: The player with the most figures captured loses, or the last player in mura loses. Have the fewest figures, or reach safety before others..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'mura.rules.objective',
+        title: 'Objective',
+        text: 'Avoid winning tricks that contain figures (Aces, Kings, Overs, Unders). Winning tricks with only numeral cards (X, IX, VIII, VII) is safe. The player with the fewest figures captured wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mura.rules.gameplay',
+        title: 'Turn flow',
+        text: 'No trumps. Must follow suit if possible. Highest card of led suit wins the trick. The winner of a trick leads to the next.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mura.setup.players',
+        title: 'Players',
+        text: '4 players, each playing for themselves.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mura.setup.deck',
+        title: 'Deck',
+        text: '32-card Hungarian pack. Suits: Hearts (Piros), Gourds (Tok), Leaves (Zold), Acorns (Makk). Ranking: X, IX, Ace, King, Over (Felso), Under (Also), VIII, VII. Note: X and IX are high, Ace is third highest.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mura.setup.equipment',
+        title: 'Equipment',
+        text: 'Hungarian deck or modified standard deck, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mura.setup.dealing',
+        title: 'Deal',
+        text: '8 cards to each player, dealt in packets. Deal and play are counter-clockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mura.score.win-condition',
+        title: 'Win condition',
+        text: 'Have the fewest figures, or reach safety before others.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mura.score.description',
+        title: 'Scoring',
+        text: 'The player with the most figures captured loses, or the last player in mura loses.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mura.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if able',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'mura.rules.key.2',
+        title: 'Key rule 2',
+        text: 'No trumps',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'mura.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Figures (A, K, Over, Under) are bad to capture',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'mura.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Ace counts as 3 figures if it wins',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'mura.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Avoid winning tricks with figures',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mura.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mura.rules.objective',
+          'mura.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mura.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mura.setup.players',
+          'mura.setup.deck',
+          'mura.setup.equipment',
+          'mura.setup.dealing',
+        ],
+      },
+      {
+        id: 'mura.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mura.rules.key.1',
+          'mura.rules.key.2',
+          'mura.rules.key.3',
+          'mura.rules.key.4',
+          'mura.rules.key.5',
+        ],
+      },
+      {
+        id: 'mura.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mura.score.description',
+          'mura.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mura.setup.dealing',
+        'mura.rules.objective',
+      ],
+      play_card: [
+        'mura.rules.gameplay',
+      ],
+    },
   },
 }

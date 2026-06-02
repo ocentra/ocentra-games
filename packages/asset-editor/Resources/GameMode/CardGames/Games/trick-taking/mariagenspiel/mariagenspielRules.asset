@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Mariagenspiel (Mariage). Logic: See rules.objective and rules.gameplay.',
-    Player: "Mariagenspiel is the historical ancestor of the vast 'Marriage' family of card games, which includes global hits like Sixty-Six, Schnapsen, Pinochle, and Belote. Its name literally means 'Marriage Game', referring to the core mechanic: earning bonus points by holding and declaring a King and Queen of the same suit. It is a trick-taking game where players must balance the pursuit of card points with the opportunistic timing of their marriages.",
+    LLM: '1. **Phase 1**: Players play tricks and then draw a card to stay at 6. No obligation to follow suit.\n2. **Phase 2**: Once the stock is empty, suit-following and trumping rules apply.\n3. **Victory**: A player can declare a marriage only after winning their first trick.',
+    Player: '1. **Phase 1**: Players play tricks and then draw a card to stay at 6. No obligation to follow suit.\n2. **Phase 2**: Once the stock is empty, suit-following and trumping rules apply.\n3. **Victory**: A player can declare a marriage only after winning their first trick.',
     objective: 'Be the first to reach a target score (usually 66 or 100 points) through tricks and marriages.',
     gameplay: '1. **Phase 1**: Players play tricks and then draw a card to stay at 6. No obligation to follow suit.\n2. **Phase 2**: Once the stock is empty, suit-following and trumping rules apply.\n3. **Victory**: A player can declare a marriage only after winning their first trick.',
     keyRules: [
@@ -53,10 +53,168 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_6_each_turn_trump before phase1_play.',
-      'Scoring check: Be the first to reach a target score (usually 66 or 100 points) through tricks and marriages. Expected outcome: 66.',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Be the first to reach a target score (usually 66 or 100 points) through tricks and marriages.',
+      'Turn-flow example: 1. **Phase 1**: Players play tricks and then draw a card to stay at 6. No obligation to follow suit.\n2. **Phase 2**: Once the stock is empty, suit-following and trumping rules apply.\n3. **Victory**: A player can declare a marriage only after winning their first trick.',
+      'Scoring example: Be the first to reach a target score (usually 66 or 100 points) through tricks and marriages. Be the first to reach a target score (usually 66 or 100 points) through tricks and marriages..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'mariagenspiel.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to reach a target score (usually 66 or 100 points) through tricks and marriages.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mariagenspiel.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Phase 1**: Players play tricks and then draw a card to stay at 6. No obligation to follow suit.\n2. **Phase 2**: Once the stock is empty, suit-following and trumping rules apply.\n3. **Victory**: A player can declare a marriage only after winning their first trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mariagenspiel.setup.players',
+        title: 'Players',
+        text: 'Two players. The game is played by two people; each receives six cards at the start. One card is turned face-up for trump (the seven of trumps may be exchanged for it). While the stock lasts, after each trick both players draw to refill to six cards.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mariagenspiel.setup.deck',
+        title: 'Deck',
+        text: '32 cards: Ace, 10, King, Queen, Jack, 9, 8, 7.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mariagenspiel.setup.equipment',
+        title: 'Equipment',
+        text: '32 cards: Ace, 10, King, Queen, Jack, 9, 8, 7.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mariagenspiel.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 6 cards. One card is flipped to determine the Trump suit.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mariagenspiel.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first to reach a target score (usually 66 or 100 points) through tricks and marriages.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mariagenspiel.score.description',
+        title: 'Scoring',
+        text: 'Be the first to reach a target score (usually 66 or 100 points) through tricks and marriages.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mariagenspiel.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Phase 1: no obligation to follow suit; after each trick both players draw to refill to 6.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'mariagenspiel.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Phase 2 (stock empty): must follow suit or trump if unable; no more draws or marriage declarations.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'mariagenspiel.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Marriage (K+Q same suit): 20 pts plain, 40 in trumps; declare only after winning a trick.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'mariagenspiel.rules.key.4',
+        title: 'Key rule 4',
+        text: '66 card points win the deal; last trick worth 10 extra. Trump 7 may rob the turn-up.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mariagenspiel.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mariagenspiel.rules.objective',
+          'mariagenspiel.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mariagenspiel.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mariagenspiel.setup.players',
+          'mariagenspiel.setup.deck',
+          'mariagenspiel.setup.equipment',
+          'mariagenspiel.setup.dealing',
+        ],
+      },
+      {
+        id: 'mariagenspiel.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mariagenspiel.rules.key.1',
+          'mariagenspiel.rules.key.2',
+          'mariagenspiel.rules.key.3',
+          'mariagenspiel.rules.key.4',
+        ],
+      },
+      {
+        id: 'mariagenspiel.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mariagenspiel.score.description',
+          'mariagenspiel.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mariagenspiel.setup.dealing',
+        'mariagenspiel.rules.objective',
+      ],
+      play_card: [
+        'mariagenspiel.rules.gameplay',
+      ],
+      draw: [
+        'mariagenspiel.rules.gameplay',
+      ],
+      deal_6_each_turn_trump: [
+        'mariagenspiel.rules.gameplay',
+      ],
+      play_any_card: [
+        'mariagenspiel.rules.gameplay',
+      ],
+      declare_marriage: [
+        'mariagenspiel.rules.gameplay',
+      ],
+    },
   },
 }

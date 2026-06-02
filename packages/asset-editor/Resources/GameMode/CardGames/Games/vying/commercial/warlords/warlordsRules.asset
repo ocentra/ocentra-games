@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players explore, gather treasure, build forces, and fight battles. Combat compares battle values and terrain modifiers using the published resolution table.',
+    Player: 'Players explore, gather treasure, build forces, and fight battles. Combat compares battle values and terrain modifiers using the published resolution table.',
     objective: 'Become the supreme Warlord through exploration, treasure, armies, and citadels.',
     gameplay: 'Players explore, gather treasure, build forces, and fight battles. Combat compares battle values and terrain modifiers using the published resolution table.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Become the supreme Warlord through exploration, treasure, armies, and citadels.',
+      'Turn-flow example: Players explore, gather treasure, build forces, and fight battles. Combat compares battle values and terrain modifiers using the published resolution table.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'warlords.rules.objective',
+        title: 'Objective',
+        text: 'Become the supreme Warlord through exploration, treasure, armies, and citadels.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'warlords.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players explore, gather treasure, build forces, and fight battles. Combat compares battle values and terrain modifiers using the published resolution table.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'warlords.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Warlords.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'warlords.setup.deck',
+        title: 'Deck',
+        text: 'Constructed Warlords CCG decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'warlords.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed Warlords CCG decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'warlords.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Constructed Warlords CCG decks and deal or lay out cards according to the documented Warlords rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'warlords.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'warlords.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'warlords.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Fantasy collectible card game from 1997.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'warlords.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players assemble followers, armies, artifacts, and citadels.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'warlords.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Combat uses a battle-value comparison table.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'warlords.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'warlords.rules.objective',
+          'warlords.rules.gameplay',
+        ],
+      },
+      {
+        id: 'warlords.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'warlords.setup.players',
+          'warlords.setup.deck',
+          'warlords.setup.equipment',
+          'warlords.setup.dealing',
+        ],
+      },
+      {
+        id: 'warlords.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'warlords.rules.key.1',
+          'warlords.rules.key.2',
+          'warlords.rules.key.3',
+        ],
+      },
+      {
+        id: 'warlords.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'warlords.score.description',
+          'warlords.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'warlords.setup.dealing',
+        'warlords.rules.objective',
+      ],
+      play_card: [
+        'warlords.rules.gameplay',
+      ],
+    },
   },
 }

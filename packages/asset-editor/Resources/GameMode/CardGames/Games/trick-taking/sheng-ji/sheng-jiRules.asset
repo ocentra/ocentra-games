@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Sheng Ji. Logic: See rules.objective and rules.gameplay.',
-    Player: "In Sheng Ji, your team wins rounds by controlling opponents' point-card captures while handling dynamic trump rank and suit. Bidding, kitty management, and combination play decide long-session rank progression.",
+    LLM: "Each round establishes dominant rank and usually a dominant suit through bidding. Declarers take the kitty and discard back to kitty size. Trick play then proceeds with strict follow/combination constraints based on lead pattern and trump structure. Opponents' captured point cards (5s, 10s, Kings) determine whether declarers keep deal and advance or defenders seize momentum.",
+    Player: "Each round establishes dominant rank and usually a dominant suit through bidding. Declarers take the kitty and discard back to kitty size. Trick play then proceeds with strict follow/combination constraints based on lead pattern and trump structure. Opponents' captured point cards (5s, 10s, Kings) determine whether declarers keep deal and advance or defenders seize momentum.",
     objective: "Raise your partnership rank from 2 upward (often to Ace) by winning rounds while controlling opponents' trick points.",
     gameplay: "Each round establishes dominant rank and usually a dominant suit through bidding. Declarers take the kitty and discard back to kitty size. Trick play then proceeds with strict follow/combination constraints based on lead pattern and trump structure. Opponents' captured point cards (5s, 10s, Kings) determine whether declarers keep deal and advance or defenders seize momentum.",
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-6 player(s), 25 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before bidding.',
-      "Scoring check: Only point cards score in tricks: 5s, 10s, and Kings. Round outcomes and level advancement depend on opponents' total captured points and variant thresholds. Expected outcome: Advance your partnership rank above the agreed target (commonly from 2 toward Ace) before opponents do..",
+      'Setup example: 25 card(s) per player.',
+      "Rule example: Raise your partnership rank from 2 upward (often to Ace) by winning rounds while controlling opponents' trick points.",
+      "Turn-flow example: Each round establishes dominant rank and usually a dominant suit through bidding. Declarers take the kitty and discard back to kitty size. Trick play then proceeds with strict follow/combination constraints based on lead pattern and trump structure. Opponents' captured point cards (5s, 10s, Kings) determine whether declarers keep deal and advance or defenders seize momentum.",
+      "Scoring example: Only point cards score in tricks: 5s, 10s, and Kings. Round outcomes and level advancement depend on opponents' total captured points and variant thresholds. Advance your partnership rank above the agreed target (commonly from 2 toward Ace) before opponents do..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'sheng-ji.rules.objective',
+        title: 'Objective',
+        text: "Raise your partnership rank from 2 upward (often to Ace) by winning rounds while controlling opponents' trick points.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'sheng-ji.rules.gameplay',
+        title: 'Turn flow',
+        text: "Each round establishes dominant rank and usually a dominant suit through bidding. Declarers take the kitty and discard back to kitty size. Trick play then proceeds with strict follow/combination constraints based on lead pattern and trump structure. Opponents' captured point cards (5s, 10s, Kings) determine whether declarers keep deal and advance or defenders seize momentum.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'sheng-ji.setup.players',
+        title: 'Players',
+        text: 'Usually 4 players in fixed partnerships (partners sit opposite).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'sheng-ji.setup.deck',
+        title: 'Deck',
+        text: 'Commonly two full decks with jokers (108 cards total).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'sheng-ji.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards and score/rank tracking.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'sheng-ji.setup.dealing',
+        title: 'Deal',
+        text: 'Players draw one card at a time during deal; in two-deck four-player games, each player gets 25 cards and 8 cards remain as kitty/bottom.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'sheng-ji.score.win-condition',
+        title: 'Win condition',
+        text: 'Advance your partnership rank above the agreed target (commonly from 2 toward Ace) before opponents do.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'sheng-ji.score.description',
+        title: 'Scoring',
+        text: "Only point cards score in tricks: 5s, 10s, and Kings. Round outcomes and level advancement depend on opponents' total captured points and variant thresholds.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'sheng-ji.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dynamic trump rank each round changes comparative card power.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'sheng-ji.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Only 5s, 10s, and Kings score points in tricks.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'sheng-ji.rules.key.3',
+        title: 'Key rule 3',
+        text: "Round control shifts based on opponents' point total thresholds.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'sheng-ji.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'sheng-ji.rules.objective',
+          'sheng-ji.rules.gameplay',
+        ],
+      },
+      {
+        id: 'sheng-ji.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'sheng-ji.setup.players',
+          'sheng-ji.setup.deck',
+          'sheng-ji.setup.equipment',
+          'sheng-ji.setup.dealing',
+        ],
+      },
+      {
+        id: 'sheng-ji.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'sheng-ji.rules.key.1',
+          'sheng-ji.rules.key.2',
+          'sheng-ji.rules.key.3',
+        ],
+      },
+      {
+        id: 'sheng-ji.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'sheng-ji.score.description',
+          'sheng-ji.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'sheng-ji.setup.dealing',
+        'sheng-ji.rules.objective',
+      ],
+      deal: [
+        'sheng-ji.rules.gameplay',
+      ],
+      play_card: [
+        'sheng-ji.rules.gameplay',
+      ],
+      pass: [
+        'sheng-ji.rules.gameplay',
+      ],
+      bid: [
+        'sheng-ji.rules.gameplay',
+      ],
+    },
   },
 }

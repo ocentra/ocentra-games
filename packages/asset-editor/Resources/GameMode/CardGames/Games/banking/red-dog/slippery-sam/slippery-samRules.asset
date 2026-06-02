@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Slippery Sam. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Red Dog variant: six-spot. Also Six-spot Red Dog.',
+    LLM: "Dealer puts up a stake (the pot). Dealer deals three cards face-down to each other player; players must not look at their cards. Dealer then turns cards face up in the centre until a six or lower appears; that card is the spot card. In turn, each player bets an amount between an agreed minimum and the current pot that they hold a higher card of the same suit than the spot card. After the player bets, the player's hand is exposed. If it contains a higher card of the same suit, the player wins that stake from the pot; otherwise the bet is added to the pot. If the pot becomes empty during the hand, the deal passes to the next player who creates a new pot. At the end of the hand, the dealer keeps whatever remains in the pot and the deal passes to the next player.",
+    Player: "Dealer puts up a stake (the pot). Dealer deals three cards face-down to each other player; players must not look at their cards. Dealer then turns cards face up in the centre until a six or lower appears; that card is the spot card. In turn, each player bets an amount between an agreed minimum and the current pot that they hold a higher card of the same suit than the spot card. After the player bets, the player's hand is exposed. If it contains a higher card of the same suit, the player wins that stake from the pot; otherwise the bet is added to the pot. If the pot becomes empty during the hand, the deal passes to the next player who creates a new pot. At the end of the hand, the dealer keeps whatever remains in the pot and the deal passes to the next player.",
     objective: "Win money by betting that your hand contains a higher card of the same suit than the dealer's spot card (a six or lower); the dealer banks the pot and pays or collects each bet.",
     gameplay: "Dealer puts up a stake (the pot). Dealer deals three cards face-down to each other player; players must not look at their cards. Dealer then turns cards face up in the centre until a six or lower appears; that card is the spot card. In turn, each player bets an amount between an agreed minimum and the current pot that they hold a higher card of the same suit than the spot card. After the player bets, the player's hand is exposed. If it contains a higher card of the same suit, the player wins that stake from the pot; otherwise the bet is added to the pot. If the pot becomes empty during the hand, the deal passes to the next player who creates a new pot. At the end of the hand, the dealer keeps whatever remains in the pot and the deal passes to the next player.",
     keyRules: [
@@ -52,10 +52,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_three_each before reveal_spot.',
-      'Scoring check: Paytable Expected outcome: Player wins stake from pot if hand contains a higher card of the same suit as the spot card; otherwise bet is added to pot. Dealer keeps remainder at end of hand..',
+      'Setup example: 3 card(s) per player.',
+      "Rule example: Win money by betting that your hand contains a higher card of the same suit than the dealer's spot card (a six or lower); the dealer banks the pot and pays or collects each bet.",
+      "Turn-flow example: Dealer puts up a stake (the pot). Dealer deals three cards face-down to each other player; players must not look at their cards. Dealer then turns cards face up in the centre until a six or lower appears; that card is the spot card. In turn, each player bets an amount between an agreed minimum and the current pot that they hold a higher card of the same suit than the spot card. After the player bets, the player's hand is exposed. If it contains a higher card of the same suit, the player wins that stake from the pot; otherwise the bet is added to the pot. If the pot becomes empty during the hand, the deal passes to the next player who creates a new pot. At the end of the hand, the dealer keeps whatever remains in the pot and the deal passes to the next player.",
+      'Scoring example: Paytable Player wins stake from pot if hand contains a higher card of the same suit as the spot card; otherwise bet is added to pot. Dealer keeps remainder at end of hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'slippery-sam.rules.objective',
+        title: 'Objective',
+        text: "Win money by betting that your hand contains a higher card of the same suit than the dealer's spot card (a six or lower); the dealer banks the pot and pays or collects each bet.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'slippery-sam.rules.gameplay',
+        title: 'Turn flow',
+        text: "Dealer puts up a stake (the pot). Dealer deals three cards face-down to each other player; players must not look at their cards. Dealer then turns cards face up in the centre until a six or lower appears; that card is the spot card. In turn, each player bets an amount between an agreed minimum and the current pot that they hold a higher card of the same suit than the spot card. After the player bets, the player's hand is exposed. If it contains a higher card of the same suit, the player wins that stake from the pot; otherwise the bet is added to the pot. If the pot becomes empty during the hand, the deal passes to the next player who creates a new pot. At the end of the hand, the dealer keeps whatever remains in the pot and the deal passes to the next player.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'slippery-sam.setup.players',
+        title: 'Players',
+        text: 'Two or more players; one is dealer and banker each hand.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'slippery-sam.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'slippery-sam.setup.equipment',
+        title: 'Equipment',
+        text: 'Chips or money for the pot and bets.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'slippery-sam.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer deals three cards face-down to each other player; players must not look at their cards. Dealer then turns cards face up from the deck until a six or lower appears; that card is the spot card for the hand.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'slippery-sam.score.win-condition',
+        title: 'Win condition',
+        text: 'Player wins stake from pot if hand contains a higher card of the same suit as the spot card; otherwise bet is added to pot. Dealer keeps remainder at end of hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'slippery-sam.score.description',
+        title: 'Scoring',
+        text: 'Paytable',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'slippery-sam.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Six-spot: dealer turns cards until a six or lower appears; players bet on having a higher same-suit card.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'slippery-sam.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players do not look at their cards until after they have bet.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'slippery-sam.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Bet between agreed minimum and current pot.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'slippery-sam.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'slippery-sam.rules.objective',
+          'slippery-sam.rules.gameplay',
+        ],
+      },
+      {
+        id: 'slippery-sam.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'slippery-sam.setup.players',
+          'slippery-sam.setup.deck',
+          'slippery-sam.setup.equipment',
+          'slippery-sam.setup.dealing',
+        ],
+      },
+      {
+        id: 'slippery-sam.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'slippery-sam.rules.key.1',
+          'slippery-sam.rules.key.2',
+          'slippery-sam.rules.key.3',
+        ],
+      },
+      {
+        id: 'slippery-sam.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'slippery-sam.score.description',
+          'slippery-sam.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'slippery-sam.setup.dealing',
+        'slippery-sam.rules.objective',
+      ],
+      bet: [
+        'slippery-sam.rules.gameplay',
+      ],
+      deal_three_each: [
+        'slippery-sam.rules.gameplay',
+      ],
+      turn_until_six_or_lower: [
+        'slippery-sam.rules.gameplay',
+      ],
+      reveal_hand_and_settle: [
+        'slippery-sam.rules.gameplay',
+      ],
+      dealer_keeps_remainder: [
+        'slippery-sam.rules.gameplay',
+      ],
+    },
   },
 }

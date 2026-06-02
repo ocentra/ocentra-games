@@ -52,10 +52,180 @@
       go_out: 'Dompe is modeled as a Trick-taking flow; go out is not a core player action in its documented rules.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before main_play.',
-      'Scoring check: Scoring uses the documented rules for Dompe and determines round or match winners accordingly. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win the pot by having the best fivendcard poker hand when the round ends, or win instantly with a sixndcard combination.',
+      "Turn-flow example: 1. Drawing: Players take turns in anti-clockwise order, drawing the top card from the deck or the last discarded card.\n2. Calling Dompe: After drawing, if a player believes they have the best 5-card hand, they call 'Dompe'. This ends the game after the current round concludes.\n3. Discarding: After drawing (and potentially calling), the player must discard one card.",
+      'Scoring example: Scoring uses the documented rules for Dompe and determines round or match winners accordingly. Win the pot by having the best fivendcard poker hand when the round ends, or win instantly with a sixndcard combination..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'dompe.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the best fivendcard poker hand when the round ends, or win instantly with a sixndcard combination.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'dompe.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Drawing: Players take turns in anti-clockwise order, drawing the top card from the deck or the last discarded card.\n2. Calling Dompe: After drawing, if a player believes they have the best 5-card hand, they call 'Dompe'. This ends the game after the current round concludes.\n3. Discarding: After drawing (and potentially calling), the player must discard one card.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'dompe.setup.players',
+        title: 'Players',
+        text: '2 to 5 players using one deck. Additional decks can be added for more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'dompe.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck plus one Joker (53 tiles).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'dompe.setup.equipment',
+        title: 'Equipment',
+        text: 'One deck of cards, betting chips (one chip ante per player).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'dompe.setup.dealing',
+        title: 'Deal',
+        text: '5 cards dealt to each player, one at a time, in an anti-clockwise direction.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'dompe.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the pot by having the best fivendcard poker hand when the round ends, or win instantly with a sixndcard combination.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'dompe.score.description',
+        title: 'Scoring',
+        text: 'Scoring uses the documented rules for Dompe and determines round or match winners accordingly.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'dompe.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Anti-clockwise play: Dealing and turns move to the right.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'dompe.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The Joker is wild and can represent any card.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'dompe.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Six-Card Instant Wins: Six-card Flush, Six-card Straight, or Three Pairs win the pot immediately without waiting for a round to end.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'dompe.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'dompe.rules.objective',
+          'dompe.rules.gameplay',
+        ],
+      },
+      {
+        id: 'dompe.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'dompe.setup.players',
+          'dompe.setup.deck',
+          'dompe.setup.equipment',
+          'dompe.setup.dealing',
+        ],
+      },
+      {
+        id: 'dompe.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'dompe.rules.key.1',
+          'dompe.rules.key.2',
+          'dompe.rules.key.3',
+        ],
+      },
+      {
+        id: 'dompe.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'dompe.score.description',
+          'dompe.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'dompe.setup.dealing',
+        'dompe.rules.objective',
+      ],
+      ante: [
+        'dompe.rules.gameplay',
+      ],
+      deal: [
+        'dompe.rules.gameplay',
+      ],
+      fold: [
+        'dompe.rules.gameplay',
+      ],
+      check: [
+        'dompe.rules.gameplay',
+      ],
+      call: [
+        'dompe.rules.gameplay',
+      ],
+      bet: [
+        'dompe.rules.gameplay',
+      ],
+      raise: [
+        'dompe.rules.gameplay',
+      ],
+      award_pot: [
+        'dompe.rules.gameplay',
+      ],
+      play_card: [
+        'dompe.rules.gameplay',
+      ],
+      draw: [
+        'dompe.rules.gameplay',
+      ],
+      discard: [
+        'dompe.rules.gameplay',
+      ],
+      pass: [
+        'dompe.rules.gameplay',
+      ],
+    },
   },
 }

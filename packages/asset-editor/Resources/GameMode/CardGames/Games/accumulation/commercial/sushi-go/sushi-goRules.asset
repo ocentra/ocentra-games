@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Twenty-Four. Logic: See rules.objective and rules.gameplay.',
-    Player: '24 is a mathematical card game: use four numbers (from four cards) and only +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· (and parentheses) to make exactly 24. All four numbers must be used once. First to call a correct solution wins the four cards (or they go to opponent); play until one player has no cards. Popular in China since at least the 1960s (Shanghai); also played in North America.',
+    LLM: 'Players choose one card from hand, reveal simultaneously, then pass the remaining hand. Different sushi cards score as sets, majorities, or individual bonuses after the round.',
+    Player: 'Players choose one card from hand, reveal simultaneously, then pass the remaining hand. Different sushi cards score as sets, majorities, or individual bonuses after the round.',
     objective: 'Score the most points by drafting valuable sushi cards and set combinations.',
     gameplay: 'Players choose one card from hand, reveal simultaneously, then pass the remaining hand. Different sushi cards score as sets, majorities, or individual bonuses after the round.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: None; win = other player has no cards. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score the most points by drafting valuable sushi cards and set combinations.',
+      'Turn-flow example: Players choose one card from hand, reveal simultaneously, then pass the remaining hand. Different sushi cards score as sets, majorities, or individual bonuses after the round.',
+      "Scoring example: None; win = other player has no cards. Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'sushi-go.rules.objective',
+        title: 'Objective',
+        text: 'Score the most points by drafting valuable sushi cards and set combinations.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'sushi-go.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players choose one card from hand, reveal simultaneously, then pass the remaining hand. Different sushi cards score as sets, majorities, or individual bonuses after the round.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'sushi-go.setup.players',
+        title: 'Players',
+        text: '2-5 players use the table arrangement described for Sushi Go.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'sushi-go.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Sushi Go card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'sushi-go.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Sushi Go card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'sushi-go.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Sushi Go card deck and deal or lay out cards according to the documented Sushi Go rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'sushi-go.score.win-condition',
+        title: 'Win condition',
+        text: "Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'sushi-go.score.description',
+        title: 'Scoring',
+        text: 'None; win = other player has no cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'sushi-go.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Choose one card and pass the remaining hand each turn.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'sushi-go.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Cards score through different set-collection rules.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'sushi-go.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Pudding or dessert cards can affect endgame scoring depending on edition.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'sushi-go.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'sushi-go.rules.objective',
+          'sushi-go.rules.gameplay',
+        ],
+      },
+      {
+        id: 'sushi-go.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'sushi-go.setup.players',
+          'sushi-go.setup.deck',
+          'sushi-go.setup.equipment',
+          'sushi-go.setup.dealing',
+        ],
+      },
+      {
+        id: 'sushi-go.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'sushi-go.rules.key.1',
+          'sushi-go.rules.key.2',
+          'sushi-go.rules.key.3',
+        ],
+      },
+      {
+        id: 'sushi-go.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'sushi-go.score.description',
+          'sushi-go.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'sushi-go.setup.dealing',
+        'sushi-go.rules.objective',
+      ],
+      play_card: [
+        'sushi-go.rules.gameplay',
+      ],
+    },
   },
 }

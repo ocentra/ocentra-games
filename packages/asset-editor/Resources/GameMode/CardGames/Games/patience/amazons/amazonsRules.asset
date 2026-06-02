@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Amazons. Logic: Build the required suit sequences and clear the reduced pack.',
-    Player: 'Amazons is a short patience game using a reduced piquet pack without kings, organized as a simple builder where queens and suit sequences drive the finish.',
+    LLM: 'Playable cards are moved to foundations as they become available. The reduced pack makes every rank important, and missed opportunities can quickly block the small layout.',
+    Player: 'Playable cards are moved to foundations as they become available. The reduced pack makes every rank important, and missed opportunities can quickly block the small layout.',
     objective: 'Build the required suit sequences and clear the reduced pack.',
     gameplay: 'Playable cards are moved to foundations as they become available. The reduced pack makes every rank important, and missed opportunities can quickly block the small layout.',
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: Win by completing the prescribed foundations; lose if the layout blocks. Expected outcome: Build the required suit sequences and clear the reduced pack..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Build the required suit sequences and clear the reduced pack.',
+      'Turn-flow example: Playable cards are moved to foundations as they become available. The reduced pack makes every rank important, and missed opportunities can quickly block the small layout.',
+      'Scoring example: Win by completing the prescribed foundations; lose if the layout blocks. Build the required suit sequences and clear the reduced pack..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'amazons.rules.objective',
+        title: 'Objective',
+        text: 'Build the required suit sequences and clear the reduced pack.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'amazons.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Playable cards are moved to foundations as they become available. The reduced pack makes every rank important, and missed opportunities can quickly block the small layout.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'amazons.setup.players',
+        title: 'Players',
+        text: 'One player lays out the reduced pack for solitaire play.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'amazons.setup.deck',
+        title: 'Deck',
+        text: 'Use a piquet pack after removing the kings.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'amazons.setup.equipment',
+        title: 'Equipment',
+        text: 'Piquet pack with kings removed, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'amazons.setup.dealing',
+        title: 'Deal',
+        text: 'Deal according to the Amazons layout, exposing cards for foundation building and keeping the remainder as stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'amazons.score.win-condition',
+        title: 'Win condition',
+        text: 'Build the required suit sequences and clear the reduced pack.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'amazons.score.description',
+        title: 'Scoring',
+        text: 'Win by completing the prescribed foundations; lose if the layout blocks.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'amazons.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Uses a reduced piquet pack without kings.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'amazons.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Queens are important to the foundation pattern.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'amazons.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The game is short and usually resolved in a few minutes.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'amazons.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'amazons.rules.objective',
+          'amazons.rules.gameplay',
+        ],
+      },
+      {
+        id: 'amazons.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'amazons.setup.players',
+          'amazons.setup.deck',
+          'amazons.setup.equipment',
+          'amazons.setup.dealing',
+        ],
+      },
+      {
+        id: 'amazons.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'amazons.rules.key.1',
+          'amazons.rules.key.2',
+          'amazons.rules.key.3',
+        ],
+      },
+      {
+        id: 'amazons.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'amazons.score.description',
+          'amazons.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'amazons.setup.dealing',
+        'amazons.rules.objective',
+      ],
+      deal: [
+        'amazons.rules.gameplay',
+      ],
+      play_card: [
+        'amazons.rules.gameplay',
+      ],
+      draw: [
+        'amazons.rules.gameplay',
+      ],
+    },
   },
 }

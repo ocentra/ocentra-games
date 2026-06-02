@@ -11,12 +11,36 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Spades 1–13 points (K=13 down to A=1), aces of other suits 1 each, 10♦ = 6; total 100. Sweep: 50 (25 on first play, 0 on last). First team to lead by 100 wins one baazi. Team scoring under 9 in a deal loses a baazi.',
+      winCondition: 'First team to achieve a lead of 100 or more points over the other team wins one baazi. Team scoring fewer than 9 points in a deal loses a baazi immediately.',
+      targetScore: 100,
+      scoringDirection: 'high_wins',
+      cardValues: {
         spades: '1-13 by rank (K=13 to A=1)',
         aces_other_suits: '1 each',
         '10_diamonds': '6',
         total: '100',
       },
+      sourceCardValues: {
+        raw: {
+          spades: '1-13 by rank (K=13 to A=1)',
+          aces_other_suits: '1 each',
+          '10_diamonds': '6',
+          total: '100',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {},
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,
@@ -26,7 +50,7 @@
       '10_diamonds': 6,
       total: 100,
     },
-    penalties: '{\n  "under_9_in_deal": "Lose baazi immediately"\n}',
+    penalties: '{"under_9_in_deal":"Lose baazi immediately"}',
     targetScore: 100,
     scoringDirection: 'high_wins',
     rankingAsset: {

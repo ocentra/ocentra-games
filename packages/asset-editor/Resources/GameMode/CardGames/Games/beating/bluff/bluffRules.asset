@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Bluff/IDI. Shedding + deduction. All cards dealt. Players claim current rank face-down. Challenge = loser takes pile. First to empty hand wins.',
-    Player: "The current rank is 7s. You have no 7s! Play 2 cards face-down and claim 'Two Sevens'. Risky—but if your opponents aren't counting, they won't know there have already been three 7s played. If no one challenges, you shed 2 cards for free!",
+    LLM: "1. **Establish Rank**: A target rank (e.g., Queens) is chosen for the round. 2. **Turn**: Each player in turn must play 1 to 4 cards face-down, claiming they are the target rank. 3. **Challenge**: Any player can shout 'Bluff!' or 'I Doubt It!' after a play. 4. **Reveal**: If challenged, the played cards are revealed. 5. **Penalty**: If the player lied, they take the entire table pile. If they were truthful, the challenger takes the pile. 6. **Rank Change**: The rank changes to the next in sequence (A-2-3...) after a successful challenge or when a new round starts.",
+    Player: "1. **Establish Rank**: A target rank (e.g., Queens) is chosen for the round. 2. **Turn**: Each player in turn must play 1 to 4 cards face-down, claiming they are the target rank. 3. **Challenge**: Any player can shout 'Bluff!' or 'I Doubt It!' after a play. 4. **Reveal**: If challenged, the played cards are revealed. 5. **Penalty**: If the player lied, they take the entire table pile. If they were truthful, the challenger takes the pile. 6. **Rank Change**: The rank changes to the next in sequence (A-2-3...) after a successful challenge or when a new round starts.",
     objective: 'Be the first player to empty your hand of all cards.',
     gameplay: "1. **Establish Rank**: A target rank (e.g., Queens) is chosen for the round. 2. **Turn**: Each player in turn must play 1 to 4 cards face-down, claiming they are the target rank. 3. **Challenge**: Any player can shout 'Bluff!' or 'I Doubt It!' after a play. 4. **Reveal**: If challenged, the played cards are revealed. 5. **Penalty**: If the player lied, they take the entire table pile. If they were truthful, the challenger takes the pile. 6. **Rank Change**: The rank changes to the next in sequence (A-2-3...) after a successful challenge or when a new round starts.",
     keyRules: [
@@ -52,10 +52,168 @@
       go_out: 'Winning occurs automatically upon playing the last card; no separate go-out action is used.',
     },
     exampleHands: [
-      'Opening deal: 3-6 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in dealing; system may use deal_all before play_loop.',
-      'Scoring check: No points are awarded; the objective is purely hand-emptying. Expected outcome: Successful shedding of all hand cards..',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Be the first player to empty your hand of all cards.',
+      "Turn-flow example: 1. **Establish Rank**: A target rank (e.g., Queens) is chosen for the round. 2. **Turn**: Each player in turn must play 1 to 4 cards face-down, claiming they are the target rank. 3. **Challenge**: Any player can shout 'Bluff!' or 'I Doubt It!' after a play. 4. **Reveal**: If challenged, the played cards are revealed. 5. **Penalty**: If the player lied, they take the entire table pile. If they were truthful, the challenger takes the pile. 6. **Rank Change**: The rank changes to the next in sequence (A-2-3...) after a successful challenge or when a new round starts.",
+      'Scoring example: No points are awarded; the objective is purely hand-emptying. Successful shedding of all hand cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'bluff.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to empty your hand of all cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bluff.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Establish Rank**: A target rank (e.g., Queens) is chosen for the round. 2. **Turn**: Each player in turn must play 1 to 4 cards face-down, claiming they are the target rank. 3. **Challenge**: Any player can shout 'Bluff!' or 'I Doubt It!' after a play. 4. **Reveal**: If challenged, the played cards are revealed. 5. **Penalty**: If the player lied, they take the entire table pile. If they were truthful, the challenger takes the pile. 6. **Rank Change**: The rank changes to the next in sequence (A-2-3...) after a successful challenge or when a new round starts.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bluff.setup.players',
+        title: 'Players',
+        text: '3 to 6 players playing individually.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bluff.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card French pack (No Jokers).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bluff.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bluff.setup.dealing',
+        title: 'Deal',
+        text: 'Deal the entire deck as evenly as possible clockwise. Players keep their hands private but their card count visible.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bluff.score.win-condition',
+        title: 'Win condition',
+        text: 'Successful shedding of all hand cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bluff.score.description',
+        title: 'Scoring',
+        text: 'No points are awarded; the objective is purely hand-emptying.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bluff.rules.key.1',
+        title: 'Key rule 1',
+        text: 'You must play at least one card every turn.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bluff.rules.key.2',
+        title: 'Key rule 2',
+        text: "Any player can challenge any other player's claim.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bluff.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Successful challenges reset the central pile.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bluff.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bluff.rules.objective',
+          'bluff.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bluff.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bluff.setup.players',
+          'bluff.setup.deck',
+          'bluff.setup.equipment',
+          'bluff.setup.dealing',
+        ],
+      },
+      {
+        id: 'bluff.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bluff.rules.key.1',
+          'bluff.rules.key.2',
+          'bluff.rules.key.3',
+        ],
+      },
+      {
+        id: 'bluff.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bluff.score.description',
+          'bluff.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bluff.setup.dealing',
+        'bluff.rules.objective',
+      ],
+      declare: [
+        'bluff.rules.gameplay',
+      ],
+      play_card: [
+        'bluff.rules.gameplay',
+      ],
+      pass: [
+        'bluff.rules.gameplay',
+      ],
+      play_facedown: [
+        'bluff.rules.gameplay',
+      ],
+      challenge_previous: [
+        'bluff.rules.gameplay',
+      ],
+      deal_all: [
+        'bluff.rules.gameplay',
+      ],
+      reveal_cards: [
+        'bluff.rules.gameplay',
+      ],
+      award_pile_to_loser: [
+        'bluff.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Troggu. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Troggu (Trogga) is a Swiss Tarot game from the German-speaking Valais. Uses a modified 62-card Tarot deck. 3-8 players. Features bidding (Normal/Solo), Tapp exchange, the unique Fool as highest trump, and Misere when all pass. The secret partner mechanic (calling a trump card) adds intrigue in 7-8 player games.',
+    LLM: 'Bid: Pass/Normal/Solo. Tappist exchanges with Tapp (no 5-pt cards). Solo plays without exchange. Follow suit; must trump if void. Fool = highest trump (special last-card rule). 7-8 players: Tappist calls a trump for secret partner.',
+    Player: 'Bid: Pass/Normal/Solo. Tappist exchanges with Tapp (no 5-pt cards). Solo plays without exchange. Follow suit; must trump if void. Fool = highest trump (special last-card rule). 7-8 players: Tappist calls a trump for secret partner.',
     objective: 'Score 58+ of 114 card points (as declarer) or prevent it (as defenders).',
     gameplay: 'Bid: Pass/Normal/Solo. Tappist exchanges with Tapp (no 5-pt cards). Solo plays without exchange. Follow suit; must trump if void. Fool = highest trump (special last-card rule). 7-8 players: Tappist calls a trump for secret partner.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: K/Bagat/TrXXI/Fool=5, Q=4, Cav=3, J=2, others=1. Total 114. 58+ to win. Double if opponent <30, triple if 0 tricks. Expected outcome: Score 58+ of 114 card points (as declarer) or prevent it (as defenders)..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score 58+ of 114 card points (as declarer) or prevent it (as defenders).',
+      'Turn-flow example: Bid: Pass/Normal/Solo. Tappist exchanges with Tapp (no 5-pt cards). Solo plays without exchange. Follow suit; must trump if void. Fool = highest trump (special last-card rule). 7-8 players: Tappist calls a trump for secret partner.',
+      'Scoring example: K/Bagat/TrXXI/Fool=5, Q=4, Cav=3, J=2, others=1. Total 114. 58+ to win. Double if opponent <30, triple if 0 tricks. Score 58+ of 114 card points (as declarer) or prevent it (as defenders)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'troggu.rules.objective',
+        title: 'Objective',
+        text: 'Score 58+ of 114 card points (as declarer) or prevent it (as defenders).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'troggu.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Bid: Pass/Normal/Solo. Tappist exchanges with Tapp (no 5-pt cards). Solo plays without exchange. Follow suit; must trump if void. Fool = highest trump (special last-card rule). 7-8 players: Tappist calls a trump for secret partner.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'troggu.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'troggu.setup.deck',
+        title: 'Deck',
+        text: '62 cards (78 minus low swords/batons and high cups/coins). 21 trumps + Fool + 40 suit cards. Total 114 pts.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'troggu.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, coins/chips',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'troggu.setup.dealing',
+        title: 'Deal',
+        text: 'Cards dealt + Tapp in center.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'troggu.score.win-condition',
+        title: 'Win condition',
+        text: 'Score 58+ of 114 card points (as declarer) or prevent it (as defenders).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'troggu.score.description',
+        title: 'Scoring',
+        text: 'K/Bagat/TrXXI/Fool=5, Q=4, Cav=3, J=2, others=1. Total 114. 58+ to win. Double if opponent <30, triple if 0 tricks.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'troggu.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Fool as highest trump (with last-card exception)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'troggu.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Secret partner mechanic (7-8 players)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'troggu.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Tapp exchange',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'troggu.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Misere when all pass',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'troggu.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'troggu.rules.objective',
+          'troggu.rules.gameplay',
+        ],
+      },
+      {
+        id: 'troggu.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'troggu.setup.players',
+          'troggu.setup.deck',
+          'troggu.setup.equipment',
+          'troggu.setup.dealing',
+        ],
+      },
+      {
+        id: 'troggu.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'troggu.rules.key.1',
+          'troggu.rules.key.2',
+          'troggu.rules.key.3',
+          'troggu.rules.key.4',
+        ],
+      },
+      {
+        id: 'troggu.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'troggu.score.description',
+          'troggu.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'troggu.setup.dealing',
+        'troggu.rules.objective',
+      ],
+      play_card: [
+        'troggu.rules.gameplay',
+      ],
+    },
   },
 }

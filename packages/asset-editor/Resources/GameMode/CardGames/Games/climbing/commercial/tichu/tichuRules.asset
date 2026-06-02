@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Big Two. Type: Climbing. Rules: 2-A-K...3 rank. Spades > Hearts > Clubs > Diamonds. Singles, Pairs, Triples, 5-card Poker hands. Goal: Empty hand.',
-    Player: 'You have the 2 of Spades—the highest single in the game. An opponent just played an Ace. Regain control of the lead with your 2, then dump that troublesome pair of 4s!',
+    LLM: 'Partners play climbing combinations to empty hands, call Tichu bets, and use special cards such as Dragon, Phoenix, Dog, and Mah Jong. Points from captured cards and successful calls determine the score.',
+    Player: 'Partners play climbing combinations to empty hands, call Tichu bets, and use special cards such as Dragon, Phoenix, Dog, and Mah Jong. Points from captured cards and successful calls determine the score.',
     objective: 'As a partnership, be first to reach the target score, usually 1000 points.',
     gameplay: 'Partners play climbing combinations to empty hands, call Tichu bets, and use special cards such as Dragon, Phoenix, Dog, and Mah Jong. Points from captured cards and successful calls determine the score.',
     keyRules: [
@@ -52,10 +52,159 @@
       go_out: 'A player wins the round automatically upon playing their final combination from hand.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in dealing; system may use deal_13_each before climbing.',
-      'Scoring check: Losers receive penalty points based on remaining cards (1x, 2x, or 3x multipliers). Expected outcome: 1000.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: As a partnership, be first to reach the target score, usually 1000 points.',
+      'Turn-flow example: Partners play climbing combinations to empty hands, call Tichu bets, and use special cards such as Dragon, Phoenix, Dog, and Mah Jong. Points from captured cards and successful calls determine the score.',
+      'Scoring example: Losers receive penalty points based on remaining cards (1x, 2x, or 3x multipliers). First player to empty their hand wins the round..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tichu.rules.objective',
+        title: 'Objective',
+        text: 'As a partnership, be first to reach the target score, usually 1000 points.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tichu.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Partners play climbing combinations to empty hands, call Tichu bets, and use special cards such as Dragon, Phoenix, Dog, and Mah Jong. Points from captured cards and successful calls determine the score.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tichu.setup.players',
+        title: 'Players',
+        text: '4 players use the table arrangement described for Tichu.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tichu.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated 56-card Tichu deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tichu.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated 56-card Tichu deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tichu.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated 56-card Tichu deck and deal or lay out cards according to the documented Tichu rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tichu.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to empty their hand wins the round.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tichu.score.description',
+        title: 'Scoring',
+        text: 'Losers receive penalty points based on remaining cards (1x, 2x, or 3x multipliers).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tichu.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Four players in two partnerships.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tichu.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players climb with singles, pairs, sequences, full houses, and bombs.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tichu.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Tichu calls create major bonus or penalty swings.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tichu.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tichu.rules.objective',
+          'tichu.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tichu.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tichu.setup.players',
+          'tichu.setup.deck',
+          'tichu.setup.equipment',
+          'tichu.setup.dealing',
+        ],
+      },
+      {
+        id: 'tichu.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tichu.rules.key.1',
+          'tichu.rules.key.2',
+          'tichu.rules.key.3',
+        ],
+      },
+      {
+        id: 'tichu.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tichu.score.description',
+          'tichu.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tichu.setup.dealing',
+        'tichu.rules.objective',
+      ],
+      play_card: [
+        'tichu.rules.gameplay',
+      ],
+      pass: [
+        'tichu.rules.gameplay',
+      ],
+      deal_13_each: [
+        'tichu.rules.gameplay',
+      ],
+      play_combination: [
+        'tichu.rules.gameplay',
+      ],
+      calculate_penalties: [
+        'tichu.rules.gameplay',
+      ],
+    },
   },
 }

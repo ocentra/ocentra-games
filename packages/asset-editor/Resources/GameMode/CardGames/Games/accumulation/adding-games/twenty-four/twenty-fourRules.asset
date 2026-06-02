@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Twenty-Four. Logic: See rules.objective and rules.gameplay.',
-    Player: '24 is a mathematical card game: use four numbers (from four cards) and only +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· (and parentheses) to make exactly 24. All four numbers must be used once. First to call a correct solution wins the four cards (or they go to opponent); play until one player has no cards. Popular in China since at least the 1960s (Shanghai); also played in North America.',
+    LLM: "Both players reveal two cards (four face-up). First to call a correct expression that equals 24 wins the four cards (placed on opponent's stack). Repeat until one player has no cards; that player wins.",
+    Player: "Both players reveal two cards (four face-up). First to call a correct expression that equals 24 wins the four cards (placed on opponent's stack). Repeat until one player has no cards; that player wins.",
     objective: "Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards.",
     gameplay: "Both players reveal two cards (four face-up). First to call a correct expression that equals 24 wins the four cards (placed on opponent's stack). Repeat until one player has no cards; that player wins.",
     keyRules: [
@@ -51,7 +51,148 @@
       meld: 'This game has no meld action.',
       go_out: 'This game has no go-out action.',
     },
-    exampleHands: [],
+    exampleHands: [
+      'Setup example: 5 card(s) per player.',
+      "Rule example: Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards.",
+      "Turn-flow example: Both players reveal two cards (four face-up). First to call a correct expression that equals 24 wins the four cards (placed on opponent's stack). Repeat until one player has no cards; that player wins.",
+      "Scoring example: None; win = other player has no cards. Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards..",
+    ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'twenty-four.rules.objective',
+        title: 'Objective',
+        text: "Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'twenty-four.rules.gameplay',
+        title: 'Turn flow',
+        text: "Both players reveal two cards (four face-up). First to call a correct expression that equals 24 wins the four cards (placed on opponent's stack). Repeat until one player has no cards; that player wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'twenty-four.setup.players',
+        title: 'Players',
+        text: '2 (or more in multi-player variant)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'twenty-four.setup.deck',
+        title: 'Deck',
+        text: '40 cards: A(1) through 10 in each suit',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'twenty-four.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck with face cards and jokers removed',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'twenty-four.setup.dealing',
+        title: 'Deal',
+        text: 'Split deck equally; each player has a face-down stack.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'twenty-four.score.win-condition',
+        title: 'Win condition',
+        text: "Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'twenty-four.score.description',
+        title: 'Scoring',
+        text: 'None; win = other player has no cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'twenty-four.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Use all four numbers exactly once',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'twenty-four.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Only + Ã¢Ë†â€™ Ãƒâ€” ÃƒÂ· and parentheses',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'twenty-four.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Exact 24; no rounding',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'twenty-four.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'twenty-four.rules.objective',
+          'twenty-four.rules.gameplay',
+        ],
+      },
+      {
+        id: 'twenty-four.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'twenty-four.setup.players',
+          'twenty-four.setup.deck',
+          'twenty-four.setup.equipment',
+          'twenty-four.setup.dealing',
+        ],
+      },
+      {
+        id: 'twenty-four.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'twenty-four.rules.key.1',
+          'twenty-four.rules.key.2',
+          'twenty-four.rules.key.3',
+        ],
+      },
+      {
+        id: 'twenty-four.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'twenty-four.score.description',
+          'twenty-four.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'twenty-four.setup.dealing',
+        'twenty-four.rules.objective',
+      ],
+      play_card: [
+        'twenty-four.rules.gameplay',
+      ],
+    },
   },
 }

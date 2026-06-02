@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Gloom. Logic: Finish with the lowest total family self-worth by playing negative modifiers on your own characters and positive ones on opponents.',
-    Player: 'Gloom is a commercial storytelling card game where players make their own family miserable while improving opponents before deaths are scored.',
+    LLM: 'Players play transparent modifier cards onto characters, tell story fragments, and eventually play death cards to lock in a characters score.',
+    Player: 'Players play transparent modifier cards onto characters, tell story fragments, and eventually play death cards to lock in a characters score.',
     objective: 'Finish with the lowest total family self-worth by playing negative modifiers on your own characters and positive ones on opponents.',
     gameplay: 'Players play transparent modifier cards onto characters, tell story fragments, and eventually play death cards to lock in a characters score.',
     keyRules: [
@@ -54,10 +54,168 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: Published endgame scoring or victory conditions determine the winner. Expected outcome: Finish with the lowest total family self-worth by playing negative modifiers on your own characters and positive ones on opponents..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Finish with the lowest total family self-worth by playing negative modifiers on your own characters and positive ones on opponents.',
+      'Turn-flow example: Players play transparent modifier cards onto characters, tell story fragments, and eventually play death cards to lock in a characters score.',
+      'Scoring example: Published endgame scoring or victory conditions determine the winner. Finish with the lowest total family self-worth by playing negative modifiers on your own characters and positive ones on opponents..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'gloom.rules.objective',
+        title: 'Objective',
+        text: 'Finish with the lowest total family self-worth by playing negative modifiers on your own characters and positive ones on opponents.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'gloom.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play transparent modifier cards onto characters, tell story fragments, and eventually play death cards to lock in a characters score.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'gloom.setup.players',
+        title: 'Players',
+        text: '2-4 basic deck players use the table arrangement described for Gloom.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'gloom.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated transparent Gloom family and modifier cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'gloom.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated transparent Gloom family and modifier cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'gloom.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare the dedicated Gloom deck and any shared scoring, resource, or tableau area described by the rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'gloom.score.win-condition',
+        title: 'Win condition',
+        text: 'Finish with the lowest total family self-worth by playing negative modifiers on your own characters and positive ones on opponents.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'gloom.score.description',
+        title: 'Scoring',
+        text: 'Published endgame scoring or victory conditions determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'gloom.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Transparent cards stack modifiers.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'gloom.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players control families of characters.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'gloom.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Negative points are good for your own family.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'gloom.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Death cards lock scores.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'gloom.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Lowest total wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'gloom.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'gloom.rules.objective',
+          'gloom.rules.gameplay',
+        ],
+      },
+      {
+        id: 'gloom.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'gloom.setup.players',
+          'gloom.setup.deck',
+          'gloom.setup.equipment',
+          'gloom.setup.dealing',
+        ],
+      },
+      {
+        id: 'gloom.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'gloom.rules.key.1',
+          'gloom.rules.key.2',
+          'gloom.rules.key.3',
+          'gloom.rules.key.4',
+          'gloom.rules.key.5',
+        ],
+      },
+      {
+        id: 'gloom.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'gloom.score.description',
+          'gloom.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'gloom.setup.dealing',
+        'gloom.rules.objective',
+      ],
+      play_card: [
+        'gloom.rules.gameplay',
+      ],
+      flip_top_card: [
+        'gloom.rules.gameplay',
+      ],
+    },
   },
 }

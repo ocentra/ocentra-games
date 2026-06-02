@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Aces and Kings. Logic: Complete all eight foundations, four building up from ace to king and four building down from king to ace, without regard to suit.',
-    Player: 'Aces and Kings is a difficult two-deck solitaire in which eight foundations build both upward from aces and downward from kings without regard to suit.',
+    LLM: 'Deal ten tableau piles of four cards each. Build tableau cards down by suit, with same-suit sequences movable as groups. Deal one card at a time from the stock and play available cards to the tableau or foundations. There are no redeals.',
+    Player: 'Deal ten tableau piles of four cards each. Build tableau cards down by suit, with same-suit sequences movable as groups. Deal one card at a time from the stock and play available cards to the tableau or foundations. There are no redeals.',
     objective: 'Move all cards to the foundations from ace to king by suit.',
     gameplay: 'Deal ten tableau piles of four cards each. Build tableau cards down by suit, with same-suit sequences movable as groups. Deal one card at a time from the stock and play available cards to the tableau or foundations. There are no redeals.',
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: The game is won only by completing all foundations; otherwise the deal is lost when the stock is exhausted. Expected outcome: 1.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Move all cards to the foundations from ace to king by suit.',
+      'Turn-flow example: Deal ten tableau piles of four cards each. Build tableau cards down by suit, with same-suit sequences movable as groups. Deal one card at a time from the stock and play available cards to the tableau or foundations. There are no redeals.',
+      'Scoring example: The game is won only by completing all foundations; otherwise the deal is lost when the stock is exhausted. Complete all eight foundations, four building up from ace to king and four building down from king to ace, without regard to suit..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'josephine.rules.objective',
+        title: 'Objective',
+        text: 'Move all cards to the foundations from ace to king by suit.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'josephine.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Deal ten tableau piles of four cards each. Build tableau cards down by suit, with same-suit sequences movable as groups. Deal one card at a time from the stock and play available cards to the tableau or foundations. There are no redeals.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'josephine.setup.players',
+        title: 'Players',
+        text: '1 players use the table arrangement described for Josephine.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'josephine.setup.deck',
+        title: 'Deck',
+        text: 'Two standard 52-card decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'josephine.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard 52-card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'josephine.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Two standard 52-card decks and deal or lay out cards according to the documented Josephine rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'josephine.score.win-condition',
+        title: 'Win condition',
+        text: 'Complete all eight foundations, four building up from ace to king and four building down from king to ace, without regard to suit.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'josephine.score.description',
+        title: 'Scoring',
+        text: 'The game is won only by completing all foundations; otherwise the deal is lost when the stock is exhausted.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'josephine.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Foundations build up by suit from ace to king.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'josephine.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Tableau builds down by suit.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'josephine.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Same-suit sequences can be moved together, unlike stricter Forty Thieves variants.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'josephine.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'josephine.rules.objective',
+          'josephine.rules.gameplay',
+        ],
+      },
+      {
+        id: 'josephine.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'josephine.setup.players',
+          'josephine.setup.deck',
+          'josephine.setup.equipment',
+          'josephine.setup.dealing',
+        ],
+      },
+      {
+        id: 'josephine.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'josephine.rules.key.1',
+          'josephine.rules.key.2',
+          'josephine.rules.key.3',
+        ],
+      },
+      {
+        id: 'josephine.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'josephine.score.description',
+          'josephine.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'josephine.setup.dealing',
+        'josephine.rules.objective',
+      ],
+      deal: [
+        'josephine.rules.gameplay',
+      ],
+      play_card: [
+        'josephine.rules.gameplay',
+      ],
+      draw: [
+        'josephine.rules.gameplay',
+      ],
+    },
   },
 }

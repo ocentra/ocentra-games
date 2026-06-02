@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Whist. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Whist is the classic English partnership trick-taking game and ancestor of Bridge. 4 players, 2 teams. 52 cards, 13 each. Last card dealt (to dealer) turned face-up = trump. Eldest hand leads. Follow suit. Each trick over 6 = 1 point. Honours (A-K-Q-J of trump): 3 held = 2pts, 4 held = 4pts. Game to 5 (British) or 7 (American). Rubber = best of 3.',
+    LLM: 'Two partnerships play a Whist-like trick game. Unlike ordinary Whist, partners may communicate within the permitted table convention and a captain may ask for information and direct play.',
+    Player: 'Two partnerships play a Whist-like trick game. Unlike ordinary Whist, partners may communicate within the permitted table convention and a captain may ask for information and direct play.',
     objective: 'As a partnership, coordinate card play to win the required tricks.',
     gameplay: 'Two partnerships play a Whist-like trick game. Unlike ordinary Whist, partners may communicate within the permitted table convention and a captain may ask for information and direct play.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Odd tricks (over 6) = 1pt each. Honours bonus. Game: 5pts (British) or 7pts (American). Rubber: best of 3 games. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: As a partnership, coordinate card play to win the required tricks.',
+      'Turn-flow example: Two partnerships play a Whist-like trick game. Unlike ordinary Whist, partners may communicate within the permitted table convention and a captain may ask for information and direct play.',
+      'Scoring example: Odd tricks (over 6) = 1pt each. Honours bonus. Game: 5pts (British) or 7pts (American). Rubber: best of 3 games. Win majority of tricks. First to 5/7 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'quadrette.rules.objective',
+        title: 'Objective',
+        text: 'As a partnership, coordinate card play to win the required tricks.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'quadrette.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Two partnerships play a Whist-like trick game. Unlike ordinary Whist, partners may communicate within the permitted table convention and a captain may ask for information and direct play.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'quadrette.setup.players',
+        title: 'Players',
+        text: '4 players use the table arrangement described for Quadrette.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'quadrette.setup.deck',
+        title: 'Deck',
+        text: 'Traditional French-suited pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'quadrette.setup.equipment',
+        title: 'Equipment',
+        text: 'Traditional French-suited pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'quadrette.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Traditional French-suited pack and deal or lay out cards according to the documented Quadrette rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'quadrette.score.win-condition',
+        title: 'Win condition',
+        text: 'Win majority of tricks. First to 5/7 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'quadrette.score.description',
+        title: 'Scoring',
+        text: 'Odd tricks (over 6) = 1pt each. Honours bonus. Game: 5pts (British) or 7pts (American). Rubber: best of 3 games.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'quadrette.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Four players form two partnerships.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'quadrette.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Partner communication is allowed under the game convention.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'quadrette.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The game is a simpler, faster Whist variant with anticlockwise play recorded in historical descriptions.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'quadrette.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'quadrette.rules.objective',
+          'quadrette.rules.gameplay',
+        ],
+      },
+      {
+        id: 'quadrette.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'quadrette.setup.players',
+          'quadrette.setup.deck',
+          'quadrette.setup.equipment',
+          'quadrette.setup.dealing',
+        ],
+      },
+      {
+        id: 'quadrette.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'quadrette.rules.key.1',
+          'quadrette.rules.key.2',
+          'quadrette.rules.key.3',
+        ],
+      },
+      {
+        id: 'quadrette.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'quadrette.score.description',
+          'quadrette.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'quadrette.setup.dealing',
+        'quadrette.rules.objective',
+      ],
+      play_card: [
+        'quadrette.rules.gameplay',
+      ],
+    },
   },
 }

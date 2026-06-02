@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Derda. Execute deal and bid phase, enforce trick obligations, then score points and words toward 500.',
-    Player: 'Choose the safer trump contract for this deal based on your high cards and likely sequence bonuses.',
+    LLM: "1. First dealer chosen by drawing cards (higher card in trump order)\n2. Deal 6 cards to each player, turn up 13th card for suggested trump\n3. Bidding round 1: Non-dealer can 'play' suggested trump or 'pass'\n4. If non-dealer passes, dealer can 'play', 'pass', or ask 'how many times?'\n5. If both pass round 1, round 2 allows choosing different trump suit\n6. Commercial offers can be made to throw in hand for points/deal advantage\n7. Once trumps chosen, deal 3 more cards each\n8. Player with 7 of trumps may exchange it for turn-up card\n9. Non-dealer leads to first trick\n10. Must follow suit if able; must play trump if cannot follow (if have trump)\n11. Highest trump wins if trumps played; otherwise highest of led suit\n12. Winner leads to next trick",
+    Player: "1. First dealer chosen by drawing cards (higher card in trump order)\n2. Deal 6 cards to each player, turn up 13th card for suggested trump\n3. Bidding round 1: Non-dealer can 'play' suggested trump or 'pass'\n4. If non-dealer passes, dealer can 'play', 'pass', or ask 'how many times?'\n5. If both pass round 1, round 2 allows choosing different trump suit\n6. Commercial offers can be made to throw in hand for points/deal advantage\n7. Once trumps chosen, deal 3 more cards each\n8. Player with 7 of trumps may exchange it for turn-up card\n9. Non-dealer leads to first trick\n10. Must follow suit if able; must play trump if cannot follow (if have trump)\n11. Highest trump wins if trumps played; otherwise highest of led suit\n12. Winner leads to next trick",
     objective: "Be first to achieve cumulative score of 500 points across multiple deals. Points scored for cards taken in tricks and bonuses ('words').",
     gameplay: "1. First dealer chosen by drawing cards (higher card in trump order)\n2. Deal 6 cards to each player, turn up 13th card for suggested trump\n3. Bidding round 1: Non-dealer can 'play' suggested trump or 'pass'\n4. If non-dealer passes, dealer can 'play', 'pass', or ask 'how many times?'\n5. If both pass round 1, round 2 allows choosing different trump suit\n6. Commercial offers can be made to throw in hand for points/deal advantage\n7. Once trumps chosen, deal 3 more cards each\n8. Player with 7 of trumps may exchange it for turn-up card\n9. Non-dealer leads to first trick\n10. Must follow suit if able; must play trump if cannot follow (if have trump)\n11. Highest trump wins if trumps played; otherwise highest of led suit\n12. Winner leads to next trick",
     keyRules: [
@@ -55,10 +55,183 @@
       go_out: 'Deal ends after trick completion, not via going out.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before bidding.',
-      'Scoring check: Score comes from captured trick cards and word bonuses across repeated deals. Expected outcome: 500.',
+      'Setup example: 6 card(s) per player.',
+      "Rule example: Be first to achieve cumulative score of 500 points across multiple deals. Points scored for cards taken in tricks and bonuses ('words').",
+      "Turn-flow example: 1. First dealer chosen by drawing cards (higher card in trump order)\n2. Deal 6 cards to each player, turn up 13th card for suggested trump\n3. Bidding round 1: Non-dealer can 'play' suggested trump or 'pass'\n4. If non-dealer passes, dealer can 'play', 'pass', or ask 'how many times?'\n5. If both pass round 1, round 2 allows choosing different trump suit\n6. Commercial offers can be made to throw in hand for points/deal advantage\n7. Once trumps chosen, deal 3 more cards each\n8. Player with 7 of trumps may exchange it for turn-up card\n9. Non-dealer leads to first trick\n10. Must follow suit if able; must play trump if cannot follow (if have trump)\n11. Highest trump wins if trumps played; otherwise highest of led suit\n12. Winner leads to next trick",
+      'Scoring example: Score comes from captured trick cards and word bonuses across repeated deals. First player to reach 500 cumulative points wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'derda.rules.objective',
+        title: 'Objective',
+        text: "Be first to achieve cumulative score of 500 points across multiple deals. Points scored for cards taken in tricks and bonuses ('words').",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'derda.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. First dealer chosen by drawing cards (higher card in trump order)\n2. Deal 6 cards to each player, turn up 13th card for suggested trump\n3. Bidding round 1: Non-dealer can 'play' suggested trump or 'pass'\n4. If non-dealer passes, dealer can 'play', 'pass', or ask 'how many times?'\n5. If both pass round 1, round 2 allows choosing different trump suit\n6. Commercial offers can be made to throw in hand for points/deal advantage\n7. Once trumps chosen, deal 3 more cards each\n8. Player with 7 of trumps may exchange it for turn-up card\n9. Non-dealer leads to first trick\n10. Must follow suit if able; must play trump if cannot follow (if have trump)\n11. Highest trump wins if trumps played; otherwise highest of led suit\n12. Winner leads to next trick",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'derda.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 2\nOptimal Players: 2\nPartnerships: None - individual head-to-head play',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'derda.setup.deck',
+        title: 'Deck',
+        text: 'Type: 32-card French suited pack\nNumber of Decks: 1\nJokers: Not included\nCards used: A, K, Q, J, 10, 9, 8, 7 in each suit',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'derda.setup.equipment',
+        title: 'Equipment',
+        text: '32-card French suited pack\nScore slate and chalk for special notation\nTable space for cards and talon',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'derda.setup.dealing',
+        title: 'Deal',
+        text: 'First deal: 6 cards to each player in packets of 3\nTurn-up card: 13th card suggests trump\nSecond deal (if trumps chosen): 3 more cards to each player\nRemaining 13 cards form talon with top card face up',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'derda.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach 500 cumulative points wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'derda.score.description',
+        title: 'Scoring',
+        text: 'Score comes from captured trick cards and word bonuses across repeated deals.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'derda.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trump Jack scores double: 2 points as jack + 20 as word = 22 total',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'derda.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Derda and 50 bonuses only scored by player with best sequence',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'derda.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Commercial offers allow throwing in hand for points/deal advantage',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'derda.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Must follow suit; if cannot follow, must play trump if held',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'derda.rules.key.5',
+        title: 'Key rule 5',
+        text: '7 of trumps can be exchanged for turn-up card before play',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'derda.rules.key.6',
+        title: 'Key rule 6',
+        text: "Sequences use 'derda ranking': A-K-Q-J-10-9-8-7",
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'derda.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'derda.rules.objective',
+          'derda.rules.gameplay',
+        ],
+      },
+      {
+        id: 'derda.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'derda.setup.players',
+          'derda.setup.deck',
+          'derda.setup.equipment',
+          'derda.setup.dealing',
+        ],
+      },
+      {
+        id: 'derda.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'derda.rules.key.1',
+          'derda.rules.key.2',
+          'derda.rules.key.3',
+          'derda.rules.key.4',
+          'derda.rules.key.5',
+          'derda.rules.key.6',
+        ],
+      },
+      {
+        id: 'derda.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'derda.score.description',
+          'derda.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'derda.setup.dealing',
+        'derda.rules.objective',
+      ],
+      deal: [
+        'derda.rules.gameplay',
+      ],
+      award_pot: [
+        'derda.rules.gameplay',
+      ],
+      play_card: [
+        'derda.rules.gameplay',
+      ],
+      bid: [
+        'derda.rules.gameplay',
+      ],
+    },
   },
 }

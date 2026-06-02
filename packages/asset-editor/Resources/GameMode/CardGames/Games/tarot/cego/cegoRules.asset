@@ -52,10 +52,153 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-4 player(s), 11 card(s) per player, 54 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use perform_deal before bid.',
-      'Scoring check: Card points in tricks: Gstieß, Trock 21, Trock 1, Kings 5 each; Queens 4; Cavaliers 3; Jacks 2; others 1. Total 70. Normal games: bidder needs 36+ (plus at least one trick). Count in threes, subtract 2 per group; remainder subtract 1. Special games (Ulti, Piccolo, Bettel, Räuber) have fixed scores. Expected outcome: NA.',
+      'Setup example: 11 card(s) per player.',
+      'Rule example: Fulfill contract (bid); score points from tricks. Many contracts: play from Legage (central hand).',
+      "Turn-flow example: Bidding; declarer names contract. Deal includes Legage (Cego). Play from hand or Legage per contract. Trick-taking; trumps (Trocke) 1â€“21 plus GstieÃŸ. Follow suit; must trump if can't follow. Contract success/failure and card points.",
+      'Scoring example: Card points in tricks: Gstieß, Trock 21, Trock 1, Kings 5 each; Queens 4; Cavaliers 3; Jacks 2; others 1. Total 70. Normal games: bidder needs 36+ (plus at least one trick). Count in threes, subtract 2 per group; remainder subtract 1. Special games (Ulti, Piccolo, Bettel, Räuber) have fixed scores. Normal games: bidder wins by taking at least 36 card points and at least one trick; defenders win otherwise. Special games: Ulti (last trick with Trock 1), Piccolo (exactly one trick), Bettel (no tricks), Räuber (lowest points wins)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'cego.rules.objective',
+        title: 'Objective',
+        text: 'Fulfill contract (bid); score points from tricks. Many contracts: play from Legage (central hand).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'cego.rules.gameplay',
+        title: 'Turn flow',
+        text: "Bidding; declarer names contract. Deal includes Legage (Cego). Play from hand or Legage per contract. Trick-taking; trumps (Trocke) 1â€“21 plus GstieÃŸ. Follow suit; must trump if can't follow. Contract success/failure and card points.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'cego.setup.players',
+        title: 'Players',
+        text: '3â€“4. Individual or partnerships by contract.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'cego.setup.deck',
+        title: 'Deck',
+        text: '54-card Cego deck (22 trumps Trocke + 8 per suit).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'cego.setup.equipment',
+        title: 'Equipment',
+        text: 'Cego deck; score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'cego.setup.dealing',
+        title: 'Deal',
+        text: 'Varies by contract; central hand (Legage) dealt; many contracts use Legage. Anticlockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'cego.score.win-condition',
+        title: 'Win condition',
+        text: 'Normal games: bidder wins by taking at least 36 card points and at least one trick; defenders win otherwise. Special games: Ulti (last trick with Trock 1), Piccolo (exactly one trick), Bettel (no tricks), Räuber (lowest points wins).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'cego.score.description',
+        title: 'Scoring',
+        text: 'Card points in tricks: Gstieß, Trock 21, Trock 1, Kings 5 each; Queens 4; Cavaliers 3; Jacks 2; others 1. Total 70. Normal games: bidder needs 36+ (plus at least one trick). Count in threes, subtract 2 per group; remainder subtract 1. Special games (Ulti, Piccolo, Bettel, Räuber) have fixed scores.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'cego.rules.key.1',
+        title: 'Key rule 1',
+        text: '3â€“4p; 54-card Cego deck; central hand (Legage)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'cego.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Contracts often use Legage; from Ombre/Dreierles',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'cego.rules.key.3',
+        title: 'Key rule 3',
+        text: '22 trumps (1â€“21 + GstieÃŸ); 8 per suit',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'cego.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'cego.rules.objective',
+          'cego.rules.gameplay',
+        ],
+      },
+      {
+        id: 'cego.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'cego.setup.players',
+          'cego.setup.deck',
+          'cego.setup.equipment',
+          'cego.setup.dealing',
+        ],
+      },
+      {
+        id: 'cego.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'cego.rules.key.1',
+          'cego.rules.key.2',
+          'cego.rules.key.3',
+        ],
+      },
+      {
+        id: 'cego.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'cego.score.description',
+          'cego.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'cego.setup.dealing',
+        'cego.rules.objective',
+      ],
+      play_card: [
+        'cego.rules.gameplay',
+      ],
+      bid: [
+        'cego.rules.gameplay',
+      ],
+      perform_deal: [
+        'cego.rules.gameplay',
+      ],
+    },
   },
 }

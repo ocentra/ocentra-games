@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Binglao. PLO variant. D6 determines hole card count (4/5/6) and High or Hi-Lo 8-or-better per deal. Standard Omaha: must use exactly 2 hole + 3 board. Pot Limit betting. 6-max table. Norwegian championship format.',
-    Player: "The die shows 5 — this hand is 5-Card Omaha Hi-Lo! You're dealt: A♠ 2♥ K♦ J♣ 7♠. The flop is 3♦ 5♠ Q♥. You have a strong low draw (A-2) and need a low card on turn/river to qualify. Your high is weak. Pot Limit — control the sizing.",
+    LLM: '1. **Format Roll**: Dealer rolls die: 1-2 = 4-card, 3-4 = 5-card, 5-6 = 6-card. High/Low is determined by house rule or second roll. 2. **Betting**: Standard Pot Limit structure. 3. **Hand Construction**: You MUST use exactly two cards from your hand and exactly three cards from the community board to form a five-card hand.',
+    Player: '1. **Format Roll**: Dealer rolls die: 1-2 = 4-card, 3-4 = 5-card, 5-6 = 6-card. High/Low is determined by house rule or second roll. 2. **Betting**: Standard Pot Limit structure. 3. **Hand Construction**: You MUST use exactly two cards from your hand and exactly three cards from the community board to form a five-card hand.',
     objective: 'Win the pot by having the highest hand (or best qualifying low hand in Hi-Lo deals) at showdown, or by forcing all opponents to fold.',
     gameplay: '1. **Format Roll**: Dealer rolls die: 1-2 = 4-card, 3-4 = 5-card, 5-6 = 6-card. High/Low is determined by house rule or second roll. 2. **Betting**: Standard Pot Limit structure. 3. **Hand Construction**: You MUST use exactly two cards from your hand and exactly three cards from the community board to form a five-card hand.',
     keyRules: [
@@ -52,10 +52,183 @@
       go_out: 'The round concludes automatically after the final showdown and pot distribution are completed.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in die_roll; dealer may use roll_die before dealing.',
-      'Scoring check: Standard poker pot mechanics. In High deals, best hand wins entire pot. In Hi-Lo deals, pot is split between best high hand and best qualifying low hand. Expected outcome: Highest chip total at the end of the session or tournament..',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Win the pot by having the highest hand (or best qualifying low hand in Hi-Lo deals) at showdown, or by forcing all opponents to fold.',
+      'Turn-flow example: 1. **Format Roll**: Dealer rolls die: 1-2 = 4-card, 3-4 = 5-card, 5-6 = 6-card. High/Low is determined by house rule or second roll. 2. **Betting**: Standard Pot Limit structure. 3. **Hand Construction**: You MUST use exactly two cards from your hand and exactly three cards from the community board to form a five-card hand.',
+      'Scoring example: Standard poker pot mechanics. In High deals, best hand wins entire pot. In Hi-Lo deals, pot is split between best high hand and best qualifying low hand. Highest chip total at the end of the session or tournament..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'binglao-poker.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the highest hand (or best qualifying low hand in Hi-Lo deals) at showdown, or by forcing all opponents to fold.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'binglao-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Format Roll**: Dealer rolls die: 1-2 = 4-card, 3-4 = 5-card, 5-6 = 6-card. High/Low is determined by house rule or second roll. 2. **Betting**: Standard Pot Limit structure. 3. **Hand Construction**: You MUST use exactly two cards from your hand and exactly three cards from the community board to form a five-card hand.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'binglao-poker.setup.players',
+        title: 'Players',
+        text: 'Typically 2 to 6 players; the 6-max format is standard to accommodate the potential for 6 hole cards per player.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'binglao-poker.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card French pack.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'binglao-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, poker chips, one six-sided die (D6).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'binglao-poker.setup.dealing',
+        title: 'Deal',
+        text: 'The dealer rolls the D6 to establish the hand rules. Players are dealt 4, 5, or 6 hole cards face down. Five community cards are dealt in the flop (3), turn (1), and river (1) pattern.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'binglao-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest chip total at the end of the session or tournament.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'binglao-poker.score.description',
+        title: 'Scoring',
+        text: 'Standard poker pot mechanics. In High deals, best hand wins entire pot. In Hi-Lo deals, pot is split between best high hand and best qualifying low hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'binglao-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Pot Limit: The maximum bet or raise is equal to the current total pot.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'binglao-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Qualifying Low: In Hi-Lo rounds, a low hand must consist of five unpaired cards ranked 8 or lower to be eligible.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'binglao-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Scooping: A player who holds both the best high hand and the best qualifying low hand wins the entire pot.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'binglao-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'binglao-poker.rules.objective',
+          'binglao-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'binglao-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'binglao-poker.setup.players',
+          'binglao-poker.setup.deck',
+          'binglao-poker.setup.equipment',
+          'binglao-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'binglao-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'binglao-poker.rules.key.1',
+          'binglao-poker.rules.key.2',
+          'binglao-poker.rules.key.3',
+        ],
+      },
+      {
+        id: 'binglao-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'binglao-poker.score.description',
+          'binglao-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'binglao-poker.setup.dealing',
+        'binglao-poker.rules.objective',
+      ],
+      fold: [
+        'binglao-poker.rules.gameplay',
+      ],
+      check: [
+        'binglao-poker.rules.gameplay',
+      ],
+      call: [
+        'binglao-poker.rules.gameplay',
+      ],
+      bet: [
+        'binglao-poker.rules.gameplay',
+      ],
+      raise: [
+        'binglao-poker.rules.gameplay',
+      ],
+      award_pot: [
+        'binglao-poker.rules.gameplay',
+      ],
+      deal_hole_cards: [
+        'binglao-poker.rules.gameplay',
+      ],
+      deal_flop: [
+        'binglao-poker.rules.gameplay',
+      ],
+      deal_turn: [
+        'binglao-poker.rules.gameplay',
+      ],
+      deal_river: [
+        'binglao-poker.rules.gameplay',
+      ],
+      roll_die: [
+        'binglao-poker.rules.gameplay',
+      ],
+      raise_pot_limit: [
+        'binglao-poker.rules.gameplay',
+      ],
+      evaluate_hands: [
+        'binglao-poker.rules.gameplay',
+      ],
+    },
   },
 }

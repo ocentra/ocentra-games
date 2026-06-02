@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Dixie. Logic: Defeat the opponent by using units, terrain, and combat results better than the opposing force.',
-    Player: 'Dixie is a collectible card game that uses cards and dice to simulate American Civil War battles.',
+    LLM: 'Players deploy unit cards, resolve combat with card abilities and dice, and manoeuvre around scenario objectives from the dedicated battle deck.',
+    Player: 'Players deploy unit cards, resolve combat with card abilities and dice, and manoeuvre around scenario objectives from the dedicated battle deck.',
     objective: 'Defeat the opponent by using units, terrain, and combat results better than the opposing force.',
     gameplay: 'Players deploy unit cards, resolve combat with card abilities and dice, and manoeuvre around scenario objectives from the dedicated battle deck.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Victory follows the battle scenario or opponent defeat condition. Expected outcome: Defeat the opponent by using units, terrain, and combat results better than the opposing force..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Defeat the opponent by using units, terrain, and combat results better than the opposing force.',
+      'Turn-flow example: Players deploy unit cards, resolve combat with card abilities and dice, and manoeuvre around scenario objectives from the dedicated battle deck.',
+      'Scoring example: Victory follows the battle scenario or opponent defeat condition. Defeat the opponent by using units, terrain, and combat results better than the opposing force..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'dixie.rules.objective',
+        title: 'Objective',
+        text: 'Defeat the opponent by using units, terrain, and combat results better than the opposing force.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'dixie.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players deploy unit cards, resolve combat with card abilities and dice, and manoeuvre around scenario objectives from the dedicated battle deck.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'dixie.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Dixie.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'dixie.setup.deck',
+        title: 'Deck',
+        text: 'Constructed Dixie Civil War battle decks with dice',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'dixie.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed Dixie Civil War battle decks with dice, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'dixie.setup.dealing',
+        title: 'Deal',
+        text: 'Players prepare battle decks, draw hands, and set up forces for the selected American Civil War battle scenario.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'dixie.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opponent by using units, terrain, and combat results better than the opposing force.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'dixie.score.description',
+        title: 'Scoring',
+        text: 'Victory follows the battle scenario or opponent defeat condition.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'dixie.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two-player collectible card game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'dixie.rules.key.2',
+        title: 'Key rule 2',
+        text: 'American Civil War battle theme.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'dixie.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Cards represent units and battle factors.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'dixie.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Dice are used for combat resolution.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'dixie.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Scenario or battle outcome decides victory.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'dixie.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'dixie.rules.objective',
+          'dixie.rules.gameplay',
+        ],
+      },
+      {
+        id: 'dixie.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'dixie.setup.players',
+          'dixie.setup.deck',
+          'dixie.setup.equipment',
+          'dixie.setup.dealing',
+        ],
+      },
+      {
+        id: 'dixie.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'dixie.rules.key.1',
+          'dixie.rules.key.2',
+          'dixie.rules.key.3',
+          'dixie.rules.key.4',
+          'dixie.rules.key.5',
+        ],
+      },
+      {
+        id: 'dixie.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'dixie.score.description',
+          'dixie.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'dixie.setup.dealing',
+        'dixie.rules.objective',
+      ],
+      play_card: [
+        'dixie.rules.gameplay',
+      ],
+    },
   },
 }

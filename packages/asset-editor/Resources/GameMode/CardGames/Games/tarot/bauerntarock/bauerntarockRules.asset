@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Bauerntarock. Logic: Win enough card points and bonuses to beat the opposing players under the chosen contract.',
-    Player: 'Bauerntarock is an Austrian German Tarok point-trick game for three or four players in which hearts are always trumps.',
+    LLM: 'Players follow suit when able, otherwise may trump. Hearts are always trumps, and card points plus contract bonuses determine the hand result.',
+    Player: 'Players follow suit when able, otherwise may trump. Hearts are always trumps, and card points plus contract bonuses determine the hand result.',
     objective: 'Win enough card points and bonuses to beat the opposing players under the chosen contract.',
     gameplay: 'Players follow suit when able, otherwise may trump. Hearts are always trumps, and card points plus contract bonuses determine the hand result.',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Card points and contract bonuses decide whether the declarer or defenders score. Expected outcome: Win enough card points and bonuses to beat the opposing players under the chosen contract..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win enough card points and bonuses to beat the opposing players under the chosen contract.',
+      'Turn-flow example: Players follow suit when able, otherwise may trump. Hearts are always trumps, and card points plus contract bonuses determine the hand result.',
+      'Scoring example: Card points and contract bonuses decide whether the declarer or defenders score. Win enough card points and bonuses to beat the opposing players under the chosen contract..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'bauerntarock.rules.objective',
+        title: 'Objective',
+        text: 'Win enough card points and bonuses to beat the opposing players under the chosen contract.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bauerntarock.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players follow suit when able, otherwise may trump. Hearts are always trumps, and card points plus contract bonuses determine the hand result.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bauerntarock.setup.players',
+        title: 'Players',
+        text: '3-4 players use the table arrangement described for Bauerntarock.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bauerntarock.setup.deck',
+        title: 'Deck',
+        text: '36-card German-suited pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bauerntarock.setup.equipment',
+        title: 'Equipment',
+        text: '36-card German-suited pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bauerntarock.setup.dealing',
+        title: 'Deal',
+        text: 'Deal from a 36-card German-suited pack; hearts are permanent trumps and the deal may include contracts such as Hineinschauen or Sumpern.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bauerntarock.score.win-condition',
+        title: 'Win condition',
+        text: 'Win enough card points and bonuses to beat the opposing players under the chosen contract.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bauerntarock.score.description',
+        title: 'Scoring',
+        text: 'Card points and contract bonuses decide whether the declarer or defenders score.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bauerntarock.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Three or four players.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bauerntarock.rules.key.2',
+        title: 'Key rule 2',
+        text: '36-card German pack.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bauerntarock.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Hearts are always trumps.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'bauerntarock.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Contract options alter the risk and scoring.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'bauerntarock.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Captured card points decide payment.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bauerntarock.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bauerntarock.rules.objective',
+          'bauerntarock.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bauerntarock.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bauerntarock.setup.players',
+          'bauerntarock.setup.deck',
+          'bauerntarock.setup.equipment',
+          'bauerntarock.setup.dealing',
+        ],
+      },
+      {
+        id: 'bauerntarock.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bauerntarock.rules.key.1',
+          'bauerntarock.rules.key.2',
+          'bauerntarock.rules.key.3',
+          'bauerntarock.rules.key.4',
+          'bauerntarock.rules.key.5',
+        ],
+      },
+      {
+        id: 'bauerntarock.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bauerntarock.score.description',
+          'bauerntarock.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bauerntarock.setup.dealing',
+        'bauerntarock.rules.objective',
+      ],
+      play_card: [
+        'bauerntarock.rules.gameplay',
+      ],
+      discard: [
+        'bauerntarock.rules.gameplay',
+      ],
+      pass: [
+        'bauerntarock.rules.gameplay',
+      ],
+      bid: [
+        'bauerntarock.rules.gameplay',
+      ],
+    },
   },
 }

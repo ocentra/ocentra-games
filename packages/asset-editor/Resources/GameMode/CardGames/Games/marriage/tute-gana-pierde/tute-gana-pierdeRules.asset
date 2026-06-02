@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tute gana-pierde. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Tute gana-pierde: win-lose Tute variant. First to reach target wins; or lose condition. 40-card Spanish.',
+    LLM: "All 40 cards dealt singly; last card exposed for trump. Player to dealer's right leads; follow suit and beat or trump per Tute rules. After winning a trick, a player may sing 40 (king-horse of trumps) or 20 (king-horse of another suit). Last trick winner may take or decline 10 extra points. Count points individually; most points loses, or 101+ wins.",
+    Player: "All 40 cards dealt singly; last card exposed for trump. Player to dealer's right leads; follow suit and beat or trump per Tute rules. After winning a trick, a player may sing 40 (king-horse of trumps) or 20 (king-horse of another suit). Last trick winner may take or decline 10 extra points. Count points individually; most points loses, or 101+ wins.",
     objective: 'Avoid taking the most points; or reach 101 or more points to win and make all others lose. The player with the most points (under 101) loses unless someone reaches 101+.',
     gameplay: "All 40 cards dealt singly; last card exposed for trump. Player to dealer's right leads; follow suit and beat or trump per Tute rules. After winning a trick, a player may sing 40 (king-horse of trumps) or 20 (king-horse of another suit). Last trick winner may take or decline 10 extra points. Count points individually; most points loses, or 101+ wins.",
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-5 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Points from cards in tricks, last trick 10, singing 40 or 20. Reach 101+ to win; else most points loses. Expected outcome: 101.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Avoid taking the most points; or reach 101 or more points to win and make all others lose. The player with the most points (under 101) loses unless someone reaches 101+.',
+      "Turn-flow example: All 40 cards dealt singly; last card exposed for trump. Player to dealer's right leads; follow suit and beat or trump per Tute rules. After winning a trick, a player may sing 40 (king-horse of trumps) or 20 (king-horse of another suit). Last trick winner may take or decline 10 extra points. Count points individually; most points loses, or 101+ wins.",
+      'Scoring example: Points from cards in tricks, last trick 10, singing 40 or 20. Reach 101+ to win; else most points loses. Reach 101 or more points to win; otherwise the player with the most points loses..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tute-gana-pierde.rules.objective',
+        title: 'Objective',
+        text: 'Avoid taking the most points; or reach 101 or more points to win and make all others lose. The player with the most points (under 101) loses unless someone reaches 101+.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tute-gana-pierde.rules.gameplay',
+        title: 'Turn flow',
+        text: "All 40 cards dealt singly; last card exposed for trump. Player to dealer's right leads; follow suit and beat or trump per Tute rules. After winning a trick, a player may sing 40 (king-horse of trumps) or 20 (king-horse of another suit). Last trick winner may take or decline 10 extra points. Count points individually; most points loses, or 101+ wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tute-gana-pierde.setup.players',
+        title: 'Players',
+        text: 'Three to five players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tute-gana-pierde.setup.deck',
+        title: 'Deck',
+        text: 'Standard Spanish 40-card pack (four suits: Oros, Copas, Espadas, Bastos; ranks 2–7 plus Sota, Caballo, Rey, As).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tute-gana-pierde.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tute-gana-pierde.setup.dealing',
+        title: 'Deal',
+        text: 'All cards dealt one at a time anticlockwise; last card exposed for trump.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tute-gana-pierde.score.win-condition',
+        title: 'Win condition',
+        text: 'Reach 101 or more points to win; otherwise the player with the most points loses.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tute-gana-pierde.score.description',
+        title: 'Scoring',
+        text: 'Points from cards in tricks, last trick 10, singing 40 or 20. Reach 101+ to win; else most points loses.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tute-gana-pierde.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Gana-pierde: most points loses unless someone reaches 101+ to win.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tute-gana-pierde.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Follow suit and beat or trump when able.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tute-gana-pierde.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Sing 40 or 20 after winning a trick (king-horse in trumps or other suit).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tute-gana-pierde.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Last trick: winner may claim or decline 10 points.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tute-gana-pierde.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tute-gana-pierde.rules.objective',
+          'tute-gana-pierde.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tute-gana-pierde.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tute-gana-pierde.setup.players',
+          'tute-gana-pierde.setup.deck',
+          'tute-gana-pierde.setup.equipment',
+          'tute-gana-pierde.setup.dealing',
+        ],
+      },
+      {
+        id: 'tute-gana-pierde.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tute-gana-pierde.rules.key.1',
+          'tute-gana-pierde.rules.key.2',
+          'tute-gana-pierde.rules.key.3',
+          'tute-gana-pierde.rules.key.4',
+        ],
+      },
+      {
+        id: 'tute-gana-pierde.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tute-gana-pierde.score.description',
+          'tute-gana-pierde.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tute-gana-pierde.setup.dealing',
+        'tute-gana-pierde.rules.objective',
+      ],
+      play_card: [
+        'tute-gana-pierde.rules.gameplay',
+      ],
+    },
   },
 }

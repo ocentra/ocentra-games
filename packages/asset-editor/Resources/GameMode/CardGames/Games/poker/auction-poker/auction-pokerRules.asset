@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Auction Poker (Buy Your Card). Type: Stud / Market variant. Rules: Pay 1-4 units to swap cards from a 3-card market. 3 rounds of buying/betting. Showdown: Best 5-card hand wins.',
-    Player: 'Welcome to Auction Poker! You have two 10s showing. The Market has another 10 for just 3 units. Do you buy it now to lock in your Three-of-a-Kind, or do you save your chips for the betting round?',
+    LLM: '1. **Initial Deal**: Players receive 5 cards (2 down, 3 up). 2. **Buying Round**: Starting left of dealer, each player may: (a) Buy a card at the fixed price, discard one of their current cards face down, and take the new card; (b) Pass. 3. **Replacement**: If a market card is bought, it is immediately replaced from the deck. 4. **Betting Round**: A standard round of poker betting follows each buying round. 5. **Cycles**: There are typically 3 buying rounds followed by 3 betting rounds. 6. **Showdown**: Standard poker hand rankings apply.',
+    Player: '1. **Initial Deal**: Players receive 5 cards (2 down, 3 up). 2. **Buying Round**: Starting left of dealer, each player may: (a) Buy a card at the fixed price, discard one of their current cards face down, and take the new card; (b) Pass. 3. **Replacement**: If a market card is bought, it is immediately replaced from the deck. 4. **Betting Round**: A standard round of poker betting follows each buying round. 5. **Cycles**: There are typically 3 buying rounds followed by 3 betting rounds. 6. **Showdown**: Standard poker hand rankings apply.',
     objective: 'Form the best five-card poker hand using your hole cards and purchased improvements.',
     gameplay: '1. **Initial Deal**: Players receive 5 cards (2 down, 3 up). 2. **Buying Round**: Starting left of dealer, each player may: (a) Buy a card at the fixed price, discard one of their current cards face down, and take the new card; (b) Pass. 3. **Replacement**: If a market card is bought, it is immediately replaced from the deck. 4. **Betting Round**: A standard round of poker betting follows each buying round. 5. **Cycles**: There are typically 3 buying rounds followed by 3 betting rounds. 6. **Showdown**: Standard poker hand rankings apply.',
     keyRules: [
@@ -52,10 +52,177 @@
       go_out: 'Hand ends at showdown or when all but one fold.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in ante; all_simultaneous may use ante_up before deal.',
-      'Scoring check: Standard Poker Hand Rankings (High or High-Low). Expected outcome: Capturing the pot at showdown or by forcing all others to fold..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Form the best five-card poker hand using your hole cards and purchased improvements.',
+      'Turn-flow example: 1. **Initial Deal**: Players receive 5 cards (2 down, 3 up). 2. **Buying Round**: Starting left of dealer, each player may: (a) Buy a card at the fixed price, discard one of their current cards face down, and take the new card; (b) Pass. 3. **Replacement**: If a market card is bought, it is immediately replaced from the deck. 4. **Betting Round**: A standard round of poker betting follows each buying round. 5. **Cycles**: There are typically 3 buying rounds followed by 3 betting rounds. 6. **Showdown**: Standard poker hand rankings apply.',
+      'Scoring example: Standard Poker Hand Rankings (High or High-Low). Capturing the pot at showdown or by forcing all others to fold..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'auction-poker.rules.objective',
+        title: 'Objective',
+        text: 'Form the best five-card poker hand using your hole cards and purchased improvements.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'auction-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Initial Deal**: Players receive 5 cards (2 down, 3 up). 2. **Buying Round**: Starting left of dealer, each player may: (a) Buy a card at the fixed price, discard one of their current cards face down, and take the new card; (b) Pass. 3. **Replacement**: If a market card is bought, it is immediately replaced from the deck. 4. **Betting Round**: A standard round of poker betting follows each buying round. 5. **Cycles**: There are typically 3 buying rounds followed by 3 betting rounds. 6. **Showdown**: Standard poker hand rankings apply.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'auction-poker.setup.players',
+        title: 'Players',
+        text: '2-6 players (to ensure enough cards in the deck for buying rounds).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'auction-poker.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'auction-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, poker chips.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'auction-poker.setup.dealing',
+        title: 'Deal',
+        text: 'Initial: 2 cards face down, 3 cards face up to each player. Market: 3 cards dealt face up in a row in the center.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'auction-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Capturing the pot at showdown or by forcing all others to fold.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'auction-poker.score.description',
+        title: 'Scoring',
+        text: 'Standard Poker Hand Rankings (High or High-Low).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'auction-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: "Purchased units are added to the pot immediately and do not count as 'bets' (others don't have to match them).",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'auction-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If you buy a card, you MUST discard one. You always maintain a 5-card hand.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'auction-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'High-Low Split: Often played where the highest and lowest (A-5) hands split the pot.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'auction-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'auction-poker.rules.objective',
+          'auction-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'auction-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'auction-poker.setup.players',
+          'auction-poker.setup.deck',
+          'auction-poker.setup.equipment',
+          'auction-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'auction-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'auction-poker.rules.key.1',
+          'auction-poker.rules.key.2',
+          'auction-poker.rules.key.3',
+        ],
+      },
+      {
+        id: 'auction-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'auction-poker.score.description',
+          'auction-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'auction-poker.setup.dealing',
+        'auction-poker.rules.objective',
+      ],
+      fold: [
+        'auction-poker.rules.gameplay',
+      ],
+      check: [
+        'auction-poker.rules.gameplay',
+      ],
+      call: [
+        'auction-poker.rules.gameplay',
+      ],
+      bet: [
+        'auction-poker.rules.gameplay',
+      ],
+      raise: [
+        'auction-poker.rules.gameplay',
+      ],
+      award_pot: [
+        'auction-poker.rules.gameplay',
+      ],
+      pass: [
+        'auction-poker.rules.gameplay',
+      ],
+      ante_up: [
+        'auction-poker.rules.gameplay',
+      ],
+      deal_hole_and_community: [
+        'auction-poker.rules.gameplay',
+      ],
+      buy_card: [
+        'auction-poker.rules.gameplay',
+      ],
+      evaluate_hands: [
+        'auction-poker.rules.gameplay',
+      ],
+    },
   },
 }

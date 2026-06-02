@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Spar. Logic: See rules.objective and rules.gameplay.',
-    Player: "Spar (or 'Spa') is a trick-taking card game widely played in Ghana and other parts of West Africa (sometimes as 'Sipa'). It is typically played with 2-4 players (solo or partnerships). The core mechanic revolves around taking the last trick, which earns significant points, and collecting certain cards (Aces, 10s). The game is fast, social, and often played for small stakes. It uses a reduced 32 or 36 card deck.",
+    LLM: "Player to dealer's left leads any card. Others must follow suit if possible; if not, any card. Highest card of the suit led wins the trick. Cards stay in a face-up pile. Trick winner leads to the next trick. Five tricks per hand. Winner of the last trick scores: 3 points if winning card is a 6, 2 if a 7, 1 if 8 or higher. Winner of the hand deals the next hand.",
+    Player: "Player to dealer's left leads any card. Others must follow suit if possible; if not, any card. Highest card of the suit led wins the trick. Cards stay in a face-up pile. Trick winner leads to the next trick. Five tricks per hand. Winner of the last trick scores: 3 points if winning card is a 6, 2 if a 7, 1 if 8 or higher. Winner of the hand deals the next hand.",
     objective: 'The object is to win the last (fifth) trick of each hand. There are no trumps. The player who wins the last trick scores points: 3 if the winning card is a 6, 2 if a 7, and 1 if 8 or higher. The session continues for as long as players wish with no fixed target score.',
     gameplay: "Player to dealer's left leads any card. Others must follow suit if possible; if not, any card. Highest card of the suit led wins the trick. Cards stay in a face-up pile. Trick winner leads to the next trick. Five tricks per hand. Winner of the last trick scores: 3 points if winning card is a 6, 2 if a 7, 1 if 8 or higher. Winner of the hand deals the next hand.",
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Winner of the last trick scores: 3 points if the winning card is a 6, 2 if a 7, 1 if 8 or higher. No fixed target; session continues as players wish. When played for money, winner is paid 1, 2 or 3 stakes by each other player. Expected outcome: Win the last (fifth) trick; score 3, 2 or 1 point depending on the winning card (6, 7, or 8+)..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: The object is to win the last (fifth) trick of each hand. There are no trumps. The player who wins the last trick scores points: 3 if the winning card is a 6, 2 if a 7, and 1 if 8 or higher. The session continues for as long as players wish with no fixed target score.',
+      "Turn-flow example: Player to dealer's left leads any card. Others must follow suit if possible; if not, any card. Highest card of the suit led wins the trick. Cards stay in a face-up pile. Trick winner leads to the next trick. Five tricks per hand. Winner of the last trick scores: 3 points if winning card is a 6, 2 if a 7, 1 if 8 or higher. Winner of the hand deals the next hand.",
+      'Scoring example: Winner of the last trick scores: 3 points if the winning card is a 6, 2 if a 7, 1 if 8 or higher. No fixed target; session continues as players wish. When played for money, winner is paid 1, 2 or 3 stakes by each other player. Win the last (fifth) trick; score 3, 2 or 1 point depending on the winning card (6, 7, or 8+)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'spar.rules.objective',
+        title: 'Objective',
+        text: 'The object is to win the last (fifth) trick of each hand. There are no trumps. The player who wins the last trick scores points: 3 if the winning card is a 6, 2 if a 7, and 1 if 8 or higher. The session continues for as long as players wish with no fixed target score.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'spar.rules.gameplay',
+        title: 'Turn flow',
+        text: "Player to dealer's left leads any card. Others must follow suit if possible; if not, any card. Highest card of the suit led wins the trick. Cards stay in a face-up pile. Trick winner leads to the next trick. Five tricks per hand. Winner of the last trick scores: 3 points if winning card is a 6, 2 if a 7, 1 if 8 or higher. Winner of the hand deals the next hand.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'spar.setup.players',
+        title: 'Players',
+        text: '2, 3 or 4 (up to 7 possible).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'spar.setup.deck',
+        title: 'Deck',
+        text: '35 cards: 6 through Ace in each suit; Ace of Spades normally not used.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'spar.setup.equipment',
+        title: 'Equipment',
+        text: '35 cards: 6 through Ace in each suit; Ace of Spades normally not used.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'spar.setup.dealing',
+        title: 'Deal',
+        text: "First dealer chosen at random; thereafter the winner of each hand deals the next. Five cards to each player: a batch of three to each (starting with player to dealer's left if clockwise), then a batch of two each, ending with the dealer.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'spar.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the last (fifth) trick; score 3, 2 or 1 point depending on the winning card (6, 7, or 8+).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'spar.score.description',
+        title: 'Scoring',
+        text: 'Winner of the last trick scores: 3 points if the winning card is a 6, 2 if a 7, 1 if 8 or higher. No fixed target; session continues as players wish. When played for money, winner is paid 1, 2 or 3 stakes by each other player.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'spar.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if possible; otherwise any card.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'spar.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Highest card of led suit wins the trick.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'spar.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winner of the last trick scores 3 (with 6), 2 (with 7), or 1 (with 8 or higher) point(s).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'spar.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Winner of the hand deals next; no fixed target score, session continues as players wish.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'spar.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'spar.rules.objective',
+          'spar.rules.gameplay',
+        ],
+      },
+      {
+        id: 'spar.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'spar.setup.players',
+          'spar.setup.deck',
+          'spar.setup.equipment',
+          'spar.setup.dealing',
+        ],
+      },
+      {
+        id: 'spar.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'spar.rules.key.1',
+          'spar.rules.key.2',
+          'spar.rules.key.3',
+          'spar.rules.key.4',
+        ],
+      },
+      {
+        id: 'spar.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'spar.score.description',
+          'spar.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'spar.setup.dealing',
+        'spar.rules.objective',
+      ],
+      play_card: [
+        'spar.rules.gameplay',
+      ],
+    },
   },
 }

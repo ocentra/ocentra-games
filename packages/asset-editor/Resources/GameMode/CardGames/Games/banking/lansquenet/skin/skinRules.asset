@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Skin. Logic: See rules.objective and rules.gameplay.',
-    Player: "Skin (or 'Georgia Skin') is a legendary high-stakes gambling game from the American South. It is a banking game, but not in the traditional sense where the bank has an edge; the edge comes purely from chance, nerve, and 'side bets'. Cards are dealt from a shoe one by one. Players bet on their card being matched by a card from the deck. If your card is matched (falls), you lose. The last card standing ('The Skin') is the winner unless all bets are resolved earlier. It is famous for its slow, tension-filled reveal ('Skinning').",
+    LLM: "Players buy a case card from the dealer; the dealer also takes a card. Cards are then revealed one by one from the shoe. When a revealed card matches a player's card (same rank), that player is eliminated. The last card remaining wins unless all bets are resolved earlier. Side bets are common.",
+    Player: "Players buy a case card from the dealer; the dealer also takes a card. Cards are then revealed one by one from the shoe. When a revealed card matches a player's card (same rank), that player is eliminated. The last card remaining wins unless all bets are resolved earlier. Side bets are common.",
     objective: 'Have your card survive while others fall (are matched).',
     gameplay: "Players buy a case card from the dealer; the dealer also takes a card. Cards are then revealed one by one from the shoe. When a revealed card matches a player's card (same rank), that player is eliminated. The last card remaining wins unless all bets are resolved earlier. Side bets are common.",
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-20 player(s), 1 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in case_card; dealer may use issue_case_cards before reveal.',
-      'Scoring check: Have your card survive while others fall (are matched). Expected outcome: Have your card survive while others fall (are matched)..',
+      'Setup example: 1 card(s) per player.',
+      'Rule example: Have your card survive while others fall (are matched).',
+      "Turn-flow example: Players buy a case card from the dealer; the dealer also takes a card. Cards are then revealed one by one from the shoe. When a revealed card matches a player's card (same rank), that player is eliminated. The last card remaining wins unless all bets are resolved earlier. Side bets are common.",
+      'Scoring example: Have your card survive while others fall (are matched). Have your card survive while others fall (are matched)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'skin.rules.objective',
+        title: 'Objective',
+        text: 'Have your card survive while others fall (are matched).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'skin.rules.gameplay',
+        title: 'Turn flow',
+        text: "Players buy a case card from the dealer; the dealer also takes a card. Cards are then revealed one by one from the shoe. When a revealed card matches a player's card (same rank), that player is eliminated. The last card remaining wins unless all bets are resolved earlier. Side bets are common.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'skin.setup.players',
+        title: 'Players',
+        text: 'Two or more players; Scarne describes it as best for about six. One player is the banker (dealer). The first banker is chosen by dealing cards one at a time until an Ace appears; the turn to be banker passes to the right after each deal. Each player may accept one case card from the dealer to bet on, or refuse; the dealer also holds one card. Cards are revealed one by one from a dealing box or shoe.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'skin.setup.deck',
+        title: 'Deck',
+        text: '52 cards (or Shoe of 6 decks).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'skin.setup.equipment',
+        title: 'Equipment',
+        text: '52 cards (or Shoe of 6 decks).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'skin.setup.dealing',
+        title: 'Deal',
+        text: "Players buy a card from the dealer (the 'Case Card'). Dealer takes a card too.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'skin.score.win-condition',
+        title: 'Win condition',
+        text: 'Have your card survive while others fall (are matched).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'skin.score.description',
+        title: 'Scoring',
+        text: 'Have your card survive while others fall (are matched).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'skin.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Each player buys one case card from the dealer; the dealer takes one.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'skin.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Cards are revealed one by one from the shoe (skinning).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'skin.rules.key.3',
+        title: 'Key rule 3',
+        text: "When a revealed card matches your card's rank, you are eliminated.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'skin.rules.key.4',
+        title: 'Key rule 4',
+        text: 'The last card standing (The Skin) wins unless all bets are resolved earlier.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'skin.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Side bets between players are common.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'skin.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'skin.rules.objective',
+          'skin.rules.gameplay',
+        ],
+      },
+      {
+        id: 'skin.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'skin.setup.players',
+          'skin.setup.deck',
+          'skin.setup.equipment',
+          'skin.setup.dealing',
+        ],
+      },
+      {
+        id: 'skin.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'skin.rules.key.1',
+          'skin.rules.key.2',
+          'skin.rules.key.3',
+          'skin.rules.key.4',
+          'skin.rules.key.5',
+        ],
+      },
+      {
+        id: 'skin.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'skin.score.description',
+          'skin.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'skin.setup.dealing',
+        'skin.rules.objective',
+      ],
+      call: [
+        'skin.rules.gameplay',
+      ],
+      bet: [
+        'skin.rules.gameplay',
+      ],
+      raise: [
+        'skin.rules.gameplay',
+      ],
+      issue_case_cards: [
+        'skin.rules.gameplay',
+      ],
+    },
   },
 }

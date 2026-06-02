@@ -57,10 +57,192 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Teams score the point values of all cards they have melded on the table, receive bonuses for burracos (clean or dirty) and for going out, and subtract the values of any cards left in hand. A clean burraco (seven or more natural cards) is worth 200 points, a dirty burraco (seven or more cards including at least one wild card) is worth 100 points, going out (closing) is worth 100 points, and a team that has not taken its pozzetto at the end of the hand loses 100 points. Expected outcome: 2000.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Form melds (sets or sequences) and create burracos (7+ card melds). Be first team to go out after taking pozzetto and having at least one burraco. Score points from melded cards plus bonuses.',
+      'Turn-flow example: Turn: draw from stock or take entire discard pile; optionally meld sets (3+ same rank) or sequences (3+ consecutive same suit) or add to team melds; discard one card. First player to empty hand takes a pozzetto (11-card extra hand). Direct pozzetto: meld all cards, take pozzetto, continue. Indirect: meld all but one, discard, take pozzetto face down, use next turn.',
+      'Scoring example: Teams score the point values of all cards they have melded on the table, receive bonuses for burracos (clean or dirty) and for going out, and subtract the values of any cards left in hand. A clean burraco (seven or more natural cards) is worth 200 points, a dirty burraco (seven or more cards including at least one wild card) is worth 100 points, going out (closing) is worth 100 points, and a team that has not taken its pozzetto at the end of the hand loses 100 points. The game is played over multiple hands; after each hand both teams add their hand score (melded cards plus bonuses minus cards in hand and pozzetto penalties) to a cumulative total. When at least one team has more than 2000 points, the team with the higher total wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'burraco-italian.rules.objective',
+        title: 'Objective',
+        text: 'Form melds (sets or sequences) and create burracos (7+ card melds). Be first team to go out after taking pozzetto and having at least one burraco. Score points from melded cards plus bonuses.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'burraco-italian.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Turn: draw from stock or take entire discard pile; optionally meld sets (3+ same rank) or sequences (3+ consecutive same suit) or add to team melds; discard one card. First player to empty hand takes a pozzetto (11-card extra hand). Direct pozzetto: meld all cards, take pozzetto, continue. Indirect: meld all but one, discard, take pozzetto face down, use next turn.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'burraco-italian.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships; 2-5 player variants exist',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'burraco-italian.setup.deck',
+        title: 'Deck',
+        text: '108 cards: two standard 52-card packs with 4 jokers (jolly). Twos (pinelle) can be wild or natural.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'burraco-italian.setup.equipment',
+        title: 'Equipment',
+        text: 'Double deck with jokers, score sheet, table space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'burraco-italian.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer chosen by drawing cards (lowest deals). Dealer deals 11 cards each from bottom portion. Cutter takes top third (~22+ cards), deals two 11-card pozzetti from bottom alternately, stacks them crosswise. Remaining cards form draw pile (41 cards) with one face-up card.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'burraco-italian.score.win-condition',
+        title: 'Win condition',
+        text: 'The game is played over multiple hands; after each hand both teams add their hand score (melded cards plus bonuses minus cards in hand and pozzetto penalties) to a cumulative total. When at least one team has more than 2000 points, the team with the higher total wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'burraco-italian.score.description',
+        title: 'Scoring',
+        text: 'Teams score the point values of all cards they have melded on the table, receive bonuses for burracos (clean or dirty) and for going out, and subtract the values of any cards left in hand. A clean burraco (seven or more natural cards) is worth 200 points, a dirty burraco (seven or more cards including at least one wild card) is worth 100 points, going out (closing) is worth 100 points, and a team that has not taken its pozzetto at the end of the hand loses 100 points.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'burraco-italian.rules.key.1',
+        title: 'Key rule 1',
+        text: '108 cards: 2 decks + 4 jokers; twos are wild (pinelle)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'burraco-italian.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Two 11-card pozzetti set aside for first players out',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'burraco-italian.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Sets: 3+ cards same rank, max 1 wild, max 9 cards',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'burraco-italian.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Sequences: 3+ consecutive same suit, max 1 wild',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'burraco-italian.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Ace can be high or low but not both in same sequence',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'burraco-italian.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Burraco = 7+ card meld (clean or dirty)',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'burraco-italian.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Need burraco and taken pozzetto to go out',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+      {
+        id: 'burraco-italian.rules.key.8',
+        title: 'Key rule 8',
+        text: 'Target: 2005 points',
+        sourceFields: [
+          'rules.keyRules.7',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'burraco-italian.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'burraco-italian.rules.objective',
+          'burraco-italian.rules.gameplay',
+        ],
+      },
+      {
+        id: 'burraco-italian.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'burraco-italian.setup.players',
+          'burraco-italian.setup.deck',
+          'burraco-italian.setup.equipment',
+          'burraco-italian.setup.dealing',
+        ],
+      },
+      {
+        id: 'burraco-italian.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'burraco-italian.rules.key.1',
+          'burraco-italian.rules.key.2',
+          'burraco-italian.rules.key.3',
+          'burraco-italian.rules.key.4',
+          'burraco-italian.rules.key.5',
+          'burraco-italian.rules.key.6',
+          'burraco-italian.rules.key.7',
+          'burraco-italian.rules.key.8',
+        ],
+      },
+      {
+        id: 'burraco-italian.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'burraco-italian.score.description',
+          'burraco-italian.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'burraco-italian.setup.dealing',
+        'burraco-italian.rules.objective',
+      ],
+      play_card: [
+        'burraco-italian.rules.gameplay',
+      ],
+    },
   },
 }

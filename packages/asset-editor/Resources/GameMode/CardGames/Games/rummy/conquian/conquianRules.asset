@@ -10,7 +10,7 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Conquian. 40-card Mexican deck (8s/9s/10s removed). 2-player. 10 cards each. Offer top stock card; opponent must take if meldable. Sequences: A-2-3-4-5-6-7-J-Q-K. Sets: same rank Ã—3-4. First to meld all 10 wins.',
+    LLM: "The non-dealer offers (turns face-up) the top stock card:\n- If the active player CAN incorporate the card into an existing or new meld/sequence, they MUST take it.\n- If a player 'should' take a card (it completes a meld for them) but refuses, opponent may compel them.\n- If active player cannot use it, they reject it; opponent may then take it.\n- If neither takes it, it goes face-up as a new discard; active player draws top stock card.\n- After taking any card, player may rearrange melds on the table, then must discard one card face-up.\nGame continues until a player melds all 10 cards (wins) or stock is exhausted (draw).",
     Player: "The non-dealer offers (turns face-up) the top stock card:\n- If the active player CAN incorporate the card into an existing or new meld/sequence, they MUST take it.\n- If a player 'should' take a card (it completes a meld for them) but refuses, opponent may compel them.\n- If active player cannot use it, they reject it; opponent may then take it.\n- If neither takes it, it goes face-up as a new discard; active player draws top stock card.\n- After taking any card, player may rearrange melds on the table, then must discard one card face-up.\nGame continues until a player melds all 10 cards (wins) or stock is exhausted (draw).",
     objective: 'Be first to meld all 10 cards (hands meld face-up; you keep some in reserve for sequences).',
     gameplay: "The non-dealer offers (turns face-up) the top stock card:\n- If the active player CAN incorporate the card into an existing or new meld/sequence, they MUST take it.\n- If a player 'should' take a card (it completes a meld for them) but refuses, opponent may compel them.\n- If active player cannot use it, they reject it; opponent may then take it.\n- If neither takes it, it goes face-up as a new discard; active player draws top stock card.\n- After taking any card, player may rearrange melds on the table, then must discard one card face-up.\nGame continues until a player melds all 10 cards (wins) or stock is exhausted (draw).",
@@ -52,10 +52,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 10 card(s) per player, 40 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal_10 before play_loop.',
-      'Scoring check: Win/loss per hand. Expected outcome: Meld all 10 cards..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Be first to meld all 10 cards (hands meld face-up; you keep some in reserve for sequences).',
+      "Turn-flow example: The non-dealer offers (turns face-up) the top stock card:\n- If the active player CAN incorporate the card into an existing or new meld/sequence, they MUST take it.\n- If a player 'should' take a card (it completes a meld for them) but refuses, opponent may compel them.\n- If active player cannot use it, they reject it; opponent may then take it.\n- If neither takes it, it goes face-up as a new discard; active player draws top stock card.\n- After taking any card, player may rearrange melds on the table, then must discard one card face-up.\nGame continues until a player melds all 10 cards (wins) or stock is exhausted (draw).",
+      'Scoring example: Win/loss per hand. Meld all 10 cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'conquian.rules.objective',
+        title: 'Objective',
+        text: 'Be first to meld all 10 cards (hands meld face-up; you keep some in reserve for sequences).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'conquian.rules.gameplay',
+        title: 'Turn flow',
+        text: "The non-dealer offers (turns face-up) the top stock card:\n- If the active player CAN incorporate the card into an existing or new meld/sequence, they MUST take it.\n- If a player 'should' take a card (it completes a meld for them) but refuses, opponent may compel them.\n- If active player cannot use it, they reject it; opponent may then take it.\n- If neither takes it, it goes face-up as a new discard; active player draws top stock card.\n- After taking any card, player may rearrange melds on the table, then must discard one card face-up.\nGame continues until a player melds all 10 cards (wins) or stock is exhausted (draw).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'conquian.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'conquian.setup.deck',
+        title: 'Deck',
+        text: '40 cards: Standard 52-card deck with 8s, 9s, and 10s removed. Rank order: A-2-3-4-5-6-7-J-Q-K.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'conquian.setup.equipment',
+        title: 'Equipment',
+        text: '40-card stripped deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'conquian.setup.dealing',
+        title: 'Deal',
+        text: '10 cards each. Rest is stock. No initial discard pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'conquian.score.win-condition',
+        title: 'Win condition',
+        text: 'Meld all 10 cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'conquian.score.description',
+        title: 'Scoring',
+        text: 'Win/loss per hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'conquian.rules.key.1',
+        title: 'Key rule 1',
+        text: "Players' melds are laid face-up on the table throughoutâ€”visible to both.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'conquian.rules.key.2',
+        title: 'Key rule 2',
+        text: 'An opponent can force you to take a card if it fits your existing melds.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'conquian.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Stock exhausted without winner = draw; often a new deal rewards the non-losing player.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'conquian.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'conquian.rules.objective',
+          'conquian.rules.gameplay',
+        ],
+      },
+      {
+        id: 'conquian.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'conquian.setup.players',
+          'conquian.setup.deck',
+          'conquian.setup.equipment',
+          'conquian.setup.dealing',
+        ],
+      },
+      {
+        id: 'conquian.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'conquian.rules.key.1',
+          'conquian.rules.key.2',
+          'conquian.rules.key.3',
+        ],
+      },
+      {
+        id: 'conquian.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'conquian.score.description',
+          'conquian.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'conquian.setup.dealing',
+        'conquian.rules.objective',
+      ],
+      discard: [
+        'conquian.rules.gameplay',
+      ],
+      meld: [
+        'conquian.rules.gameplay',
+      ],
+      deal_10: [
+        'conquian.rules.gameplay',
+      ],
+      take_offered_card: [
+        'conquian.rules.gameplay',
+      ],
+      reject_offered_card: [
+        'conquian.rules.gameplay',
+      ],
+    },
   },
 }

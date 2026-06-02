@@ -11,7 +11,7 @@
   },
   data: {
     LLM: '1. **Turn**: Play one card face-up, place a chip on the matching unoccupied board space (or use jack power). 2. **Draw**: Replenish hand from stock. 3. **Two-eyed jack** (clubs, diamonds): Wildâ€”place your chip on any unoccupied space. 4. **One-eyed jack** (hearts, spades): Remove one opponent chip from the board. 5. **Win**: First player/team to complete a row of five chips wins.',
-    Player: "Play a card, put a chip on the matching space. Two-eyed jacks let you place on any empty space. One-eyed jacks let you remove an opponent's chip. First to get five in a row wins.",
+    Player: '1. **Turn**: Play one card face-up, place a chip on the matching unoccupied board space (or use jack power). 2. **Draw**: Replenish hand from stock. 3. **Two-eyed jack** (clubs, diamonds): Wildâ€”place your chip on any unoccupied space. 4. **One-eyed jack** (hearts, spades): Remove one opponent chip from the board. 5. **Win**: First player/team to complete a row of five chips wins.',
     objective: "Form one or more rows of five chips of your colour (or your team's) on the board. Rows can be horizontal, vertical, or diagonal.",
     gameplay: '1. **Turn**: Play one card face-up, place a chip on the matching unoccupied board space (or use jack power). 2. **Draw**: Replenish hand from stock. 3. **Two-eyed jack** (clubs, diamonds): Wildâ€”place your chip on any unoccupied space. 4. **One-eyed jack** (hearts, spades): Remove one opponent chip from the board. 5. **Win**: First player/team to complete a row of five chips wins.',
     keyRules: [
@@ -54,10 +54,180 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: No scoring in basic game. First to form a row of five wins. Expected outcome: First player or team to complete a row of five chips (horizontal, vertical, or diagonal) wins..',
+      'Setup example: 7 card(s) per player.',
+      "Rule example: Form one or more rows of five chips of your colour (or your team's) on the board. Rows can be horizontal, vertical, or diagonal.",
+      'Turn-flow example: 1. **Turn**: Play one card face-up, place a chip on the matching unoccupied board space (or use jack power). 2. **Draw**: Replenish hand from stock. 3. **Two-eyed jack** (clubs, diamonds): Wildâ€”place your chip on any unoccupied space. 4. **One-eyed jack** (hearts, spades): Remove one opponent chip from the board. 5. **Win**: First player/team to complete a row of five chips wins.',
+      'Scoring example: No scoring in basic game. First to form a row of five wins. First player or team to complete a row of five chips (horizontal, vertical, or diagonal) wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'one-eyed-jack.rules.objective',
+        title: 'Objective',
+        text: "Form one or more rows of five chips of your colour (or your team's) on the board. Rows can be horizontal, vertical, or diagonal.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'one-eyed-jack.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Turn**: Play one card face-up, place a chip on the matching unoccupied board space (or use jack power). 2. **Draw**: Replenish hand from stock. 3. **Two-eyed jack** (clubs, diamonds): Wildâ€”place your chip on any unoccupied space. 4. **One-eyed jack** (hearts, spades): Remove one opponent chip from the board. 5. **Win**: First player/team to complete a row of five chips wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'one-eyed-jack.setup.players',
+        title: 'Players',
+        text: '2, 3, or 4 players. Four typically play as partners (opposite seats).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'one-eyed-jack.setup.deck',
+        title: 'Deck',
+        text: 'Two standard 52-card packs (104 cards). Board: 50 card-spaces from a second deck (4 jacks removed; 2 jokers = corner spaces).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'one-eyed-jack.setup.equipment',
+        title: 'Equipment',
+        text: 'Two decks, board (10x10 with card faces in cells; jokers in corners), chips: 50 per colour (2 players/teams) or 40 per colour (3 players).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'one-eyed-jack.setup.dealing',
+        title: 'Deal',
+        text: '1. Deal 7 (2 players), 6 (3 players), or 5 (4 players) cards to each player. 2. Remaining cards form the stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'one-eyed-jack.score.win-condition',
+        title: 'Win condition',
+        text: 'First player or team to complete a row of five chips (horizontal, vertical, or diagonal) wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'one-eyed-jack.score.description',
+        title: 'Scoring',
+        text: 'No scoring in basic game. First to form a row of five wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'one-eyed-jack.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Play card â†’ place chip on matching space (or use jack).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'one-eyed-jack.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Two-eyed jack = place chip on any empty space.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'one-eyed-jack.rules.key.3',
+        title: 'Key rule 3',
+        text: 'One-eyed jack = remove one opponent chip.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'one-eyed-jack.rules.key.4',
+        title: 'Key rule 4',
+        text: "Draw at end of turn. Play proceeds clockwise from dealer's left.",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'one-eyed-jack.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Corner joker spaces: rules vary (free space, wild, or special).',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'one-eyed-jack.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'one-eyed-jack.rules.objective',
+          'one-eyed-jack.rules.gameplay',
+        ],
+      },
+      {
+        id: 'one-eyed-jack.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'one-eyed-jack.setup.players',
+          'one-eyed-jack.setup.deck',
+          'one-eyed-jack.setup.equipment',
+          'one-eyed-jack.setup.dealing',
+        ],
+      },
+      {
+        id: 'one-eyed-jack.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'one-eyed-jack.rules.key.1',
+          'one-eyed-jack.rules.key.2',
+          'one-eyed-jack.rules.key.3',
+          'one-eyed-jack.rules.key.4',
+          'one-eyed-jack.rules.key.5',
+        ],
+      },
+      {
+        id: 'one-eyed-jack.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'one-eyed-jack.score.description',
+          'one-eyed-jack.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'one-eyed-jack.setup.dealing',
+        'one-eyed-jack.rules.objective',
+      ],
+      deal: [
+        'one-eyed-jack.rules.gameplay',
+      ],
+      play_card: [
+        'one-eyed-jack.rules.gameplay',
+      ],
+      draw: [
+        'one-eyed-jack.rules.gameplay',
+      ],
+      place_chip: [
+        'one-eyed-jack.rules.gameplay',
+      ],
+      check_row: [
+        'one-eyed-jack.rules.gameplay',
+      ],
+      award_win: [
+        'one-eyed-jack.rules.gameplay',
+      ],
+    },
   },
 }

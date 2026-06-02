@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Lame Brain Pete. Logic: 3 hole cards, 4 community cards revealed sequentially. Wild card = lowest rank among all 4 community cards (determined after 4th card). Betting rounds after hole cards and after each community card. Standard poker hand evaluation with wild cards.',
-    Player: "Welcome to Lame Brain Pete. You'll get three hole cards and watch four community cards appear one by one. But here's the twistâ€”the lowest card showing on the board becomes wild at the end. Will your hand improve or fall apart? Bet wisely and remember: in this game, patience is often rewarded.",
+    LLM: '1. **Ante**: All players post an ante. 2. **Initial Deal**: Each player receives 3 hole cards. 3. **First Betting Round**: Players bet based on their hole cards only. 4. **First Community Card**: Dealer reveals the first community card face-up. This is NOT automatically wild. 5. **Second Betting Round**: Players bet. 6. **Second Community Card**: Revealed. 7. **Third Betting Round**: Players bet. 8. **Third Community Card**: Revealed. 9. **Fourth Betting Round**: Players bet. 10. **Fourth Community Card**: Revealed. 11. **Final Betting Round**: Players bet. 12. **Showdown**: Remaining players reveal hands.',
+    Player: '1. **Ante**: All players post an ante. 2. **Initial Deal**: Each player receives 3 hole cards. 3. **First Betting Round**: Players bet based on their hole cards only. 4. **First Community Card**: Dealer reveals the first community card face-up. This is NOT automatically wild. 5. **Second Betting Round**: Players bet. 6. **Second Community Card**: Revealed. 7. **Third Betting Round**: Players bet. 8. **Third Community Card**: Revealed. 9. **Fourth Betting Round**: Players bet. 10. **Fourth Community Card**: Revealed. 11. **Final Betting Round**: Players bet. 12. **Showdown**: Remaining players reveal hands.',
     objective: 'Form the best five-card poker hand using any combination of your three hole cards and the four community cards.',
     gameplay: '1. **Ante**: All players post an ante. 2. **Initial Deal**: Each player receives 3 hole cards. 3. **First Betting Round**: Players bet based on their hole cards only. 4. **First Community Card**: Dealer reveals the first community card face-up. This is NOT automatically wild. 5. **Second Betting Round**: Players bet. 6. **Second Community Card**: Revealed. 7. **Third Betting Round**: Players bet. 8. **Third Community Card**: Revealed. 9. **Fourth Betting Round**: Players bet. 10. **Fourth Community Card**: Revealed. 11. **Final Betting Round**: Players bet. 12. **Showdown**: Remaining players reveal hands.',
     keyRules: [
@@ -54,10 +54,192 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-10 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in ante; current_player may use ante before deal_hole_cards.',
-      'Scoring check: Standard poker hand rankings with wild cards. The player with the highest-ranking five-card hand wins the pot. Expected outcome: NA.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Form the best five-card poker hand using any combination of your three hole cards and the four community cards.',
+      'Turn-flow example: 1. **Ante**: All players post an ante. 2. **Initial Deal**: Each player receives 3 hole cards. 3. **First Betting Round**: Players bet based on their hole cards only. 4. **First Community Card**: Dealer reveals the first community card face-up. This is NOT automatically wild. 5. **Second Betting Round**: Players bet. 6. **Second Community Card**: Revealed. 7. **Third Betting Round**: Players bet. 8. **Third Community Card**: Revealed. 9. **Fourth Betting Round**: Players bet. 10. **Fourth Community Card**: Revealed. 11. **Final Betting Round**: Players bet. 12. **Showdown**: Remaining players reveal hands.',
+      'Scoring example: Standard poker hand rankings with wild cards. The player with the highest-ranking five-card hand wins the pot. Best five-card poker hand at showdown wins. Hands rank: Royal Flush > Straight Flush > Four of a Kind > Full House > Flush > Straight > Three of a Kind > Two Pair > One Pair > High Card..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'indian-poker-lame-brain-pete.rules.objective',
+        title: 'Objective',
+        text: 'Form the best five-card poker hand using any combination of your three hole cards and the four community cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'indian-poker-lame-brain-pete.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Ante**: All players post an ante. 2. **Initial Deal**: Each player receives 3 hole cards. 3. **First Betting Round**: Players bet based on their hole cards only. 4. **First Community Card**: Dealer reveals the first community card face-up. This is NOT automatically wild. 5. **Second Betting Round**: Players bet. 6. **Second Community Card**: Revealed. 7. **Third Betting Round**: Players bet. 8. **Third Community Card**: Revealed. 9. **Fourth Betting Round**: Players bet. 10. **Fourth Community Card**: Revealed. 11. **Final Betting Round**: Players bet. 12. **Showdown**: Remaining players reveal hands.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'indian-poker-lame-brain-pete.setup.players',
+        title: 'Players',
+        text: '3-10 players (Optimal with 5-7).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'indian-poker-lame-brain-pete.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. No jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'indian-poker-lame-brain-pete.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, poker chips, and a flat playing surface.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'indian-poker-lame-brain-pete.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 3 cards face-down (hole cards). Four cards are placed face-down in the center as community cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'indian-poker-lame-brain-pete.score.win-condition',
+        title: 'Win condition',
+        text: 'Best five-card poker hand at showdown wins. Hands rank: Royal Flush > Straight Flush > Four of a Kind > Full House > Flush > Straight > Three of a Kind > Two Pair > One Pair > High Card.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'indian-poker-lame-brain-pete.score.description',
+        title: 'Scoring',
+        text: 'Standard poker hand rankings with wild cards. The player with the highest-ranking five-card hand wins the pot.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'indian-poker-lame-brain-pete.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The wild card is determined only after ALL four community cards are revealed.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'indian-poker-lame-brain-pete.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Until the final card, players must speculate on what the wild card might be.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'indian-poker-lame-brain-pete.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Standard poker hand rankings apply, with wild cards substituting for any rank/suit.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'indian-poker-lame-brain-pete.rules.key.4',
+        title: 'Key rule 4',
+        text: 'If two community cards tie for lowest rank, both ranks are wild.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'indian-poker-lame-brain-pete.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Aces are high for determining the lowest wild card.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'indian-poker-lame-brain-pete.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'indian-poker-lame-brain-pete.rules.objective',
+          'indian-poker-lame-brain-pete.rules.gameplay',
+        ],
+      },
+      {
+        id: 'indian-poker-lame-brain-pete.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'indian-poker-lame-brain-pete.setup.players',
+          'indian-poker-lame-brain-pete.setup.deck',
+          'indian-poker-lame-brain-pete.setup.equipment',
+          'indian-poker-lame-brain-pete.setup.dealing',
+        ],
+      },
+      {
+        id: 'indian-poker-lame-brain-pete.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'indian-poker-lame-brain-pete.rules.key.1',
+          'indian-poker-lame-brain-pete.rules.key.2',
+          'indian-poker-lame-brain-pete.rules.key.3',
+          'indian-poker-lame-brain-pete.rules.key.4',
+          'indian-poker-lame-brain-pete.rules.key.5',
+        ],
+      },
+      {
+        id: 'indian-poker-lame-brain-pete.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'indian-poker-lame-brain-pete.score.description',
+          'indian-poker-lame-brain-pete.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'indian-poker-lame-brain-pete.setup.dealing',
+        'indian-poker-lame-brain-pete.rules.objective',
+      ],
+      ante: [
+        'indian-poker-lame-brain-pete.rules.gameplay',
+      ],
+      deal: [
+        'indian-poker-lame-brain-pete.rules.gameplay',
+      ],
+      fold: [
+        'indian-poker-lame-brain-pete.rules.gameplay',
+      ],
+      check: [
+        'indian-poker-lame-brain-pete.rules.gameplay',
+      ],
+      call: [
+        'indian-poker-lame-brain-pete.rules.gameplay',
+      ],
+      bet: [
+        'indian-poker-lame-brain-pete.rules.gameplay',
+      ],
+      raise: [
+        'indian-poker-lame-brain-pete.rules.gameplay',
+      ],
+      award_pot: [
+        'indian-poker-lame-brain-pete.rules.gameplay',
+      ],
+      reveal: [
+        'indian-poker-lame-brain-pete.rules.gameplay',
+      ],
+      set_wild: [
+        'indian-poker-lame-brain-pete.rules.gameplay',
+      ],
+    },
   },
 }

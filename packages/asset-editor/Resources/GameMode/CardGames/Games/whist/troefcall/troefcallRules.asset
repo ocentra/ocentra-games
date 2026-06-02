@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Troefcall. Logic: See rules.objective and rules.gameplay.',
-    Player: "Troefcall is a 4-player partnership trick-taking game from Suriname, also popular in the Netherlands. The 'trump caller' gets 5 cards first and declares trump. Teams try to win 7+ tricks. Winning first 7 in a row = 'Kap Partij' (5 pts). All 13 = 'Baunie' (15 pts). If Baunie attempted but failed, opponents score 2.",
+    LLM: 'Trump caller leads. Follow suit. Trump if void. Win 7+ tricks for points. Kap Partij: Win first 7 consecutive = 5 pts. Baunie: Win all 13 = 15 pts. Failed Baunie = opponents get 2.',
+    Player: 'Trump caller leads. Follow suit. Trump if void. Win 7+ tricks for points. Kap Partij: Win first 7 consecutive = 5 pts. Baunie: Win all 13 = 15 pts. Failed Baunie = opponents get 2.',
     objective: 'Win the majority of tricks (at least 7 of 13) and be the first team to reach the agreed target score (e.g. 15, 20, or 50 points).',
     gameplay: 'Trump caller leads. Follow suit. Trump if void. Win 7+ tricks for points. Kap Partij: Win first 7 consecutive = 5 pts. Baunie: Win all 13 = 15 pts. Failed Baunie = opponents get 2.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: 7+ tricks = 2 pts. Kap = 5 pts. Baunie = 15 pts. Failed Baunie = -2 to opponents. Expected outcome: Reach target score (15, 20, or 50 pts)..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the majority of tricks (at least 7 of 13) and be the first team to reach the agreed target score (e.g. 15, 20, or 50 points).',
+      'Turn-flow example: Trump caller leads. Follow suit. Trump if void. Win 7+ tricks for points. Kap Partij: Win first 7 consecutive = 5 pts. Baunie: Win all 13 = 15 pts. Failed Baunie = opponents get 2.',
+      'Scoring example: 7+ tricks = 2 pts. Kap = 5 pts. Baunie = 15 pts. Failed Baunie = -2 to opponents. Reach target score (15, 20, or 50 pts)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'troefcall.rules.objective',
+        title: 'Objective',
+        text: 'Win the majority of tricks (at least 7 of 13) and be the first team to reach the agreed target score (e.g. 15, 20, or 50 points).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'troefcall.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Trump caller leads. Follow suit. Trump if void. Win 7+ tricks for points. Kap Partij: Win first 7 consecutive = 5 pts. Baunie: Win all 13 = 15 pts. Failed Baunie = opponents get 2.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'troefcall.setup.players',
+        title: 'Players',
+        text: '4 (partnerships)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'troefcall.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52 cards. A(high)-2(low).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'troefcall.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, score sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'troefcall.setup.dealing',
+        title: 'Deal',
+        text: 'Trump caller gets 5 first, declares trump. Then 5+4+4 to each.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'troefcall.score.win-condition',
+        title: 'Win condition',
+        text: 'Reach target score (15, 20, or 50 pts).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'troefcall.score.description',
+        title: 'Scoring',
+        text: '7+ tricks = 2 pts. Kap = 5 pts. Baunie = 15 pts. Failed Baunie = -2 to opponents.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'troefcall.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trump caller gets first 5 cards',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'troefcall.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Kap Partij (5 pts for first 7)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'troefcall.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Baunie (15 pts for all 13)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'troefcall.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Dealer rotates based on scoring',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'troefcall.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'troefcall.rules.objective',
+          'troefcall.rules.gameplay',
+        ],
+      },
+      {
+        id: 'troefcall.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'troefcall.setup.players',
+          'troefcall.setup.deck',
+          'troefcall.setup.equipment',
+          'troefcall.setup.dealing',
+        ],
+      },
+      {
+        id: 'troefcall.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'troefcall.rules.key.1',
+          'troefcall.rules.key.2',
+          'troefcall.rules.key.3',
+          'troefcall.rules.key.4',
+        ],
+      },
+      {
+        id: 'troefcall.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'troefcall.score.description',
+          'troefcall.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'troefcall.setup.dealing',
+        'troefcall.rules.objective',
+      ],
+      play_card: [
+        'troefcall.rules.gameplay',
+      ],
+    },
   },
 }

@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Each hand is settled for money: the player who dominoes, or who has the lowest total pips in hand when play is blocked, wins the bets they placed against the banker. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the first player to achieve the winning condition through strategic play of cards.',
+      'Turn-flow example: 1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
+      'Scoring example: Each hand is settled for money: the player who dominoes, or who has the lowest total pips in hand when play is blocked, wins the bets they placed against the banker. Win individual games by playing your last tile or, in a blocked game, by having the lowest pip total; settle stakes between each non-banker and the banker according to the agreed minimum and maximum bets..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'buki-dominoes.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to achieve the winning condition through strategic play of cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'buki-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'buki-dominoes.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 4\nMaximum Players: 4\nOptimal Players: 4\nPartnerships: None; each player plays for themselves against the banker.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'buki-dominoes.setup.deck',
+        title: 'Deck',
+        text: 'Type: Double-six style domino set (28 tiles)\nNumber of Sets: 1\nJokers: Not used; tiles are standard dominoes with pip values from 0 to 6.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'buki-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'One domino tile set, stakes or chips for betting, and table space to lay out the Stamm and tableau.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'buki-dominoes.setup.dealing',
+        title: 'Deal',
+        text: 'Tiles per Player: 6 in the basic form, or 7 in the common variation; remaining tiles form the three-column Stamm or a single row used to mark betting positions.\nDealing Pattern: Clockwise; banker lays out the Stamm after players draw their tiles.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'buki-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'Win individual games by playing your last tile or, in a blocked game, by having the lowest pip total; settle stakes between each non-banker and the banker according to the agreed minimum and maximum bets.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'buki-dominoes.score.description',
+        title: 'Scoring',
+        text: 'Each hand is settled for money: the player who dominoes, or who has the lowest total pips in hand when play is blocked, wins the bets they placed against the banker.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'buki-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Play proceeds in turn order with only legal actions allowed.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'buki-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: "Round resolution follows the variant's scoring and bonus conditions.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'buki-dominoes.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Match winner is determined by agreed target score or elimination condition.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'buki-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'buki-dominoes.rules.objective',
+          'buki-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: 'buki-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'buki-dominoes.setup.players',
+          'buki-dominoes.setup.deck',
+          'buki-dominoes.setup.equipment',
+          'buki-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: 'buki-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'buki-dominoes.rules.key.1',
+          'buki-dominoes.rules.key.2',
+          'buki-dominoes.rules.key.3',
+        ],
+      },
+      {
+        id: 'buki-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'buki-dominoes.score.description',
+          'buki-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'buki-dominoes.setup.dealing',
+        'buki-dominoes.rules.objective',
+      ],
+      play_card: [
+        'buki-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

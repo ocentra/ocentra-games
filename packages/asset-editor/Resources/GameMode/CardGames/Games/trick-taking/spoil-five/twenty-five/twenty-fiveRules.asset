@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Twenty-Five. Logic: See rules.objective and rules.gameplay.',
-    Player: "Twenty-Five is the national card game of Ireland. 2-10 players, 52-card deck, 5 cards each. Unique ranking: 5 of trumps is HIGHEST, then J of trumps, then Aâ™¥ (always 3rd trump). Black suits rank low-to-high (A-2-3...10), red rank high-to-low (K-Q-J...A). 'Rob the pack' if dealt A of trumps. Each trick = 5 pts, first to 25 wins.",
+    LLM: '5 of trumps always highest. J of trumps always 2nd. Aâ™¥ always 3rd trump. Follow suit (optional for top 3 trumps if only trump held). Rob the pack: swap A of trumps for turned-up card. Win tricks = 5 pts each.',
+    Player: '5 of trumps always highest. J of trumps always 2nd. Aâ™¥ always 3rd trump. Follow suit (optional for top 3 trumps if only trump held). Rob the pack: swap A of trumps for turned-up card. Win tricks = 5 pts each.',
     objective: 'To be the first player or team to twenty-five points, scoring five points per trick.',
     gameplay: '5 of trumps always highest. J of trumps always 2nd. Aâ™¥ always 3rd trump. Follow suit (optional for top 3 trumps if only trump held). Rob the pack: swap A of trumps for turned-up card. Win tricks = 5 pts each.',
     keyRules: [
@@ -54,10 +54,168 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_5_turn_trump before play.',
-      'Scoring check: Each trick = 5 pts. First to 25 wins. Expected outcome: 25.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: To be the first player or team to twenty-five points, scoring five points per trick.',
+      'Turn-flow example: 5 of trumps always highest. J of trumps always 2nd. Aâ™¥ always 3rd trump. Follow suit (optional for top 3 trumps if only trump held). Rob the pack: swap A of trumps for turned-up card. Win tricks = 5 pts each.',
+      'Scoring example: Each trick = 5 pts. First to 25 wins. First to 25 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'twenty-five.rules.objective',
+        title: 'Objective',
+        text: 'To be the first player or team to twenty-five points, scoring five points per trick.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'twenty-five.rules.gameplay',
+        title: 'Turn flow',
+        text: '5 of trumps always highest. J of trumps always 2nd. Aâ™¥ always 3rd trump. Follow suit (optional for top 3 trumps if only trump held). Rob the pack: swap A of trumps for turned-up card. Win tricks = 5 pts each.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'twenty-five.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'twenty-five.setup.deck',
+        title: 'Deck',
+        text: '52 cards. Complex ranking: Trump 5 > Trump J > Aâ™¥ > A trump > K > Q. Red non-trump: K-Q-J-10-9-8-7-6-5-4-3-2-A. Black non-trump: K-Q-J-A-2-3-4-5-6-7-8-9-10.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'twenty-five.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, chips',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'twenty-five.setup.dealing',
+        title: 'Deal',
+        text: '5 cards each. Turn up trump.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'twenty-five.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 25 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'twenty-five.score.description',
+        title: 'Scoring',
+        text: 'Each trick = 5 pts. First to 25 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'twenty-five.rules.key.1',
+        title: 'Key rule 1',
+        text: '5 of trumps = HIGHEST card',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'twenty-five.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Aâ™¥ is ALWAYS 3rd trump',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'twenty-five.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Low in black, high in red',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'twenty-five.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Rob the pack with A of trumps',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'twenty-five.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Top 3 trumps can be held back',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'twenty-five.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'twenty-five.rules.objective',
+          'twenty-five.rules.gameplay',
+        ],
+      },
+      {
+        id: 'twenty-five.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'twenty-five.setup.players',
+          'twenty-five.setup.deck',
+          'twenty-five.setup.equipment',
+          'twenty-five.setup.dealing',
+        ],
+      },
+      {
+        id: 'twenty-five.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'twenty-five.rules.key.1',
+          'twenty-five.rules.key.2',
+          'twenty-five.rules.key.3',
+          'twenty-five.rules.key.4',
+          'twenty-five.rules.key.5',
+        ],
+      },
+      {
+        id: 'twenty-five.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'twenty-five.score.description',
+          'twenty-five.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'twenty-five.setup.dealing',
+        'twenty-five.rules.objective',
+      ],
+      play_card: [
+        'twenty-five.rules.gameplay',
+      ],
+      deal_5_turn_trump: [
+        'twenty-five.rules.gameplay',
+      ],
+    },
   },
 }

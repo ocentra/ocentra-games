@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Scoring uses sticks (good) and potatoes (bad). The four-player scoring differs significantly from Mittlere. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Avoid being in the middle scores. Score points by winning tricks, but try to be either highest or lowest scorer.',
+      "Turn-flow example: Player to dealer's right leads to first trick. Must follow suit if possible. If unable to follow, may play any card - if no trump is established, this card's suit becomes trumps. Once trump is established, must follow suit or trump if void.",
+      'Scoring example: Scoring uses sticks (good) and potatoes (bad). The four-player scoring differs significantly from Mittlere. Player with most sticks (or fewest potatoes) after agreed number of hands wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'molotow-jass.rules.objective',
+        title: 'Objective',
+        text: 'Avoid being in the middle scores. Score points by winning tricks, but try to be either highest or lowest scorer.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'molotow-jass.rules.gameplay',
+        title: 'Turn flow',
+        text: "Player to dealer's right leads to first trick. Must follow suit if possible. If unable to follow, may play any card - if no trump is established, this card's suit becomes trumps. Once trump is established, must follow suit or trump if void.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'molotow-jass.setup.players',
+        title: 'Players',
+        text: '4 players, each playing for themselves.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'molotow-jass.setup.deck',
+        title: 'Deck',
+        text: '36-card Jass deck (6 through Ace in four suits: Acorns, Shields, Flowers, Bells). Can use standard deck with 5s and below removed.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'molotow-jass.setup.equipment',
+        title: 'Equipment',
+        text: '36-card Jass deck or modified standard deck, scoring slate (for sticks and potatoes).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'molotow-jass.setup.dealing',
+        title: 'Deal',
+        text: '9 cards to each player, dealt in packets of 3. Deal and play are anticlockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'molotow-jass.score.win-condition',
+        title: 'Win condition',
+        text: 'Player with most sticks (or fewest potatoes) after agreed number of hands wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'molotow-jass.score.description',
+        title: 'Scoring',
+        text: 'Scoring uses sticks (good) and potatoes (bad). The four-player scoring differs significantly from Mittlere.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'molotow-jass.rules.key.1',
+        title: 'Key rule 1',
+        text: 'First void play determines trumps',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'molotow-jass.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Avoid middle scores',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'molotow-jass.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Different scoring than Mittlere for four players',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'molotow-jass.rules.key.4',
+        title: 'Key rule 4',
+        text: 'No penalty for taking no tricks',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'molotow-jass.rules.key.5',
+        title: 'Key rule 5',
+        text: '100+ points is heavily penalized',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'molotow-jass.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'molotow-jass.rules.objective',
+          'molotow-jass.rules.gameplay',
+        ],
+      },
+      {
+        id: 'molotow-jass.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'molotow-jass.setup.players',
+          'molotow-jass.setup.deck',
+          'molotow-jass.setup.equipment',
+          'molotow-jass.setup.dealing',
+        ],
+      },
+      {
+        id: 'molotow-jass.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'molotow-jass.rules.key.1',
+          'molotow-jass.rules.key.2',
+          'molotow-jass.rules.key.3',
+          'molotow-jass.rules.key.4',
+          'molotow-jass.rules.key.5',
+        ],
+      },
+      {
+        id: 'molotow-jass.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'molotow-jass.score.description',
+          'molotow-jass.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'molotow-jass.setup.dealing',
+        'molotow-jass.rules.objective',
+      ],
+      play_card: [
+        'molotow-jass.rules.gameplay',
+      ],
+    },
   },
 }

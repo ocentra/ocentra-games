@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "In Pai Gow Poker, split your seven cards into a 5-card back hand and a 2-card front hand. Your back hand MUST be stronger than your front hand. Beat both of the dealer's hands to win your bet!",
-    Player: 'How do I split my hand in Pai Gow Poker?',
+    LLM: "1. Deal: Each player and the dealer receives seven cards. 2. Split: Players divide cards into a 5-card back hand and a 2-card front hand. 3. Constraint: The 5-card hand must always outrank the 2-card hand. 4. Reveal: Hands are compared against the banker's hands. 5. Scoring: Win both to win; lose both to lose; split one each for a push. Ties favor the banker.",
+    Player: "1. Deal: Each player and the dealer receives seven cards. 2. Split: Players divide cards into a 5-card back hand and a 2-card front hand. 3. Constraint: The 5-card hand must always outrank the 2-card hand. 4. Reveal: Hands are compared against the banker's hands. 5. Scoring: Win both to win; lose both to lose; split one each for a push. Ties favor the banker.",
     objective: "Arrange seven cards into two separate poker hands that both outrank the dealer's corresponding hands.",
     gameplay: "1. Deal: Each player and the dealer receives seven cards. 2. Split: Players divide cards into a 5-card back hand and a 2-card front hand. 3. Constraint: The 5-card hand must always outrank the 2-card hand. 4. Reveal: Hands are compared against the banker's hands. 5. Scoring: Win both to win; lose both to lose; split one each for a push. Ties favor the banker.",
     keyRules: [
@@ -54,10 +54,177 @@
       go_out: 'The game deal ends when all players have compared their hands with the banker.',
     },
     exampleHands: [
-      'Opening deal: 2-7 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in betting; each_player_clockwise may use bet before deal.',
-      "Scoring check: Win both hands to win (minus commission); lose both to lose; split one each for a push. Expected outcome: Both the 5-card and 2-card hands must outrank the banker's corresponding hands..",
+      'Setup example: 7 card(s) per player.',
+      "Rule example: Arrange seven cards into two separate poker hands that both outrank the dealer's corresponding hands.",
+      "Turn-flow example: 1. Deal: Each player and the dealer receives seven cards. 2. Split: Players divide cards into a 5-card back hand and a 2-card front hand. 3. Constraint: The 5-card hand must always outrank the 2-card hand. 4. Reveal: Hands are compared against the banker's hands. 5. Scoring: Win both to win; lose both to lose; split one each for a push. Ties favor the banker.",
+      "Scoring example: Win both hands to win (minus commission); lose both to lose; split one each for a push. Both the 5-card and 2-card hands must outrank the banker's corresponding hands..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pai-gow-poker.rules.objective',
+        title: 'Objective',
+        text: "Arrange seven cards into two separate poker hands that both outrank the dealer's corresponding hands.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Deal: Each player and the dealer receives seven cards. 2. Split: Players divide cards into a 5-card back hand and a 2-card front hand. 3. Constraint: The 5-card hand must always outrank the 2-card hand. 4. Reveal: Hands are compared against the banker's hands. 5. Scoring: Win both to win; lose both to lose; split one each for a push. Ties favor the banker.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.setup.players',
+        title: 'Players',
+        text: 'Typically played with six players and a dealer who acts as the banker.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.setup.deck',
+        title: 'Deck',
+        text: 'Standard pack including one Joker. The Joker is semi-wild, completing straights and flushes or acting as an Ace.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard poker cards, casino chips, and sometimes dice to determine starting positions.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.setup.dealing',
+        title: 'Deal',
+        text: 'Seven face-down piles of seven cards are dealt; four cards remain unused.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.score.win-condition',
+        title: 'Win condition',
+        text: "Both the 5-card and 2-card hands must outrank the banker's corresponding hands.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.score.description',
+        title: 'Scoring',
+        text: 'Win both hands to win (minus commission); lose both to lose; split one each for a push.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The 5-card hand rank must exceed the 2-card hand rank or the hand is fouled.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: "Winner must beat both of the banker's hands; losing one results in a push.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Ties on individual hand comparisons (copies) are won by the banker.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Joker completes straights or flushes in the high hand; otherwise it is an Ace.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Wheel straight (A-2-3-4-5) is typically ranked as the second-highest straight.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pai-gow-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pai-gow-poker.rules.objective',
+          'pai-gow-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pai-gow-poker.setup.players',
+          'pai-gow-poker.setup.deck',
+          'pai-gow-poker.setup.equipment',
+          'pai-gow-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pai-gow-poker.rules.key.1',
+          'pai-gow-poker.rules.key.2',
+          'pai-gow-poker.rules.key.3',
+          'pai-gow-poker.rules.key.4',
+          'pai-gow-poker.rules.key.5',
+        ],
+      },
+      {
+        id: 'pai-gow-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pai-gow-poker.score.description',
+          'pai-gow-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pai-gow-poker.setup.dealing',
+        'pai-gow-poker.rules.objective',
+      ],
+      bet: [
+        'pai-gow-poker.rules.gameplay',
+      ],
+      deal_seven_cards: [
+        'pai-gow-poker.rules.gameplay',
+      ],
+      partition_into_two_hands: [
+        'pai-gow-poker.rules.gameplay',
+      ],
+      reveal_hands: [
+        'pai-gow-poker.rules.gameplay',
+      ],
+      settle_bets: [
+        'pai-gow-poker.rules.gameplay',
+      ],
+    },
   },
 }

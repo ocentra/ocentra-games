@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Five Card Stud. Logic: See rules.objective and rules.gameplay.',
-    Player: "Five Card Stud is one of the earliest forms of Stud Poker, emerging in the mid-19th century. Unlike Draw Poker, Five Card Stud is an 'open' game where most of a player's hand is visible to everyone at the table. Each player receives one hidden 'hole' card and four exposed 'up' cards, with betting rounds interspersed between each deal. This creates a high-tension environment where players must calculate their strength against the visible threats in their opponents' hands.",
+    LLM: '1. 1st Street: Each player gets one card face-down (hole) and one card face-up. Betting round begins with the lowest upcard (Bring-In).\n2. 2nd Street: A second upcard is dealt. Betting round begins with the highest visible hand.\n3. 3rd Street: A third upcard is dealt. Betting round begins with the highest visible hand.\n4. 4th Street: The final upcard is dealt. Final betting round.\n5. Showdown: hole cards are revealed.',
+    Player: '1. 1st Street: Each player gets one card face-down (hole) and one card face-up. Betting round begins with the lowest upcard (Bring-In).\n2. 2nd Street: A second upcard is dealt. Betting round begins with the highest visible hand.\n3. 3rd Street: A third upcard is dealt. Betting round begins with the highest visible hand.\n4. 4th Street: The final upcard is dealt. Final betting round.\n5. Showdown: hole cards are revealed.',
     objective: 'Win the pot by having the best 5-card poker hand or by being the last player remaining after everyone else folds.',
     gameplay: '1. 1st Street: Each player gets one card face-down (hole) and one card face-up. Betting round begins with the lowest upcard (Bring-In).\n2. 2nd Street: A second upcard is dealt. Betting round begins with the highest visible hand.\n3. 3rd Street: A third upcard is dealt. Betting round begins with the highest visible hand.\n4. 4th Street: The final upcard is dealt. Final betting round.\n5. Showdown: hole cards are revealed.',
     keyRules: [
@@ -51,10 +51,162 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; each_player_clockwise may use ante before deal_1.',
-      'Scoring check: Win the pot by having the best 5-card poker hand or by being the last player remaining after everyone else folds. Expected outcome: Win the pot by having the best 5-card poker hand or by being the last player remaining after everyone else folds..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the pot by having the best 5-card poker hand or by being the last player remaining after everyone else folds.',
+      'Turn-flow example: 1. 1st Street: Each player gets one card face-down (hole) and one card face-up. Betting round begins with the lowest upcard (Bring-In).\n2. 2nd Street: A second upcard is dealt. Betting round begins with the highest visible hand.\n3. 3rd Street: A third upcard is dealt. Betting round begins with the highest visible hand.\n4. 4th Street: The final upcard is dealt. Final betting round.\n5. Showdown: hole cards are revealed.',
+      'Scoring example: Win the pot by having the best 5-card poker hand or by being the last player remaining after everyone else folds. Win the pot by having the best 5-card poker hand or by being the last player remaining after everyone else folds..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'five-card-stud.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the best 5-card poker hand or by being the last player remaining after everyone else folds.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'five-card-stud.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. 1st Street: Each player gets one card face-down (hole) and one card face-up. Betting round begins with the lowest upcard (Bring-In).\n2. 2nd Street: A second upcard is dealt. Betting round begins with the highest visible hand.\n3. 3rd Street: A third upcard is dealt. Betting round begins with the highest visible hand.\n4. 4th Street: The final upcard is dealt. Final betting round.\n5. Showdown: hole cards are revealed.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'five-card-stud.setup.players',
+        title: 'Players',
+        text: '2 to 10 players. Best with 5 to 7.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'five-card-stud.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'five-card-stud.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'five-card-stud.setup.dealing',
+        title: 'Deal',
+        text: 'Cards are dealt one at a time. The first card is face-down, subsequent cards are face-up.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'five-card-stud.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the pot by having the best 5-card poker hand or by being the last player remaining after everyone else folds.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'five-card-stud.score.description',
+        title: 'Scoring',
+        text: 'Win the pot by having the best 5-card poker hand or by being the last player remaining after everyone else folds.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'five-card-stud.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The Bring-In: Unlike blinds, the first bet is forced on the player with the worst visible start (the lowest card).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'five-card-stud.rules.key.2',
+        title: 'Key rule 2',
+        text: "Street nomenclature: The rounds are often called 'Third Street' (the first 2 cards) through 'Fifth Street' (the final card).",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'five-card-stud.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'five-card-stud.rules.objective',
+          'five-card-stud.rules.gameplay',
+        ],
+      },
+      {
+        id: 'five-card-stud.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'five-card-stud.setup.players',
+          'five-card-stud.setup.deck',
+          'five-card-stud.setup.equipment',
+          'five-card-stud.setup.dealing',
+        ],
+      },
+      {
+        id: 'five-card-stud.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'five-card-stud.rules.key.1',
+          'five-card-stud.rules.key.2',
+        ],
+      },
+      {
+        id: 'five-card-stud.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'five-card-stud.score.description',
+          'five-card-stud.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'five-card-stud.setup.dealing',
+        'five-card-stud.rules.objective',
+      ],
+      ante: [
+        'five-card-stud.rules.gameplay',
+      ],
+      fold: [
+        'five-card-stud.rules.gameplay',
+      ],
+      check: [
+        'five-card-stud.rules.gameplay',
+      ],
+      call: [
+        'five-card-stud.rules.gameplay',
+      ],
+      bet: [
+        'five-card-stud.rules.gameplay',
+      ],
+      raise: [
+        'five-card-stud.rules.gameplay',
+      ],
+      reveal_hand: [
+        'five-card-stud.rules.gameplay',
+      ],
+      award_pot: [
+        'five-card-stud.rules.gameplay',
+      ],
+      deal_stud_round: [
+        'five-card-stud.rules.gameplay',
+      ],
+    },
   },
 }

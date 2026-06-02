@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Pip-Pip. Marriage game. 2 packs. Marriage sets trump.',
-    Player: 'Pip-Pip: 4-10p. 104 cards. Marriage = trump + 50. Draw after trick.',
+    LLM: '1. 7 each. 2. Marriage declares trump; 50 pts. 3. Play tricks. 4. Draw one after each trick. 5. Continue until stock exhausted, then play out hand.',
+    Player: '1. 7 each. 2. Marriage declares trump; 50 pts. 3. Play tricks. 4. Draw one after each trick. 5. Continue until stock exhausted, then play out hand.',
     objective: 'Score points. Marriage declares trump; each marriage = 50. Point values: 2=11, A=10, K/Q/J=5/4/3. Marriage sets trump like 1000.',
     gameplay: '1. 7 each. 2. Marriage declares trump; 50 pts. 3. Play tricks. 4. Draw one after each trick. 5. Continue until stock exhausted, then play out hand.',
     keyRules: [
@@ -53,10 +53,168 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-10 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: Marriage 50. Card points: 2=11, A=10, K=5, Q=4, J=3. Expected outcome: First to target (variant)..',
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Score points. Marriage declares trump; each marriage = 50. Point values: 2=11, A=10, K/Q/J=5/4/3. Marriage sets trump like 1000.',
+      'Turn-flow example: 1. 7 each. 2. Marriage declares trump; 50 pts. 3. Play tricks. 4. Draw one after each trick. 5. Continue until stock exhausted, then play out hand.',
+      'Scoring example: Marriage 50. Card points: 2=11, A=10, K=5, Q=4, J=3. First to target (variant)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pip-pip.rules.objective',
+        title: 'Objective',
+        text: 'Score points. Marriage declares trump; each marriage = 50. Point values: 2=11, A=10, K/Q/J=5/4/3. Marriage sets trump like 1000.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pip-pip.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. 7 each. 2. Marriage declares trump; 50 pts. 3. Play tricks. 4. Draw one after each trick. 5. Continue until stock exhausted, then play out hand.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pip-pip.setup.players',
+        title: 'Players',
+        text: 'Four to ten players. Described in 20th-century British card game books; the game accommodates a larger group by using two packs; play is individual (no partnerships).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pip-pip.setup.deck',
+        title: 'Deck',
+        text: 'Two standard packs shuffled together (104 cards).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pip-pip.setup.equipment',
+        title: 'Equipment',
+        text: '104 cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pip-pip.setup.dealing',
+        title: 'Deal',
+        text: '7 each. Draw after each trick until stock exhausted.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pip-pip.score.win-condition',
+        title: 'Win condition',
+        text: 'First to target (variant).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pip-pip.score.description',
+        title: 'Scoring',
+        text: 'Marriage 50. Card points: 2=11, A=10, K=5, Q=4, J=3.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pip-pip.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Marriage = new trump + 50 pts.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pip-pip.rules.key.2',
+        title: 'Key rule 2',
+        text: '2=11, A=10, K=5, Q=4, J=3.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pip-pip.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Two packs. 7 each. Draw after trick.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pip-pip.rules.key.4',
+        title: 'Key rule 4',
+        text: '4-10 players.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pip-pip.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pip-pip.rules.objective',
+          'pip-pip.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pip-pip.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pip-pip.setup.players',
+          'pip-pip.setup.deck',
+          'pip-pip.setup.equipment',
+          'pip-pip.setup.dealing',
+        ],
+      },
+      {
+        id: 'pip-pip.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pip-pip.rules.key.1',
+          'pip-pip.rules.key.2',
+          'pip-pip.rules.key.3',
+          'pip-pip.rules.key.4',
+        ],
+      },
+      {
+        id: 'pip-pip.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pip-pip.score.description',
+          'pip-pip.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pip-pip.setup.dealing',
+        'pip-pip.rules.objective',
+      ],
+      deal: [
+        'pip-pip.rules.gameplay',
+      ],
+      play_card: [
+        'pip-pip.rules.gameplay',
+      ],
+      draw: [
+        'pip-pip.rules.gameplay',
+      ],
+      declare_marriage: [
+        'pip-pip.rules.gameplay',
+      ],
+      lead: [
+        'pip-pip.rules.gameplay',
+      ],
+    },
   },
 }

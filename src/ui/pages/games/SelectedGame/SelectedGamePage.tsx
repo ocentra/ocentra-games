@@ -248,11 +248,12 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
               ? String(dataOf(bundle.gameMode).releaseStatus)
               : GameModeStatus.WorkInProgress;
             const nextPresentation = withSelectedGameReleaseStatus(buildSelectedGamePresentation(bundle), releaseStatus);
-            const savedLayoutControls = await layoutControlsPromise;
+            const savedLayoutControls = (await layoutControlsPromise) ?? undefined;
+            const bundledLayoutControls = extractSelectedGameLayoutControls(bundle?.layout);
             setGameInfo(loadedInfo ?? null);
             setPresentation(nextPresentation);
             setAssetBundle(bundle);
-            setLayoutControls(savedLayoutControls ?? extractSelectedGameLayoutControls(bundle?.layout));
+            setLayoutControls(bundledLayoutControls ?? savedLayoutControls);
             setParsedGameName(authoredGame.slug);
             setResolvedGameId(authoredGame.routeId);
             setResolvedReleaseStatus(releaseStatus);
@@ -291,7 +292,7 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
     ref.imageHash && isImageHash(ref.imageHash) ? resolveImageUrl(ref.imageHash as ImageHash) : null,
   [resolveImageUrl]);
   const selectedGameDisplayName = presentation?.hero.title || formatGameName(parsedGameName || gameId);
-  const selectedGameSubtitle = presentation?.hero.taglineLines[0] || gameInfo?.tagline || "Simple Rules. Deadly Game.";
+  const selectedGameSubtitle = presentation?.hero.taglineLines[0] || gameInfo?.tagline || '';
   const renderSelectedGameVisualContent = useCallback(({ tabId }: { tabId: Parameters<typeof SelectedGameVisualContent>[0]['tabId'] }) => {
     const hasDeckVisual = tabId === 'deck' && Boolean(assetBundle?.deck || assetBundle?.deckModel);
     const hasRankingVisual = tabId === 'ranking' && Boolean(assetBundle?.ranking);

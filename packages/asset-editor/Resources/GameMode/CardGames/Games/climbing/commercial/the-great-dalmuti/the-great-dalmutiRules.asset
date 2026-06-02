@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: The Great Dalmuti. Objective: Be the first player to achieve the winning condition through strategic play of cards.',
-    Player: 'The Great Dalmuti: play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: '1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
+    Player: '1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
     objective: 'Be the first player to achieve the winning condition through strategic play of cards.',
     gameplay: '1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-8 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: first card is dealt to the President, the second to the Vice President, and so on down. Expected outcome: 3.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the first player to achieve the winning condition through strategic play of cards.',
+      'Turn-flow example: 1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
+      'Scoring example: first card is dealt to the President, the second to the Vice President, and so on down. first card is dealt to the President, the second to the Vice President, and so on down..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'the-great-dalmuti.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to achieve the winning condition through strategic play of cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'the-great-dalmuti.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'the-great-dalmuti.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'the-great-dalmuti.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'the-great-dalmuti.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'the-great-dalmuti.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'the-great-dalmuti.score.win-condition',
+        title: 'Win condition',
+        text: 'first card is dealt to the President, the second to the Vice President, and so on down.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'the-great-dalmuti.score.description',
+        title: 'Scoring',
+        text: 'first card is dealt to the President, the second to the Vice President, and so on down.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'the-great-dalmuti.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for The Great Dalmuti.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'the-great-dalmuti.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: Points based on cards captured or objectives completed Game ends when target reached --',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'the-great-dalmuti.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Be the first player to achieve the winning condition through strategic play of cards.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'the-great-dalmuti.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'the-great-dalmuti.rules.objective',
+          'the-great-dalmuti.rules.gameplay',
+        ],
+      },
+      {
+        id: 'the-great-dalmuti.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'the-great-dalmuti.setup.players',
+          'the-great-dalmuti.setup.deck',
+          'the-great-dalmuti.setup.equipment',
+          'the-great-dalmuti.setup.dealing',
+        ],
+      },
+      {
+        id: 'the-great-dalmuti.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'the-great-dalmuti.rules.key.1',
+          'the-great-dalmuti.rules.key.2',
+          'the-great-dalmuti.rules.key.3',
+        ],
+      },
+      {
+        id: 'the-great-dalmuti.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'the-great-dalmuti.score.description',
+          'the-great-dalmuti.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'the-great-dalmuti.setup.dealing',
+        'the-great-dalmuti.rules.objective',
+      ],
+      play_card: [
+        'the-great-dalmuti.rules.gameplay',
+      ],
+    },
   },
 }

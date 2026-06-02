@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Sheepshead. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Sheepshead is a trick-taking card game that involves tricks, trump, following suit. The game originated in Europe and has become popular worldwide.',
+    LLM: 'After dealing, players may pass or pick the blind depending on table rules. The picker takes the blind, buries cards, and usually forms a hidden partnership (for example called-ace or jack-of-diamonds variants). Play is clockwise in tricks with mandatory suit following. Trump order is fixed with queens and jacks highest, plus diamonds as trumps in common five-player rules. After all tricks, card points determine whether picker side or defenders win.',
+    Player: 'After dealing, players may pass or pick the blind depending on table rules. The picker takes the blind, buries cards, and usually forms a hidden partnership (for example called-ace or jack-of-diamonds variants). Play is clockwise in tricks with mandatory suit following. Trump order is fixed with queens and jacks highest, plus diamonds as trumps in common five-player rules. After all tricks, card points determine whether picker side or defenders win.',
     objective: 'Picker side must take at least 61 of 120 card points; defenders win if picker side stays below 61.',
     gameplay: 'After dealing, players may pass or pick the blind depending on table rules. The picker takes the blind, buries cards, and usually forms a hidden partnership (for example called-ace or jack-of-diamonds variants). Play is clockwise in tricks with mandatory suit following. Trump order is fixed with queens and jacks highest, plus diamonds as trumps in common five-player rules. After all tricks, card points determine whether picker side or defenders win.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before pick_or_pass.',
-      'Scoring check: Card-point total per hand determines result: picker side needs 61+ points (of 120) to win. Game points and bump/double conventions vary by table. Expected outcome: Win the hand by taking the required card-point threshold for your side under the active variant..',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Picker side must take at least 61 of 120 card points; defenders win if picker side stays below 61.',
+      'Turn-flow example: After dealing, players may pass or pick the blind depending on table rules. The picker takes the blind, buries cards, and usually forms a hidden partnership (for example called-ace or jack-of-diamonds variants). Play is clockwise in tricks with mandatory suit following. Trump order is fixed with queens and jacks highest, plus diamonds as trumps in common five-player rules. After all tricks, card points determine whether picker side or defenders win.',
+      'Scoring example: Card-point total per hand determines result: picker side needs 61+ points (of 120) to win. Game points and bump/double conventions vary by table. Win the hand by taking the required card-point threshold for your side under the active variant..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'sheepshead.rules.objective',
+        title: 'Objective',
+        text: 'Picker side must take at least 61 of 120 card points; defenders win if picker side stays below 61.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'sheepshead.rules.gameplay',
+        title: 'Turn flow',
+        text: 'After dealing, players may pass or pick the blind depending on table rules. The picker takes the blind, buries cards, and usually forms a hidden partnership (for example called-ace or jack-of-diamonds variants). Play is clockwise in tricks with mandatory suit following. Trump order is fixed with queens and jacks highest, plus diamonds as trumps in common five-player rules. After all tricks, card points determine whether picker side or defenders win.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'sheepshead.setup.players',
+        title: 'Players',
+        text: 'Standard game is five players with changing teams each hand; variants exist for 2-8 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'sheepshead.setup.deck',
+        title: 'Deck',
+        text: 'Use a 32-card piquet deck (remove 2-6 from each suit in a standard deck).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'sheepshead.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards and score tracking for game points.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'sheepshead.setup.dealing',
+        title: 'Deal',
+        text: 'In the common five-player form, deal 6 cards to each player and 2 cards face down to the blind.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'sheepshead.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the hand by taking the required card-point threshold for your side under the active variant.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'sheepshead.score.description',
+        title: 'Scoring',
+        text: 'Card-point total per hand determines result: picker side needs 61+ points (of 120) to win. Game points and bump/double conventions vary by table.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'sheepshead.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Players must follow suit when possible.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'sheepshead.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If trump is led and you hold trump, you must play trump.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'sheepshead.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Card points are counted from captured tricks; total points in hand are 120.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'sheepshead.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'sheepshead.rules.objective',
+          'sheepshead.rules.gameplay',
+        ],
+      },
+      {
+        id: 'sheepshead.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'sheepshead.setup.players',
+          'sheepshead.setup.deck',
+          'sheepshead.setup.equipment',
+          'sheepshead.setup.dealing',
+        ],
+      },
+      {
+        id: 'sheepshead.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'sheepshead.rules.key.1',
+          'sheepshead.rules.key.2',
+          'sheepshead.rules.key.3',
+        ],
+      },
+      {
+        id: 'sheepshead.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'sheepshead.score.description',
+          'sheepshead.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'sheepshead.setup.dealing',
+        'sheepshead.rules.objective',
+      ],
+      deal: [
+        'sheepshead.rules.gameplay',
+      ],
+      play_card: [
+        'sheepshead.rules.gameplay',
+      ],
+      pass: [
+        'sheepshead.rules.gameplay',
+      ],
+      bid: [
+        'sheepshead.rules.gameplay',
+      ],
+    },
   },
 }

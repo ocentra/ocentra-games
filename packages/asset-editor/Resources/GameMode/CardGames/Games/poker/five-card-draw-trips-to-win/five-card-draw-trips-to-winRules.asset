@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Trips to Win (5 Card Draw). Logic: See rules.objective and rules.gameplay.',
-    Player: 'Trips to Win: Five Card Draw variant. To win at showdown you must hold at least three of a kind (trips). Otherwise the hand is a push and the pot carries over.',
+    LLM: 'As Five Card Draw; at showdown, best hand wins only if it qualifies (trips or better). If no one has trips, no winner; pot rolls to next hand.',
+    Player: 'As Five Card Draw; at showdown, best hand wins only if it qualifies (trips or better). If no one has trips, no winner; pot rolls to next hand.',
     objective: 'Best hand wins only if it is at least three of a kind; else push, pot carries.',
     gameplay: 'As Five Card Draw; at showdown, best hand wins only if it qualifies (trips or better). If no one has trips, no winner; pot rolls to next hand.',
     keyRules: [
@@ -51,10 +51,138 @@
       go_out: 'This game does not support go out.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Qualifier: trips minimum to win. Expected outcome: Best hand wins only if it is at least three of a kind; else push, pot carries..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Best hand wins only if it is at least three of a kind; else push, pot carries.',
+      'Turn-flow example: As Five Card Draw; at showdown, best hand wins only if it qualifies (trips or better). If no one has trips, no winner; pot rolls to next hand.',
+      'Scoring example: Qualifier: trips minimum to win. Best hand wins only if it is at least three of a kind; else push, pot carries..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'five-card-draw-trips-to-win.rules.objective',
+        title: 'Objective',
+        text: 'Best hand wins only if it is at least three of a kind; else push, pot carries.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'five-card-draw-trips-to-win.rules.gameplay',
+        title: 'Turn flow',
+        text: 'As Five Card Draw; at showdown, best hand wins only if it qualifies (trips or better). If no one has trips, no winner; pot rolls to next hand.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'five-card-draw-trips-to-win.setup.players',
+        title: 'Players',
+        text: 'Two to six players; six is recommended for the best game. More than six risks running out of cards during the draw.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'five-card-draw-trips-to-win.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack; one full deck, no jokers. Same as base Five Card Draw.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'five-card-draw-trips-to-win.setup.equipment',
+        title: 'Equipment',
+        text: 'Chips.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'five-card-draw-trips-to-win.setup.dealing',
+        title: 'Deal',
+        text: '5 cards each; standard draw.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'five-card-draw-trips-to-win.score.win-condition',
+        title: 'Win condition',
+        text: 'Best hand wins only if it is at least three of a kind; else push, pot carries.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'five-card-draw-trips-to-win.score.description',
+        title: 'Scoring',
+        text: 'Qualifier: trips minimum to win.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'five-card-draw-trips-to-win.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must have trips or better to win',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'five-card-draw-trips-to-win.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Otherwise push, pot carries',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'five-card-draw-trips-to-win.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'five-card-draw-trips-to-win.rules.objective',
+          'five-card-draw-trips-to-win.rules.gameplay',
+        ],
+      },
+      {
+        id: 'five-card-draw-trips-to-win.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'five-card-draw-trips-to-win.setup.players',
+          'five-card-draw-trips-to-win.setup.deck',
+          'five-card-draw-trips-to-win.setup.equipment',
+          'five-card-draw-trips-to-win.setup.dealing',
+        ],
+      },
+      {
+        id: 'five-card-draw-trips-to-win.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'five-card-draw-trips-to-win.rules.key.1',
+          'five-card-draw-trips-to-win.rules.key.2',
+        ],
+      },
+      {
+        id: 'five-card-draw-trips-to-win.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'five-card-draw-trips-to-win.score.description',
+          'five-card-draw-trips-to-win.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'five-card-draw-trips-to-win.setup.dealing',
+        'five-card-draw-trips-to-win.rules.objective',
+      ],
+      play_card: [
+        'five-card-draw-trips-to-win.rules.gameplay',
+      ],
+    },
   },
 }

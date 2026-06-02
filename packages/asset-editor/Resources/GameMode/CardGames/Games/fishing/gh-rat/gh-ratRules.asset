@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Gharat. Play one card per turn, capture matching top ranks (including hidden same-rank runs), and score captures at 5/10/20 by rank class toward target.',
-    Player: 'Gharat: protect high-value tops in your capture pile and steal exposed ranks before opponents can chain them.',
+    LLM: "Play begins with player to dealer's right and proceeds counterclockwise. On turn, play exactly one card from hand. If its rank matches the top of any table pile (central play pile or any capture pile), take that top card plus any immediately underlying equal-rank cards and place them on top of your capture pile. If no match exists, place played card on top of central play pile. After all players exhaust current 4-card hands, dealer gives another 4 to each if stock remains. Continue until stock and hands are empty.",
+    Player: "Play begins with player to dealer's right and proceeds counterclockwise. On turn, play exactly one card from hand. If its rank matches the top of any table pile (central play pile or any capture pile), take that top card plus any immediately underlying equal-rank cards and place them on top of your capture pile. If no match exists, place played card on top of central play pile. After all players exhaust current 4-card hands, dealer gives another 4 to each if stock remains. Continue until stock and hands are empty.",
     objective: 'Capture high-value cards and reach agreed cumulative target score before opponents.',
     gameplay: "Play begins with player to dealer's right and proceeds counterclockwise. On turn, play exactly one card from hand. If its rank matches the top of any table pile (central play pile or any capture pile), take that top card plus any immediately underlying equal-rank cards and place them on top of your capture pile. If no match exists, place played card on top of central play pile. After all players exhaust current 4-card hands, dealer gives another 4 to each if stock remains. Continue until stock and hands are empty.",
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'Round ends when all cards are played and scored, not by first empty hand winner.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play_loop.',
-      'Scoring check: Number cards score 5 each, J/Q/K score 10 each, and Aces score 20 each from captured piles only. Expected outcome: 500.',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Capture high-value cards and reach agreed cumulative target score before opponents.',
+      "Turn-flow example: Play begins with player to dealer's right and proceeds counterclockwise. On turn, play exactly one card from hand. If its rank matches the top of any table pile (central play pile or any capture pile), take that top card plus any immediately underlying equal-rank cards and place them on top of your capture pile. If no match exists, place played card on top of central play pile. After all players exhaust current 4-card hands, dealer gives another 4 to each if stock remains. Continue until stock and hands are empty.",
+      'Scoring example: Number cards score 5 each, J/Q/K score 10 each, and Aces score 20 each from captured piles only. First player or team to reach or exceed agreed target total, usually 500 or 1000, wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'gh-rat.rules.objective',
+        title: 'Objective',
+        text: 'Capture high-value cards and reach agreed cumulative target score before opponents.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'gh-rat.rules.gameplay',
+        title: 'Turn flow',
+        text: "Play begins with player to dealer's right and proceeds counterclockwise. On turn, play exactly one card from hand. If its rank matches the top of any table pile (central play pile or any capture pile), take that top card plus any immediately underlying equal-rank cards and place them on top of your capture pile. If no match exists, place played card on top of central play pile. After all players exhaust current 4-card hands, dealer gives another 4 to each if stock remains. Continue until stock and hands are empty.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'gh-rat.setup.players',
+        title: 'Players',
+        text: '2, 3, or 4 players, with optional partnerships at 4.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'gh-rat.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card international deck, rank-only comparisons.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'gh-rat.setup.equipment',
+        title: 'Equipment',
+        text: 'Score sheet for cumulative target race.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'gh-rat.setup.dealing',
+        title: 'Deal',
+        text: 'Start play pile with four face-up stacked cards (only top visible), deal four cards to each player, and keep remainder as face-down stock for future 4-card redeals.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'gh-rat.score.win-condition',
+        title: 'Win condition',
+        text: 'First player or team to reach or exceed agreed target total, usually 500 or 1000, wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'gh-rat.score.description',
+        title: 'Scoring',
+        text: 'Number cards score 5 each, J/Q/K score 10 each, and Aces score 20 each from captured piles only.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'gh-rat.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Only top cards of piles are visible and inspectable; hidden underlying cards are unknown until uncovered.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'gh-rat.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Suits are irrelevant; rank only matters for matching.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'gh-rat.rules.key.3',
+        title: 'Key rule 3',
+        text: 'A player may effectively steal from their own capture pile by matching its top rank.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'gh-rat.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Uncaptured cards left in play pile at end score for nobody.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'gh-rat.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'gh-rat.rules.objective',
+          'gh-rat.rules.gameplay',
+        ],
+      },
+      {
+        id: 'gh-rat.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'gh-rat.setup.players',
+          'gh-rat.setup.deck',
+          'gh-rat.setup.equipment',
+          'gh-rat.setup.dealing',
+        ],
+      },
+      {
+        id: 'gh-rat.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'gh-rat.rules.key.1',
+          'gh-rat.rules.key.2',
+          'gh-rat.rules.key.3',
+          'gh-rat.rules.key.4',
+        ],
+      },
+      {
+        id: 'gh-rat.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'gh-rat.score.description',
+          'gh-rat.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'gh-rat.setup.dealing',
+        'gh-rat.rules.objective',
+      ],
+      deal: [
+        'gh-rat.rules.gameplay',
+      ],
+      award_pot: [
+        'gh-rat.rules.gameplay',
+      ],
+      play_card: [
+        'gh-rat.rules.gameplay',
+      ],
+    },
   },
 }

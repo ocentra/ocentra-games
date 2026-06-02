@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players move figures on a board and play cards from unique character decks to attack, defend, scheme, and trigger special effects. The board matters, but the combat engine is card-driven.',
+    Player: 'Players move figures on a board and play cards from unique character decks to attack, defend, scheme, and trigger special effects. The board matters, but the combat engine is card-driven.',
     objective: 'Defeat the opposing fighter or team by using movement, attack, defense, and scheme cards.',
     gameplay: 'Players move figures on a board and play cards from unique character decks to attack, defend, scheme, and trigger special effects. The board matters, but the combat engine is card-driven.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Defeat the opposing fighter or team by using movement, attack, defense, and scheme cards.',
+      'Turn-flow example: Players move figures on a board and play cards from unique character decks to attack, defend, scheme, and trigger special effects. The board matters, but the combat engine is card-driven.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'unmatched.rules.objective',
+        title: 'Objective',
+        text: 'Defeat the opposing fighter or team by using movement, attack, defense, and scheme cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'unmatched.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players move figures on a board and play cards from unique character decks to attack, defend, scheme, and trigger special effects. The board matters, but the combat engine is card-driven.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'unmatched.setup.players',
+        title: 'Players',
+        text: '2-4 players use the table arrangement described for Unmatched.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'unmatched.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Unmatched fighter decks plus board and figures',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'unmatched.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Unmatched fighter decks plus board and figures, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'unmatched.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Unmatched fighter decks plus board and figures and deal or lay out cards according to the documented Unmatched rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'unmatched.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'unmatched.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'unmatched.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Each fighter has a unique deck.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'unmatched.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Attack and defense are resolved by played cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'unmatched.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Licensed characters and deck text are proprietary.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'unmatched.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'unmatched.rules.objective',
+          'unmatched.rules.gameplay',
+        ],
+      },
+      {
+        id: 'unmatched.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'unmatched.setup.players',
+          'unmatched.setup.deck',
+          'unmatched.setup.equipment',
+          'unmatched.setup.dealing',
+        ],
+      },
+      {
+        id: 'unmatched.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'unmatched.rules.key.1',
+          'unmatched.rules.key.2',
+          'unmatched.rules.key.3',
+        ],
+      },
+      {
+        id: 'unmatched.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'unmatched.score.description',
+          'unmatched.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'unmatched.setup.dealing',
+        'unmatched.rules.objective',
+      ],
+      play_card: [
+        'unmatched.rules.gameplay',
+      ],
+    },
   },
 }

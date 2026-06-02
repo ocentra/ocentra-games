@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: House of Cards. Logic: See rules.objective and rules.gameplay.',
-    Player: "House of Cards is a dual-purpose term. While it commonly refers to the physical act of building towers with playing cards, it is also a specific, traditional drawing and building game. In its game form, players compete to build virtual 'rooms' and 'stories' by matching colors and ranks to score points based on triangle formations.",
+    LLM: "1. Players take turns placing cards on the table to 'build' a house.\n2. **Valleys**: Two cards placed side-by-side on the base.\n3. **Floors**: A horizontal card placed over a 'valley'.\n4. **Peaks (Triangles)**: Two cards leaning against each other over a floor.\n5. Points are awarded when a triangle is closed. If the majority of cards in a specific 'story' or triangle are of your color, you score the face value of those cards.",
+    Player: "1. Players take turns placing cards on the table to 'build' a house.\n2. **Valleys**: Two cards placed side-by-side on the base.\n3. **Floors**: A horizontal card placed over a 'valley'.\n4. **Peaks (Triangles)**: Two cards leaning against each other over a floor.\n5. Points are awarded when a triangle is closed. If the majority of cards in a specific 'story' or triangle are of your color, you score the face value of those cards.",
     objective: 'Score the most points by forming specific geometric patterns (triangles) using your assigned color.',
     gameplay: "1. Players take turns placing cards on the table to 'build' a house.\n2. **Valleys**: Two cards placed side-by-side on the base.\n3. **Floors**: A horizontal card placed over a 'valley'.\n4. **Peaks (Triangles)**: Two cards leaning against each other over a floor.\n5. Points are awarded when a triangle is closed. If the majority of cards in a specific 'story' or triangle are of your color, you score the face value of those cards.",
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Score the most points by forming specific geometric patterns (triangles) using your assigned color. Expected outcome: Score the most points by forming specific geometric patterns (triangles) using your assigned color..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score the most points by forming specific geometric patterns (triangles) using your assigned color.',
+      "Turn-flow example: 1. Players take turns placing cards on the table to 'build' a house.\n2. **Valleys**: Two cards placed side-by-side on the base.\n3. **Floors**: A horizontal card placed over a 'valley'.\n4. **Peaks (Triangles)**: Two cards leaning against each other over a floor.\n5. Points are awarded when a triangle is closed. If the majority of cards in a specific 'story' or triangle are of your color, you score the face value of those cards.",
+      'Scoring example: Score the most points by forming specific geometric patterns (triangles) using your assigned color. Score the most points by forming specific geometric patterns (triangles) using your assigned color..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'house-of-cards.rules.objective',
+        title: 'Objective',
+        text: 'Score the most points by forming specific geometric patterns (triangles) using your assigned color.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'house-of-cards.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Players take turns placing cards on the table to 'build' a house.\n2. **Valleys**: Two cards placed side-by-side on the base.\n3. **Floors**: A horizontal card placed over a 'valley'.\n4. **Peaks (Triangles)**: Two cards leaning against each other over a floor.\n5. Points are awarded when a triangle is closed. If the majority of cards in a specific 'story' or triangle are of your color, you score the face value of those cards.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'house-of-cards.setup.players',
+        title: 'Players',
+        text: 'Two players. Each player is assigned a color (Red or Black) in the common half-deck variant; with the full deck both take turns placing cards to build the shared house structure.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'house-of-cards.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Often split by color (Red vs Black).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'house-of-cards.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. Often split by color (Red vs Black).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'house-of-cards.setup.dealing',
+        title: 'Deal',
+        text: "Players draw cards to their hand (usually 3 at a time) to build their 'house'.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'house-of-cards.score.win-condition',
+        title: 'Win condition',
+        text: 'Score the most points by forming specific geometric patterns (triangles) using your assigned color.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'house-of-cards.score.description',
+        title: 'Scoring',
+        text: 'Score the most points by forming specific geometric patterns (triangles) using your assigned color.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'house-of-cards.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Build from base: valleys (two cards side-by-side), then floors (horizontal over a valley), then peaks (two cards leaning over a floor).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'house-of-cards.rules.key.2',
+        title: 'Key rule 2',
+        text: 'When a triangle is closed, the player whose color holds the majority in that story scores the face value of those cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'house-of-cards.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Players take turns placing one card at a time to extend the structure.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'house-of-cards.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'house-of-cards.rules.objective',
+          'house-of-cards.rules.gameplay',
+        ],
+      },
+      {
+        id: 'house-of-cards.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'house-of-cards.setup.players',
+          'house-of-cards.setup.deck',
+          'house-of-cards.setup.equipment',
+          'house-of-cards.setup.dealing',
+        ],
+      },
+      {
+        id: 'house-of-cards.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'house-of-cards.rules.key.1',
+          'house-of-cards.rules.key.2',
+          'house-of-cards.rules.key.3',
+        ],
+      },
+      {
+        id: 'house-of-cards.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'house-of-cards.score.description',
+          'house-of-cards.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'house-of-cards.setup.dealing',
+        'house-of-cards.rules.objective',
+      ],
+      play_card: [
+        'house-of-cards.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Basset. Logic: Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
-    Player: 'Basset is a historical Italian gambling card game in which players bet against a banker on ranks that may appear from the pack.',
+    LLM: 'Deal five cards to each player from a 40-card Spanish pack and turn the next card for trump. Players may pass or play; active players may discard and draw replacements before trick play. Those who enter must usually win at least two tricks to avoid paying penalties.',
+    Player: 'Deal five cards to each player from a 40-card Spanish pack and turn the next card for trump. Players may pass or play; active players may discard and draw replacements before trick play. Those who enter must usually win at least two tricks to avoid paying penalties.',
     objective: 'Enter only when you can win the required tricks, then gain chips while avoiding pot penalties.',
     gameplay: 'Deal five cards to each player from a 40-card Spanish pack and turn the next card for trump. Players may pass or play; active players may discard and draw replacements before trick play. Those who enter must usually win at least two tricks to avoid paying penalties.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Bets are paid or lost against the bank according to the exposed-card result. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Enter only when you can win the required tricks, then gain chips while avoiding pot penalties.',
+      'Turn-flow example: Deal five cards to each player from a 40-card Spanish pack and turn the next card for trump. Players may pass or play; active players may discard and draw replacements before trick play. Those who enter must usually win at least two tricks to avoid paying penalties.',
+      'Scoring example: Bets are paid or lost against the bank according to the exposed-card result. Win stakes by backing ranks that appear in the favourable positions of the banked deal..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'julepe.rules.objective',
+        title: 'Objective',
+        text: 'Enter only when you can win the required tricks, then gain chips while avoiding pot penalties.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'julepe.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Deal five cards to each player from a 40-card Spanish pack and turn the next card for trump. Players may pass or play; active players may discard and draw replacements before trick play. Those who enter must usually win at least two tricks to avoid paying penalties.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'julepe.setup.players',
+        title: 'Players',
+        text: '3-8 players use the table arrangement described for Julepe.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'julepe.setup.deck',
+        title: 'Deck',
+        text: 'Spanish 40-card pack without 8s and 9s',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'julepe.setup.equipment',
+        title: 'Equipment',
+        text: 'Spanish 40-card pack without 8s and 9s, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'julepe.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Spanish 40-card pack without 8s and 9s and deal or lay out cards according to the documented Julepe rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'julepe.score.win-condition',
+        title: 'Win condition',
+        text: 'Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'julepe.score.description',
+        title: 'Scoring',
+        text: 'Bets are paid or lost against the bank according to the exposed-card result.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'julepe.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Players may pass before committing to the hand.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'julepe.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Active players can discard and draw before play.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'julepe.rules.key.3',
+        title: 'Key rule 3',
+        text: 'A player who enters and fails to win enough tricks pays the pot or loses chips.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'julepe.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'julepe.rules.objective',
+          'julepe.rules.gameplay',
+        ],
+      },
+      {
+        id: 'julepe.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'julepe.setup.players',
+          'julepe.setup.deck',
+          'julepe.setup.equipment',
+          'julepe.setup.dealing',
+        ],
+      },
+      {
+        id: 'julepe.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'julepe.rules.key.1',
+          'julepe.rules.key.2',
+          'julepe.rules.key.3',
+        ],
+      },
+      {
+        id: 'julepe.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'julepe.score.description',
+          'julepe.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'julepe.setup.dealing',
+        'julepe.rules.objective',
+      ],
+      play_card: [
+        'julepe.rules.gameplay',
+      ],
+    },
   },
 }

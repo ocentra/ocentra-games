@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Gān Dèng Yǎn 干瞪眼. 54 cards. Play higher combinations or pass. First to shed all cards wins.',
-    Player: 'Gan Deng Yan. Play combinations that beat the previous play or pass. 2s and jokers are wild.',
+    LLM: 'Play proceeds in tricks. A lead may be a legal ordinary combination or bomb. Each following play must be the same combination type and exactly one rank higher, or a permitted special response such as a two-set on singles/pairs, or a bomb. Players may pass. When all but one player pass, the trick ends; players draw from the talon starting with the last player to play, then that player leads the next trick.',
+    Player: 'Play proceeds in tricks. A lead may be a legal ordinary combination or bomb. Each following play must be the same combination type and exactly one rank higher, or a permitted special response such as a two-set on singles/pairs, or a bomb. Players may pass. When all but one player pass, the trick ends; players draw from the talon starting with the last player to play, then that player leads the next trick.',
     objective: 'Be the first player to shed all cards from hand; if you cannot win, minimize cards left when another player goes out.',
     gameplay: 'Play proceeds in tricks. A lead may be a legal ordinary combination or bomb. Each following play must be the same combination type and exactly one rank higher, or a permitted special response such as a two-set on singles/pairs, or a bomb. Players may pass. When all but one player pass, the trick ends; players draw from the talon starting with the last player to play, then that player leads the next trick.',
     keyRules: [
@@ -53,10 +53,171 @@
       go_out: 'Triggers immediately when a legal play empties your hand.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before trick_play.',
-      'Scoring check: Winner scores one point from each opponent for every card that opponent still holds at the end of the deal. Expected outcome: 100.',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Be the first player to shed all cards from hand; if you cannot win, minimize cards left when another player goes out.',
+      'Turn-flow example: Play proceeds in tricks. A lead may be a legal ordinary combination or bomb. Each following play must be the same combination type and exactly one rank higher, or a permitted special response such as a two-set on singles/pairs, or a bomb. Players may pass. When all but one player pass, the trick ends; players draw from the talon starting with the last player to play, then that player leads the next trick.',
+      'Scoring example: Winner scores one point from each opponent for every card that opponent still holds at the end of the deal. First to shed all cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'gandengyan.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to shed all cards from hand; if you cannot win, minimize cards left when another player goes out.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'gandengyan.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Play proceeds in tricks. A lead may be a legal ordinary combination or bomb. Each following play must be the same combination type and exactly one rank higher, or a permitted special response such as a two-set on singles/pairs, or a bomb. Players may pass. When all but one player pass, the trick ends; players draw from the talon starting with the last player to play, then that player leads the next trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'gandengyan.setup.players',
+        title: 'Players',
+        text: '2 to 6 players, with each player competing individually.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'gandengyan.setup.deck',
+        title: 'Deck',
+        text: '54-card deck (standard 52 cards plus two jokers).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'gandengyan.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck + 2 jokers',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'gandengyan.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer shuffles, then players draw cards in counterclockwise order until dealer has 6 cards and each other player has 5. Remaining cards form a face-down talon.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'gandengyan.score.win-condition',
+        title: 'Win condition',
+        text: 'First to shed all cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'gandengyan.score.description',
+        title: 'Scoring',
+        text: 'Winner scores one point from each opponent for every card that opponent still holds at the end of the deal.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'gandengyan.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Singles, pairs, sequences, and double-sequences are ordinary combinations; responses must usually be exactly one rank higher.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'gandengyan.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Twos are highest in singles and pairs but cannot be used inside sequences or double-sequences.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'gandengyan.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Bombs (triples, four-of-a-kind, and double-joker bomb) can beat ordinary combinations, with larger bomb classes beating smaller ones.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'gandengyan.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Jokers are wild in combinations but cannot normally be played as single cards unless it is your only remaining card when leading.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'gandengyan.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'gandengyan.rules.objective',
+          'gandengyan.rules.gameplay',
+        ],
+      },
+      {
+        id: 'gandengyan.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'gandengyan.setup.players',
+          'gandengyan.setup.deck',
+          'gandengyan.setup.equipment',
+          'gandengyan.setup.dealing',
+        ],
+      },
+      {
+        id: 'gandengyan.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'gandengyan.rules.key.1',
+          'gandengyan.rules.key.2',
+          'gandengyan.rules.key.3',
+          'gandengyan.rules.key.4',
+        ],
+      },
+      {
+        id: 'gandengyan.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'gandengyan.score.description',
+          'gandengyan.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'gandengyan.setup.dealing',
+        'gandengyan.rules.objective',
+      ],
+      deal: [
+        'gandengyan.rules.gameplay',
+      ],
+      award_pot: [
+        'gandengyan.rules.gameplay',
+      ],
+      play_card: [
+        'gandengyan.rules.gameplay',
+      ],
+      draw: [
+        'gandengyan.rules.gameplay',
+      ],
+      pass: [
+        'gandengyan.rules.gameplay',
+      ],
+      go_out: [
+        'gandengyan.rules.gameplay',
+      ],
+    },
   },
 }

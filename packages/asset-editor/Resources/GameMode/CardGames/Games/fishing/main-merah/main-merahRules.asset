@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-3 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Capture as many red cards as possible, specifically those with high point values.',
+      "Turn-flow example: 1. Play a card from your hand.\n2. Draw a card from the deck and play it to the table.\n3. **Capturing**: You capture a card if your card and the table card SUM TO 10 (e.g., 4 captures 6).\n4. **Face Cards**: 10, J, Q, K are captured by an IDENTICAL rank (e.g., King captures King).\n5. If your card doesn't capture anything, it stays on the table.",
+      'Scoring example: Points or match rules. Player with the most points from captured red cards at end of game wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'main-merah.rules.objective',
+        title: 'Objective',
+        text: 'Capture as many red cards as possible, specifically those with high point values.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'main-merah.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Play a card from your hand.\n2. Draw a card from the deck and play it to the table.\n3. **Capturing**: You capture a card if your card and the table card SUM TO 10 (e.g., 4 captures 6).\n4. **Face Cards**: 10, J, Q, K are captured by an IDENTICAL rank (e.g., King captures King).\n5. If your card doesn't capture anything, it stays on the table.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'main-merah.setup.players',
+        title: 'Players',
+        text: '2 players (10 cards each) or 3 players (7 cards each).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'main-merah.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52 cards.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'main-merah.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52 cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'main-merah.setup.dealing',
+        title: 'Deal',
+        text: '2 players: 10 cards each; 3 players: 7 cards each.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'main-merah.score.win-condition',
+        title: 'Win condition',
+        text: 'Player with the most points from captured red cards at end of game wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'main-merah.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'main-merah.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Capture by sum to 10 (e.g. 4 captures 6) or by matching rank for 10/J/Q/K.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'main-merah.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Only red cards (Hearts, Diamonds) score points; black cards are for capturing.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'main-merah.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Each turn: play one card from hand, then draw one from stock and play it to the table.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'main-merah.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'main-merah.rules.objective',
+          'main-merah.rules.gameplay',
+        ],
+      },
+      {
+        id: 'main-merah.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'main-merah.setup.players',
+          'main-merah.setup.deck',
+          'main-merah.setup.equipment',
+          'main-merah.setup.dealing',
+        ],
+      },
+      {
+        id: 'main-merah.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'main-merah.rules.key.1',
+          'main-merah.rules.key.2',
+          'main-merah.rules.key.3',
+        ],
+      },
+      {
+        id: 'main-merah.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'main-merah.score.description',
+          'main-merah.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'main-merah.setup.dealing',
+        'main-merah.rules.objective',
+      ],
+      play_card: [
+        'main-merah.rules.gameplay',
+      ],
+    },
   },
 }

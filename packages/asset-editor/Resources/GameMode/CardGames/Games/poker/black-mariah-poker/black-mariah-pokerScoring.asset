@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Standard poker pot. Pot only awarded when one player satisfies both conditions. Unclaimed pots carry forward.',
+      winCondition: 'Best hand + highest spade = win. Split = carryover.',
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: 'No fixed target score; play by game rules.',
+        cardValues: 'Poker evaluates hands by standard rankings rather than fixed per-rank point values, so no separate cardValues table is needed.',
+      },
+      splitRules: 'No split â€” either one player meets both conditions, or pot carries over.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'poker_ranking',
     patternMultipliers: null,
     priorityOrder: [],

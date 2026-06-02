@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Quebec Rummy. Logic: See rules.objective and rules.gameplay.',
-    Player: "Quebec Rummy (Rami QuÃ©bÃ©cois) is a regional variation of Contract Rummy played extensively in French-speaking Canada. It is characterized by its specific sequence of 7 or 11 rounds of 'Contracts' and its unique rules regarding 'Buying' from the discard pile (The 'Pige'). Like other contract variants, players must fulfill exactly what the round calls forâ€”sets or runsâ€”before they can expand their melds. It is a social game often played at family dinners (les grandes tablÃ©es) with multiple decks to accommodate large groups.",
+    LLM: 'Players play 7 or 11 rounds. Each round has a contract (specific sets and runs). Each turn: draw one from stock or buy from discard (La Pige; 2-card penalty), fulfill the round contract then expand melds, discard one card. First to empty hand wins the round; remaining hands are scored. Lowest aggregate score after all rounds wins.',
+    Player: 'Players play 7 or 11 rounds. Each round has a contract (specific sets and runs). Each turn: draw one from stock or buy from discard (La Pige; 2-card penalty), fulfill the round contract then expand melds, discard one card. First to empty hand wins the round; remaining hands are scored. Lowest aggregate score after all rounds wins.',
     objective: "Complete the round's contract and be the first to reach zero cards. Lowest aggregate score wins.",
     gameplay: 'Players play 7 or 11 rounds. Each round has a contract (specific sets and runs). Each turn: draw one from stock or buy from discard (La Pige; 2-card penalty), fulfill the round contract then expand melds, discard one card. First to empty hand wins the round; remaining hands are scored. Lowest aggregate score after all rounds wins.',
     keyRules: [
@@ -53,10 +53,168 @@
       go_out: 'Legal when all cards can be melded or laid off and one card discarded.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 11 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use draw, buy_from_discard, meld, discard, go_out before round end.',
-      "Scoring check: Jokers (25), Aces/Face (10), Numbers (5). Expected outcome: Complete the round's contract and be the first to reach zero cards. Lowest aggregate score wins..",
+      'Setup example: 11 card(s) per player.',
+      "Rule example: Complete the round's contract and be the first to reach zero cards. Lowest aggregate score wins.",
+      'Turn-flow example: Players play 7 or 11 rounds. Each round has a contract (specific sets and runs). Each turn: draw one from stock or buy from discard (La Pige; 2-card penalty), fulfill the round contract then expand melds, discard one card. First to empty hand wins the round; remaining hands are scored. Lowest aggregate score after all rounds wins.',
+      "Scoring example: Jokers (25), Aces/Face (10), Numbers (5). Complete the round's contract and be the first to reach zero cards. Lowest aggregate score wins..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'quebec-rummy-contract.rules.objective',
+        title: 'Objective',
+        text: "Complete the round's contract and be the first to reach zero cards. Lowest aggregate score wins.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'quebec-rummy-contract.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play 7 or 11 rounds. Each round has a contract (specific sets and runs). Each turn: draw one from stock or buy from discard (La Pige; 2-card penalty), fulfill the round contract then expand melds, discard one card. First to empty hand wins the round; remaining hands are scored. Lowest aggregate score after all rounds wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'quebec-rummy-contract.setup.players',
+        title: 'Players',
+        text: 'Optimal at 4-6 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'quebec-rummy-contract.setup.deck',
+        title: 'Deck',
+        text: '2 standard decks + 4 Jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'quebec-rummy-contract.setup.equipment',
+        title: 'Equipment',
+        text: '2 standard decks + 4 Jokers.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'quebec-rummy-contract.setup.dealing',
+        title: 'Deal',
+        text: '11 cards each player every round.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'quebec-rummy-contract.score.win-condition',
+        title: 'Win condition',
+        text: "Complete the round's contract and be the first to reach zero cards. Lowest aggregate score wins.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'quebec-rummy-contract.score.description',
+        title: 'Scoring',
+        text: 'Jokers (25), Aces/Face (10), Numbers (5).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'quebec-rummy-contract.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Each round has a contract (sets and runs); fulfill it before expanding melds.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'quebec-rummy-contract.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Draw one from stock or buy from discard (La Pige; then draw two extra from stock).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'quebec-rummy-contract.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Meld and lay off on any meld; discard one card to end turn.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'quebec-rummy-contract.rules.key.4',
+        title: 'Key rule 4',
+        text: 'First to empty hand wins the round; lowest aggregate score after all rounds wins.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'quebec-rummy-contract.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'quebec-rummy-contract.rules.objective',
+          'quebec-rummy-contract.rules.gameplay',
+        ],
+      },
+      {
+        id: 'quebec-rummy-contract.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'quebec-rummy-contract.setup.players',
+          'quebec-rummy-contract.setup.deck',
+          'quebec-rummy-contract.setup.equipment',
+          'quebec-rummy-contract.setup.dealing',
+        ],
+      },
+      {
+        id: 'quebec-rummy-contract.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'quebec-rummy-contract.rules.key.1',
+          'quebec-rummy-contract.rules.key.2',
+          'quebec-rummy-contract.rules.key.3',
+          'quebec-rummy-contract.rules.key.4',
+        ],
+      },
+      {
+        id: 'quebec-rummy-contract.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'quebec-rummy-contract.score.description',
+          'quebec-rummy-contract.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'quebec-rummy-contract.setup.dealing',
+        'quebec-rummy-contract.rules.objective',
+      ],
+      draw: [
+        'quebec-rummy-contract.rules.gameplay',
+      ],
+      discard: [
+        'quebec-rummy-contract.rules.gameplay',
+      ],
+      meld: [
+        'quebec-rummy-contract.rules.gameplay',
+      ],
+      go_out: [
+        'quebec-rummy-contract.rules.gameplay',
+      ],
+      buy_from_discard: [
+        'quebec-rummy-contract.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Illustrated Tarokk. Logic: See rules.objective and rules.gameplay.',
-    Player: "Illustrated Tarokk (Illusztrált Tarokk) is the most complex and rewarding variant of Hungarian Tarokk. While based on the 42-card 'Twenty-Calling' (Paskievics) version, it adds a massive layer of additional bonuses (Figurák) that make it a game of high-stakes declarations and daring tactical plays. In this variant, winning the basic game is often secondary to fulfilling high-value bonus contracts like 'Huszonegyfogás' (Catching the XXI).",
+    LLM: 'Standard Tarokk rules apply: Must follow suit, must trump if unable, partnership established by calling the XX.',
+    Player: 'Standard Tarokk rules apply: Must follow suit, must trump if unable, partnership established by calling the XX.',
     objective: 'Win at least 48 points and fulfill declared bonuses for maximum points.',
     gameplay: 'Standard Tarokk rules apply: Must follow suit, must trump if unable, partnership established by calling the XX.',
     keyRules: [
@@ -57,10 +57,201 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 9 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Win at least 48 points and fulfill declared bonuses for maximum points. Expected outcome: Win at least 48 points and fulfill declared bonuses for maximum points..',
+      'Setup example: 9 card(s) per player.',
+      'Rule example: Win at least 48 points and fulfill declared bonuses for maximum points.',
+      'Turn-flow example: Standard Tarokk rules apply: Must follow suit, must trump if unable, partnership established by calling the XX.',
+      'Scoring example: Win at least 48 points and fulfill declared bonuses for maximum points. Win at least 48 points and fulfill declared bonuses for maximum points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'illustrated-tarokk-hungarian.rules.objective',
+        title: 'Objective',
+        text: 'Win at least 48 points and fulfill declared bonuses for maximum points.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'illustrated-tarokk-hungarian.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Standard Tarokk rules apply: Must follow suit, must trump if unable, partnership established by calling the XX.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'illustrated-tarokk-hungarian.setup.players',
+        title: 'Players',
+        text: '4 players in hidden partnerships (established by calling the XX).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'illustrated-tarokk-hungarian.setup.deck',
+        title: 'Deck',
+        text: '42-card Tarot pack. Ranking: Skíz (highest), XXI, XX... I (Pagát).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'illustrated-tarokk-hungarian.setup.equipment',
+        title: 'Equipment',
+        text: '42-card Tarot pack. Ranking: Skíz (highest), XXI, XX... I (Pagát).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'illustrated-tarokk-hungarian.setup.dealing',
+        title: 'Deal',
+        text: 'Same as Húszashívásos Tarokk (6 in talon, hands of 9 cards).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'illustrated-tarokk-hungarian.score.win-condition',
+        title: 'Win condition',
+        text: 'Win at least 48 points and fulfill declared bonuses for maximum points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'illustrated-tarokk-hungarian.score.description',
+        title: 'Scoring',
+        text: 'Win at least 48 points and fulfill declared bonuses for maximum points.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'illustrated-tarokk-hungarian.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow suit; if void in suit led, must play a tarokk; if neither possible, may play any card. Trick won by highest tarokk in it, or by highest card of suit led if no tarokk.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'illustrated-tarokk-hungarian.rules.key.2',
+        title: 'Key rule 2',
+        text: "Declarer calls a partner by naming a tarokk (usually the XX); its holder is declarer's partner; the other two are opponents.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'illustrated-tarokk-hungarian.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Bidding (ascending): three, two, one, solo. To bid you must hold at least one honour (except fourth player after three passes).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'illustrated-tarokk-hungarian.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Six cards form the talon; declarer and others draw then discard the same number; honours and kings cannot be discarded.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'illustrated-tarokk-hungarian.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Game is won by the side that takes at least 48 of 94 card points.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'illustrated-tarokk-hungarian.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Bonuses (trull, four kings, pagátultimó, XXI-catch, centrum, small/large bird, pagátuhu, king ultimó/uhu) can be announced; six Illustrated bonuses score only if announced.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'illustrated-tarokk-hungarian.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Kontra and rekontra double the score for the game or for an announced bonus.',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+      {
+        id: 'illustrated-tarokk-hungarian.rules.key.8',
+        title: 'Key rule 8',
+        text: "Player to dealer's right leads to the first trick; winner of each trick leads to the next.",
+        sourceFields: [
+          'rules.keyRules.7',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'illustrated-tarokk-hungarian.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'illustrated-tarokk-hungarian.rules.objective',
+          'illustrated-tarokk-hungarian.rules.gameplay',
+        ],
+      },
+      {
+        id: 'illustrated-tarokk-hungarian.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'illustrated-tarokk-hungarian.setup.players',
+          'illustrated-tarokk-hungarian.setup.deck',
+          'illustrated-tarokk-hungarian.setup.equipment',
+          'illustrated-tarokk-hungarian.setup.dealing',
+        ],
+      },
+      {
+        id: 'illustrated-tarokk-hungarian.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'illustrated-tarokk-hungarian.rules.key.1',
+          'illustrated-tarokk-hungarian.rules.key.2',
+          'illustrated-tarokk-hungarian.rules.key.3',
+          'illustrated-tarokk-hungarian.rules.key.4',
+          'illustrated-tarokk-hungarian.rules.key.5',
+          'illustrated-tarokk-hungarian.rules.key.6',
+          'illustrated-tarokk-hungarian.rules.key.7',
+          'illustrated-tarokk-hungarian.rules.key.8',
+        ],
+      },
+      {
+        id: 'illustrated-tarokk-hungarian.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'illustrated-tarokk-hungarian.score.description',
+          'illustrated-tarokk-hungarian.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'illustrated-tarokk-hungarian.setup.dealing',
+        'illustrated-tarokk-hungarian.rules.objective',
+      ],
+      deal: [
+        'illustrated-tarokk-hungarian.rules.gameplay',
+      ],
+      play_card: [
+        'illustrated-tarokk-hungarian.rules.gameplay',
+      ],
+      pass: [
+        'illustrated-tarokk-hungarian.rules.gameplay',
+      ],
+      bid: [
+        'illustrated-tarokk-hungarian.rules.gameplay',
+      ],
+    },
   },
 }

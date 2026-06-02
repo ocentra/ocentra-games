@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Twenty-Four. Logic: See rules.objective and rules.gameplay.',
-    Player: '24 is a mathematical card game: use four numbers (from four cards) and only +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· (and parentheses) to make exactly 24. All four numbers must be used once. First to call a correct solution wins the four cards (or they go to opponent); play until one player has no cards. Popular in China since at least the 1960s (Shanghai); also played in North America.',
+    LLM: 'Players draft or draw cards, gather resources, build locations into their tableau, activate production and action effects, and convert resources into points. Each faction has distinct card synergies and economy timing.',
+    Player: 'Players draft or draw cards, gather resources, build locations into their tableau, activate production and action effects, and convert resources into points. Each faction has distinct card synergies and economy timing.',
     objective: 'Score the most victory points by building and using faction and common cards over the game rounds.',
     gameplay: 'Players draft or draw cards, gather resources, build locations into their tableau, activate production and action effects, and convert resources into points. Each faction has distinct card synergies and economy timing.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: None; win = other player has no cards. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score the most victory points by building and using faction and common cards over the game rounds.',
+      'Turn-flow example: Players draft or draw cards, gather resources, build locations into their tableau, activate production and action effects, and convert resources into points. Each faction has distinct card synergies and economy timing.',
+      "Scoring example: None; win = other player has no cards. Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'imperial-settlers.rules.objective',
+        title: 'Objective',
+        text: 'Score the most victory points by building and using faction and common cards over the game rounds.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'imperial-settlers.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players draft or draw cards, gather resources, build locations into their tableau, activate production and action effects, and convert resources into points. Each faction has distinct card synergies and economy timing.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'imperial-settlers.setup.players',
+        title: 'Players',
+        text: '1-4 players use the table arrangement described for Imperial Settlers.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'imperial-settlers.setup.deck',
+        title: 'Deck',
+        text: 'Commercial faction and common card decks with resource components',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'imperial-settlers.setup.equipment',
+        title: 'Equipment',
+        text: 'Commercial faction and common card decks with resource components, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'imperial-settlers.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Commercial faction and common card decks with resource components and deal or lay out cards according to the documented Imperial Settlers rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'imperial-settlers.score.win-condition',
+        title: 'Win condition',
+        text: "Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'imperial-settlers.score.description',
+        title: 'Scoring',
+        text: 'None; win = other player has no cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'imperial-settlers.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The game is card-driven but also uses resource components.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'imperial-settlers.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Faction decks define asymmetric strategies.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'imperial-settlers.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Do not copy protected card text, iconography, or artwork without license.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'imperial-settlers.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'imperial-settlers.rules.objective',
+          'imperial-settlers.rules.gameplay',
+        ],
+      },
+      {
+        id: 'imperial-settlers.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'imperial-settlers.setup.players',
+          'imperial-settlers.setup.deck',
+          'imperial-settlers.setup.equipment',
+          'imperial-settlers.setup.dealing',
+        ],
+      },
+      {
+        id: 'imperial-settlers.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'imperial-settlers.rules.key.1',
+          'imperial-settlers.rules.key.2',
+          'imperial-settlers.rules.key.3',
+        ],
+      },
+      {
+        id: 'imperial-settlers.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'imperial-settlers.score.description',
+          'imperial-settlers.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'imperial-settlers.setup.dealing',
+        'imperial-settlers.rules.objective',
+      ],
+      play_card: [
+        'imperial-settlers.rules.gameplay',
+      ],
+    },
   },
 }

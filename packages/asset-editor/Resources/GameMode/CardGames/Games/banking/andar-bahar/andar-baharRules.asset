@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Andar Bahar. Logic: See rules.objective and rules.gameplay.',
-    Player: "Andar Bahar is a traditional Indian banking game of pure chance from Bangalore, Karnataka. One card is dealt face up (house card); players bet on Andar (inside) or Bahar (outside). The dealer deals alternately to each pile until a card matching the house card's rank appears; that pile wins. Also known as Mangatha or Ullae Veliyae in Tamil.",
+    LLM: 'After house card is shown, players bet on Andar or Bahar. Dealer deals alternately to the two piles. First pile to receive a card matching the house card wins. Payouts: first-dealt pile ~1:1, other pile ~0.9:1. Optional second bet after first two cards if no match.',
+    Player: 'After house card is shown, players bet on Andar or Bahar. Dealer deals alternately to the two piles. First pile to receive a card matching the house card wins. Payouts: first-dealt pile ~1:1, other pile ~0.9:1. Optional second bet after first two cards if no match.',
     objective: "Bet on which pile (Andar or Bahar) will receive the first card matching the house card's rank.",
     gameplay: 'After house card is shown, players bet on Andar or Bahar. Dealer deals alternately to the two piles. First pile to receive a card matching the house card wins. Payouts: first-dealt pile ~1:1, other pile ~0.9:1. Optional second bet after first two cards if no match.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'Round ends when a pile receives matching rank.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      "Scoring check: Betting only; no point scoring. Expected outcome: Bet on which pile (Andar or Bahar) will receive the first card matching the house card's rank..",
+      'Setup example: 5 card(s) per player.',
+      "Rule example: Bet on which pile (Andar or Bahar) will receive the first card matching the house card's rank.",
+      'Turn-flow example: After house card is shown, players bet on Andar or Bahar. Dealer deals alternately to the two piles. First pile to receive a card matching the house card wins. Payouts: first-dealt pile ~1:1, other pile ~0.9:1. Optional second bet after first two cards if no match.',
+      "Scoring example: Betting only; no point scoring. Bet on which pile (Andar or Bahar) will receive the first card matching the house card's rank..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'andar-bahar.rules.objective',
+        title: 'Objective',
+        text: "Bet on which pile (Andar or Bahar) will receive the first card matching the house card's rank.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'andar-bahar.rules.gameplay',
+        title: 'Turn flow',
+        text: 'After house card is shown, players bet on Andar or Bahar. Dealer deals alternately to the two piles. First pile to receive a card matching the house card wins. Payouts: first-dealt pile ~1:1, other pile ~0.9:1. Optional second bet after first two cards if no match.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'andar-bahar.setup.players',
+        title: 'Players',
+        text: 'Dealer banks; any number of players bet',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'andar-bahar.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'andar-bahar.setup.equipment',
+        title: 'Equipment',
+        text: 'Table, chips',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'andar-bahar.setup.dealing',
+        title: 'Deal',
+        text: 'One card dealt face up (house card). If house card is black, first card goes to Andar; if red, to Bahar. Then cards dealt alternately to Andar and Bahar until match.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'andar-bahar.score.win-condition',
+        title: 'Win condition',
+        text: "Bet on which pile (Andar or Bahar) will receive the first card matching the house card's rank.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'andar-bahar.score.description',
+        title: 'Scoring',
+        text: 'Betting only; no point scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'andar-bahar.rules.key.1',
+        title: 'Key rule 1',
+        text: 'House card determines which pile gets first card (black=Andar, red=Bahar)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'andar-bahar.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Match rank only',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'andar-bahar.rules.key.3',
+        title: 'Key rule 3',
+        text: 'First pile to get matching card wins',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'andar-bahar.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'andar-bahar.rules.objective',
+          'andar-bahar.rules.gameplay',
+        ],
+      },
+      {
+        id: 'andar-bahar.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'andar-bahar.setup.players',
+          'andar-bahar.setup.deck',
+          'andar-bahar.setup.equipment',
+          'andar-bahar.setup.dealing',
+        ],
+      },
+      {
+        id: 'andar-bahar.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'andar-bahar.rules.key.1',
+          'andar-bahar.rules.key.2',
+          'andar-bahar.rules.key.3',
+        ],
+      },
+      {
+        id: 'andar-bahar.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'andar-bahar.score.description',
+          'andar-bahar.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'andar-bahar.setup.dealing',
+        'andar-bahar.rules.objective',
+      ],
+      play_card: [
+        'andar-bahar.rules.gameplay',
+      ],
+    },
   },
 }

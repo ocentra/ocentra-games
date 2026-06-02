@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: War. Logic: See rules.objective and rules.gameplay.',
-    Player: "War is a simple children's card game. 2 players. 52-card deck split evenly. Both flip top card simultaneously — higher wins both. Tie = 'War': each plays 1 face-down then 1 face-up; higher face-up wins all. Continue until one player has all cards. Pure luck — no decisions.",
+    LLM: 'Both flip top card. Higher wins both (placed at bottom). Tie = War: 1 face-down then 1 face-up each. Higher face-up wins all cards in the war. Multiple wars possible. Insufficient cards during war = lose.',
+    Player: 'Both flip top card. Higher wins both (placed at bottom). Tie = War: 1 face-down then 1 face-up each. Higher face-up wins all cards in the war. Multiple wars possible. Insufficient cards during war = lose.',
     objective: "Win all 52 cards by capturing the opponent's cards through comparison; the player who ends up with all the cards wins.",
     gameplay: 'Both flip top card. Higher wins both (placed at bottom). Tie = War: 1 face-down then 1 face-up each. Higher face-up wins all cards in the war. Multiple wars possible. Insufficient cards during war = lose.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 26 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: Win all cards or opponent runs out. Expected outcome: Win all 52 cards..',
+      'Setup example: 26 card(s) per player.',
+      "Rule example: Win all 52 cards by capturing the opponent's cards through comparison; the player who ends up with all the cards wins.",
+      'Turn-flow example: Both flip top card. Higher wins both (placed at bottom). Tie = War: 1 face-down then 1 face-up each. Higher face-up wins all cards in the war. Multiple wars possible. Insufficient cards during war = lose.',
+      'Scoring example: Win all cards or opponent runs out. Win all 52 cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'war.rules.objective',
+        title: 'Objective',
+        text: "Win all 52 cards by capturing the opponent's cards through comparison; the player who ends up with all the cards wins.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'war.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Both flip top card. Higher wins both (placed at bottom). Tie = War: 1 face-down then 1 face-up each. Higher face-up wins all cards in the war. Multiple wars possible. Insufficient cards during war = lose.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'war.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'war.setup.deck',
+        title: 'Deck',
+        text: '52 cards. A high. Split deck evenly 26-26.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'war.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'war.setup.dealing',
+        title: 'Deal',
+        text: '26 cards each, face-down stack.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'war.score.win-condition',
+        title: 'Win condition',
+        text: 'Win all 52 cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'war.score.description',
+        title: 'Scoring',
+        text: 'Win all cards or opponent runs out.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'war.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Simultaneous flip',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'war.rules.key.2',
+        title: 'Key rule 2',
+        text: 'War on ties',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'war.rules.key.3',
+        title: 'Key rule 3',
+        text: '1 face-down then 1 face-up during war',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'war.rules.key.4',
+        title: 'Key rule 4',
+        text: 'No player decisions',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'war.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'war.rules.objective',
+          'war.rules.gameplay',
+        ],
+      },
+      {
+        id: 'war.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'war.setup.players',
+          'war.setup.deck',
+          'war.setup.equipment',
+          'war.setup.dealing',
+        ],
+      },
+      {
+        id: 'war.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'war.rules.key.1',
+          'war.rules.key.2',
+          'war.rules.key.3',
+          'war.rules.key.4',
+        ],
+      },
+      {
+        id: 'war.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'war.score.description',
+          'war.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'war.setup.dealing',
+        'war.rules.objective',
+      ],
+      deal: [
+        'war.rules.gameplay',
+      ],
+      play_card: [
+        'war.rules.gameplay',
+      ],
+      finish_game: [
+        'war.rules.gameplay',
+      ],
+    },
   },
 }

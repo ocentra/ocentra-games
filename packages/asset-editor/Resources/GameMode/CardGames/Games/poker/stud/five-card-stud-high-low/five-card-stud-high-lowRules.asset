@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Five Card Stud High-Low. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Five Card Stud with pot split between best high hand and best qualifying low hand.',
+    LLM: 'Deal and betting are the same as in ordinary Five Card Stud. At the showdown the pot is split equally between the highest and lowest hands; the odd chip goes to the high hand if the pot cannot be divided exactly by two. In home games players declare high or low (usually not both) after the final betting round; the best high among declarers and the best low among declarers share the pot.',
+    Player: 'Deal and betting are the same as in ordinary Five Card Stud. At the showdown the pot is split equally between the highest and lowest hands; the odd chip goes to the high hand if the pot cannot be divided exactly by two. In home games players declare high or low (usually not both) after the final betting round; the best high among declarers and the best low among declarers share the pot.',
     objective: 'Win the high half of the pot with the best high hand and/or the low half with the best qualifying low hand (e.g. 8-or-better). Low must qualify to win.',
     gameplay: 'Deal and betting are the same as in ordinary Five Card Stud. At the showdown the pot is split equally between the highest and lowest hands; the odd chip goes to the high hand if the pot cannot be divided exactly by two. In home games players declare high or low (usually not both) after the final betting round; the best high among declarers and the best low among declarers share the pot.',
     keyRules: [
@@ -50,10 +50,153 @@
       go_out: 'This game does not support go out.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; each_player_clockwise may use ante before second_street.',
-      'Scoring check: Split pot Expected outcome: Win high half and or low half. Low must qualify..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the high half of the pot with the best high hand and/or the low half with the best qualifying low hand (e.g. 8-or-better). Low must qualify to win.',
+      'Turn-flow example: Deal and betting are the same as in ordinary Five Card Stud. At the showdown the pot is split equally between the highest and lowest hands; the odd chip goes to the high hand if the pot cannot be divided exactly by two. In home games players declare high or low (usually not both) after the final betting round; the best high among declarers and the best low among declarers share the pot.',
+      'Scoring example: Split pot Win high half and or low half. Low must qualify..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'five-card-stud-high-low.rules.objective',
+        title: 'Objective',
+        text: 'Win the high half of the pot with the best high hand and/or the low half with the best qualifying low hand (e.g. 8-or-better). Low must qualify to win.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'five-card-stud-high-low.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Deal and betting are the same as in ordinary Five Card Stud. At the showdown the pot is split equally between the highest and lowest hands; the odd chip goes to the high hand if the pot cannot be divided exactly by two. In home games players declare high or low (usually not both) after the final betting round; the best high among declarers and the best low among declarers share the pot.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'five-card-stud-high-low.setup.players',
+        title: 'Players',
+        text: '2 to 10 players',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'five-card-stud-high-low.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'five-card-stud-high-low.setup.equipment',
+        title: 'Equipment',
+        text: 'Chips',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'five-card-stud-high-low.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives one card face down (hole card) and one face up, then three more cards face up, one at a time, with a betting round after each round of cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'five-card-stud-high-low.score.win-condition',
+        title: 'Win condition',
+        text: 'Win high half and or low half. Low must qualify.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'five-card-stud-high-low.score.description',
+        title: 'Scoring',
+        text: 'Split pot',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'five-card-stud-high-low.rules.key.1',
+        title: 'Key rule 1',
+        text: 'High-low split',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'five-card-stud-high-low.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'five-card-stud-high-low.rules.objective',
+          'five-card-stud-high-low.rules.gameplay',
+        ],
+      },
+      {
+        id: 'five-card-stud-high-low.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'five-card-stud-high-low.setup.players',
+          'five-card-stud-high-low.setup.deck',
+          'five-card-stud-high-low.setup.equipment',
+          'five-card-stud-high-low.setup.dealing',
+        ],
+      },
+      {
+        id: 'five-card-stud-high-low.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'five-card-stud-high-low.rules.key.1',
+        ],
+      },
+      {
+        id: 'five-card-stud-high-low.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'five-card-stud-high-low.score.description',
+          'five-card-stud-high-low.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'five-card-stud-high-low.setup.dealing',
+        'five-card-stud-high-low.rules.objective',
+      ],
+      ante: [
+        'five-card-stud-high-low.rules.gameplay',
+      ],
+      fold: [
+        'five-card-stud-high-low.rules.gameplay',
+      ],
+      check: [
+        'five-card-stud-high-low.rules.gameplay',
+      ],
+      call: [
+        'five-card-stud-high-low.rules.gameplay',
+      ],
+      bet: [
+        'five-card-stud-high-low.rules.gameplay',
+      ],
+      raise: [
+        'five-card-stud-high-low.rules.gameplay',
+      ],
+      declare: [
+        'five-card-stud-high-low.rules.gameplay',
+      ],
+      reveal_hand: [
+        'five-card-stud-high-low.rules.gameplay',
+      ],
+      award_pot: [
+        'five-card-stud-high-low.rules.gameplay',
+      ],
+    },
   },
 }

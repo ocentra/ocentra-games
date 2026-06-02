@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Fortress. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Fortress is a challenging open-information Solitaire (Patience) game characterized by its unique building rules and lack of a draw pile. All cards are dealt at the start; the top card of each column is available. Tableau builds up or down by same suit; empty spaces may be filled with any available card. Goal: move all 52 cards to the four foundations (ace to king by suit).',
+    LLM: 'Only the top card of each tableau column is available. Move a card to a foundation (build up by suit from ace to king) or to another tableau column (build up or down by same suit, one card at a time; no round-the-corner). Fill an empty tableau space with any available card. No redeal.',
+    Player: 'Only the top card of each tableau column is available. Move a card to a foundation (build up by suit from ace to king) or to another tableau column (build up or down by same suit, one card at a time; no round-the-corner). Fill an empty tableau space with any available card. No redeal.',
     objective: 'Move all 52 cards into the four foundation piles, building each suit up from Ace to King.',
     gameplay: 'Only the top card of each tableau column is available. Move a card to a foundation (build up by suit from ace to king) or to another tableau column (build up or down by same suit, one card at a time; no round-the-corner). Fill an empty tableau space with any available card. No redeal.',
     keyRules: [
@@ -55,10 +55,174 @@
       go_out: 'This game does not support go out.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Move all 52 cards into the four foundation piles, building each suit up from Ace to King. Expected outcome: Move all 52 cards into the four foundation piles, building each suit up from Ace to King..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Move all 52 cards into the four foundation piles, building each suit up from Ace to King.',
+      'Turn-flow example: Only the top card of each tableau column is available. Move a card to a foundation (build up by suit from ace to king) or to another tableau column (build up or down by same suit, one card at a time; no round-the-corner). Fill an empty tableau space with any available card. No redeal.',
+      'Scoring example: Move all 52 cards into the four foundation piles, building each suit up from Ace to King. Move all 52 cards into the four foundation piles, building each suit up from Ace to King..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'fortress.rules.objective',
+        title: 'Objective',
+        text: 'Move all 52 cards into the four foundation piles, building each suit up from Ace to King.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'fortress.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Only the top card of each tableau column is available. Move a card to a foundation (build up by suit from ace to king) or to another tableau column (build up or down by same suit, one card at a time; no round-the-corner). Fill an empty tableau space with any available card. No redeal.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'fortress.setup.players',
+        title: 'Players',
+        text: 'One player only. Fortress is a patience (solitaire) game; the entire deck is laid out at the start and the single player moves cards between the tableau columns and the four foundations.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'fortress.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'fortress.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'fortress.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 52 cards face-up into 10 columns: two columns of 6 cards (one on the left, one on the right) and eight columns of 5 cards. Four foundation spaces in the centre for aces.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'fortress.score.win-condition',
+        title: 'Win condition',
+        text: 'Move all 52 cards into the four foundation piles, building each suit up from Ace to King.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'fortress.score.description',
+        title: 'Scoring',
+        text: 'Move all 52 cards into the four foundation piles, building each suit up from Ace to King.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'fortress.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Only the exposed (top) card of each column is available.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'fortress.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Foundations build up by suit from ace to king.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'fortress.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Tableau builds up or down by same suit; one card at a time.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'fortress.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Aces cannot be placed on kings or vice versa.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'fortress.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Empty spaces may be filled with any available card.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'fortress.rules.key.6',
+        title: 'Key rule 6',
+        text: 'No redeal.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'fortress.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'fortress.rules.objective',
+          'fortress.rules.gameplay',
+        ],
+      },
+      {
+        id: 'fortress.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'fortress.setup.players',
+          'fortress.setup.deck',
+          'fortress.setup.equipment',
+          'fortress.setup.dealing',
+        ],
+      },
+      {
+        id: 'fortress.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'fortress.rules.key.1',
+          'fortress.rules.key.2',
+          'fortress.rules.key.3',
+          'fortress.rules.key.4',
+          'fortress.rules.key.5',
+          'fortress.rules.key.6',
+        ],
+      },
+      {
+        id: 'fortress.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'fortress.score.description',
+          'fortress.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'fortress.setup.dealing',
+        'fortress.rules.objective',
+      ],
+      play_card: [
+        'fortress.rules.gameplay',
+      ],
+    },
   },
 }

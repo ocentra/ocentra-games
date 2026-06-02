@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 7 Card Stud High-Low. Logic: See rules.objective and rules.gameplay.',
-    Player: '7 Card Stud Hi-Lo: seven cards each (two down, four up, one down). Pot split between best high hand and best qualifying low (typically 8-or-better). Can scoop with best of both. USA.',
+    LLM: 'Same as 7 Card Stud (two down, four up, one down; betting rounds). At showdown, best high hand and best qualifying low split the pot. Ace can count high or low for low.',
+    Player: 'Same as 7 Card Stud (two down, four up, one down; betting rounds). At showdown, best high hand and best qualifying low split the pot. Ace can count high or low for low.',
     objective: 'Win the high half and/or the low half of the pot; best high hand and best qualifying low (e.g. 8-or-better) split; one player can scoop both.',
     gameplay: 'Same as 7 Card Stud (two down, four up, one down; betting rounds). At showdown, best high hand and best qualifying low split the pot. Ace can count high or low for low.',
     keyRules: [
@@ -52,10 +52,171 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; each_player_clockwise may use ante before third_street.',
-      'Scoring check: Pot split between high and low; scoop if you win both. Expected outcome: Win the high half and/or the low half of the pot; best high hand and best qualifying low (e.g. 8-or-better) split; one player can scoop both..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Win the high half and/or the low half of the pot; best high hand and best qualifying low (e.g. 8-or-better) split; one player can scoop both.',
+      'Turn-flow example: Same as 7 Card Stud (two down, four up, one down; betting rounds). At showdown, best high hand and best qualifying low split the pot. Ace can count high or low for low.',
+      'Scoring example: Pot split between high and low; scoop if you win both. Win the high half and/or the low half of the pot; best high hand and best qualifying low (e.g. 8-or-better) split; one player can scoop both..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '7-card-stud-high-low.rules.objective',
+        title: 'Objective',
+        text: 'Win the high half and/or the low half of the pot; best high hand and best qualifying low (e.g. 8-or-better) split; one player can scoop both.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '7-card-stud-high-low.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Same as 7 Card Stud (two down, four up, one down; betting rounds). At showdown, best high hand and best qualifying low split the pot. Ace can count high or low for low.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '7-card-stud-high-low.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '7-card-stud-high-low.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '7-card-stud-high-low.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '7-card-stud-high-low.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '7-card-stud-high-low.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the high half and/or the low half of the pot; best high hand and best qualifying low (e.g. 8-or-better) split; one player can scoop both.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '7-card-stud-high-low.score.description',
+        title: 'Scoring',
+        text: 'Pot split between high and low; scoop if you win both.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '7-card-stud-high-low.rules.key.1',
+        title: 'Key rule 1',
+        text: '7 Card Stud deal and betting',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '7-card-stud-high-low.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Pot split high and low',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '7-card-stud-high-low.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Qualify for low (typically 8-high or ace-to-five)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '7-card-stud-high-low.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '7-card-stud-high-low.rules.objective',
+          '7-card-stud-high-low.rules.gameplay',
+        ],
+      },
+      {
+        id: '7-card-stud-high-low.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '7-card-stud-high-low.setup.players',
+          '7-card-stud-high-low.setup.deck',
+          '7-card-stud-high-low.setup.equipment',
+          '7-card-stud-high-low.setup.dealing',
+        ],
+      },
+      {
+        id: '7-card-stud-high-low.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '7-card-stud-high-low.rules.key.1',
+          '7-card-stud-high-low.rules.key.2',
+          '7-card-stud-high-low.rules.key.3',
+        ],
+      },
+      {
+        id: '7-card-stud-high-low.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '7-card-stud-high-low.score.description',
+          '7-card-stud-high-low.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '7-card-stud-high-low.setup.dealing',
+        '7-card-stud-high-low.rules.objective',
+      ],
+      ante: [
+        '7-card-stud-high-low.rules.gameplay',
+      ],
+      fold: [
+        '7-card-stud-high-low.rules.gameplay',
+      ],
+      check: [
+        '7-card-stud-high-low.rules.gameplay',
+      ],
+      call: [
+        '7-card-stud-high-low.rules.gameplay',
+      ],
+      bet: [
+        '7-card-stud-high-low.rules.gameplay',
+      ],
+      raise: [
+        '7-card-stud-high-low.rules.gameplay',
+      ],
+      declare: [
+        '7-card-stud-high-low.rules.gameplay',
+      ],
+      reveal_hand: [
+        '7-card-stud-high-low.rules.gameplay',
+      ],
+      award_pot: [
+        '7-card-stud-high-low.rules.gameplay',
+      ],
+    },
   },
 }

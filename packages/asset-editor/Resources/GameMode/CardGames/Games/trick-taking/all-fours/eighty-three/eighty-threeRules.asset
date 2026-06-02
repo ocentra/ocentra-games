@@ -52,10 +52,159 @@
       go_out: 'Game ends per rules.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 9 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before bid.',
-      'Scoring check: Only trumps score; 83 points in deck. First to game target wins. Expected outcome: First to reach game target (e.g. 500) wins. Count trick points from trumps only..',
+      'Setup example: 9 card(s) per player.',
+      'Rule example: Bid and make at least the bid in trick points. 83 points in deck (with joker); first to game target wins.',
+      'Turn-flow example: Like 63: 9 cards, bid, discard non-trumps, dealer replenishes to 6. Joker = lowest trump (15 pts); trump 3 = 0. Only trumps score.',
+      'Scoring example: Only trumps score; 83 points in deck. First to game target wins. First to reach game target (e.g. 500) wins. Count trick points from trumps only..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'eighty-three.rules.objective',
+        title: 'Objective',
+        text: 'Bid and make at least the bid in trick points. 83 points in deck (with joker); first to game target wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'eighty-three.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Like 63: 9 cards, bid, discard non-trumps, dealer replenishes to 6. Joker = lowest trump (15 pts); trump 3 = 0. Only trumps score.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'eighty-three.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'eighty-three.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'eighty-three.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'eighty-three.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'eighty-three.score.win-condition',
+        title: 'Win condition',
+        text: 'First to reach game target (e.g. 500) wins. Count trick points from trumps only.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'eighty-three.score.description',
+        title: 'Scoring',
+        text: 'Only trumps score; 83 points in deck. First to game target wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'eighty-three.rules.key.1',
+        title: 'Key rule 1',
+        text: '52 + joker; joker = lowest trump (15)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'eighty-three.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Bid; only trumps score; total 83',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'eighty-three.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Same structure as 63',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'eighty-three.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'eighty-three.rules.objective',
+          'eighty-three.rules.gameplay',
+        ],
+      },
+      {
+        id: 'eighty-three.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'eighty-three.setup.players',
+          'eighty-three.setup.deck',
+          'eighty-three.setup.equipment',
+          'eighty-three.setup.dealing',
+        ],
+      },
+      {
+        id: 'eighty-three.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'eighty-three.rules.key.1',
+          'eighty-three.rules.key.2',
+          'eighty-three.rules.key.3',
+        ],
+      },
+      {
+        id: 'eighty-three.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'eighty-three.score.description',
+          'eighty-three.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'eighty-three.setup.dealing',
+        'eighty-three.rules.objective',
+      ],
+      deal: [
+        'eighty-three.rules.gameplay',
+      ],
+      play_card: [
+        'eighty-three.rules.gameplay',
+      ],
+      discard: [
+        'eighty-three.rules.gameplay',
+      ],
+      pass: [
+        'eighty-three.rules.gameplay',
+      ],
+      bid: [
+        'eighty-three.rules.gameplay',
+      ],
+    },
   },
 }

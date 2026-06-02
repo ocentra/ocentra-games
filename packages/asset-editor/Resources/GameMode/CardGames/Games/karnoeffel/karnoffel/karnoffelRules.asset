@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Karnöffel. See rules.objective and rules.gameplay for details.',
-    Player: "KarnÃ¶ffel is arguably the oldest identifiable European card game still played today, with records dating back to 1426. It is a highly unusual trick-taking game where players are allowed to communicate freely with their partners. The game is famous for its chaotic 'Elected Suit' ranking, featuring cards with evocative names like the Joker-like 'KarnÃ¶ffel' (Unter), the 'Pope' (6), and the 'Devil' (7).",
+    LLM: '1. Standard trick-taking. NO OBLIGATION to follow suit (this is a key medieval rule).\n2. Players can talk to their partners, showing cards or suggesting plays.\n3. The leader of a partnership (the Director) often makes the final decision on signals.',
+    Player: '1. Standard trick-taking. NO OBLIGATION to follow suit (this is a key medieval rule).\n2. Players can talk to their partners, showing cards or suggesting plays.\n3. The leader of a partnership (the Director) often makes the final decision on signals.',
     objective: 'Win at least three out of the five tricks in a hand to score points for your team.',
     gameplay: '1. Standard trick-taking. NO OBLIGATION to follow suit (this is a key medieval rule).\n2. Players can talk to their partners, showing cards or suggesting plays.\n3. The leader of a partnership (the Director) often makes the final decision on signals.',
     keyRules: [
@@ -53,10 +53,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Win at least three out of the five tricks in a hand to score points for your team. Expected outcome: NA.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win at least three out of the five tricks in a hand to score points for your team.',
+      'Turn-flow example: 1. Standard trick-taking. NO OBLIGATION to follow suit (this is a key medieval rule).\n2. Players can talk to their partners, showing cards or suggesting plays.\n3. The leader of a partnership (the Director) often makes the final decision on signals.',
+      'Scoring example: Win at least three out of the five tricks in a hand to score points for your team. Win at least three out of the five tricks in a hand to score points for your team..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'karnoffel.rules.objective',
+        title: 'Objective',
+        text: 'Win at least three out of the five tricks in a hand to score points for your team.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'karnoffel.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Standard trick-taking. NO OBLIGATION to follow suit (this is a key medieval rule).\n2. Players can talk to their partners, showing cards or suggesting plays.\n3. The leader of a partnership (the Director) often makes the final decision on signals.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'karnoffel.setup.players',
+        title: 'Players',
+        text: 'Typically 4 players in two partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'karnoffel.setup.deck',
+        title: 'Deck',
+        text: '32 cards (Standard 32, German suits: Acorns, Leaves, Hearts, Bells). French equivalent: remove 2s through 6s.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'karnoffel.setup.equipment',
+        title: 'Equipment',
+        text: '32 cards (Standard 32, German suits: Acorns, Leaves, Hearts, Bells). French equivalent: remove 2s through 6s.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'karnoffel.setup.dealing',
+        title: 'Deal',
+        text: "Deal 5 cards to each player, one at a time. The first card of each player's hand is dealt face up; the lowest of these face-up cards determines the chosen (trump) suit. If two tie, the first dealt decides. Then players pick up their cards.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'karnoffel.score.win-condition',
+        title: 'Win condition',
+        text: 'Win at least three out of the five tricks in a hand to score points for your team.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'karnoffel.score.description',
+        title: 'Scoring',
+        text: 'Win at least three out of the five tricks in a hand to score points for your team.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'karnoffel.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No requirement to follow suit; highest card of led suit or highest trump wins the trick.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'karnoffel.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Lowest of the four face-up cards (one per player) determines the chosen (trump) suit for the deal.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'karnoffel.rules.key.3',
+        title: 'Key rule 3',
+        text: 'First team to win three tricks wins the deal. Partners sit opposite; communication between partners is allowed.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'karnoffel.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Devil (7 of chosen suit) may not be played to the first trick; it beats all only when led.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'karnoffel.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'karnoffel.rules.objective',
+          'karnoffel.rules.gameplay',
+        ],
+      },
+      {
+        id: 'karnoffel.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'karnoffel.setup.players',
+          'karnoffel.setup.deck',
+          'karnoffel.setup.equipment',
+          'karnoffel.setup.dealing',
+        ],
+      },
+      {
+        id: 'karnoffel.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'karnoffel.rules.key.1',
+          'karnoffel.rules.key.2',
+          'karnoffel.rules.key.3',
+          'karnoffel.rules.key.4',
+        ],
+      },
+      {
+        id: 'karnoffel.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'karnoffel.score.description',
+          'karnoffel.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'karnoffel.setup.dealing',
+        'karnoffel.rules.objective',
+      ],
+      deal: [
+        'karnoffel.rules.gameplay',
+      ],
+      play_card: [
+        'karnoffel.rules.gameplay',
+      ],
+    },
   },
 }

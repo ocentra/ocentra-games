@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Block Dominoes. Double-six set (28 tiles). 2-4 players. Match tiles on train ends. Pass if can't play (no drawing). Doubles crosswise, NOT spinners. Two open ends only. Win by dominoing or lowest pips. Score difference. Game to 61 or 100.",
-    Player: 'You have 5 tiles: 6-4, 6-3, 6-1, 3-2, 5-5. The open ends are 6 and 2. You control the 6-suit heavily. Do you play 6-4 to maintain your 6 presence on one end, or the 3-2 to keep all three 6-tiles? If the game blocks, your high pips hurt you.',
+    LLM: '1. **Start**: The player with the highest double (usually 6-6) plays first. 2. **Turn**: Each player in turn must place one tile that matches the pip value of an open end of the line. 3. **Doubles**: Doubles are played crosswise but are not spinners; they only provide two matching ends. 4. **Passing**: If you cannot play, you must pass your turn. 5. **End**: The round ends when a player is out of tiles or no player can make a move.',
+    Player: '1. **Start**: The player with the highest double (usually 6-6) plays first. 2. **Turn**: Each player in turn must place one tile that matches the pip value of an open end of the line. 3. **Doubles**: Doubles are played crosswise but are not spinners; they only provide two matching ends. 4. **Passing**: If you cannot play, you must pass your turn. 5. **End**: The round ends when a player is out of tiles or no player can make a move.',
     objective: 'Be the first player to play all tiles from your hand, or have the lowest pip count in a blocked game.',
     gameplay: '1. **Start**: The player with the highest double (usually 6-6) plays first. 2. **Turn**: Each player in turn must place one tile that matches the pip value of an open end of the line. 3. **Doubles**: Doubles are played crosswise but are not spinners; they only provide two matching ends. 4. **Passing**: If you cannot play, you must pass your turn. 5. **End**: The round ends when a player is out of tiles or no player can make a move.',
     keyRules: [
@@ -52,10 +52,159 @@
       go_out: 'Going domino occurs automatically when the last tile is played; no separate engine action is needed.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in dealing; system may use deal_tiles before play_loop.',
-      "Scoring check: Winner scores sum of losers' pips minus own pips. Game to 100 (2-player/partnership) or 61 (3-4 player). Expected outcome: 100.",
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Be the first player to play all tiles from your hand, or have the lowest pip count in a blocked game.',
+      'Turn-flow example: 1. **Start**: The player with the highest double (usually 6-6) plays first. 2. **Turn**: Each player in turn must place one tile that matches the pip value of an open end of the line. 3. **Doubles**: Doubles are played crosswise but are not spinners; they only provide two matching ends. 4. **Passing**: If you cannot play, you must pass your turn. 5. **End**: The round ends when a player is out of tiles or no player can make a move.',
+      "Scoring example: Winner scores sum of losers' pips minus own pips. Game to 100 (2-player/partnership) or 61 (3-4 player). First player to reach the target score across multiple rounds..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'block-dominoes.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to play all tiles from your hand, or have the lowest pip count in a blocked game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'block-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Start**: The player with the highest double (usually 6-6) plays first. 2. **Turn**: Each player in turn must place one tile that matches the pip value of an open end of the line. 3. **Doubles**: Doubles are played crosswise but are not spinners; they only provide two matching ends. 4. **Passing**: If you cannot play, you must pass your turn. 5. **End**: The round ends when a player is out of tiles or no player can make a move.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'block-dominoes.setup.players',
+        title: 'Players',
+        text: '2 to 4 players (4 players usually play in fixed partnerships).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'block-dominoes.setup.deck',
+        title: 'Deck',
+        text: 'Standard double-six domino set consisting of 28 tiles.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'block-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'One domino set, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'block-dominoes.setup.dealing',
+        title: 'Deal',
+        text: '2 players: 7 tiles each. 3 players: 5 tiles each. 4 players: 5 or 7 tiles each (depending on whether the boneyard is used). Remaining tiles are set aside face down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'block-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach the target score across multiple rounds.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'block-dominoes.score.description',
+        title: 'Scoring',
+        text: "Winner scores sum of losers' pips minus own pips. Game to 100 (2-player/partnership) or 61 (3-4 player).",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'block-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The line always has exactly two open ends.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'block-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: 'No drawing from the boneyard during play.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'block-dominoes.rules.key.3',
+        title: 'Key rule 3',
+        text: 'In a blocked game, the player with the lowest total pips wins the round.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'block-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'block-dominoes.rules.objective',
+          'block-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: 'block-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'block-dominoes.setup.players',
+          'block-dominoes.setup.deck',
+          'block-dominoes.setup.equipment',
+          'block-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: 'block-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'block-dominoes.rules.key.1',
+          'block-dominoes.rules.key.2',
+          'block-dominoes.rules.key.3',
+        ],
+      },
+      {
+        id: 'block-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'block-dominoes.score.description',
+          'block-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'block-dominoes.setup.dealing',
+        'block-dominoes.rules.objective',
+      ],
+      pass: [
+        'block-dominoes.rules.gameplay',
+      ],
+      deal_tiles: [
+        'block-dominoes.rules.gameplay',
+      ],
+      place_tile: [
+        'block-dominoes.rules.gameplay',
+      ],
+      calculate_pips: [
+        'block-dominoes.rules.gameplay',
+      ],
+      award_round_points: [
+        'block-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kasino (Swedish). See rules.objective and rules.gameplay for details.',
-    Player: "Kasino (Swedish Casino) is a classic fishing game played in Sweden. While sharing the 'Royal' capture values of its Finnish counterpart, the Swedish version features distinct scoring (1 point for most spades instead of 2) and emphasizes a 16-point winning match. It is a game of strategic capture where the 10 of Diamonds ('Storan') and the 2 of Spades ('Lillan') are the primary targets.",
+    LLM: "Each turn play one card from hand. Capture a table card of the same capture value, or a set of table cards whose values sum to your card's value; you may take multiple such captures with one play. Capture is optional. Ace counts as 1 or 14. Clearing the table (tabbe) scores 1; last player to capture gets remaining table cards and 1 point (sistan).",
+    Player: "Each turn play one card from hand. Capture a table card of the same capture value, or a set of table cards whose values sum to your card's value; you may take multiple such captures with one play. Capture is optional. Ace counts as 1 or 14. Clearing the table (tabbe) scores 1; last player to capture gets remaining table cards and 1 point (sistan).",
     objective: 'Capture scoring cards to reach 16 cumulative points.',
     gameplay: "Each turn play one card from hand. Capture a table card of the same capture value, or a set of table cards whose values sum to your card's value; you may take multiple such captures with one play. Capture is optional. Ace counts as 1 or 14. Clearing the table (tabbe) scores 1; last player to capture gets remaining table cards and 1 point (sistan).",
     keyRules: [
@@ -53,10 +53,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Most spades 2, most cards 1, each Ace 1, 10 of Diamonds (Storan) 2, 2 of Spades (Lillan) 1, last capture (sistan) 1, each tabbe 1. First to 16 points wins. Expected outcome: 16.',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Capture scoring cards to reach 16 cumulative points.',
+      "Turn-flow example: Each turn play one card from hand. Capture a table card of the same capture value, or a set of table cards whose values sum to your card's value; you may take multiple such captures with one play. Capture is optional. Ace counts as 1 or 14. Clearing the table (tabbe) scores 1; last player to capture gets remaining table cards and 1 point (sistan).",
+      'Scoring example: Most spades 2, most cards 1, each Ace 1, 10 of Diamonds (Storan) 2, 2 of Spades (Lillan) 1, last capture (sistan) 1, each tabbe 1. First to 16 points wins. First player to reach 16 or more cumulative points wins; if tie at 16+, highest total wins, then most spades..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'kasino-swedish.rules.objective',
+        title: 'Objective',
+        text: 'Capture scoring cards to reach 16 cumulative points.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kasino-swedish.rules.gameplay',
+        title: 'Turn flow',
+        text: "Each turn play one card from hand. Capture a table card of the same capture value, or a set of table cards whose values sum to your card's value; you may take multiple such captures with one play. Capture is optional. Ace counts as 1 or 14. Clearing the table (tabbe) scores 1; last player to capture gets remaining table cards and 1 point (sistan).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kasino-swedish.setup.players',
+        title: 'Players',
+        text: 'Usually 2 or 4 (in partnerships).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kasino-swedish.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kasino-swedish.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kasino-swedish.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 4 cards to each player and 4 face-up to the table. This is repeated until the deck is empty.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kasino-swedish.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach 16 or more cumulative points wins; if tie at 16+, highest total wins, then most spades.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kasino-swedish.score.description',
+        title: 'Scoring',
+        text: 'Most spades 2, most cards 1, each Ace 1, 10 of Diamonds (Storan) 2, 2 of Spades (Lillan) 1, last capture (sistan) 1, each tabbe 1. First to 16 points wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kasino-swedish.rules.key.1',
+        title: 'Key rule 1',
+        text: "Capture by same value or by a set of table cards summing to the played card's value; multiple captures allowed in one turn.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kasino-swedish.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Capture is never compulsory; you may leave capturable cards or trail without capturing.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kasino-swedish.rules.key.3',
+        title: 'Key rule 3',
+        text: 'First to 16 or more points wins; tie-break by most points then most spades.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kasino-swedish.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Tabbe (sweep): clearing the table scores 1; sistan: last capture gets remaining table cards and 1 point.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kasino-swedish.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kasino-swedish.rules.objective',
+          'kasino-swedish.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kasino-swedish.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kasino-swedish.setup.players',
+          'kasino-swedish.setup.deck',
+          'kasino-swedish.setup.equipment',
+          'kasino-swedish.setup.dealing',
+        ],
+      },
+      {
+        id: 'kasino-swedish.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kasino-swedish.rules.key.1',
+          'kasino-swedish.rules.key.2',
+          'kasino-swedish.rules.key.3',
+          'kasino-swedish.rules.key.4',
+        ],
+      },
+      {
+        id: 'kasino-swedish.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kasino-swedish.score.description',
+          'kasino-swedish.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kasino-swedish.setup.dealing',
+        'kasino-swedish.rules.objective',
+      ],
+      deal: [
+        'kasino-swedish.rules.gameplay',
+      ],
+      play_card: [
+        'kasino-swedish.rules.gameplay',
+      ],
+    },
   },
 }

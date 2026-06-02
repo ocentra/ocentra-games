@@ -11,18 +11,44 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Payouts based on hand outcome.',
+      winCondition: 'Higher total than dealer or dealer bust.',
+      targetScore: 21,
+      scoringDirection: 'high_wins',
+      cardValues: {
         Ace: '1 or 11 points',
         'Face Cards': '10 points',
         'Number Cards': '2-10 points each',
       },
+      sourceCardValues: {
+        raw: {
+          Ace: '1 or 11 points',
+          'Face Cards': '10 points',
+          'Number Cards': '2-10 points each',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        nullReasons: 'Not applicable.',
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: "Ties (Push) result in the player's bet being returned with no profit or loss.",
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],
     winCondition: 'Higher total than dealer or dealer bust.',
     cardValues: {},
-    penalties: '{\n  "Bust": "Immediate loss of bet for exceeding 21."\n}',
+    penalties: '{"Bust":"Immediate loss of bet for exceeding 21."}',
     targetScore: 21,
     scoringDirection: 'high_wins',
     rankingAsset: {

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tile Matching Solitaire. Logic: See rules.',
-    Player: 'Solitaire game using domino or mahjong-style tile matching.',
+    LLM: 'A tile is available when it is at the end of a row and not covered. Remove two matching tiles at a time. Layout is built in layers; clear the tableau to win.',
+    Player: 'A tile is available when it is at the end of a row and not covered. Remove two matching tiles at a time. Layout is built in layers; clear the tableau to win.',
     objective: 'Remove all tiles from the layout by taking matching pairs of exposed tiles.',
     gameplay: 'A tile is available when it is at the end of a row and not covered. Remove two matching tiles at a time. Layout is built in layers; clear the tableau to win.',
     keyRules: [
@@ -52,10 +52,150 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in setup; system may use layout_tiles before play.',
-      'Scoring check: No point scoring; win by clearing the layout. Expected outcome: Remove all tiles from the layout by matching and removing exposed pairs..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Remove all tiles from the layout by taking matching pairs of exposed tiles.',
+      'Turn-flow example: A tile is available when it is at the end of a row and not covered. Remove two matching tiles at a time. Layout is built in layers; clear the tableau to win.',
+      'Scoring example: No point scoring; win by clearing the layout. Remove all tiles from the layout by matching and removing exposed pairs..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tile-matching-solitaire.rules.objective',
+        title: 'Objective',
+        text: 'Remove all tiles from the layout by taking matching pairs of exposed tiles.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tile-matching-solitaire.rules.gameplay',
+        title: 'Turn flow',
+        text: 'A tile is available when it is at the end of a row and not covered. Remove two matching tiles at a time. Layout is built in layers; clear the tableau to win.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tile-matching-solitaire.setup.players',
+        title: 'Players',
+        text: 'Single player. This solitaire is played by one person, who clears the layout by removing matching pairs of exposed tiles (tiles at the end of a row and not covered).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tile-matching-solitaire.setup.deck',
+        title: 'Deck',
+        text: 'Set of around 144 tiles (Mah Jong traditionally).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tile-matching-solitaire.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards or tiles',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tile-matching-solitaire.setup.dealing',
+        title: 'Deal',
+        text: 'Tiles are stacked in layers; each layer has horizontal rows. Tiles in a row rest on the row below. Remove pairs of exposed (uncovered) matching tiles until the layout is clear.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tile-matching-solitaire.score.win-condition',
+        title: 'Win condition',
+        text: 'Remove all tiles from the layout by matching and removing exposed pairs.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tile-matching-solitaire.score.description',
+        title: 'Scoring',
+        text: 'No point scoring; win by clearing the layout.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tile-matching-solitaire.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Only exposed tiles (end of row, nothing on top) can be played.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tile-matching-solitaire.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Remove tiles in matching pairs only.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tile-matching-solitaire.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Some deals may be unsolvable; many computer versions guarantee a solution.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tile-matching-solitaire.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tile-matching-solitaire.rules.objective',
+          'tile-matching-solitaire.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tile-matching-solitaire.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tile-matching-solitaire.setup.players',
+          'tile-matching-solitaire.setup.deck',
+          'tile-matching-solitaire.setup.equipment',
+          'tile-matching-solitaire.setup.dealing',
+        ],
+      },
+      {
+        id: 'tile-matching-solitaire.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tile-matching-solitaire.rules.key.1',
+          'tile-matching-solitaire.rules.key.2',
+          'tile-matching-solitaire.rules.key.3',
+        ],
+      },
+      {
+        id: 'tile-matching-solitaire.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tile-matching-solitaire.score.description',
+          'tile-matching-solitaire.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tile-matching-solitaire.setup.dealing',
+        'tile-matching-solitaire.rules.objective',
+      ],
+      layout_tiles: [
+        'tile-matching-solitaire.rules.gameplay',
+      ],
+      remove_matching_pair: [
+        'tile-matching-solitaire.rules.gameplay',
+      ],
+    },
   },
 }

@@ -11,12 +11,40 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Only Face cards (J, Q, K, A) matter for scoring. There are 16 face cards total (4 per suit).',
+      winCondition: 'The game ends when a team loses all 5 of their starting Go stones.',
+      targetScore: null,
+      scoringDirection: null,
+      cardValues: {
         Jack: '1 face card point',
         Queen: '1 face card point',
         King: '1 face card point',
         Ace: '1 face card point (Rensho is special Ace of Spades)',
       },
+      sourceCardValues: {
+        raw: {
+          Jack: '1 face card point',
+          Queen: '1 face card point',
+          King: '1 face card point',
+          Ace: '1 face card point (Rensho is special Ace of Spades)',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        targetScore: 'No fixed target score; play by game rules.',
+        scoringDirection: 'Scoring direction is not applicable; winner is determined by game rules.',
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: 'Winning 9-11 face cards = 1 Go stone, 12-15 = 2 stones, 16 (All) = 4 stones.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,

@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Block/draw variant: play all or lowest pips if blocked. Expected outcome: First to play all tiles or lowest pips remaining..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Play all tiles first, or have fewest pips if blocked.',
+      "Turn-flow example: Highest double leads. Match one number to an open end; doubles crosswise. Block: pass if cannot play. Draw: draw from boneyard until playable. Winner scores opponents' pips or lowest hand if blocked.",
+      'Scoring example: Block/draw variant: play all or lowest pips if blocked. First to play all tiles or lowest pips remaining..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '55-91-dominoes.rules.objective',
+        title: 'Objective',
+        text: 'Play all tiles first, or have fewest pips if blocked.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '55-91-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: "Highest double leads. Match one number to an open end; doubles crosswise. Block: pass if cannot play. Draw: draw from boneyard until playable. Winner scores opponents' pips or lowest hand if blocked.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '55-91-dominoes.setup.players',
+        title: 'Players',
+        text: '2-6 players depending on domino set size.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '55-91-dominoes.setup.deck',
+        title: 'Deck',
+        text: 'Double-9 (55) or double-12 (91) domino set.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '55-91-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'Domino set and a playing surface or table.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '55-91-dominoes.setup.dealing',
+        title: 'Deal',
+        text: 'Draw tiles; the number per player depends on set size and player count, with any remainder forming a boneyard in draw games.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '55-91-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'First to play all tiles or lowest pips remaining.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '55-91-dominoes.score.description',
+        title: 'Scoring',
+        text: 'Block/draw variant: play all or lowest pips if blocked.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '55-91-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Match to open ends; doubles crosswise',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '55-91-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Set size 55 (double-9) to 91 (double-12)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '55-91-dominoes.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Block or draw variant',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '55-91-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '55-91-dominoes.rules.objective',
+          '55-91-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: '55-91-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '55-91-dominoes.setup.players',
+          '55-91-dominoes.setup.deck',
+          '55-91-dominoes.setup.equipment',
+          '55-91-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: '55-91-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '55-91-dominoes.rules.key.1',
+          '55-91-dominoes.rules.key.2',
+          '55-91-dominoes.rules.key.3',
+        ],
+      },
+      {
+        id: '55-91-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '55-91-dominoes.score.description',
+          '55-91-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '55-91-dominoes.setup.dealing',
+        '55-91-dominoes.rules.objective',
+      ],
+      play_card: [
+        '55-91-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

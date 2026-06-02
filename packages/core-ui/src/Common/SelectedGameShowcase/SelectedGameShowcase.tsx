@@ -496,7 +496,7 @@ function estimateStripCardWidth(card: GoalCardInfo, c: SelectedGameShowcaseConfi
   return Math.min(c.cardMaxWidth, Math.max(c.cardMinWidth, titleW, bulletW));
 }
 
-function SvgFitText({ x, y, width, height, text, maxFontSize, minFontSize = 8, fontWeight = '400', fill = '#ffffff' }: {
+function SvgFitText({ x, y, width, height, text, maxFontSize, minFontSize = 8, fontWeight = '400', fill = '#ffffff', fontFamily = 'Arial', stroke, strokeWidth, paintOrder = 'normal' }: {
   x: number;
   y: number;
   width: number;
@@ -506,15 +506,19 @@ function SvgFitText({ x, y, width, height, text, maxFontSize, minFontSize = 8, f
   minFontSize?: number;
   fontWeight?: string;
   fill?: string;
+  fontFamily?: string;
+  stroke?: string;
+  strokeWidth?: number;
+  paintOrder?: string;
 }) {
   const approxWidthAtMax = text.length * maxFontSize * 0.52;
   const widthScale = width / Math.max(1, approxWidthAtMax);
   const heightScale = height / Math.max(1, maxFontSize * 1.2);
   const fontSize = Math.max(minFontSize, Math.min(maxFontSize, maxFontSize * Math.min(1, widthScale, heightScale)));
-  return <text x={x + width / 2} y={y + height / 2} textAnchor="middle" dominantBaseline="central" fontFamily="Arial" fontSize={fontSize} fontWeight={fontWeight} fill={fill}>{text}</text>;
+  return <text x={x + width / 2} y={y + height / 2} textAnchor="middle" dominantBaseline="central" fontFamily={fontFamily} fontSize={fontSize} fontWeight={fontWeight} fill={fill} stroke={stroke} strokeWidth={strokeWidth} paintOrder={paintOrder}>{text}</text>;
 }
 
-function SvgWrappedText({ x, y, width, height, text, maxFontSize, minFontSize = 7, lineHeight = 1.16, fill = '#cbd5ff' }: {
+function SvgWrappedText({ x, y, width, height, text, maxFontSize, minFontSize = 7, lineHeight = 1.16, fill = '#cbd5ff', fontFamily = 'Arial', fontWeight = '400', stroke, strokeWidth, paintOrder = 'normal' }: {
   x: number;
   y: number;
   width: number;
@@ -524,6 +528,11 @@ function SvgWrappedText({ x, y, width, height, text, maxFontSize, minFontSize = 
   minFontSize?: number;
   lineHeight?: number;
   fill?: string;
+  fontFamily?: string;
+  fontWeight?: string;
+  stroke?: string;
+  strokeWidth?: number;
+  paintOrder?: string;
 }) {
   const makeLines = (fontSize: number) => wrapText(text, Math.max(8, Math.floor(width / (fontSize * 0.5))));
   let fontSize = maxFontSize;
@@ -534,7 +543,7 @@ function SvgWrappedText({ x, y, width, height, text, maxFontSize, minFontSize = 
   }
   const totalH = lines.length * fontSize * lineHeight;
   const firstY = y + Math.max(0, (height - totalH) / 2) + fontSize * 0.78;
-  return <text x={x + width / 2} y={firstY} textAnchor="middle" fontFamily="Arial" fontSize={fontSize} fill={fill}>{lines.map((line, index) => <tspan key={`${line}-${index}`} x={x + width / 2} dy={index === 0 ? 0 : fontSize * lineHeight}>{line}</tspan>)}</text>;
+  return <text x={x + width / 2} y={firstY} textAnchor="middle" fontFamily={fontFamily} fontSize={fontSize} fontWeight={fontWeight} fill={fill} stroke={stroke} strokeWidth={strokeWidth} paintOrder={paintOrder}>{lines.map((line, index) => <tspan key={`${line}-${index}`} x={x + width / 2} dy={index === 0 ? 0 : fontSize * lineHeight}>{line}</tspan>)}</text>;
 }
 
 function DebugLabel({ x, y, label, cfg }: {
@@ -686,18 +695,38 @@ function HeroSummary({ x, y, w, cfg, logoUrl, presentation }: {
   const subtitle = taglineLines[0] ?? '';
   const detail = taglineLines[1] ?? presentation.hero.badges[0] ?? '';
   const logoH = Math.min(94, Math.max(56, cfg.sideA.logoFont * 1.24));
+  const fallbackTitleH = Math.min(120, Math.max(70, cfg.sideA.logoFont * 1.72));
   const logoY = y;
-  const subtitleY = logoUrl ? logoY + logoH + 2 : y + 112;
-  const detailY = logoUrl ? subtitleY + 24 : y + 142;
+  const titleH = logoUrl ? logoH : fallbackTitleH;
+  const subtitleY = logoY + titleH + (logoUrl ? 2 : 8);
+  const detailY = subtitleY + (logoUrl ? 24 : 30);
+  const narrowCanvas = cfg.canvas.vw <= 500;
+  const subtitleMinFont = narrowCanvas ? 5 : 9;
+  const detailMinFont = narrowCanvas ? 5 : 8;
   return (
     <g>
       {logoUrl ? (
         <image href={logoUrl} x={x + w * 0.12} y={logoY} width={w * 0.76} height={logoH} preserveAspectRatio="xMidYMid meet" />
       ) : (
-        <text x={x + w / 2} y={y + 74} textAnchor="middle" dominantBaseline="central" fontFamily="Impact, Arial Black" fontSize={Math.min(cfg.sideA.logoFont, 78)} fontWeight="900" fill="#f4f7ff" stroke="#071321" strokeWidth="3" paintOrder="stroke">{title.toUpperCase()}</text>
+        <SvgWrappedText
+          x={x + 18}
+          y={logoY + 2}
+          width={w - 36}
+          height={fallbackTitleH}
+          text={title.toUpperCase()}
+          maxFontSize={Math.min(cfg.sideA.logoFont, 58)}
+          minFontSize={cfg.canvas.vw <= 500 ? 8 : 12}
+          lineHeight={0.96}
+          fontFamily="Impact, Arial Black"
+          fontWeight="900"
+          fill="#f4f7ff"
+          stroke="#071321"
+          strokeWidth={3}
+          paintOrder="stroke"
+        />
       )}
-      {subtitle && <SvgFitText x={x + 14} y={subtitleY} width={w - 28} height={28} text={subtitle} maxFontSize={cfg.sideA.taglineFont} minFontSize={9} fontWeight="800" fill="#ffffff" />}
-      {detail && <SvgWrappedText x={x + 26} y={detailY} width={w - 52} height={42} text={detail} maxFontSize={Math.max(9, cfg.sideA.taglineFont * 0.72)} minFontSize={8} fill="#cbd5ff" />}
+      {subtitle && <SvgFitText x={x + 14} y={subtitleY} width={w - 28} height={28} text={subtitle} maxFontSize={cfg.sideA.taglineFont} minFontSize={subtitleMinFont} fontWeight="800" fill="#ffffff" />}
+      {detail && <SvgWrappedText x={x + 26} y={detailY} width={w - 52} height={42} text={detail} maxFontSize={Math.max(9, cfg.sideA.taglineFont * 0.72)} minFontSize={detailMinFont} fill="#cbd5ff" />}
     </g>
   );
 }

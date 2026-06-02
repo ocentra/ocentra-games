@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Troeven. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Troeven is a Dutch/Flemish trick-taking game where players start at a score (e.g., 7) and work down to zero. Uses a 32-card deck (7-A). The trump caller picks trump from first 4-5 cards. Win more card-value points (A=4, K=3, Q=2, J=1) than opponents to reduce score by 1. If trump caller loses, their team gains a point (penalty).',
+    LLM: 'Trump caller declares trump. Play 8 tricks. Follow suit. Total 40 card points. Higher scorer reduces score by 1. Tie = no change. Trump caller losing = adds 1 (penalty).',
+    Player: 'Trump caller declares trump. Play 8 tricks. Follow suit. Total 40 card points. Higher scorer reduces score by 1. Tie = no change. Trump caller losing = adds 1 (penalty).',
     objective: 'Be the first team to cancel all seven branches (reduce your score from 7 to 0) by winning more card points than the opponents in each hand; the team that called trumps and loses adds a branch.',
     gameplay: 'Trump caller declares trump. Play 8 tricks. Follow suit. Total 40 card points. Higher scorer reduces score by 1. Tie = no change. Trump caller losing = adds 1 (penalty).',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Win most card points = -1 to score. Trump caller loses = +1 penalty. First to 0 wins. Expected outcome: Reduce score from 7 to 0 first..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first team to cancel all seven branches (reduce your score from 7 to 0) by winning more card points than the opponents in each hand; the team that called trumps and loses adds a branch.',
+      'Turn-flow example: Trump caller declares trump. Play 8 tricks. Follow suit. Total 40 card points. Higher scorer reduces score by 1. Tie = no change. Trump caller losing = adds 1 (penalty).',
+      'Scoring example: Win most card points = -1 to score. Trump caller loses = +1 penalty. First to 0 wins. Reduce score from 7 to 0 first..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'troeven.rules.objective',
+        title: 'Objective',
+        text: 'Be the first team to cancel all seven branches (reduce your score from 7 to 0) by winning more card points than the opponents in each hand; the team that called trumps and loses adds a branch.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'troeven.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Trump caller declares trump. Play 8 tricks. Follow suit. Total 40 card points. Higher scorer reduces score by 1. Tie = no change. Trump caller losing = adds 1 (penalty).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'troeven.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'troeven.setup.deck',
+        title: 'Deck',
+        text: '32 cards. A(high)-7(low). Values: A=4, K=3, Q=2, J=1. Total 40 pts.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'troeven.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, score sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'troeven.setup.dealing',
+        title: 'Deal',
+        text: '8 cards each. Trump caller sees first 4-5 and declares.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'troeven.score.win-condition',
+        title: 'Win condition',
+        text: 'Reduce score from 7 to 0 first.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'troeven.score.description',
+        title: 'Scoring',
+        text: 'Win most card points = -1 to score. Trump caller loses = +1 penalty. First to 0 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'troeven.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Count down from 7 to 0',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'troeven.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Trump caller penalty on loss',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'troeven.rules.key.3',
+        title: 'Key rule 3',
+        text: '40 total card points',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'troeven.rules.key.4',
+        title: 'Key rule 4',
+        text: 'A=4, K=3, Q=2, J=1',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'troeven.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'troeven.rules.objective',
+          'troeven.rules.gameplay',
+        ],
+      },
+      {
+        id: 'troeven.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'troeven.setup.players',
+          'troeven.setup.deck',
+          'troeven.setup.equipment',
+          'troeven.setup.dealing',
+        ],
+      },
+      {
+        id: 'troeven.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'troeven.rules.key.1',
+          'troeven.rules.key.2',
+          'troeven.rules.key.3',
+          'troeven.rules.key.4',
+        ],
+      },
+      {
+        id: 'troeven.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'troeven.score.description',
+          'troeven.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'troeven.setup.dealing',
+        'troeven.rules.objective',
+      ],
+      play_card: [
+        'troeven.rules.gameplay',
+      ],
+    },
   },
 }

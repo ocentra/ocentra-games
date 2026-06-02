@@ -11,7 +11,11 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Win tricks worth at least 70 points. Game points: 1 (loser has 30+), 2 (loser has <30), 3 (loser won 0 tricks). Match to 7 game points.',
+      winCondition: 'First to 7 game points across multiple deals.',
+      targetScore: 7,
+      scoringDirection: 'high_wins',
+      cardValues: {
         '6-6': '12 points',
         '5-5': '10 points',
         '4-4': '8 points',
@@ -20,6 +24,31 @@
         '1-1': '2 points',
         Others: '0',
       },
+      sourceCardValues: {
+        raw: {
+          '6-6': '12 points',
+          '5-5': '10 points',
+          '4-4': '8 points',
+          '3-3': '6 points',
+          '2-2': '4 points',
+          '1-1': '2 points',
+          Others: '0',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        nullReasons: 'Not applicable.',
+      },
+      splitRules: 'None; only one player can win the 70-point race.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,
@@ -28,7 +57,7 @@
     cardValues: {
       Others: 0,
     },
-    penalties: '{\n  "Incorrect Claim": "Claiming 70 points when you have fewer results in losing the deal immediately."\n}',
+    penalties: '{"Incorrect Claim":"Claiming 70 points when you have fewer results in losing the deal immediately."}',
     targetScore: 7,
     scoringDirection: 'high_wins',
     rankingAsset: {

@@ -52,10 +52,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: Cards (1 pt per), sweeps, sometimes majority. Expected outcome: 21.',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Capture cards; score points. First to 21 (Dominican) wins.',
+      'Turn-flow example: 1. Must play exactly one card. 2. Capture: match loose card or sum; or capture build. 3. Build: combine with table cards; owner must hold matching card. 4. Trail: leave card on table if no match. Cannot trail if played card equals loose card. Owner of build cannot trail. 5. Sweeps (clearing table) score extra.',
+      'Scoring example: Cards (1 pt per), sweeps, sometimes majority. 21 points (Dominican)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'royal-casino.rules.objective',
+        title: 'Objective',
+        text: 'Capture cards; score points. First to 21 (Dominican) wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'royal-casino.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Must play exactly one card. 2. Capture: match loose card or sum; or capture build. 3. Build: combine with table cards; owner must hold matching card. 4. Trail: leave card on table if no match. Cannot trail if played card equals loose card. Owner of build cannot trail. 5. Sweeps (clearing table) score extra.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'royal-casino.setup.players',
+        title: 'Players',
+        text: '2-4 (4 in partnerships).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'royal-casino.setup.deck',
+        title: 'Deck',
+        text: "Standard 52-card pack (French suits). In Royal Casino the court cards have numerical capture values: Jacks 11, Queens 12, Kings 13; number cards use face value; Aces count as 1 or 14 at the player's choice. The same deck is used for capture, building, and trailing as in Casino.",
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'royal-casino.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'royal-casino.setup.dealing',
+        title: 'Deal',
+        text: '4 each; 4 face up on table. Deal 4 more when hands empty.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'royal-casino.score.win-condition',
+        title: 'Win condition',
+        text: '21 points (Dominican).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'royal-casino.score.description',
+        title: 'Scoring',
+        text: 'Cards (1 pt per), sweeps, sometimes majority.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'royal-casino.rules.key.1',
+        title: 'Key rule 1',
+        text: 'K=13, Q=12, J=11, A=1 or 14. Number cards = face value.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'royal-casino.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Capture, build, or trail. Owner of build must hold matching card.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'royal-casino.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Cannot trail when played card matches loose card. Target 21.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'royal-casino.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'royal-casino.rules.objective',
+          'royal-casino.rules.gameplay',
+        ],
+      },
+      {
+        id: 'royal-casino.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'royal-casino.setup.players',
+          'royal-casino.setup.deck',
+          'royal-casino.setup.equipment',
+          'royal-casino.setup.dealing',
+        ],
+      },
+      {
+        id: 'royal-casino.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'royal-casino.rules.key.1',
+          'royal-casino.rules.key.2',
+          'royal-casino.rules.key.3',
+        ],
+      },
+      {
+        id: 'royal-casino.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'royal-casino.score.description',
+          'royal-casino.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'royal-casino.setup.dealing',
+        'royal-casino.rules.objective',
+      ],
+      deal: [
+        'royal-casino.rules.gameplay',
+      ],
+      capture: [
+        'royal-casino.rules.gameplay',
+      ],
+      build: [
+        'royal-casino.rules.gameplay',
+      ],
+      trail: [
+        'royal-casino.rules.gameplay',
+      ],
+    },
   },
 }

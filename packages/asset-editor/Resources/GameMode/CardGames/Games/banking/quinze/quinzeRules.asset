@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Chinese Blackjack. Logic: Beat the banker with a stronger legal total or special combination without busting.',
-    Player: 'Chinese Blackjack is an East and Southeast Asian twenty-one banking game also known as ban-luck, ban-nag, or xi dach.',
+    LLM: 'A banker-player structure compares hands by point total. Cards are drawn toward the target of 15, making Quinze a direct ancestor of twenty-one and blackjack-style banking games.',
+    Player: 'A banker-player structure compares hands by point total. Cards are drawn toward the target of 15, making Quinze a direct ancestor of twenty-one and blackjack-style banking games.',
     objective: 'Reach 15 points or come closer to 15 than the opponent without exceeding the target.',
     gameplay: 'A banker-player structure compares hands by point total. Cards are drawn toward the target of 15, making Quinze a direct ancestor of twenty-one and blackjack-style banking games.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Wagers are paid by comparing each player hand to the banker hand. Expected outcome: 15.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Reach 15 points or come closer to 15 than the opponent without exceeding the target.',
+      'Turn-flow example: A banker-player structure compares hands by point total. Cards are drawn toward the target of 15, making Quinze a direct ancestor of twenty-one and blackjack-style banking games.',
+      'Scoring example: Wagers are paid by comparing each player hand to the banker hand. Beat the banker with a stronger legal total or special combination without busting..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'quinze.rules.objective',
+        title: 'Objective',
+        text: 'Reach 15 points or come closer to 15 than the opponent without exceeding the target.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'quinze.rules.gameplay',
+        title: 'Turn flow',
+        text: 'A banker-player structure compares hands by point total. Cards are drawn toward the target of 15, making Quinze a direct ancestor of twenty-one and blackjack-style banking games.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'quinze.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Quinze.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'quinze.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'quinze.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'quinze.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Standard 52-card pack and deal or lay out cards according to the documented Quinze rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'quinze.score.win-condition',
+        title: 'Win condition',
+        text: 'Beat the banker with a stronger legal total or special combination without busting.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'quinze.score.description',
+        title: 'Scoring',
+        text: 'Wagers are paid by comparing each player hand to the banker hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'quinze.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The target total is 15 rather than 21.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'quinze.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Aces are low in the traditional ace-low description.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'quinze.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The game is primarily chance-driven and historically treated as a banking game.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'quinze.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'quinze.rules.objective',
+          'quinze.rules.gameplay',
+        ],
+      },
+      {
+        id: 'quinze.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'quinze.setup.players',
+          'quinze.setup.deck',
+          'quinze.setup.equipment',
+          'quinze.setup.dealing',
+        ],
+      },
+      {
+        id: 'quinze.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'quinze.rules.key.1',
+          'quinze.rules.key.2',
+          'quinze.rules.key.3',
+        ],
+      },
+      {
+        id: 'quinze.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'quinze.score.description',
+          'quinze.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'quinze.setup.dealing',
+        'quinze.rules.objective',
+      ],
+      play_card: [
+        'quinze.rules.gameplay',
+      ],
+    },
   },
 }

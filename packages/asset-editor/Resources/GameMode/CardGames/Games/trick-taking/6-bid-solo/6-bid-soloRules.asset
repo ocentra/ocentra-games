@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 6-Bid Solo. Logic: See rules.objective and rules.gameplay.',
-    Player: '6-Bid Solo: 3p trick-taking from German Tarok/Skat; popular in Salt Lake City. 36 cards; 11 each, 3-card widow. Bids: Solo (60+ pts), Heart Solo, Misère, Guarantee (74/80), Spread Misère, Call Solo (120). A-10-K-Q-J-9-8-7-6; 120 pts per round.',
+    LLM: "1. Deal: 4-3-3 (widow)-4 to each of three players; widow stays face-down. 2. Bidding: Player to dealer's left bids first, then second; if both bid they alternate until one passes; then third player may bid. Bidding continues until one player remains. Six bids from lowest: Solo, Heart Solo, Misère, Guarantee Solo, Spread Misère, Call Solo. 3. Play: Declarer leads (except Spread Misère, where player to declarer's left leads and declarer's hand is spread face-up). Follow suit if possible; if not, play trump if able; no requirement to beat. Winner of trick leads next. 4. Scoring: Card points in tricks (and widow for declarer) determine success; each bid has a fixed score (30–150) paid to or by declarer.",
+    Player: "1. Deal: 4-3-3 (widow)-4 to each of three players; widow stays face-down. 2. Bidding: Player to dealer's left bids first, then second; if both bid they alternate until one passes; then third player may bid. Bidding continues until one player remains. Six bids from lowest: Solo, Heart Solo, Misère, Guarantee Solo, Spread Misère, Call Solo. 3. Play: Declarer leads (except Spread Misère, where player to declarer's left leads and declarer's hand is spread face-up). Follow suit if possible; if not, play trump if able; no requirement to beat. Winner of trick leads next. 4. Scoring: Card points in tricks (and widow for declarer) determine success; each bid has a fixed score (30–150) paid to or by declarer.",
     objective: 'As declarer, meet your bid contract (e.g. take at least 61 card points in Solo, avoid all points in Misère, or take all 120 in Call Solo). As defenders, prevent the declarer from making the contract.',
     gameplay: "1. Deal: 4-3-3 (widow)-4 to each of three players; widow stays face-down. 2. Bidding: Player to dealer's left bids first, then second; if both bid they alternate until one passes; then third player may bid. Bidding continues until one player remains. Six bids from lowest: Solo, Heart Solo, Misère, Guarantee Solo, Spread Misère, Call Solo. 3. Play: Declarer leads (except Spread Misère, where player to declarer's left leads and declarer's hand is spread face-up). Follow suit if possible; if not, play trump if able; no requirement to beat. Winner of trick leads next. 4. Scoring: Card points in tricks (and widow for declarer) determine success; each bid has a fixed score (30–150) paid to or by declarer.",
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 11 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in bid; each_player_clockwise may use bid, pass before play.',
-      'Scoring check: Card points in tricks (and widow for declarer): A=11, 10=10, K=4, Q=3, J=2; 9-6=0. Total 120. Declarer must meet contract: Solo/Heart Solo 61+; Guarantee 74 (hearts) or 80 (other); Misère/Spread Misère zero points; Call Solo all 120. Fixed scores per bid (30–150) paid to or by declarer. Expected outcome: Declarer wins by meeting the bid contract (e.g. 61+ points in Solo, zero in Misère, all 120 in Call Solo); defenders win by defeating the contract..',
+      'Setup example: 11 card(s) per player.',
+      'Rule example: As declarer, meet your bid contract (e.g. take at least 61 card points in Solo, avoid all points in Misère, or take all 120 in Call Solo). As defenders, prevent the declarer from making the contract.',
+      "Turn-flow example: 1. Deal: 4-3-3 (widow)-4 to each of three players; widow stays face-down. 2. Bidding: Player to dealer's left bids first, then second; if both bid they alternate until one passes; then third player may bid. Bidding continues until one player remains. Six bids from lowest: Solo, Heart Solo, Misère, Guarantee Solo, Spread Misère, Call Solo. 3. Play: Declarer leads (except Spread Misère, where player to declarer's left leads and declarer's hand is spread face-up). Follow suit if possible; if not, play trump if able; no requirement to beat. Winner of trick leads next. 4. Scoring: Card points in tricks (and widow for declarer) determine success; each bid has a fixed score (30–150) paid to or by declarer.",
+      'Scoring example: Card points in tricks (and widow for declarer): A=11, 10=10, K=4, Q=3, J=2; 9-6=0. Total 120. Declarer must meet contract: Solo/Heart Solo 61+; Guarantee 74 (hearts) or 80 (other); Misère/Spread Misère zero points; Call Solo all 120. Fixed scores per bid (30–150) paid to or by declarer. Declarer wins by meeting the bid contract (e.g. 61+ points in Solo, zero in Misère, all 120 in Call Solo); defenders win by defeating the contract..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '6-bid-solo.rules.objective',
+        title: 'Objective',
+        text: 'As declarer, meet your bid contract (e.g. take at least 61 card points in Solo, avoid all points in Misère, or take all 120 in Call Solo). As defenders, prevent the declarer from making the contract.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '6-bid-solo.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Deal: 4-3-3 (widow)-4 to each of three players; widow stays face-down. 2. Bidding: Player to dealer's left bids first, then second; if both bid they alternate until one passes; then third player may bid. Bidding continues until one player remains. Six bids from lowest: Solo, Heart Solo, Misère, Guarantee Solo, Spread Misère, Call Solo. 3. Play: Declarer leads (except Spread Misère, where player to declarer's left leads and declarer's hand is spread face-up). Follow suit if possible; if not, play trump if able; no requirement to beat. Winner of trick leads next. 4. Scoring: Card points in tricks (and widow for declarer) determine success; each bid has a fixed score (30–150) paid to or by declarer.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '6-bid-solo.setup.players',
+        title: 'Players',
+        text: 'Exactly 3 players. No partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '6-bid-solo.setup.deck',
+        title: 'Deck',
+        text: '36 cards: A, 10, K, Q, J, 9, 8, 7, 6 in four suits (French). One standard 52-card deck with 2s, 3s, 4s, 5s removed.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '6-bid-solo.setup.equipment',
+        title: 'Equipment',
+        text: '36-card deck, score sheet or chips for point settlement.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '6-bid-solo.setup.dealing',
+        title: 'Deal',
+        text: "Deal a batch of 4 cards to each player, then 3 to each, then 3 cards face down in the center (widow), then 4 more to each. Eleven cards per player; the widow stays unseen until the end. Deal clockwise starting from the player to the dealer's left.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '6-bid-solo.score.win-condition',
+        title: 'Win condition',
+        text: 'Declarer wins by meeting the bid contract (e.g. 61+ points in Solo, zero in Misère, all 120 in Call Solo); defenders win by defeating the contract.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '6-bid-solo.score.description',
+        title: 'Scoring',
+        text: 'Card points in tricks (and widow for declarer): A=11, 10=10, K=4, Q=3, J=2; 9-6=0. Total 120. Declarer must meet contract: Solo/Heart Solo 61+; Guarantee 74 (hearts) or 80 (other); Misère/Spread Misère zero points; Call Solo all 120. Fixed scores per bid (30–150) paid to or by declarer.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '6-bid-solo.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if possible; if void, must play trump if able.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '6-bid-solo.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Card points: A=11, 10=10, K=4, Q=3, J=2; 9-6=0. Total 120.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '6-bid-solo.rules.key.3',
+        title: 'Key rule 3',
+        text: '61+ points wins for declarer in point bids; Misère = zero points; Guarantee = 74 (hearts) or 80 (other); Call Solo = all 120.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '6-bid-solo.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '6-bid-solo.rules.objective',
+          '6-bid-solo.rules.gameplay',
+        ],
+      },
+      {
+        id: '6-bid-solo.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '6-bid-solo.setup.players',
+          '6-bid-solo.setup.deck',
+          '6-bid-solo.setup.equipment',
+          '6-bid-solo.setup.dealing',
+        ],
+      },
+      {
+        id: '6-bid-solo.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '6-bid-solo.rules.key.1',
+          '6-bid-solo.rules.key.2',
+          '6-bid-solo.rules.key.3',
+        ],
+      },
+      {
+        id: '6-bid-solo.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '6-bid-solo.score.description',
+          '6-bid-solo.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '6-bid-solo.setup.dealing',
+        '6-bid-solo.rules.objective',
+      ],
+      play_card: [
+        '6-bid-solo.rules.gameplay',
+      ],
+      pass: [
+        '6-bid-solo.rules.gameplay',
+      ],
+      bid: [
+        '6-bid-solo.rules.gameplay',
+      ],
+    },
   },
 }

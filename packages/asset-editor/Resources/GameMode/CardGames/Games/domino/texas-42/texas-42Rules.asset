@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Texas 42. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Texas 42 is a four-player partnership trick-taking game using a double-six domino set (28 tiles). Each draws 7; bid 30â€“42 (points the team will take). High bidder names trump (blanks, 1sâ€“6s, doubles, or no-trump) and leads. Follow suit; else any tile. 42 points per hand: 1 per trick plus count tiles (5-5 and 6-4 = 10 each; 5-0, 4-1, 3-2 = 5 each). Meet bid to score; else opponents get bid plus points. First to 250 (or 7 marks) wins.',
+    LLM: '1. Setup: Deal cards to all players\n2. Gameplay: Players take turns playing cards\n3. Scoring: Points awarded based on game outcomes\n4. Winning: First to reach target score or complete objective wins',
+    Player: '1. Setup: Deal cards to all players\n2. Gameplay: Players take turns playing cards\n3. Scoring: Points awarded based on game outcomes\n4. Winning: First to reach target score or complete objective wins',
     objective: 'Be the first player to achieve the winning condition through strategic play of cards.',
     gameplay: '1. Setup: Deal cards to all players\n2. Gameplay: Players take turns playing cards\n3. Scoring: Points awarded based on game outcomes\n4. Winning: First to reach target score or complete objective wins',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: 42 points per hand (1 per trick plus count tiles). Make bid to score marks; if set, opponents score. First to 7 marks wins. Expected outcome: First partnership to reach 7 marks wins the game..',
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Be the first player to achieve the winning condition through strategic play of cards.',
+      'Turn-flow example: 1. Setup: Deal cards to all players\n2. Gameplay: Players take turns playing cards\n3. Scoring: Points awarded based on game outcomes\n4. Winning: First to reach target score or complete objective wins',
+      'Scoring example: 42 points per hand (1 per trick plus count tiles). Make bid to score marks; if set, opponents score. First to 7 marks wins. First partnership to reach 7 marks wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'texas-42.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to achieve the winning condition through strategic play of cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'texas-42.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Setup: Deal cards to all players\n2. Gameplay: Players take turns playing cards\n3. Scoring: Points awarded based on game outcomes\n4. Winning: First to reach target score or complete objective wins',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'texas-42.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships; players sit opposite their partner.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'texas-42.setup.deck',
+        title: 'Deck',
+        text: 'Double-six set of dominoes (28 tiles, one for each pair from 0 to 6).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'texas-42.setup.equipment',
+        title: 'Equipment',
+        text: 'Double-six domino set; score sheet or marks (e.g. drawn to form ALL).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'texas-42.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer shuffles face down; each player takes 7 dominoes (opponents first, then partner, then dealer). Deal rotates clockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'texas-42.score.win-condition',
+        title: 'Win condition',
+        text: 'First partnership to reach 7 marks wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'texas-42.score.description',
+        title: 'Scoring',
+        text: '42 points per hand (1 per trick plus count tiles). Make bid to score marks; if set, opponents score. First to 7 marks wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'texas-42.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow game-specific card play rules',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'texas-42.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Score according to game objectives',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'texas-42.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Win by achieving game goal',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'texas-42.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'texas-42.rules.objective',
+          'texas-42.rules.gameplay',
+        ],
+      },
+      {
+        id: 'texas-42.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'texas-42.setup.players',
+          'texas-42.setup.deck',
+          'texas-42.setup.equipment',
+          'texas-42.setup.dealing',
+        ],
+      },
+      {
+        id: 'texas-42.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'texas-42.rules.key.1',
+          'texas-42.rules.key.2',
+          'texas-42.rules.key.3',
+        ],
+      },
+      {
+        id: 'texas-42.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'texas-42.score.description',
+          'texas-42.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'texas-42.setup.dealing',
+        'texas-42.rules.objective',
+      ],
+      play_card: [
+        'texas-42.rules.gameplay',
+      ],
+    },
   },
 }

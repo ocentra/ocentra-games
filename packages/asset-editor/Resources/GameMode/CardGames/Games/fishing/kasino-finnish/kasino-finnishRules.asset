@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kasino (Finnish). See rules.objective and rules.gameplay for details.',
-    Player: "Kasino (Finnish Casino) is the most popular fishing card game in Finland. Unlike standard Casino, it uses 'Royal' capture values (J=11, Q=12, K=13) and features a unique 'In-Hand Value' system where Aces and the two Kasino cards (10D and 2S) have higher values when held in the hand than when on the table. It is a game of calculation, memory, and defensive stalling.",
+    LLM: "1. Match: Play a card from hand to capture any group of cards on the table whose values sum to the hand card's value.\n2. Building: In the Finnish variant, direct building is less common than in English Casino; capture by sum is the primary mechanic.\n3. **MÃ¶kki**: If you clear the entire table, you score 1 point immediately (turn the card face-up in your pile).",
+    Player: "1. Match: Play a card from hand to capture any group of cards on the table whose values sum to the hand card's value.\n2. Building: In the Finnish variant, direct building is less common than in English Casino; capture by sum is the primary mechanic.\n3. **MÃ¶kki**: If you clear the entire table, you score 1 point immediately (turn the card face-up in your pile).",
     objective: 'Capture cards to score points. The first player to reach 16 points wins the match.',
     gameplay: "1. Match: Play a card from hand to capture any group of cards on the table whose values sum to the hand card's value.\n2. Building: In the Finnish variant, direct building is less common than in English Casino; capture by sum is the primary mechanic.\n3. **MÃ¶kki**: If you clear the entire table, you score 1 point immediately (turn the card face-up in your pile).",
     keyRules: [
@@ -55,10 +55,177 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Capture cards to score points. The first player to reach 16 points wins the match. Expected outcome: 16.',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Capture cards to score points. The first player to reach 16 points wins the match.',
+      "Turn-flow example: 1. Match: Play a card from hand to capture any group of cards on the table whose values sum to the hand card's value.\n2. Building: In the Finnish variant, direct building is less common than in English Casino; capture by sum is the primary mechanic.\n3. **MÃ¶kki**: If you clear the entire table, you score 1 point immediately (turn the card face-up in your pile).",
+      'Scoring example: Capture cards to score points. The first player to reach 16 points wins the match. Capture cards to score points. The first player to reach 16 points wins the match..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'kasino-finnish.rules.objective',
+        title: 'Objective',
+        text: 'Capture cards to score points. The first player to reach 16 points wins the match.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kasino-finnish.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Match: Play a card from hand to capture any group of cards on the table whose values sum to the hand card's value.\n2. Building: In the Finnish variant, direct building is less common than in English Casino; capture by sum is the primary mechanic.\n3. **MÃ¶kki**: If you clear the entire table, you score 1 point immediately (turn the card face-up in your pile).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kasino-finnish.setup.players',
+        title: 'Players',
+        text: 'Optimal with 2 players (heads-up) or 4 in pairs.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kasino-finnish.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. No Jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kasino-finnish.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. No Jokers.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kasino-finnish.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 4 cards (in two batches of 2). 4 cards are dealt face-up to the table. Rounds continue until the deck is empty.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kasino-finnish.score.win-condition',
+        title: 'Win condition',
+        text: 'Capture cards to score points. The first player to reach 16 points wins the match.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kasino-finnish.score.description',
+        title: 'Scoring',
+        text: 'Capture cards to score points. The first player to reach 16 points wins the match.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kasino-finnish.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Play one card from hand per turn; capture by same value or by sum of table cards; captures are not compulsory.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kasino-finnish.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Ace counts 1 on table, 14 from hand; cannot capture a single Ace.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kasino-finnish.rules.key.3',
+        title: 'Key rule 3',
+        text: '2 of Spades (Small Kasino): 2 on table, 15 from hand. 10 of Diamonds (Big Kasino): 10 on table, 16 from hand.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kasino-finnish.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Sweep (mökki): clearing the table scores 1 point; card placed face up in capture pile. If all players have a sweep, they cancel.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'kasino-finnish.rules.key.5',
+        title: 'Key rule 5',
+        text: 'No sweep points after the last deal; no sweep points if any player has 10 or more.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'kasino-finnish.rules.key.6',
+        title: 'Key rule 6',
+        text: 'First to 16 points wins. Aces and Kasino points awarded when captured; game can end mid-hand. Tiebreak: Aces and Kasino first, then spades, then cards.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kasino-finnish.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kasino-finnish.rules.objective',
+          'kasino-finnish.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kasino-finnish.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kasino-finnish.setup.players',
+          'kasino-finnish.setup.deck',
+          'kasino-finnish.setup.equipment',
+          'kasino-finnish.setup.dealing',
+        ],
+      },
+      {
+        id: 'kasino-finnish.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kasino-finnish.rules.key.1',
+          'kasino-finnish.rules.key.2',
+          'kasino-finnish.rules.key.3',
+          'kasino-finnish.rules.key.4',
+          'kasino-finnish.rules.key.5',
+          'kasino-finnish.rules.key.6',
+        ],
+      },
+      {
+        id: 'kasino-finnish.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kasino-finnish.score.description',
+          'kasino-finnish.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kasino-finnish.setup.dealing',
+        'kasino-finnish.rules.objective',
+      ],
+      deal: [
+        'kasino-finnish.rules.gameplay',
+      ],
+      play_card: [
+        'kasino-finnish.rules.gameplay',
+      ],
+    },
   },
 }

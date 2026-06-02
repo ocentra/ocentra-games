@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Score points by winning the hand (taking the majority of tricks) and by successfully risking or smacking high honours such as Brus and Galhund; points are tracked as sticks or strokes erased from a shared comb. Expected outcome: 12.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Be the first player to achieve the winning condition through strategic play of cards.',
+      'Turn-flow example: 1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
+      'Scoring example: Score points by winning the hand (taking the majority of tricks) and by successfully risking or smacking high honours such as Brus and Galhund; points are tracked as sticks or strokes erased from a shared comb. First team or player to discard all of their sticks or erase all strokes on their side of the comb wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'brus-denmark.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to achieve the winning condition through strategic play of cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'brus-denmark.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'brus-denmark.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'brus-denmark.setup.deck',
+        title: 'Deck',
+        text: 'Type: 36-card French pack (6–10, J, Q, K, A in each suit)\nNumber of Decks: 1\nJokers: Not included; created by removing all 2s, 3s, 4s and 10s plus jokers from a standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'brus-denmark.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'brus-denmark.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'brus-denmark.score.win-condition',
+        title: 'Win condition',
+        text: 'First team or player to discard all of their sticks or erase all strokes on their side of the comb wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'brus-denmark.score.description',
+        title: 'Scoring',
+        text: 'Score points by winning the hand (taking the majority of tricks) and by successfully risking or smacking high honours such as Brus and Galhund; points are tracked as sticks or strokes erased from a shared comb.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'brus-denmark.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Play proceeds in turn order with only legal actions allowed.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'brus-denmark.rules.key.2',
+        title: 'Key rule 2',
+        text: "Round resolution follows the variant's scoring and bonus conditions.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'brus-denmark.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Match winner is determined by agreed target score or elimination condition.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'brus-denmark.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'brus-denmark.rules.objective',
+          'brus-denmark.rules.gameplay',
+        ],
+      },
+      {
+        id: 'brus-denmark.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'brus-denmark.setup.players',
+          'brus-denmark.setup.deck',
+          'brus-denmark.setup.equipment',
+          'brus-denmark.setup.dealing',
+        ],
+      },
+      {
+        id: 'brus-denmark.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'brus-denmark.rules.key.1',
+          'brus-denmark.rules.key.2',
+          'brus-denmark.rules.key.3',
+        ],
+      },
+      {
+        id: 'brus-denmark.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'brus-denmark.score.description',
+          'brus-denmark.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'brus-denmark.setup.dealing',
+        'brus-denmark.rules.objective',
+      ],
+      play_card: [
+        'brus-denmark.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Badacey. Type: Triple Draw Split-Pot Poker. Rules: Half pot for best 4-card Badugi; Half pot for best 5-card Ace-to-Five low. 3 draws. Blinds applied. Discard 0-5.',
-    Player: "Welcome to the Badacey table. You've been dealt 5 cards. Remember, you want as many different suits as possible for a Badugi, and the lowest ranks for the Lowball half. It's time for the first drawâ€”how many cards are you swapping?",
+    LLM: '1. **Blinds**: Players post small and big blinds. 2. **Deal**: 5 cards each. 3. **Betting Round 1**. 4. **First Draw**: Players discard and draw. 5. **Betting Round 2**. 6. **Second Draw**. 7. **Betting Round 3**. 8. **Third Draw**. 9. **Final Betting Round**. 10. **Showdown**: Split pot.',
+    Player: '1. **Blinds**: Players post small and big blinds. 2. **Deal**: 5 cards each. 3. **Betting Round 1**. 4. **First Draw**: Players discard and draw. 5. **Betting Round 2**. 6. **Second Draw**. 7. **Betting Round 3**. 8. **Third Draw**. 9. **Final Betting Round**. 10. **Showdown**: Split pot.',
     objective: 'Win half the pot with the best 4-card Badugi and half with the best 5-card Ace-to-Five low.',
     gameplay: '1. **Blinds**: Players post small and big blinds. 2. **Deal**: 5 cards each. 3. **Betting Round 1**. 4. **First Draw**: Players discard and draw. 5. **Betting Round 2**. 6. **Second Draw**. 7. **Betting Round 3**. 8. **Third Draw**. 9. **Final Betting Round**. 10. **Showdown**: Split pot.',
     keyRules: [
@@ -52,10 +52,186 @@
       go_out: 'Hand ends after final betting and showdown; no go-out declaration.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in blinds; current_player may use post_blind before deal.',
-      'Scoring check: Pot-limit or Fixed-limit betting rounds. Expected outcome: Lowest ranks in two specific categories..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win half the pot with the best 4-card Badugi and half with the best 5-card Ace-to-Five low.',
+      'Turn-flow example: 1. **Blinds**: Players post small and big blinds. 2. **Deal**: 5 cards each. 3. **Betting Round 1**. 4. **First Draw**: Players discard and draw. 5. **Betting Round 2**. 6. **Second Draw**. 7. **Betting Round 3**. 8. **Third Draw**. 9. **Final Betting Round**. 10. **Showdown**: Split pot.',
+      'Scoring example: Pot-limit or Fixed-limit betting rounds. Lowest ranks in two specific categories..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'badacey.rules.objective',
+        title: 'Objective',
+        text: 'Win half the pot with the best 4-card Badugi and half with the best 5-card Ace-to-Five low.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'badacey.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Blinds**: Players post small and big blinds. 2. **Deal**: 5 cards each. 3. **Betting Round 1**. 4. **First Draw**: Players discard and draw. 5. **Betting Round 2**. 6. **Second Draw**. 7. **Betting Round 3**. 8. **Third Draw**. 9. **Final Betting Round**. 10. **Showdown**: Split pot.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'badacey.setup.players',
+        title: 'Players',
+        text: 'Two to six players. All players post an ante; the dealer gives each player five cards face down. Play uses a dealer button with small and big blinds; the game is commonly played with fixed-limit betting in card rooms.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'badacey.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck (No Jokers).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'badacey.setup.equipment',
+        title: 'Equipment',
+        text: 'Poker chips, Dealer button, Small/Big Blind markers.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'badacey.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 5 cards face down. There are three drawing rounds where players can discard 0-5 cards and receive replacements.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'badacey.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest ranks in two specific categories.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'badacey.score.description',
+        title: 'Scoring',
+        text: 'Pot-limit or Fixed-limit betting rounds.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'badacey.rules.key.1',
+        title: 'Key rule 1',
+        text: 'A 3-card Badugi loses to any 4-card Badugi.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'badacey.rules.key.2',
+        title: 'Key rule 2',
+        text: 'In the Lowball half, if you have a pair, your low is disqualified from the top ranks.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'badacey.rules.key.3',
+        title: 'Key rule 3',
+        text: 'A-2-3-4-5 is the best low; A-2-3-4 (rainbow) is the best Badugi.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'badacey.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'badacey.rules.objective',
+          'badacey.rules.gameplay',
+        ],
+      },
+      {
+        id: 'badacey.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'badacey.setup.players',
+          'badacey.setup.deck',
+          'badacey.setup.equipment',
+          'badacey.setup.dealing',
+        ],
+      },
+      {
+        id: 'badacey.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'badacey.rules.key.1',
+          'badacey.rules.key.2',
+          'badacey.rules.key.3',
+        ],
+      },
+      {
+        id: 'badacey.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'badacey.score.description',
+          'badacey.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'badacey.setup.dealing',
+        'badacey.rules.objective',
+      ],
+      ante: [
+        'badacey.rules.gameplay',
+      ],
+      deal: [
+        'badacey.rules.gameplay',
+      ],
+      fold: [
+        'badacey.rules.gameplay',
+      ],
+      check: [
+        'badacey.rules.gameplay',
+      ],
+      call: [
+        'badacey.rules.gameplay',
+      ],
+      bet: [
+        'badacey.rules.gameplay',
+      ],
+      raise: [
+        'badacey.rules.gameplay',
+      ],
+      discard: [
+        'badacey.rules.gameplay',
+      ],
+      post_blind: [
+        'badacey.rules.gameplay',
+      ],
+      deal_hole_cards: [
+        'badacey.rules.gameplay',
+      ],
+      discard_and_draw: [
+        'badacey.rules.gameplay',
+      ],
+      evaluate_badugi: [
+        'badacey.rules.gameplay',
+      ],
+      evaluate_low: [
+        'badacey.rules.gameplay',
+      ],
+      split_pot: [
+        'badacey.rules.gameplay',
+      ],
+    },
   },
 }

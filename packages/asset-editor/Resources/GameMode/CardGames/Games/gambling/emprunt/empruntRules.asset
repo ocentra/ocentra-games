@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Basset. Logic: Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
-    Player: 'Basset is a historical Italian gambling card game in which players bet against a banker on ranks that may appear from the pack.',
+    LLM: 'Set the pack according to player count, deal the prescribed hands and talon, then play the Hoc-style stages. The distinguishing feature is that players may borrow a card they do not have under the documented rule, creating tactical access to otherwise missing combinations.',
+    Player: 'Set the pack according to player count, deal the prescribed hands and talon, then play the Hoc-style stages. The distinguishing feature is that players may borrow a card they do not have under the documented rule, creating tactical access to otherwise missing combinations.',
     objective: 'Win stakes through the Hoc-family combinations and play sequence while using the borrowing option better than the other players.',
     gameplay: 'Set the pack according to player count, deal the prescribed hands and talon, then play the Hoc-style stages. The distinguishing feature is that players may borrow a card they do not have under the documented rule, creating tactical access to otherwise missing combinations.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Bets are paid or lost against the bank according to the exposed-card result. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win stakes through the Hoc-family combinations and play sequence while using the borrowing option better than the other players.',
+      'Turn-flow example: Set the pack according to player count, deal the prescribed hands and talon, then play the Hoc-style stages. The distinguishing feature is that players may borrow a card they do not have under the documented rule, creating tactical access to otherwise missing combinations.',
+      'Scoring example: Bets are paid or lost against the bank according to the exposed-card result. Win stakes by backing ranks that appear in the favourable positions of the banked deal..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'emprunt.rules.objective',
+        title: 'Objective',
+        text: 'Win stakes through the Hoc-family combinations and play sequence while using the borrowing option better than the other players.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'emprunt.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Set the pack according to player count, deal the prescribed hands and talon, then play the Hoc-style stages. The distinguishing feature is that players may borrow a card they do not have under the documented rule, creating tactical access to otherwise missing combinations.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'emprunt.setup.players',
+        title: 'Players',
+        text: '3-6 players use the table arrangement described for Emprunt.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'emprunt.setup.deck',
+        title: 'Deck',
+        text: 'Standard French-suited pack, stripped by player count in some rules',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'emprunt.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard French-suited pack, stripped by player count in some rules, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'emprunt.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Standard French-suited pack, stripped by player count in some rules and deal or lay out cards according to the documented Emprunt rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'emprunt.score.win-condition',
+        title: 'Win condition',
+        text: 'Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'emprunt.score.description',
+        title: 'Scoring',
+        text: 'Bets are paid or lost against the bank according to the exposed-card result.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'emprunt.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Player count changes the pack size and deal.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'emprunt.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The game is related to Hoc and uses combination and shedding-style stages.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'emprunt.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The borrowing rule is the feature that gives Emprunt its name and tactical identity.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'emprunt.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'emprunt.rules.objective',
+          'emprunt.rules.gameplay',
+        ],
+      },
+      {
+        id: 'emprunt.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'emprunt.setup.players',
+          'emprunt.setup.deck',
+          'emprunt.setup.equipment',
+          'emprunt.setup.dealing',
+        ],
+      },
+      {
+        id: 'emprunt.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'emprunt.rules.key.1',
+          'emprunt.rules.key.2',
+          'emprunt.rules.key.3',
+        ],
+      },
+      {
+        id: 'emprunt.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'emprunt.score.description',
+          'emprunt.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'emprunt.setup.dealing',
+        'emprunt.rules.objective',
+      ],
+      play_card: [
+        'emprunt.rules.gameplay',
+      ],
+    },
   },
 }

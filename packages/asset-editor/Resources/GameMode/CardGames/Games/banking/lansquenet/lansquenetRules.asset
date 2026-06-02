@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Lansquenet. Banking game, pure chance. Banker reveals Banker Card and Player Card. If match, Banker wins. Otherwise, draw cards until either rank appears. Player bettors win 1:1 if Player Card rank appears first; Banker wins all bets if Banker Card rank appears first.',
-    Player: "Welcome to Lansquenet, the game that emptied the pockets of Renaissance mercenaries and French nobility alike. It's simple: I'll turn two cardsâ€”one for the Banker, one for the Player. Then I'll draw cards until one of those ranks appears. Bet wisely, but know thisâ€”if the first two cards match, the Banker wins instantly. No skill, just fate.",
+    LLM: "1. **Banker Card**: The banker turns up one card from the deck and places it on their right (The Banker's Card). 2. **Player Card**: The banker turns up a second card and places it on the left (The Player's Card). 3. **Initial Tie**: If these two cards match in rank, the banker wins all bets immediately. 4. **The Draw**: The banker continues turning up cards from the deck one by one. - If a card matches the Banker's Card rank, the banker wins all bets. - If a card matches the Player's Card rank, the banker pays all bettors at even money.",
+    Player: "1. **Banker Card**: The banker turns up one card from the deck and places it on their right (The Banker's Card). 2. **Player Card**: The banker turns up a second card and places it on the left (The Player's Card). 3. **Initial Tie**: If these two cards match in rank, the banker wins all bets immediately. 4. **The Draw**: The banker continues turning up cards from the deck one by one. - If a card matches the Banker's Card rank, the banker wins all bets. - If a card matches the Player's Card rank, the banker pays all bettors at even money.",
     objective: "Bet on whether the 'Player' card or the 'Banker' card will appear first as cards are turned up from the deck.",
     gameplay: "1. **Banker Card**: The banker turns up one card from the deck and places it on their right (The Banker's Card). 2. **Player Card**: The banker turns up a second card and places it on the left (The Player's Card). 3. **Initial Tie**: If these two cards match in rank, the banker wins all bets immediately. 4. **The Draw**: The banker continues turning up cards from the deck one by one. - If a card matches the Banker's Card rank, the banker wins all bets. - If a card matches the Player's Card rank, the banker pays all bettors at even money.",
     keyRules: [
@@ -54,10 +54,186 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-20 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_up.',
-      'Opening flow: start in place_bets; current_player may use bet_player, bet_banker before reveal_banker_card.',
-      "Scoring check: Even money payouts. No complex scoringâ€”pure win/lose on each bet. Expected outcome: If the Player's Card rank appears first in the draw, Player bettors win 1:1. If the Banker's Card rank appears first, Banker wins all bets..",
+      'Setup example: 0 card(s) per player.',
+      "Rule example: Bet on whether the 'Player' card or the 'Banker' card will appear first as cards are turned up from the deck.",
+      "Turn-flow example: 1. **Banker Card**: The banker turns up one card from the deck and places it on their right (The Banker's Card). 2. **Player Card**: The banker turns up a second card and places it on the left (The Player's Card). 3. **Initial Tie**: If these two cards match in rank, the banker wins all bets immediately. 4. **The Draw**: The banker continues turning up cards from the deck one by one. - If a card matches the Banker's Card rank, the banker wins all bets. - If a card matches the Player's Card rank, the banker pays all bettors at even money.",
+      "Scoring example: Even money payouts. No complex scoringâ€”pure win/lose on each bet. If the Player's Card rank appears first in the draw, Player bettors win 1:1. If the Banker's Card rank appears first, Banker wins all bets..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'lansquenet.rules.objective',
+        title: 'Objective',
+        text: "Bet on whether the 'Player' card or the 'Banker' card will appear first as cards are turned up from the deck.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'lansquenet.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Banker Card**: The banker turns up one card from the deck and places it on their right (The Banker's Card). 2. **Player Card**: The banker turns up a second card and places it on the left (The Player's Card). 3. **Initial Tie**: If these two cards match in rank, the banker wins all bets immediately. 4. **The Draw**: The banker continues turning up cards from the deck one by one. - If a card matches the Banker's Card rank, the banker wins all bets. - If a card matches the Player's Card rank, the banker pays all bettors at even money.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'lansquenet.setup.players',
+        title: 'Players',
+        text: 'One Banker (Dealer) and any number of bettors. Minimum 2 players total.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'lansquenet.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Multiple decks (2-4) are often shuffled together to reduce ties.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'lansquenet.setup.equipment',
+        title: 'Equipment',
+        text: "Cards and a flat surface. A 'shoe' or dealing box is traditionally used.",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'lansquenet.setup.dealing',
+        title: 'Deal',
+        text: 'The banker shuffles the deck(s) and places them in a shoe or pile. No cards are dealt to players initially.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'lansquenet.score.win-condition',
+        title: 'Win condition',
+        text: "If the Player's Card rank appears first in the draw, Player bettors win 1:1. If the Banker's Card rank appears first, Banker wins all bets.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'lansquenet.score.description',
+        title: 'Scoring',
+        text: 'Even money payouts. No complex scoringâ€”pure win/lose on each bet.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'lansquenet.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Only card ranks matter; suits are irrelevant.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'lansquenet.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If the first two cards match (tie), banker wins immediately.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'lansquenet.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The first matching card dealt determines the winner.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'lansquenet.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Bets are typically placed after seeing the first two cards but before the draw begins.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'lansquenet.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Multiple decks reduce the frequency of ties.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'lansquenet.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'lansquenet.rules.objective',
+          'lansquenet.rules.gameplay',
+        ],
+      },
+      {
+        id: 'lansquenet.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'lansquenet.setup.players',
+          'lansquenet.setup.deck',
+          'lansquenet.setup.equipment',
+          'lansquenet.setup.dealing',
+        ],
+      },
+      {
+        id: 'lansquenet.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'lansquenet.rules.key.1',
+          'lansquenet.rules.key.2',
+          'lansquenet.rules.key.3',
+          'lansquenet.rules.key.4',
+          'lansquenet.rules.key.5',
+        ],
+      },
+      {
+        id: 'lansquenet.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'lansquenet.score.description',
+          'lansquenet.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'lansquenet.setup.dealing',
+        'lansquenet.rules.objective',
+      ],
+      bet_player: [
+        'lansquenet.rules.gameplay',
+      ],
+      bet_banker: [
+        'lansquenet.rules.gameplay',
+      ],
+      reveal: [
+        'lansquenet.rules.gameplay',
+      ],
+      resolve_tie: [
+        'lansquenet.rules.gameplay',
+      ],
+      continue: [
+        'lansquenet.rules.gameplay',
+      ],
+      draw_card: [
+        'lansquenet.rules.gameplay',
+      ],
+      pay_winners: [
+        'lansquenet.rules.gameplay',
+      ],
+      collect_losers: [
+        'lansquenet.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Diloti. Deal 6 each, capture or declare builds, then score cards and xeria bonuses.',
-    Player: 'Capture cards by matching or summing values, and use declarations to lock table sets.',
+    LLM: '1. Fishing: Match a card from hand to one on the table (for number cards you may also capture a chosen sum-equal combination).\n2. Face Cards: J/Q/K capture exactly one matching face card and cannot be used in sum captures or declarations.\n3. Declarations (Builds): Create plain or group declarations from number cards. A player making or raising a declaration must hold a matching card for later capture.\n4. Raising and ownership: Opponents may raise plain declarations; group declarations cannot be raised. The player who most recently created/added to a declaration is responsible for capturing it.\n5. Xeri: Capturing all table cards in one play scores 10 points (with standard exceptions for the opening table-clear and some end-of-round cases).\n6. Further deals: When hands are exhausted, dealer gives 6 new cards each from stock; no new table cards are dealt.',
+    Player: '1. Fishing: Match a card from hand to one on the table (for number cards you may also capture a chosen sum-equal combination).\n2. Face Cards: J/Q/K capture exactly one matching face card and cannot be used in sum captures or declarations.\n3. Declarations (Builds): Create plain or group declarations from number cards. A player making or raising a declaration must hold a matching card for later capture.\n4. Raising and ownership: Opponents may raise plain declarations; group declarations cannot be raised. The player who most recently created/added to a declaration is responsible for capturing it.\n5. Xeri: Capturing all table cards in one play scores 10 points (with standard exceptions for the opening table-clear and some end-of-round cases).\n6. Further deals: When hands are exhausted, dealer gives 6 new cards each from stock; no new table cards are dealt.',
     objective: 'Score points by capturing key cards, winning most cards, and making xeri sweeps; first to 61 points usually wins.',
     gameplay: '1. Fishing: Match a card from hand to one on the table (for number cards you may also capture a chosen sum-equal combination).\n2. Face Cards: J/Q/K capture exactly one matching face card and cannot be used in sum captures or declarations.\n3. Declarations (Builds): Create plain or group declarations from number cards. A player making or raising a declaration must hold a matching card for later capture.\n4. Raising and ownership: Opponents may raise plain declarations; group declarations cannot be raised. The player who most recently created/added to a declaration is responsible for capturing it.\n5. Xeri: Capturing all table cards in one play scores 10 points (with standard exceptions for the opening table-clear and some end-of-round cases).\n6. Further deals: When hands are exhausted, dealer gives 6 new cards each from stock; no new table cards are dealt.',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'Round end is all cards played, not a go-out event.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before capture_play.',
-      'Scoring check: Points come from most cards, aces, 10 of diamonds, 2 of clubs, and xeri sweeps. Expected outcome: 61.',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Score points by capturing key cards, winning most cards, and making xeri sweeps; first to 61 points usually wins.',
+      'Turn-flow example: 1. Fishing: Match a card from hand to one on the table (for number cards you may also capture a chosen sum-equal combination).\n2. Face Cards: J/Q/K capture exactly one matching face card and cannot be used in sum captures or declarations.\n3. Declarations (Builds): Create plain or group declarations from number cards. A player making or raising a declaration must hold a matching card for later capture.\n4. Raising and ownership: Opponents may raise plain declarations; group declarations cannot be raised. The player who most recently created/added to a declaration is responsible for capturing it.\n5. Xeri: Capturing all table cards in one play scores 10 points (with standard exceptions for the opening table-clear and some end-of-round cases).\n6. Further deals: When hands are exhausted, dealer gives 6 new cards each from stock; no new table cards are dealt.',
+      'Scoring example: Points come from most cards, aces, 10 of diamonds, 2 of clubs, and xeri sweeps. First side or player to reach 61 points wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'diloti.rules.objective',
+        title: 'Objective',
+        text: 'Score points by capturing key cards, winning most cards, and making xeri sweeps; first to 61 points usually wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'diloti.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Fishing: Match a card from hand to one on the table (for number cards you may also capture a chosen sum-equal combination).\n2. Face Cards: J/Q/K capture exactly one matching face card and cannot be used in sum captures or declarations.\n3. Declarations (Builds): Create plain or group declarations from number cards. A player making or raising a declaration must hold a matching card for later capture.\n4. Raising and ownership: Opponents may raise plain declarations; group declarations cannot be raised. The player who most recently created/added to a declaration is responsible for capturing it.\n5. Xeri: Capturing all table cards in one play scores 10 points (with standard exceptions for the opening table-clear and some end-of-round cases).\n6. Further deals: When hands are exhausted, dealer gives 6 new cards each from stock; no new table cards are dealt.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'diloti.setup.players',
+        title: 'Players',
+        text: '2 players or 4 in fixed partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'diloti.setup.deck',
+        title: 'Deck',
+        text: '52 cards. Aces rank as 1 for sums, but otherwise have high point value.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'diloti.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'diloti.setup.dealing',
+        title: 'Deal',
+        text: "6 cards per player; 4 face-up on table. If 3 or 4 face cards of same value are on the table, it's a misdeal.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'diloti.score.win-condition',
+        title: 'Win condition',
+        text: 'First side or player to reach 61 points wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'diloti.score.description',
+        title: 'Scoring',
+        text: 'Points come from most cards, aces, 10 of diamonds, 2 of clubs, and xeri sweeps.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'diloti.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit is NOT applicable (Fishing game).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'diloti.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Face cards cannot be part of sum-captures.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'diloti.rules.key.3',
+        title: 'Key rule 3',
+        text: 'A successful Xeri is marked by placing a card face-up under the capture pile.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'diloti.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Aces are worth 1 point each and count as 1 in numerical captures.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'diloti.rules.key.5',
+        title: 'Key rule 5',
+        text: 'In 4-player games, declarations bind only the player who made them, not the partner.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'diloti.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'diloti.rules.objective',
+          'diloti.rules.gameplay',
+        ],
+      },
+      {
+        id: 'diloti.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'diloti.setup.players',
+          'diloti.setup.deck',
+          'diloti.setup.equipment',
+          'diloti.setup.dealing',
+        ],
+      },
+      {
+        id: 'diloti.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'diloti.rules.key.1',
+          'diloti.rules.key.2',
+          'diloti.rules.key.3',
+          'diloti.rules.key.4',
+          'diloti.rules.key.5',
+        ],
+      },
+      {
+        id: 'diloti.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'diloti.score.description',
+          'diloti.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'diloti.setup.dealing',
+        'diloti.rules.objective',
+      ],
+      deal: [
+        'diloti.rules.gameplay',
+      ],
+      declare: [
+        'diloti.rules.gameplay',
+      ],
+      award_pot: [
+        'diloti.rules.gameplay',
+      ],
+      play_card: [
+        'diloti.rules.gameplay',
+      ],
+    },
   },
 }

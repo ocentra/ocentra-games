@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Deuces and Jacks and the Man with the Axe. Use stud betting flow, apply wild-card substitution, and resolve highest hand at showdown.',
-    Player: 'At showdown, evaluate your seven-card holding using all wild substitutions and select the strongest five-card combination.',
+    LLM: 'Betting as in 7-card stud. At showdown, each 2, each Jack, and the King of Diamonds substitute for any card; use any five of seven for best hand.',
+    Player: 'Betting as in 7-card stud. At showdown, each 2, each Jack, and the King of Diamonds substitute for any card; use any five of seven for best hand.',
     objective: 'Make the best five-card poker hand from seven cards; 2s, Jacks, and the King of Diamonds are wild.',
     gameplay: 'Betting as in 7-card stud. At showdown, each 2, each Jack, and the King of Diamonds substitute for any card; use any five of seven for best hand.',
     keyRules: [
@@ -53,10 +53,180 @@
       go_out: 'Win condition is showdown hand strength, not going out by shedding.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 7 card(s) per player, 1 deck(s), initial visibility mixed.',
-      'Opening flow: start in ante; each_player_clockwise may use ante before deal.',
-      'Scoring check: Highest five-card poker hand wins after applying wild card substitutions. Expected outcome: NA.',
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Make the best five-card poker hand from seven cards; 2s, Jacks, and the King of Diamonds are wild.',
+      'Turn-flow example: Betting as in 7-card stud. At showdown, each 2, each Jack, and the King of Diamonds substitute for any card; use any five of seven for best hand.',
+      'Scoring example: Highest five-card poker hand wins after applying wild card substitutions. Win by making the strongest eligible five-card hand from seven cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'deuces-jacks-axe.rules.objective',
+        title: 'Objective',
+        text: 'Make the best five-card poker hand from seven cards; 2s, Jacks, and the King of Diamonds are wild.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'deuces-jacks-axe.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Betting as in 7-card stud. At showdown, each 2, each Jack, and the King of Diamonds substitute for any card; use any five of seven for best hand.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'deuces-jacks-axe.setup.players',
+        title: 'Players',
+        text: 'From 2 to 8 players can take part, using a standard 52-pack. The game is best for 5 to 7 players; with 8 players the deck may run out towards the end of the deal.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'deuces-jacks-axe.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. No jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'deuces-jacks-axe.setup.equipment',
+        title: 'Equipment',
+        text: 'Chips; table space.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'deuces-jacks-axe.setup.dealing',
+        title: 'Deal',
+        text: 'Same as 7-card stud. All 2s, all Jacks, and the King of Diamonds are wild.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'deuces-jacks-axe.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by making the strongest eligible five-card hand from seven cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'deuces-jacks-axe.score.description',
+        title: 'Scoring',
+        text: 'Highest five-card poker hand wins after applying wild card substitutions.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'deuces-jacks-axe.rules.key.1',
+        title: 'Key rule 1',
+        text: 'All 2s are wild',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'deuces-jacks-axe.rules.key.2',
+        title: 'Key rule 2',
+        text: 'All Jacks are wild',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'deuces-jacks-axe.rules.key.3',
+        title: 'Key rule 3',
+        text: "King of Diamonds is wild ('the man with the axe')",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'deuces-jacks-axe.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Standard 7-card stud deal and betting',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'deuces-jacks-axe.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'deuces-jacks-axe.rules.objective',
+          'deuces-jacks-axe.rules.gameplay',
+        ],
+      },
+      {
+        id: 'deuces-jacks-axe.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'deuces-jacks-axe.setup.players',
+          'deuces-jacks-axe.setup.deck',
+          'deuces-jacks-axe.setup.equipment',
+          'deuces-jacks-axe.setup.dealing',
+        ],
+      },
+      {
+        id: 'deuces-jacks-axe.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'deuces-jacks-axe.rules.key.1',
+          'deuces-jacks-axe.rules.key.2',
+          'deuces-jacks-axe.rules.key.3',
+          'deuces-jacks-axe.rules.key.4',
+        ],
+      },
+      {
+        id: 'deuces-jacks-axe.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'deuces-jacks-axe.score.description',
+          'deuces-jacks-axe.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'deuces-jacks-axe.setup.dealing',
+        'deuces-jacks-axe.rules.objective',
+      ],
+      ante: [
+        'deuces-jacks-axe.rules.gameplay',
+      ],
+      deal: [
+        'deuces-jacks-axe.rules.gameplay',
+      ],
+      fold: [
+        'deuces-jacks-axe.rules.gameplay',
+      ],
+      check: [
+        'deuces-jacks-axe.rules.gameplay',
+      ],
+      call: [
+        'deuces-jacks-axe.rules.gameplay',
+      ],
+      bet: [
+        'deuces-jacks-axe.rules.gameplay',
+      ],
+      raise: [
+        'deuces-jacks-axe.rules.gameplay',
+      ],
+      reveal_hand: [
+        'deuces-jacks-axe.rules.gameplay',
+      ],
+      award_pot: [
+        'deuces-jacks-axe.rules.gameplay',
+      ],
+    },
   },
 }

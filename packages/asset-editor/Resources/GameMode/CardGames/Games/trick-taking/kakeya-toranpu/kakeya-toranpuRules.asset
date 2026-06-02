@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kakeya Toranpu (Etori). Type: Partnership trick-taking. Deck: 52 cards. Hand: 13 cards. Special: Rensho (Ace of Spades) wins any trick. Scoring: Only J-Q-K-A count (16 total). Win 9-11 = 1 stone, 12-15 = 2 stones, 16 = 4 stones. Game ends when team loses all 5 stones.',
-    Player: 'Welcome to Kakeya Toranpu, a rare Japanese treasure! Your goal is to capture face cards (J-Q-K-A). Save your Rensho (Ace of Spades) for the perfect momentâ€”it wins any trick! Can you capture 9+ face cards to win Go stones?',
+    LLM: '1. Players draw lottery sticks to determine partnerships.\n2. Trump (Kiri) is determined by a cut or rotation.\n3. Must follow suit if possible; if not, any card can be played.\n4. **Scoring**: Only Face cards (16 total) matter. Winning 9-11 = 1 stone, 12-15 = 2 stones, 16 (All) = 4 stones.',
+    Player: '1. Players draw lottery sticks to determine partnerships.\n2. Trump (Kiri) is determined by a cut or rotation.\n3. Must follow suit if possible; if not, any card can be played.\n4. **Scoring**: Only Face cards (16 total) matter. Winning 9-11 = 1 stone, 12-15 = 2 stones, 16 (All) = 4 stones.',
     objective: "Win 'Face Cards' (J-Q-K-A) in tricks. The team that captures 9 or more of the 16 face cards wins a Go stone from their opponents.",
     gameplay: '1. Players draw lottery sticks to determine partnerships.\n2. Trump (Kiri) is determined by a cut or rotation.\n3. Must follow suit if possible; if not, any card can be played.\n4. **Scoring**: Only Face cards (16 total) matter. Winning 9-11 = 1 stone, 12-15 = 2 stones, 16 (All) = 4 stones.',
     keyRules: [
@@ -55,10 +55,192 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-6 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in partnership_draw; system may use draw_sticks before deal.',
-      'Scoring check: Only Face cards (J, Q, K, A) matter for scoring. There are 16 face cards total (4 per suit). Expected outcome: NA.',
+      'Setup example: 13 card(s) per player.',
+      "Rule example: Win 'Face Cards' (J-Q-K-A) in tricks. The team that captures 9 or more of the 16 face cards wins a Go stone from their opponents.",
+      'Turn-flow example: 1. Players draw lottery sticks to determine partnerships.\n2. Trump (Kiri) is determined by a cut or rotation.\n3. Must follow suit if possible; if not, any card can be played.\n4. **Scoring**: Only Face cards (16 total) matter. Winning 9-11 = 1 stone, 12-15 = 2 stones, 16 (All) = 4 stones.',
+      'Scoring example: Only Face cards (J, Q, K, A) matter for scoring. There are 16 face cards total (4 per suit). The game ends when a team loses all 5 of their starting Go stones..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'kakeya-toranpu.rules.objective',
+        title: 'Objective',
+        text: "Win 'Face Cards' (J-Q-K-A) in tricks. The team that captures 9 or more of the 16 face cards wins a Go stone from their opponents.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kakeya-toranpu.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Players draw lottery sticks to determine partnerships.\n2. Trump (Kiri) is determined by a cut or rotation.\n3. Must follow suit if possible; if not, any card can be played.\n4. **Scoring**: Only Face cards (16 total) matter. Winning 9-11 = 1 stone, 12-15 = 2 stones, 16 (All) = 4 stones.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kakeya-toranpu.setup.players',
+        title: 'Players',
+        text: '4 or 6 players. In 6-player games, two players sit out each round as dealers.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kakeya-toranpu.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Aces are high, 2s are low.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kakeya-toranpu.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard cards, Go stones for scoring, lottery sticks for partnership selection',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kakeya-toranpu.setup.dealing',
+        title: 'Deal',
+        text: 'Two players (the Kubariban) deal the entire deck. Each active player gets 13 cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kakeya-toranpu.score.win-condition',
+        title: 'Win condition',
+        text: 'The game ends when a team loses all 5 of their starting Go stones.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kakeya-toranpu.score.description',
+        title: 'Scoring',
+        text: 'Only Face cards (J, Q, K, A) matter for scoring. There are 16 face cards total (4 per suit).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kakeya-toranpu.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The Rensho (usually Ace of Spades) is the highest card and wins any trick it is played to',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kakeya-toranpu.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players draw lottery sticks to determine partnerships',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kakeya-toranpu.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trump is determined by cut or rotation',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kakeya-toranpu.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Must follow suit if possible',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'kakeya-toranpu.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Only Jacks, Queens, Kings, and Aces (16 total) count for scoring',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'kakeya-toranpu.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Game ends when a team loses all 5 starting Go stones',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kakeya-toranpu.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kakeya-toranpu.rules.objective',
+          'kakeya-toranpu.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kakeya-toranpu.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kakeya-toranpu.setup.players',
+          'kakeya-toranpu.setup.deck',
+          'kakeya-toranpu.setup.equipment',
+          'kakeya-toranpu.setup.dealing',
+        ],
+      },
+      {
+        id: 'kakeya-toranpu.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kakeya-toranpu.rules.key.1',
+          'kakeya-toranpu.rules.key.2',
+          'kakeya-toranpu.rules.key.3',
+          'kakeya-toranpu.rules.key.4',
+          'kakeya-toranpu.rules.key.5',
+          'kakeya-toranpu.rules.key.6',
+        ],
+      },
+      {
+        id: 'kakeya-toranpu.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kakeya-toranpu.score.description',
+          'kakeya-toranpu.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kakeya-toranpu.setup.dealing',
+        'kakeya-toranpu.rules.objective',
+      ],
+      deal: [
+        'kakeya-toranpu.rules.gameplay',
+      ],
+      play_card: [
+        'kakeya-toranpu.rules.gameplay',
+      ],
+      draw_sticks: [
+        'kakeya-toranpu.rules.gameplay',
+      ],
+      deal_cards: [
+        'kakeya-toranpu.rules.gameplay',
+      ],
+      determine_trump: [
+        'kakeya-toranpu.rules.gameplay',
+      ],
+      count_face_cards: [
+        'kakeya-toranpu.rules.gameplay',
+      ],
+      exchange_stones: [
+        'kakeya-toranpu.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Boerenbridge. Type: Exact-bidding. Rules: Must follow suit. Trump beats off-suit. Score: 10 + tricks if exact; 0 if not. Hand size cycle ±1.',
-    Player: 'You hold the Ace and King of trumps. The hand size is 5. Your bid must be at least 2. Can you risk a 3? Or will you play safe and bid 2?',
+    LLM: '1. **Bidding**: Each player in turn bids the exact number of tricks they intend to take. 2. **Forced Bid**: The dealer cannot bid an amount that makes the total bids equal to the total available tricks (to ensure someone fails). 3. **Tricks**: Players must follow suit. Highest trump wins; if no trump, highest of led suit wins. 4. **Scoring**: Successfully making the bid earns a base bonus (usually 10 points) plus 1 point per trick taken. Any other result scores zero.',
+    Player: '1. **Bidding**: Each player in turn bids the exact number of tricks they intend to take. 2. **Forced Bid**: The dealer cannot bid an amount that makes the total bids equal to the total available tricks (to ensure someone fails). 3. **Tricks**: Players must follow suit. Highest trump wins; if no trump, highest of led suit wins. 4. **Scoring**: Successfully making the bid earns a base bonus (usually 10 points) plus 1 point per trick taken. Any other result scores zero.',
     objective: 'Score points by winning exactly the number of tricks bid at the start of the round.',
     gameplay: '1. **Bidding**: Each player in turn bids the exact number of tricks they intend to take. 2. **Forced Bid**: The dealer cannot bid an amount that makes the total bids equal to the total available tricks (to ensure someone fails). 3. **Tricks**: Players must follow suit. Highest trump wins; if no trump, highest of led suit wins. 4. **Scoring**: Successfully making the bid earns a base bonus (usually 10 points) plus 1 point per trick taken. Any other result scores zero.',
     keyRules: [
@@ -52,10 +52,162 @@
       go_out: 'The hand terminates only after all available tricks for the current round have been played.',
     },
     exampleHands: [
-      'Opening deal: 3-7 player(s), 1 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in dealing; system may use deal_n_cards, reveal_trump before auction.',
-      'Scoring check: Successful bid = 10 pts + 1 per trick. Unsuccessful = 0 pts. Expected outcome: Highest cumulative score after the final round..',
+      'Setup example: 1 card(s) per player.',
+      'Rule example: Score points by winning exactly the number of tricks bid at the start of the round.',
+      'Turn-flow example: 1. **Bidding**: Each player in turn bids the exact number of tricks they intend to take. 2. **Forced Bid**: The dealer cannot bid an amount that makes the total bids equal to the total available tricks (to ensure someone fails). 3. **Tricks**: Players must follow suit. Highest trump wins; if no trump, highest of led suit wins. 4. **Scoring**: Successfully making the bid earns a base bonus (usually 10 points) plus 1 point per trick taken. Any other result scores zero.',
+      'Scoring example: Successful bid = 10 pts + 1 per trick. Unsuccessful = 0 pts. Highest cumulative score after the final round..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'boerenbridge.rules.objective',
+        title: 'Objective',
+        text: 'Score points by winning exactly the number of tricks bid at the start of the round.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'boerenbridge.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Bidding**: Each player in turn bids the exact number of tricks they intend to take. 2. **Forced Bid**: The dealer cannot bid an amount that makes the total bids equal to the total available tricks (to ensure someone fails). 3. **Tricks**: Players must follow suit. Highest trump wins; if no trump, highest of led suit wins. 4. **Scoring**: Successfully making the bid earns a base bonus (usually 10 points) plus 1 point per trick taken. Any other result scores zero.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'boerenbridge.setup.players',
+        title: 'Players',
+        text: '3 to 7 players playing individually.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'boerenbridge.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card French pack (No Jokers).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'boerenbridge.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, score pad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'boerenbridge.setup.dealing',
+        title: 'Deal',
+        text: 'The round number (N) determines the hand size. Start at 1 card, increase by 1 each deal to a maximum (e.g., 10), then decrease back to 1. A trump card is turned after each deal.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'boerenbridge.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest cumulative score after the final round.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'boerenbridge.score.description',
+        title: 'Scoring',
+        text: 'Successful bid = 10 pts + 1 per trick. Unsuccessful = 0 pts.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'boerenbridge.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if possible.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'boerenbridge.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must hit the bid EXACTLY; taking more or fewer tricks results in a score of zero for the round.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'boerenbridge.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trump suit is determined by the card turned up from the stock after the deal.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'boerenbridge.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'boerenbridge.rules.objective',
+          'boerenbridge.rules.gameplay',
+        ],
+      },
+      {
+        id: 'boerenbridge.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'boerenbridge.setup.players',
+          'boerenbridge.setup.deck',
+          'boerenbridge.setup.equipment',
+          'boerenbridge.setup.dealing',
+        ],
+      },
+      {
+        id: 'boerenbridge.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'boerenbridge.rules.key.1',
+          'boerenbridge.rules.key.2',
+          'boerenbridge.rules.key.3',
+        ],
+      },
+      {
+        id: 'boerenbridge.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'boerenbridge.score.description',
+          'boerenbridge.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'boerenbridge.setup.dealing',
+        'boerenbridge.rules.objective',
+      ],
+      play_card: [
+        'boerenbridge.rules.gameplay',
+      ],
+      bid: [
+        'boerenbridge.rules.gameplay',
+      ],
+      deal_n_cards: [
+        'boerenbridge.rules.gameplay',
+      ],
+      bid_exact_tricks: [
+        'boerenbridge.rules.gameplay',
+      ],
+      reveal_trump: [
+        'boerenbridge.rules.gameplay',
+      ],
+      calculate_exact_bid_points: [
+        'boerenbridge.rules.gameplay',
+      ],
+    },
   },
 }

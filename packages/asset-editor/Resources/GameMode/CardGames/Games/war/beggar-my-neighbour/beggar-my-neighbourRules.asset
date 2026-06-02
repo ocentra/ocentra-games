@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Beggar My Neighbour. Type: War/Accumulation. Rules: Face cards trigger payments (A=4, K=3, Q=2, J=1). New face card during payment passes obligation. Goal: Win all cards.',
-    Player: "It's your turn. Flip the top card... It's a King! Now the next player must pay you three cards. If they flip three number cards, the whole pile is yours!",
+    LLM: "1. **Turning**: Players take turns flipping the top card of their stack onto a central pile. 2. **Face Cards**: If a player flips an Ace, King, Queen, or Jack, the next player must 'pay' a number of cards: Ace=4, King=3, Queen=2, Jack=1. 3. **Payment**: The next player flips cards one by one from their stack. 4. **Outcome A (Success)**: If the payer flips only number cards (2-10), the original player who flipped the face card takes the ENTIRE central pile and puts it at the bottom of their stack. 5. **Outcome B (Interruption)**: If the payer flips a face card during their payment, their payment stops immediately, and the NEXT player must now pay the required amount for this new face card.",
+    Player: "1. **Turning**: Players take turns flipping the top card of their stack onto a central pile. 2. **Face Cards**: If a player flips an Ace, King, Queen, or Jack, the next player must 'pay' a number of cards: Ace=4, King=3, Queen=2, Jack=1. 3. **Payment**: The next player flips cards one by one from their stack. 4. **Outcome A (Success)**: If the payer flips only number cards (2-10), the original player who flipped the face card takes the ENTIRE central pile and puts it at the bottom of their stack. 5. **Outcome B (Interruption)**: If the payer flips a face card during their payment, their payment stops immediately, and the NEXT player must now pay the required amount for this new face card.",
     objective: 'Win all 52 cards in the deck by forcing opponents into bankruptcy.',
     gameplay: "1. **Turning**: Players take turns flipping the top card of their stack onto a central pile. 2. **Face Cards**: If a player flips an Ace, King, Queen, or Jack, the next player must 'pay' a number of cards: Ace=4, King=3, Queen=2, Jack=1. 3. **Payment**: The next player flips cards one by one from their stack. 4. **Outcome A (Success)**: If the payer flips only number cards (2-10), the original player who flipped the face card takes the ENTIRE central pile and puts it at the bottom of their stack. 5. **Outcome B (Interruption)**: If the payer flips a face card during their payment, their payment stops immediately, and the NEXT player must now pay the required amount for this new face card.",
     keyRules: [
@@ -52,10 +52,150 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: No points are awarded; victory is determined by total card possession. Expected outcome: 52.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win all 52 cards in the deck by forcing opponents into bankruptcy.',
+      "Turn-flow example: 1. **Turning**: Players take turns flipping the top card of their stack onto a central pile. 2. **Face Cards**: If a player flips an Ace, King, Queen, or Jack, the next player must 'pay' a number of cards: Ace=4, King=3, Queen=2, Jack=1. 3. **Payment**: The next player flips cards one by one from their stack. 4. **Outcome A (Success)**: If the payer flips only number cards (2-10), the original player who flipped the face card takes the ENTIRE central pile and puts it at the bottom of their stack. 5. **Outcome B (Interruption)**: If the payer flips a face card during their payment, their payment stops immediately, and the NEXT player must now pay the required amount for this new face card.",
+      'Scoring example: No points are awarded; victory is determined by total card possession. Possession of all 52 cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'beggar-my-neighbour.rules.objective',
+        title: 'Objective',
+        text: 'Win all 52 cards in the deck by forcing opponents into bankruptcy.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'beggar-my-neighbour.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Turning**: Players take turns flipping the top card of their stack onto a central pile. 2. **Face Cards**: If a player flips an Ace, King, Queen, or Jack, the next player must 'pay' a number of cards: Ace=4, King=3, Queen=2, Jack=1. 3. **Payment**: The next player flips cards one by one from their stack. 4. **Outcome A (Success)**: If the payer flips only number cards (2-10), the original player who flipped the face card takes the ENTIRE central pile and puts it at the bottom of their stack. 5. **Outcome B (Interruption)**: If the payer flips a face card during their payment, their payment stops immediately, and the NEXT player must now pay the required amount for this new face card.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'beggar-my-neighbour.setup.players',
+        title: 'Players',
+        text: '2 to 4 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'beggar-my-neighbour.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck (Ace high).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'beggar-my-neighbour.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'beggar-my-neighbour.setup.dealing',
+        title: 'Deal',
+        text: 'Deal the entire deck clockwise until all cards are distributed. Each player keeps their cards in a face-down pile (stack). No one may look at their cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'beggar-my-neighbour.score.win-condition',
+        title: 'Win condition',
+        text: 'Possession of all 52 cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'beggar-my-neighbour.score.description',
+        title: 'Scoring',
+        text: 'No points are awarded; victory is determined by total card possession.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'beggar-my-neighbour.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No strategic decisions are made; the game is purely deterministic based on the shuffle.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'beggar-my-neighbour.rules.key.2',
+        title: 'Key rule 2',
+        text: 'A player is out of the game when they run out of cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'beggar-my-neighbour.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The game continues until one player holds all 52 cards.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'beggar-my-neighbour.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'beggar-my-neighbour.rules.objective',
+          'beggar-my-neighbour.rules.gameplay',
+        ],
+      },
+      {
+        id: 'beggar-my-neighbour.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'beggar-my-neighbour.setup.players',
+          'beggar-my-neighbour.setup.deck',
+          'beggar-my-neighbour.setup.equipment',
+          'beggar-my-neighbour.setup.dealing',
+        ],
+      },
+      {
+        id: 'beggar-my-neighbour.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'beggar-my-neighbour.rules.key.1',
+          'beggar-my-neighbour.rules.key.2',
+          'beggar-my-neighbour.rules.key.3',
+        ],
+      },
+      {
+        id: 'beggar-my-neighbour.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'beggar-my-neighbour.score.description',
+          'beggar-my-neighbour.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'beggar-my-neighbour.setup.dealing',
+        'beggar-my-neighbour.rules.objective',
+      ],
+      play_card: [
+        'beggar-my-neighbour.rules.gameplay',
+      ],
+      flip_top_card: [
+        'beggar-my-neighbour.rules.gameplay',
+      ],
+    },
   },
 }

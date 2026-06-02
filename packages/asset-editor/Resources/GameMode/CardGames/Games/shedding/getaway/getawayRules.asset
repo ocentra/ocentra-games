@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Getaway. Opening trick always discarded; later off-suit break ends trick and forces highest led-suit player to pick up cards. Last player with cards loses.',
-    Player: 'Getaway: lead safely, read void suits, and avoid ending up as highest of led suit when interruption is likely.',
+    LLM: 'Opening trick: Ace of Spades holder leads, everyone contributes one card, and this first trick is always discarded. From second trick onward, leader is highest card of previously led suit. Players must follow led suit if they can. If a player cannot follow and plays another suit (tochoo), trick ends immediately and later players do not play to that trick. Highest card of the led suit picks up all cards played to that interrupted trick and leads next. If everyone follows suit, trick goes to waste and highest led-suit player leads next. Players who empty hand are out, except a player with lead power may need to draw from waste and continue under common rule.',
+    Player: 'Opening trick: Ace of Spades holder leads, everyone contributes one card, and this first trick is always discarded. From second trick onward, leader is highest card of previously led suit. Players must follow led suit if they can. If a player cannot follow and plays another suit (tochoo), trick ends immediately and later players do not play to that trick. Highest card of the led suit picks up all cards played to that interrupted trick and leads next. If everyone follows suit, trick goes to waste and highest led-suit player leads next. Players who empty hand are out, except a player with lead power may need to draw from waste and continue under common rule.',
     objective: 'Get away by shedding all cards; last player still holding cards loses.',
     gameplay: 'Opening trick: Ace of Spades holder leads, everyone contributes one card, and this first trick is always discarded. From second trick onward, leader is highest card of previously led suit. Players must follow led suit if they can. If a player cannot follow and plays another suit (tochoo), trick ends immediately and later players do not play to that trick. Highest card of the led suit picks up all cards played to that interrupted trick and leads next. If everyone follows suit, trick goes to waste and highest led-suit player leads next. Players who empty hand are out, except a player with lead power may need to draw from waste and continue under common rule.',
     keyRules: [
@@ -53,10 +53,171 @@
       go_out: 'Player may need to redraw from waste if they should lead but hand is empty.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before trick_play.',
-      'Scoring check: No formal point count is required; hand loser is the final player still holding cards. Expected outcome: 1.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Get away by shedding all cards; last player still holding cards loses.',
+      'Turn-flow example: Opening trick: Ace of Spades holder leads, everyone contributes one card, and this first trick is always discarded. From second trick onward, leader is highest card of previously led suit. Players must follow led suit if they can. If a player cannot follow and plays another suit (tochoo), trick ends immediately and later players do not play to that trick. Highest card of the led suit picks up all cards played to that interrupted trick and leads next. If everyone follows suit, trick goes to waste and highest led-suit player leads next. Players who empty hand are out, except a player with lead power may need to draw from waste and continue under common rule.',
+      'Scoring example: No formal point count is required; hand loser is the final player still holding cards. Avoid being the last remaining player with cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'getaway.rules.objective',
+        title: 'Objective',
+        text: 'Get away by shedding all cards; last player still holding cards loses.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'getaway.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Opening trick: Ace of Spades holder leads, everyone contributes one card, and this first trick is always discarded. From second trick onward, leader is highest card of previously led suit. Players must follow led suit if they can. If a player cannot follow and plays another suit (tochoo), trick ends immediately and later players do not play to that trick. Highest card of the led suit picks up all cards played to that interrupted trick and leads next. If everyone follows suit, trick goes to waste and highest led-suit player leads next. Players who empty hand are out, except a player with lead power may need to draw from waste and continue under common rule.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'getaway.setup.players',
+        title: 'Players',
+        text: '3 to 8 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'getaway.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack with rank order A K Q J 10 9 8 7 6 5 4 3 2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'getaway.setup.equipment',
+        title: 'Equipment',
+        text: 'No additional equipment required.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'getaway.setup.dealing',
+        title: 'Deal',
+        text: 'Deal all cards as evenly as possible clockwise; some players may have one extra card.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'getaway.score.win-condition',
+        title: 'Win condition',
+        text: 'Avoid being the last remaining player with cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'getaway.score.description',
+        title: 'Scoring',
+        text: 'No formal point count is required; hand loser is the final player still holding cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'getaway.rules.key.1',
+        title: 'Key rule 1',
+        text: 'First trick is a mandatory full trick and always discarded.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'getaway.rules.key.2',
+        title: 'Key rule 2',
+        text: 'From trick two onward, first valid off-suit break immediately stops trick.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'getaway.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Interrupted trick pickup goes to the highest card of led suit, not to the breaker.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'getaway.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Some tables allow taking all cards from immediate-left active player before a trick.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'getaway.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'getaway.rules.objective',
+          'getaway.rules.gameplay',
+        ],
+      },
+      {
+        id: 'getaway.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'getaway.setup.players',
+          'getaway.setup.deck',
+          'getaway.setup.equipment',
+          'getaway.setup.dealing',
+        ],
+      },
+      {
+        id: 'getaway.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'getaway.rules.key.1',
+          'getaway.rules.key.2',
+          'getaway.rules.key.3',
+          'getaway.rules.key.4',
+        ],
+      },
+      {
+        id: 'getaway.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'getaway.score.description',
+          'getaway.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'getaway.setup.dealing',
+        'getaway.rules.objective',
+      ],
+      deal: [
+        'getaway.rules.gameplay',
+      ],
+      award_pot: [
+        'getaway.rules.gameplay',
+      ],
+      play_card: [
+        'getaway.rules.gameplay',
+      ],
+      discard: [
+        'getaway.rules.gameplay',
+      ],
+      go_out: [
+        'getaway.rules.gameplay',
+      ],
+      take_left_hand: [
+        'getaway.rules.gameplay',
+      ],
+    },
   },
 }

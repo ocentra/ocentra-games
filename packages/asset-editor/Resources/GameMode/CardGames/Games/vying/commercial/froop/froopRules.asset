@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Froop. Logic: Outplay opponents through the product-defined abstract card interactions and final scoring condition.',
-    Player: 'Froop is a commercial abstract strategy card game published by Savant Garde Entertainment in 2002.',
+    LLM: 'Players use the dedicated card set to create tactical positions, resolve card effects, and score according to the published abstract strategy rules.',
+    Player: 'Players use the dedicated card set to create tactical positions, resolve card effects, and score according to the published abstract strategy rules.',
     objective: 'Outplay opponents through the product-defined abstract card interactions and final scoring condition.',
     gameplay: 'Players use the dedicated card set to create tactical positions, resolve card effects, and score according to the published abstract strategy rules.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Published endgame scoring or victory conditions determine the winner. Expected outcome: Outplay opponents through the product-defined abstract card interactions and final scoring condition..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Outplay opponents through the product-defined abstract card interactions and final scoring condition.',
+      'Turn-flow example: Players use the dedicated card set to create tactical positions, resolve card effects, and score according to the published abstract strategy rules.',
+      'Scoring example: Published endgame scoring or victory conditions determine the winner. Outplay opponents through the product-defined abstract card interactions and final scoring condition..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'froop.rules.objective',
+        title: 'Objective',
+        text: 'Outplay opponents through the product-defined abstract card interactions and final scoring condition.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'froop.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players use the dedicated card set to create tactical positions, resolve card effects, and score according to the published abstract strategy rules.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'froop.setup.players',
+        title: 'Players',
+        text: '2-4 players use the table arrangement described for Froop.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'froop.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Froop abstract strategy card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'froop.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Froop abstract strategy card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'froop.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare the dedicated Froop deck and any shared scoring, resource, or tableau area described by the rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'froop.score.win-condition',
+        title: 'Win condition',
+        text: 'Outplay opponents through the product-defined abstract card interactions and final scoring condition.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'froop.score.description',
+        title: 'Scoring',
+        text: 'Published endgame scoring or victory conditions determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'froop.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dedicated commercial card deck.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'froop.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Abstract strategy structure.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'froop.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Card effects define legal tactics.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'froop.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Published scoring decides the winner.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'froop.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'froop.rules.objective',
+          'froop.rules.gameplay',
+        ],
+      },
+      {
+        id: 'froop.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'froop.setup.players',
+          'froop.setup.deck',
+          'froop.setup.equipment',
+          'froop.setup.dealing',
+        ],
+      },
+      {
+        id: 'froop.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'froop.rules.key.1',
+          'froop.rules.key.2',
+          'froop.rules.key.3',
+          'froop.rules.key.4',
+        ],
+      },
+      {
+        id: 'froop.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'froop.score.description',
+          'froop.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'froop.setup.dealing',
+        'froop.rules.objective',
+      ],
+      play_card: [
+        'froop.rules.gameplay',
+      ],
+    },
   },
 }

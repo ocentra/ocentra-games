@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Bohemian Schneider. Logic: Win enough tricks or avoid being schneidered by the opponent.',
-    Player: 'Bohemian Schneider is a two-player central European plain-trick game played with a 32-card German Skat or French pack.',
+    LLM: 'Players alternate leading to tricks. Highest card of the led suit wins unless local trump rules apply, and the trick winner leads next.',
+    Player: 'Players alternate leading to tricks. Highest card of the led suit wins unless local trump rules apply, and the trick winner leads next.',
     objective: 'Win enough tricks or avoid being schneidered by the opponent.',
     gameplay: 'Players alternate leading to tricks. Highest card of the led suit wins unless local trump rules apply, and the trick winner leads next.',
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: The hand result is based on tricks won and schneider-style thresholds. Expected outcome: Win enough tricks or avoid being schneidered by the opponent..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win enough tricks or avoid being schneidered by the opponent.',
+      'Turn-flow example: Players alternate leading to tricks. Highest card of the led suit wins unless local trump rules apply, and the trick winner leads next.',
+      'Scoring example: The hand result is based on tricks won and schneider-style thresholds. Win enough tricks or avoid being schneidered by the opponent..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'bohemian-schneider.rules.objective',
+        title: 'Objective',
+        text: 'Win enough tricks or avoid being schneidered by the opponent.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bohemian-schneider.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players alternate leading to tricks. Highest card of the led suit wins unless local trump rules apply, and the trick winner leads next.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bohemian-schneider.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Bohemian Schneider.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bohemian-schneider.setup.deck',
+        title: 'Deck',
+        text: '32-card German Skat or French pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bohemian-schneider.setup.equipment',
+        title: 'Equipment',
+        text: '32-card German Skat or French pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bohemian-schneider.setup.dealing',
+        title: 'Deal',
+        text: 'Deal from a 32-card pack to two players according to the local hand size.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bohemian-schneider.score.win-condition',
+        title: 'Win condition',
+        text: 'Win enough tricks or avoid being schneidered by the opponent.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bohemian-schneider.score.description',
+        title: 'Scoring',
+        text: 'The hand result is based on tricks won and schneider-style thresholds.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bohemian-schneider.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two players.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bohemian-schneider.rules.key.2',
+        title: 'Key rule 2',
+        text: '32-card pack.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bohemian-schneider.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Plain-trick structure.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'bohemian-schneider.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Short hands resolve quickly.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bohemian-schneider.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bohemian-schneider.rules.objective',
+          'bohemian-schneider.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bohemian-schneider.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bohemian-schneider.setup.players',
+          'bohemian-schneider.setup.deck',
+          'bohemian-schneider.setup.equipment',
+          'bohemian-schneider.setup.dealing',
+        ],
+      },
+      {
+        id: 'bohemian-schneider.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bohemian-schneider.rules.key.1',
+          'bohemian-schneider.rules.key.2',
+          'bohemian-schneider.rules.key.3',
+          'bohemian-schneider.rules.key.4',
+        ],
+      },
+      {
+        id: 'bohemian-schneider.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bohemian-schneider.score.description',
+          'bohemian-schneider.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bohemian-schneider.setup.dealing',
+        'bohemian-schneider.rules.objective',
+      ],
+      play_card: [
+        'bohemian-schneider.rules.gameplay',
+      ],
+      discard: [
+        'bohemian-schneider.rules.gameplay',
+      ],
+      pass: [
+        'bohemian-schneider.rules.gameplay',
+      ],
+      bid: [
+        'bohemian-schneider.rules.gameplay',
+      ],
+    },
   },
 }

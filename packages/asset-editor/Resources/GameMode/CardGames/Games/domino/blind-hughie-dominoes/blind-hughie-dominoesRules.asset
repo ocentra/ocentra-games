@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Blind Hughie. Domino block variant. Tiles face-down in row. Flip rightmost each turn. Play if matches train end, else return face-down to left. Double-six set. 2-4 players. Score by pip count. Memory-based advantage. Game to 61 or 100.',
-    Player: 'Your row has 3 tiles left. You remember that the tile now on the right was a 3-5 that failed two turns ago. The train ends are 3 and 6. The 3 end matches! Will it come up?',
+    LLM: '1. **Start**: A tile is turned from the boneyard to start the central line. 2. **Turn**: Flip over the RIGHTMOST face-down tile in your row. 3. **Match**: If the tile matches either open end of the line, you must play it. 4. **Cycle**: If the tile does not match, return it face-down to the LEFT end of your row. 5. **Boneyard**: Tiles in the boneyard are not used after the start.',
+    Player: '1. **Start**: A tile is turned from the boneyard to start the central line. 2. **Turn**: Flip over the RIGHTMOST face-down tile in your row. 3. **Match**: If the tile matches either open end of the line, you must play it. 4. **Cycle**: If the tile does not match, return it face-down to the LEFT end of your row. 5. **Boneyard**: Tiles in the boneyard are not used after the start.',
     objective: 'Be the first player to play all tiles from your face-down row.',
     gameplay: '1. **Start**: A tile is turned from the boneyard to start the central line. 2. **Turn**: Flip over the RIGHTMOST face-down tile in your row. 3. **Match**: If the tile matches either open end of the line, you must play it. 4. **Cycle**: If the tile does not match, return it face-down to the LEFT end of your row. 5. **Boneyard**: Tiles in the boneyard are not used after the start.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'The round concludes automatically when a player flips and plays their final face-down tile.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in dealing; system may use deal_tiles_facedown before play_loop.',
-      "Scoring check: Winner scores sum of losers' pip totals minus their own remaining pips. Game to 100 (2-player) or 61 (3-4 player). Expected outcome: 100.",
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Be the first player to play all tiles from your face-down row.',
+      'Turn-flow example: 1. **Start**: A tile is turned from the boneyard to start the central line. 2. **Turn**: Flip over the RIGHTMOST face-down tile in your row. 3. **Match**: If the tile matches either open end of the line, you must play it. 4. **Cycle**: If the tile does not match, return it face-down to the LEFT end of your row. 5. **Boneyard**: Tiles in the boneyard are not used after the start.',
+      "Scoring example: Winner scores sum of losers' pip totals minus their own remaining pips. Game to 100 (2-player) or 61 (3-4 player). Emptying the player's row or having the fewest pips at a block..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'blind-hughie-dominoes.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to play all tiles from your face-down row.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'blind-hughie-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Start**: A tile is turned from the boneyard to start the central line. 2. **Turn**: Flip over the RIGHTMOST face-down tile in your row. 3. **Match**: If the tile matches either open end of the line, you must play it. 4. **Cycle**: If the tile does not match, return it face-down to the LEFT end of your row. 5. **Boneyard**: Tiles in the boneyard are not used after the start.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'blind-hughie-dominoes.setup.players',
+        title: 'Players',
+        text: '2 to 4 players playing individually.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'blind-hughie-dominoes.setup.deck',
+        title: 'Deck',
+        text: 'Standard double-six domino set (28 tiles).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'blind-hughie-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'blind-hughie-dominoes.setup.dealing',
+        title: 'Deal',
+        text: 'Players draw tiles based on player count (2p=7, 3p=5, 4p=5). Tiles are placed in a face-down row in front of each player. No one may look at their cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'blind-hughie-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: "Emptying the player's row or having the fewest pips at a block.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'blind-hughie-dominoes.score.description',
+        title: 'Scoring',
+        text: "Winner scores sum of losers' pip totals minus their own remaining pips. Game to 100 (2-player) or 61 (3-4 player).",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'blind-hughie-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'You must always flip the rightmost tile first.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'blind-hughie-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Returned tiles must be placed at the opposite end of the row to preserve their cycle order.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'blind-hughie-dominoes.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The game ends when a player goes domino or the line is blocked.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'blind-hughie-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'blind-hughie-dominoes.rules.objective',
+          'blind-hughie-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: 'blind-hughie-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'blind-hughie-dominoes.setup.players',
+          'blind-hughie-dominoes.setup.deck',
+          'blind-hughie-dominoes.setup.equipment',
+          'blind-hughie-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: 'blind-hughie-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'blind-hughie-dominoes.rules.key.1',
+          'blind-hughie-dominoes.rules.key.2',
+          'blind-hughie-dominoes.rules.key.3',
+        ],
+      },
+      {
+        id: 'blind-hughie-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'blind-hughie-dominoes.score.description',
+          'blind-hughie-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'blind-hughie-dominoes.setup.dealing',
+        'blind-hughie-dominoes.rules.objective',
+      ],
+      deal_tiles_facedown: [
+        'blind-hughie-dominoes.rules.gameplay',
+      ],
+      flip_rightmost_tile: [
+        'blind-hughie-dominoes.rules.gameplay',
+      ],
+      place_on_line: [
+        'blind-hughie-dominoes.rules.gameplay',
+      ],
+      cycle_to_left: [
+        'blind-hughie-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Be-Ranga Double Sar. Type: Trick-Taking. Rules: Must follow suit. Win 2 consecutive tricks to capture the center heap. First to 7 tricks wins the deal.',
-    Player: "The heap has 10 cards in it. You just won the last trick with a King. Now you lead an Ace of Trumps. If it holds, you win the Ace's trick AND the 10 cards in the heap! Don't let them trump you.",
+    LLM: "1. **Trump Call**: The Caller names the suit (Rung) based on their first 5 cards. 2. **The Lead**: Caller leads the first trick. 3. **The Trick**: Players must follow suit. Highest trump wins; if no trump, highest card of led suit wins. 4. **Accumulation Rule**: When a player wins a trick, they DO NOT collect the cards yet. The cards remain face down in the center heap. 5. **Double Sar Rule**: If the SAME player wins the *next* trick (two in a row), they capture the ENTIRE heap (all previous uncollected tricks) and place them in their team's pile. 6. **13th Trick**: The winner of the 13th (final) trick captures strictly that trick plus any uncollected heap remaining.",
+    Player: "1. **Trump Call**: The Caller names the suit (Rung) based on their first 5 cards. 2. **The Lead**: Caller leads the first trick. 3. **The Trick**: Players must follow suit. Highest trump wins; if no trump, highest card of led suit wins. 4. **Accumulation Rule**: When a player wins a trick, they DO NOT collect the cards yet. The cards remain face down in the center heap. 5. **Double Sar Rule**: If the SAME player wins the *next* trick (two in a row), they capture the ENTIRE heap (all previous uncollected tricks) and place them in their team's pile. 6. **13th Trick**: The winner of the 13th (final) trick captures strictly that trick plus any uncollected heap remaining.",
     objective: "Win the majority of the 13 tricks (7 or more) by capturing the accumulated heaps. Or inflict a 'Kot' (Slam) by winning all tricks.",
     gameplay: "1. **Trump Call**: The Caller names the suit (Rung) based on their first 5 cards. 2. **The Lead**: Caller leads the first trick. 3. **The Trick**: Players must follow suit. Highest trump wins; if no trump, highest card of led suit wins. 4. **Accumulation Rule**: When a player wins a trick, they DO NOT collect the cards yet. The cards remain face down in the center heap. 5. **Double Sar Rule**: If the SAME player wins the *next* trick (two in a row), they capture the ENTIRE heap (all previous uncollected tricks) and place them in their team's pile. 6. **13th Trick**: The winner of the 13th (final) trick captures strictly that trick plus any uncollected heap remaining.",
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'The hand terminates only after all thirteen tricks have been played and the final scores are calculated.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal_first_5; dealer may use deal_5_each before trump_call.',
-      "Scoring check: Scoring is usually tracked by 'Games' or 'Kots'. Expected outcome: 7.",
+      'Setup example: 13 card(s) per player.',
+      "Rule example: Win the majority of the 13 tricks (7 or more) by capturing the accumulated heaps. Or inflict a 'Kot' (Slam) by winning all tricks.",
+      "Turn-flow example: 1. **Trump Call**: The Caller names the suit (Rung) based on their first 5 cards. 2. **The Lead**: Caller leads the first trick. 3. **The Trick**: Players must follow suit. Highest trump wins; if no trump, highest card of led suit wins. 4. **Accumulation Rule**: When a player wins a trick, they DO NOT collect the cards yet. The cards remain face down in the center heap. 5. **Double Sar Rule**: If the SAME player wins the *next* trick (two in a row), they capture the ENTIRE heap (all previous uncollected tricks) and place them in their team's pile. 6. **13th Trick**: The winner of the 13th (final) trick captures strictly that trick plus any uncollected heap remaining.",
+      "Scoring example: Scoring is usually tracked by 'Games' or 'Kots'. Winning 7+ tricks = 1 Game Point. Winning 13 tricks (Kot) = 5 Game Points (or instant victory)..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'be-ranga-double-sar.rules.objective',
+        title: 'Objective',
+        text: "Win the majority of the 13 tricks (7 or more) by capturing the accumulated heaps. Or inflict a 'Kot' (Slam) by winning all tricks.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'be-ranga-double-sar.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Trump Call**: The Caller names the suit (Rung) based on their first 5 cards. 2. **The Lead**: Caller leads the first trick. 3. **The Trick**: Players must follow suit. Highest trump wins; if no trump, highest card of led suit wins. 4. **Accumulation Rule**: When a player wins a trick, they DO NOT collect the cards yet. The cards remain face down in the center heap. 5. **Double Sar Rule**: If the SAME player wins the *next* trick (two in a row), they capture the ENTIRE heap (all previous uncollected tricks) and place them in their team's pile. 6. **13th Trick**: The winner of the 13th (final) trick captures strictly that trick plus any uncollected heap remaining.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'be-ranga-double-sar.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'be-ranga-double-sar.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. A-K-Q-J-10...2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'be-ranga-double-sar.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'be-ranga-double-sar.setup.dealing',
+        title: 'Deal',
+        text: "Deal 5 cards to each player. The 'Trump Caller' (usually right of dealer) looks at their 5 cards and calls the Trump Suit (Rung). Then the remaining cards are dealt (8 more to each) for a total of 13 each.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'be-ranga-double-sar.score.win-condition',
+        title: 'Win condition',
+        text: 'Winning 7+ tricks = 1 Game Point. Winning 13 tricks (Kot) = 5 Game Points (or instant victory).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'be-ranga-double-sar.score.description',
+        title: 'Scoring',
+        text: "Scoring is usually tracked by 'Games' or 'Kots'.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'be-ranga-double-sar.rules.key.1',
+        title: 'Key rule 1',
+        text: "You must win TWO consecutive tricks to 'consume' the heap.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'be-ranga-double-sar.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If Partner A wins Trick 1, and Partner B wins Trick 2, the heap is NOT captured. The *same individual* must win twice (or Partner B must win Trick 3 to capture Trick 2 + 3, but Trick 1 might be lost).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'be-ranga-double-sar.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Ideally, you want to let the opponents win single tricks to build the heap, then intercept with two powerful cards to steal it all.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'be-ranga-double-sar.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'be-ranga-double-sar.rules.objective',
+          'be-ranga-double-sar.rules.gameplay',
+        ],
+      },
+      {
+        id: 'be-ranga-double-sar.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'be-ranga-double-sar.setup.players',
+          'be-ranga-double-sar.setup.deck',
+          'be-ranga-double-sar.setup.equipment',
+          'be-ranga-double-sar.setup.dealing',
+        ],
+      },
+      {
+        id: 'be-ranga-double-sar.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'be-ranga-double-sar.rules.key.1',
+          'be-ranga-double-sar.rules.key.2',
+          'be-ranga-double-sar.rules.key.3',
+        ],
+      },
+      {
+        id: 'be-ranga-double-sar.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'be-ranga-double-sar.score.description',
+          'be-ranga-double-sar.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'be-ranga-double-sar.setup.dealing',
+        'be-ranga-double-sar.rules.objective',
+      ],
+      play_card: [
+        'be-ranga-double-sar.rules.gameplay',
+      ],
+      deal_5_each: [
+        'be-ranga-double-sar.rules.gameplay',
+      ],
+      call_trump_suit: [
+        'be-ranga-double-sar.rules.gameplay',
+      ],
+      deal_8_each: [
+        'be-ranga-double-sar.rules.gameplay',
+      ],
+    },
   },
 }

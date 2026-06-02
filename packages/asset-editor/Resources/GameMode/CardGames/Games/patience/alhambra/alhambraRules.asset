@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Alhambra. Logic: Move every card to the foundations in the required rank sequences.',
-    Player: 'Alhambra is a two-deck solitaire with a distinctive reserve and foundation structure, aiming to transfer all 104 cards into ordered foundation piles.',
+    LLM: 'Use reserve, waste, and tableau access to feed foundations. Because reserve cards can become bottlenecks, the player must delay tempting foundation moves when they block later ranks.',
+    Player: 'Use reserve, waste, and tableau access to feed foundations. Because reserve cards can become bottlenecks, the player must delay tempting foundation moves when they block later ranks.',
     objective: 'Move every card to the foundations in the required rank sequences.',
     gameplay: 'Use reserve, waste, and tableau access to feed foundations. Because reserve cards can become bottlenecks, the player must delay tempting foundation moves when they block later ranks.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: The deal is won by building all cards to foundations. Expected outcome: Move every card to the foundations in the required rank sequences..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Move every card to the foundations in the required rank sequences.',
+      'Turn-flow example: Use reserve, waste, and tableau access to feed foundations. Because reserve cards can become bottlenecks, the player must delay tempting foundation moves when they block later ranks.',
+      'Scoring example: The deal is won by building all cards to foundations. Move every card to the foundations in the required rank sequences..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'alhambra.rules.objective',
+        title: 'Objective',
+        text: 'Move every card to the foundations in the required rank sequences.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'alhambra.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Use reserve, waste, and tableau access to feed foundations. Because reserve cards can become bottlenecks, the player must delay tempting foundation moves when they block later ranks.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'alhambra.setup.players',
+        title: 'Players',
+        text: 'One player arranges the reserve, tableau, stock, and foundations.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'alhambra.setup.deck',
+        title: 'Deck',
+        text: 'Use two shuffled standard 52-card decks.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'alhambra.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard 52-card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'alhambra.setup.dealing',
+        title: 'Deal',
+        text: 'Deal the Alhambra reserve and starting foundation/tableau layout, then hold the rest as stock for controlled waste play.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'alhambra.score.win-condition',
+        title: 'Win condition',
+        text: 'Move every card to the foundations in the required rank sequences.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'alhambra.score.description',
+        title: 'Scoring',
+        text: 'The deal is won by building all cards to foundations.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'alhambra.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two-pack patience using all 104 cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'alhambra.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Reserve management is central to the layout.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'alhambra.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Foundations must be completed in sequence.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'alhambra.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Stock access is limited by the deal cycle.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'alhambra.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'alhambra.rules.objective',
+          'alhambra.rules.gameplay',
+        ],
+      },
+      {
+        id: 'alhambra.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'alhambra.setup.players',
+          'alhambra.setup.deck',
+          'alhambra.setup.equipment',
+          'alhambra.setup.dealing',
+        ],
+      },
+      {
+        id: 'alhambra.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'alhambra.rules.key.1',
+          'alhambra.rules.key.2',
+          'alhambra.rules.key.3',
+          'alhambra.rules.key.4',
+        ],
+      },
+      {
+        id: 'alhambra.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'alhambra.score.description',
+          'alhambra.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'alhambra.setup.dealing',
+        'alhambra.rules.objective',
+      ],
+      deal: [
+        'alhambra.rules.gameplay',
+      ],
+      play_card: [
+        'alhambra.rules.gameplay',
+      ],
+      draw: [
+        'alhambra.rules.gameplay',
+      ],
+    },
   },
 }

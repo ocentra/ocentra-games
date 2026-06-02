@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tiu-U é‡£é­š. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Tiu-U é‡£é­š is a domino card game that involves tiles, matching, scoring. The game originated in China and has become popular worldwide.',
+    LLM: '1. Setup: Woodpile four tiles high; 16 tiles laid face up; each player draws hand (2 players: 12 each; 3 players: 8 each).\n2. Play: On your turn match one hand tile to an exposed tile (same pip total, or the 2-1 and 4-2 tiles Gee Joon together); collect the pair. A pair of 6-6 tiles may be laid immediately. Then draw one tile from woodpile; if it matches an exposed tile, collect it; else leave it face up.\n3. Matching: Identical tiles can form sets of three; fourth identical captures all.\n4. Scoring: Little fish (under 8 pips): 1 point per red spot, round up to multiple of ten. Big fish (8+ pips): 2 points per pip. Highest total wins; others pay winner the difference.',
+    Player: '1. Setup: Woodpile four tiles high; 16 tiles laid face up; each player draws hand (2 players: 12 each; 3 players: 8 each).\n2. Play: On your turn match one hand tile to an exposed tile (same pip total, or the 2-1 and 4-2 tiles Gee Joon together); collect the pair. A pair of 6-6 tiles may be laid immediately. Then draw one tile from woodpile; if it matches an exposed tile, collect it; else leave it face up.\n3. Matching: Identical tiles can form sets of three; fourth identical captures all.\n4. Scoring: Little fish (under 8 pips): 1 point per red spot, round up to multiple of ten. Big fish (8+ pips): 2 points per pip. Highest total wins; others pay winner the difference.',
     objective: 'Match tiles from hand to exposed table tiles to capture pairs; score by pip counts and red spots; highest total wins and others pay the difference.',
     gameplay: '1. Setup: Woodpile four tiles high; 16 tiles laid face up; each player draws hand (2 players: 12 each; 3 players: 8 each).\n2. Play: On your turn match one hand tile to an exposed tile (same pip total, or the 2-1 and 4-2 tiles Gee Joon together); collect the pair. A pair of 6-6 tiles may be laid immediately. Then draw one tile from woodpile; if it matches an exposed tile, collect it; else leave it face up.\n3. Matching: Identical tiles can form sets of three; fourth identical captures all.\n4. Scoring: Little fish (under 8 pips): 1 point per red spot, round up to multiple of ten. Big fish (8+ pips): 2 points per pip. Highest total wins; others pay winner the difference.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-3 player(s), 8 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Points based on cards captured or objectives completed\nGame ends when target reached\n-- Expected outcome: Be the first player to achieve the winning condition through strategic play of cards..',
+      'Setup example: 8 card(s) per player.',
+      'Rule example: Match tiles from hand to exposed table tiles to capture pairs; score by pip counts and red spots; highest total wins and others pay the difference.',
+      'Turn-flow example: 1. Setup: Woodpile four tiles high; 16 tiles laid face up; each player draws hand (2 players: 12 each; 3 players: 8 each).\n2. Play: On your turn match one hand tile to an exposed tile (same pip total, or the 2-1 and 4-2 tiles Gee Joon together); collect the pair. A pair of 6-6 tiles may be laid immediately. Then draw one tile from woodpile; if it matches an exposed tile, collect it; else leave it face up.\n3. Matching: Identical tiles can form sets of three; fourth identical captures all.\n4. Scoring: Little fish (under 8 pips): 1 point per red spot, round up to multiple of ten. Big fish (8+ pips): 2 points per pip. Highest total wins; others pay winner the difference.',
+      'Scoring example: Points based on cards captured or objectives completed\nGame ends when target reached\n-- Be the first player to achieve the winning condition through strategic play of cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tiu-u.rules.objective',
+        title: 'Objective',
+        text: 'Match tiles from hand to exposed table tiles to capture pairs; score by pip counts and red spots; highest total wins and others pay the difference.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tiu-u.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Setup: Woodpile four tiles high; 16 tiles laid face up; each player draws hand (2 players: 12 each; 3 players: 8 each).\n2. Play: On your turn match one hand tile to an exposed tile (same pip total, or the 2-1 and 4-2 tiles Gee Joon together); collect the pair. A pair of 6-6 tiles may be laid immediately. Then draw one tile from woodpile; if it matches an exposed tile, collect it; else leave it face up.\n3. Matching: Identical tiles can form sets of three; fourth identical captures all.\n4. Scoring: Little fish (under 8 pips): 1 point per red spot, round up to multiple of ten. Big fish (8+ pips): 2 points per pip. Highest total wins; others pay winner the difference.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tiu-u.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 3\nOptimal Players: 3\nPartnerships: None',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tiu-u.setup.deck',
+        title: 'Deck',
+        text: 'Type: Chinese dominoes\nNumber of Sets: 2 (64 tiles total)\nJokers: Not used',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tiu-u.setup.equipment',
+        title: 'Equipment',
+        text: 'Two sets of Chinese dominoes (64 tiles)\nTable space for woodpile and layout',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tiu-u.setup.dealing',
+        title: 'Deal',
+        text: 'Tiles in woodpile (four high). Four stacks (16 tiles) laid face up. Two players: three stacks each (12 tiles). Three players: two stacks each (8 tiles).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tiu-u.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to achieve the winning condition through strategic play of cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tiu-u.score.description',
+        title: 'Scoring',
+        text: 'Points based on cards captured or objectives completed\nGame ends when target reached\n--',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tiu-u.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two tiles match when their pips have the same total; the 2-1 and 4-2 tiles (Gee Joon) match together',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tiu-u.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Each turn: match one tile and collect pair, then draw one from woodpile and either collect or expose',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tiu-u.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Little fish score by red spots (round up to ten); big fish score two points per pip',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tiu-u.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Winner is highest score; others pay the difference to the winner',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tiu-u.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tiu-u.rules.objective',
+          'tiu-u.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tiu-u.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tiu-u.setup.players',
+          'tiu-u.setup.deck',
+          'tiu-u.setup.equipment',
+          'tiu-u.setup.dealing',
+        ],
+      },
+      {
+        id: 'tiu-u.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tiu-u.rules.key.1',
+          'tiu-u.rules.key.2',
+          'tiu-u.rules.key.3',
+          'tiu-u.rules.key.4',
+        ],
+      },
+      {
+        id: 'tiu-u.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tiu-u.score.description',
+          'tiu-u.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tiu-u.setup.dealing',
+        'tiu-u.rules.objective',
+      ],
+      play_card: [
+        'tiu-u.rules.gameplay',
+      ],
+    },
   },
 }

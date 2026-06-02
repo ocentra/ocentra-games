@@ -33,8 +33,10 @@ interface TransferCheck {
 
 const PUBLIC_TRANSFER_CHECKS: TransferCheck[] = [
   { sourcePath: 'name', targetPath: 'displayName', match: 'exact', message: 'Game name must become the generated game display name.' },
+  { sourcePath: 'name', targetPath: 'assetDataOverrides.gameInfo.hero.title', match: 'exact', message: 'Game name must become the public GameInfo hero title.' },
   { sourcePath: 'overview.description', targetPath: 'assetDataOverrides.gameInfo.description', match: 'exact', message: 'Overview description must land in GameInfo.' },
-  { sourcePath: 'overview.description', targetPath: 'assetDataOverrides.gameInfo.Player', message: 'Player-facing overview must land in GameInfo.' },
+  { sourcePath: 'overview.description', targetPath: 'assetDataOverrides.gameInfo.Player', match: 'exact', message: 'Player-facing overview must land in GameInfo.' },
+  { sourcePath: 'overview.description', targetPath: 'assetDataOverrides.gameInfo.LLM', match: 'exact', message: 'LLM overview must land in GameInfo.' },
   { sourcePath: 'overview.origin', targetPath: 'assetDataOverrides.gameInfo.origin', match: 'exact', message: 'Origin must land in GameInfo.' },
   { sourcePath: 'overview.originName', targetPath: 'assetDataOverrides.gameInfo.originName', match: 'exact', message: 'Origin name must land in GameInfo.' },
   { sourcePath: 'overview.players.minPlayers', targetPath: 'assetDataOverrides.gameInfo.minPlayers', match: 'exact', message: 'Minimum player count must land in GameInfo.' },

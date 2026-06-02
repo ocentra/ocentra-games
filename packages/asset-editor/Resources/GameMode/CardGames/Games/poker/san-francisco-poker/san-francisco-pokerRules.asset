@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: San Francisco Poker. Logic: See rules.objective and rules.gameplay.',
-    Player: "San Francisco: 7-card stud variant where all Queens are wild. Same deal and betting as 7-card stud; any Queen counts as any card. USA; dealer's choice.",
+    LLM: 'Betting as in 7-card stud. At showdown, any Queen substitutes for any card; use any five of seven for best hand.',
+    Player: 'Betting as in 7-card stud. At showdown, any Queen substitutes for any card; use any five of seven for best hand.',
     objective: 'Make the best five-card poker hand from seven cards; all Queens are wild.',
     gameplay: 'Betting as in 7-card stud. At showdown, any Queen substitutes for any card; use any five of seven for best hand.',
     keyRules: [
@@ -51,10 +51,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante_round; each_player_clockwise may use ante before third_street_bet.',
-      'Scoring check: Pot to best hand. Standard poker hand rankings. Expected outcome: Make the best five-card poker hand from seven cards; all Queens are wild..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Make the best five-card poker hand from seven cards; all Queens are wild.',
+      'Turn-flow example: Betting as in 7-card stud. At showdown, any Queen substitutes for any card; use any five of seven for best hand.',
+      'Scoring example: Pot to best hand. Standard poker hand rankings. Make the best five-card poker hand from seven cards; all Queens are wild..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'san-francisco-poker.rules.objective',
+        title: 'Objective',
+        text: 'Make the best five-card poker hand from seven cards; all Queens are wild.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'san-francisco-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Betting as in 7-card stud. At showdown, any Queen substitutes for any card; use any five of seven for best hand.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'san-francisco-poker.setup.players',
+        title: 'Players',
+        text: 'From two to eight players may take part. The game is best for five to seven players; with eight players the deck can run short on the final deal. All four Queens are wild for every player.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'san-francisco-poker.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. No jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'san-francisco-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Chips; table space.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'san-francisco-poker.setup.dealing',
+        title: 'Deal',
+        text: 'Same as 7-card stud. All Queens are wild for all players.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'san-francisco-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Make the best five-card poker hand from seven cards; all Queens are wild.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'san-francisco-poker.score.description',
+        title: 'Scoring',
+        text: 'Pot to best hand. Standard poker hand rankings.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'san-francisco-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'All Queens are wild for everyone',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'san-francisco-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Standard 7-card stud deal and betting',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'san-francisco-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'san-francisco-poker.rules.objective',
+          'san-francisco-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'san-francisco-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'san-francisco-poker.setup.players',
+          'san-francisco-poker.setup.deck',
+          'san-francisco-poker.setup.equipment',
+          'san-francisco-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'san-francisco-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'san-francisco-poker.rules.key.1',
+          'san-francisco-poker.rules.key.2',
+        ],
+      },
+      {
+        id: 'san-francisco-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'san-francisco-poker.score.description',
+          'san-francisco-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'san-francisco-poker.setup.dealing',
+        'san-francisco-poker.rules.objective',
+      ],
+      ante: [
+        'san-francisco-poker.rules.gameplay',
+      ],
+      fold: [
+        'san-francisco-poker.rules.gameplay',
+      ],
+      check: [
+        'san-francisco-poker.rules.gameplay',
+      ],
+      call: [
+        'san-francisco-poker.rules.gameplay',
+      ],
+      bet: [
+        'san-francisco-poker.rules.gameplay',
+      ],
+      raise: [
+        'san-francisco-poker.rules.gameplay',
+      ],
+      reveal_hand: [
+        'san-francisco-poker.rules.gameplay',
+      ],
+      award_pot: [
+        'san-francisco-poker.rules.gameplay',
+      ],
+    },
   },
 }

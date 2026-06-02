@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Pirate's Bridge. Logic: Auction bridge with dynamic partnerships; bid to form Declarer-Acceptor pair, then play 13 tricks following suit; individual scoring over a rubber.",
-    Player: "Pirate's Bridge is a fascinating and revolutionary variant of Bridge that replaces 'Fixed Partnerships' with a dynamic, shifting alliance system. Conceived by R.F. Foster and popularized by Aleister Crowley, it allows players to choose their partner for each specific hand based on the bidding. This removes the 'Bad Partner' frustration of standard Bridge and introduces a layer of individual competition. It is Bridge with an 'Every Player for Themselves' mentality.",
+    LLM: "Four players receive 13 cards each. An auction determines the contract (trump or no-trump) and forms a temporary partnership: the highest bidder is the Declarer and the player who accepts the bid becomes the Acceptor; the other two defend. The Acceptor's hand is exposed as dummy after the opening lead. Players then play 13 tricks: must follow suit if possible; highest card of the led suit wins the trick, or a trump wins if unable to follow. Points are scored individually (above and below the line); the side that wins two games wins the rubber.",
+    Player: "Four players receive 13 cards each. An auction determines the contract (trump or no-trump) and forms a temporary partnership: the highest bidder is the Declarer and the player who accepts the bid becomes the Acceptor; the other two defend. The Acceptor's hand is exposed as dummy after the opening lead. Players then play 13 tricks: must follow suit if possible; highest card of the led suit wins the trick, or a trump wins if unable to follow. Points are scored individually (above and below the line); the side that wins two games wins the rubber.",
     objective: 'Score the most points individually over a Rubber. Gains are tracked per player, not per team.',
     gameplay: "Four players receive 13 cards each. An auction determines the contract (trump or no-trump) and forms a temporary partnership: the highest bidder is the Declarer and the player who accepts the bid becomes the Acceptor; the other two defend. The Acceptor's hand is exposed as dummy after the opening lead. Players then play 13 tricks: must follow suit if possible; highest card of the led suit wins the trick, or a trump wins if unable to follow. Points are scored individually (above and below the line); the side that wins two games wins the rubber.",
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in auction; each_player_clockwise may use bid, pass before play.',
-      'Scoring check: Score the most points individually over a Rubber. Gains are tracked per player, not per team. Expected outcome: Score the most points individually over a Rubber. Gains are tracked per player, not per team..',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Score the most points individually over a Rubber. Gains are tracked per player, not per team.',
+      "Turn-flow example: Four players receive 13 cards each. An auction determines the contract (trump or no-trump) and forms a temporary partnership: the highest bidder is the Declarer and the player who accepts the bid becomes the Acceptor; the other two defend. The Acceptor's hand is exposed as dummy after the opening lead. Players then play 13 tricks: must follow suit if possible; highest card of the led suit wins the trick, or a trump wins if unable to follow. Points are scored individually (above and below the line); the side that wins two games wins the rubber.",
+      'Scoring example: Score the most points individually over a Rubber. Gains are tracked per player, not per team. Score the most points individually over a Rubber. Gains are tracked per player, not per team..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pirate-bridge.rules.objective',
+        title: 'Objective',
+        text: 'Score the most points individually over a Rubber. Gains are tracked per player, not per team.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pirate-bridge.rules.gameplay',
+        title: 'Turn flow',
+        text: "Four players receive 13 cards each. An auction determines the contract (trump or no-trump) and forms a temporary partnership: the highest bidder is the Declarer and the player who accepts the bid becomes the Acceptor; the other two defend. The Acceptor's hand is exposed as dummy after the opening lead. Players then play 13 tricks: must follow suit if possible; highest card of the led suit wins the trick, or a trump wins if unable to follow. Points are scored individually (above and below the line); the side that wins two games wins the rubber.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pirate-bridge.setup.players',
+        title: 'Players',
+        text: 'Four players with no fixed partnerships. Each hand, the auction determines a temporary Declarer and Acceptor (dummy); the other two defend. All four score individually over the rubber.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pirate-bridge.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card French deck. All 52 cards are used; 13 cards are dealt to each of the four players. No jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pirate-bridge.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card French deck. All 52 cards are used; 13 cards are dealt to each of the four players. No jokers.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pirate-bridge.setup.dealing',
+        title: 'Deal',
+        text: 'Standard 13 cards per player. No fixed partners; players sit at four individual positions.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pirate-bridge.score.win-condition',
+        title: 'Win condition',
+        text: 'Score the most points individually over a Rubber. Gains are tracked per player, not per team.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pirate-bridge.score.description',
+        title: 'Scoring',
+        text: 'Score the most points individually over a Rubber. Gains are tracked per player, not per team.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pirate-bridge.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Deal 13 cards each; no fixed partners.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pirate-bridge.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Auction establishes contract and temporary Declarer-Acceptor partnership.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pirate-bridge.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Must follow suit when possible; highest of led suit or trump wins the trick.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pirate-bridge.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Individual scoring over a rubber; first to two games wins the rubber.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pirate-bridge.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pirate-bridge.rules.objective',
+          'pirate-bridge.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pirate-bridge.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pirate-bridge.setup.players',
+          'pirate-bridge.setup.deck',
+          'pirate-bridge.setup.equipment',
+          'pirate-bridge.setup.dealing',
+        ],
+      },
+      {
+        id: 'pirate-bridge.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pirate-bridge.rules.key.1',
+          'pirate-bridge.rules.key.2',
+          'pirate-bridge.rules.key.3',
+          'pirate-bridge.rules.key.4',
+        ],
+      },
+      {
+        id: 'pirate-bridge.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pirate-bridge.score.description',
+          'pirate-bridge.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pirate-bridge.setup.dealing',
+        'pirate-bridge.rules.objective',
+      ],
+      play_card: [
+        'pirate-bridge.rules.gameplay',
+      ],
+      pass: [
+        'pirate-bridge.rules.gameplay',
+      ],
+      bid: [
+        'pirate-bridge.rules.gameplay',
+      ],
+    },
   },
 }

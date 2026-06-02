@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Zole. Logic: See rules.objective and rules.gameplay.',
-    Player: "Zole (Zolīte) is Latvia's national card game. 3 players (4-5 with dealer out). 26-card deck. 8 each + 2-card talon. Permanent trumps: Queens > Jacks > Diamonds. Declarer: take talon, discard 2, win 61+ of 120 card points. Solo = no talon. Mazais = lose every trick. Table game = fewest points.",
+    LLM: 'Bid: Ordinary (take talon), Solo (no talon), Mazais (lose all tricks), Table (all pass = fewest pts). Follow suit. Must trump if void. A=11, 10=10, K=4, Q=3, J=2. 120 total.',
+    Player: 'Bid: Ordinary (take talon), Solo (no talon), Mazais (lose all tricks), Table (all pass = fewest pts). Follow suit. Must trump if void. A=11, 10=10, K=4, Q=3, J=2. 120 total.',
     objective: 'Declarer: 61+ of 120 card points. Solo: same without talon. Mazais: lose every trick.',
     gameplay: 'Bid: Ordinary (take talon), Solo (no talon), Mazais (lose all tricks), Table (all pass = fewest pts). Follow suit. Must trump if void. A=11, 10=10, K=4, Q=3, J=2. 120 total.',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-5 player(s), 8 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_4_2_4_talon before bid.',
-      'Scoring check: 61-90=1pt, 91-119=2pts, all tricks=3pts. Solo/Mazais = higher stakes. Expected outcome: Declarer: 61+ of 120 card points. Solo: same without talon. Mazais: lose every trick..',
+      'Setup example: 8 card(s) per player.',
+      'Rule example: Declarer: 61+ of 120 card points. Solo: same without talon. Mazais: lose every trick.',
+      'Turn-flow example: Bid: Ordinary (take talon), Solo (no talon), Mazais (lose all tricks), Table (all pass = fewest pts). Follow suit. Must trump if void. A=11, 10=10, K=4, Q=3, J=2. 120 total.',
+      'Scoring example: 61-90=1pt, 91-119=2pts, all tricks=3pts. Solo/Mazais = higher stakes. Declarer: 61+ of 120 card points. Solo: same without talon. Mazais: lose every trick..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'zole.rules.objective',
+        title: 'Objective',
+        text: 'Declarer: 61+ of 120 card points. Solo: same without talon. Mazais: lose every trick.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'zole.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Bid: Ordinary (take talon), Solo (no talon), Mazais (lose all tricks), Table (all pass = fewest pts). Follow suit. Must trump if void. A=11, 10=10, K=4, Q=3, J=2. 120 total.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'zole.setup.players',
+        title: 'Players',
+        text: '3 (4-5: dealer sits out)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'zole.setup.deck',
+        title: 'Deck',
+        text: '26 cards. Q>J>A-10-K-9-8-7 of ♦ are trumps.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'zole.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'zole.setup.dealing',
+        title: 'Deal',
+        text: '8 each + 2-card talon.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'zole.score.win-condition',
+        title: 'Win condition',
+        text: 'Declarer: 61+ of 120 card points. Solo: same without talon. Mazais: lose every trick.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'zole.score.description',
+        title: 'Scoring',
+        text: '61-90=1pt, 91-119=2pts, all tricks=3pts. Solo/Mazais = higher stakes.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'zole.rules.key.1',
+        title: 'Key rule 1',
+        text: '26-card deck',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'zole.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Permanent trump Q>J>♦',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'zole.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Talon exchange',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'zole.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Solo/Mazais contracts',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'zole.rules.key.5',
+        title: 'Key rule 5',
+        text: '120 total card points',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'zole.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'zole.rules.objective',
+          'zole.rules.gameplay',
+        ],
+      },
+      {
+        id: 'zole.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'zole.setup.players',
+          'zole.setup.deck',
+          'zole.setup.equipment',
+          'zole.setup.dealing',
+        ],
+      },
+      {
+        id: 'zole.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'zole.rules.key.1',
+          'zole.rules.key.2',
+          'zole.rules.key.3',
+          'zole.rules.key.4',
+          'zole.rules.key.5',
+        ],
+      },
+      {
+        id: 'zole.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'zole.score.description',
+          'zole.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'zole.setup.dealing',
+        'zole.rules.objective',
+      ],
+      play_card: [
+        'zole.rules.gameplay',
+      ],
+      pass: [
+        'zole.rules.gameplay',
+      ],
+      bid: [
+        'zole.rules.gameplay',
+      ],
+      deal_4_2_4_talon: [
+        'zole.rules.gameplay',
+      ],
+    },
   },
 }

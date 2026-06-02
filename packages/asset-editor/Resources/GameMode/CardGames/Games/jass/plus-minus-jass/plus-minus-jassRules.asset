@@ -55,10 +55,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-4 player(s), 9 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Sticks only. Under 100 card points: most and least each score one stick. If someone takes 100 or more: only least points scores one stick. First to 7 sticks wins; if several reach 7 in same hand, continue until clear leader. Expected outcome: 7.',
+      'Setup example: 9 card(s) per player.',
+      'Rule example: Be the first to score 7 sticks. Score sticks by having the highest or lowest card-point total when everyone is under 100 points, or by having the only different total when others tie; if someone takes 100 or more, only the player with least points scores.',
+      "Turn-flow example: Player to dealer's right leads. Must follow suit if possible. First time a player cannot follow suit and plays another suit, that suit becomes trumps for the hand. Once trumps are set, must follow suit or play a trump; may play a lower trump only when void in the led suit. Trick winner leads to the next trick. Card points: Ace 11, King 4, Ober 3, Under 2, Banner 10, 9/8/7/6 zero; in trump Under 20, 9 14. Last trick bonus 5; total 157 points.",
+      'Scoring example: Sticks only. Under 100 card points: most and least each score one stick. If someone takes 100 or more: only least points scores one stick. First to 7 sticks wins; if several reach 7 in same hand, continue until clear leader. First player to score 7 sticks wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'plus-minus-jass.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to score 7 sticks. Score sticks by having the highest or lowest card-point total when everyone is under 100 points, or by having the only different total when others tie; if someone takes 100 or more, only the player with least points scores.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'plus-minus-jass.rules.gameplay',
+        title: 'Turn flow',
+        text: "Player to dealer's right leads. Must follow suit if possible. First time a player cannot follow suit and plays another suit, that suit becomes trumps for the hand. Once trumps are set, must follow suit or play a trump; may play a lower trump only when void in the led suit. Trick winner leads to the next trick. Card points: Ace 11, King 4, Ober 3, Under 2, Banner 10, 9/8/7/6 zero; in trump Under 20, 9 14. Last trick bonus 5; total 157 points.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'plus-minus-jass.setup.players',
+        title: 'Players',
+        text: '3 or 4 players, each playing for themselves.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'plus-minus-jass.setup.deck',
+        title: 'Deck',
+        text: '36-card Jass deck (Ace, King, Ober, Under, Banner, 9, 8, 7, 6 in four suits). Can use standard deck with cards below 6 removed.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'plus-minus-jass.setup.equipment',
+        title: 'Equipment',
+        text: '36-card Jass deck or modified standard deck; scoring tokens or slate for sticks.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'plus-minus-jass.setup.dealing',
+        title: 'Deal',
+        text: 'All cards dealt equally: 9 each for 4 players, 12 each for 3 players, in packets of 3. Deal and play anticlockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'plus-minus-jass.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to score 7 sticks wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'plus-minus-jass.score.description',
+        title: 'Scoring',
+        text: 'Sticks only. Under 100 card points: most and least each score one stick. If someone takes 100 or more: only least points scores one stick. First to 7 sticks wins; if several reach 7 in same hand, continue until clear leader.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'plus-minus-jass.rules.key.1',
+        title: 'Key rule 1',
+        text: 'First void play sets trumps for the hand',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'plus-minus-jass.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Sticks only; no potatoes',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'plus-minus-jass.rules.key.3',
+        title: 'Key rule 3',
+        text: 'First to 7 sticks wins',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'plus-minus-jass.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Under 100: most and least card points score one stick each',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'plus-minus-jass.rules.key.5',
+        title: 'Key rule 5',
+        text: '100 or more: only least points scores one stick',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'plus-minus-jass.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Puur (Under of trumps) need not be played when trumps led and it is your only trump',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'plus-minus-jass.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'plus-minus-jass.rules.objective',
+          'plus-minus-jass.rules.gameplay',
+        ],
+      },
+      {
+        id: 'plus-minus-jass.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'plus-minus-jass.setup.players',
+          'plus-minus-jass.setup.deck',
+          'plus-minus-jass.setup.equipment',
+          'plus-minus-jass.setup.dealing',
+        ],
+      },
+      {
+        id: 'plus-minus-jass.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'plus-minus-jass.rules.key.1',
+          'plus-minus-jass.rules.key.2',
+          'plus-minus-jass.rules.key.3',
+          'plus-minus-jass.rules.key.4',
+          'plus-minus-jass.rules.key.5',
+          'plus-minus-jass.rules.key.6',
+        ],
+      },
+      {
+        id: 'plus-minus-jass.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'plus-minus-jass.score.description',
+          'plus-minus-jass.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'plus-minus-jass.setup.dealing',
+        'plus-minus-jass.rules.objective',
+      ],
+      play_card: [
+        'plus-minus-jass.rules.gameplay',
+      ],
+    },
   },
 }

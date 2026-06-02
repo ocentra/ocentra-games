@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Beetle. Logic: Build complete descending suit sequences and remove them until all cards are cleared.',
-    Player: 'Beetle is a difficult two-deck patience game related to Spider, focused on assembling complete ordered suit sequences.',
+    LLM: 'Move available cards or packed sequences according to rank and suit restrictions, deal new rows from stock when no useful move remains, and remove completed king-to-ace sequences.',
+    Player: 'Move available cards or packed sequences according to rank and suit restrictions, deal new rows from stock when no useful move remains, and remove completed king-to-ace sequences.',
     objective: 'Build complete descending suit sequences and remove them until all cards are cleared.',
     gameplay: 'Move available cards or packed sequences according to rank and suit restrictions, deal new rows from stock when no useful move remains, and remove completed king-to-ace sequences.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: The game is won by clearing all cards through complete sequences. Expected outcome: Build complete descending suit sequences and remove them until all cards are cleared..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Build complete descending suit sequences and remove them until all cards are cleared.',
+      'Turn-flow example: Move available cards or packed sequences according to rank and suit restrictions, deal new rows from stock when no useful move remains, and remove completed king-to-ace sequences.',
+      'Scoring example: The game is won by clearing all cards through complete sequences. Build complete descending suit sequences and remove them until all cards are cleared..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'beetle.rules.objective',
+        title: 'Objective',
+        text: 'Build complete descending suit sequences and remove them until all cards are cleared.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'beetle.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Move available cards or packed sequences according to rank and suit restrictions, deal new rows from stock when no useful move remains, and remove completed king-to-ace sequences.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'beetle.setup.players',
+        title: 'Players',
+        text: '1 players use the table arrangement described for Beetle.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'beetle.setup.deck',
+        title: 'Deck',
+        text: 'Two standard 52-card decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'beetle.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard 52-card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'beetle.setup.dealing',
+        title: 'Deal',
+        text: 'Deal the tableau from two decks with hidden and exposed cards according to the Beetle layout, retaining a stock for later deals.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'beetle.score.win-condition',
+        title: 'Win condition',
+        text: 'Build complete descending suit sequences and remove them until all cards are cleared.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'beetle.score.description',
+        title: 'Scoring',
+        text: 'The game is won by clearing all cards through complete sequences.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'beetle.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two decks are used.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'beetle.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Sequences build downward.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'beetle.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Complete suited sequences are removed.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'beetle.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Stock deals add pressure to every tableau column.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'beetle.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'beetle.rules.objective',
+          'beetle.rules.gameplay',
+        ],
+      },
+      {
+        id: 'beetle.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'beetle.setup.players',
+          'beetle.setup.deck',
+          'beetle.setup.equipment',
+          'beetle.setup.dealing',
+        ],
+      },
+      {
+        id: 'beetle.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'beetle.rules.key.1',
+          'beetle.rules.key.2',
+          'beetle.rules.key.3',
+          'beetle.rules.key.4',
+        ],
+      },
+      {
+        id: 'beetle.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'beetle.score.description',
+          'beetle.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'beetle.setup.dealing',
+        'beetle.rules.objective',
+      ],
+      deal: [
+        'beetle.rules.gameplay',
+      ],
+      play_card: [
+        'beetle.rules.gameplay',
+      ],
+      draw: [
+        'beetle.rules.gameplay',
+      ],
+    },
   },
 }

@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points for captured cards: Jack 1, Ace 1, 2 of Clubs 2, 10 of Diamonds 3; majority of cards 3; pişti (single-card capture by matching rank) 10; double pişti (Jack on Jack) 20. If both take 26 cards, no majority point. First to 151 wins. Expected outcome: 151.',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Be the first to reach 151 points (or first team in partnership play). If both reach 151 on the same hand, the higher score wins.',
+      "Turn-flow example: Each turn, play one card from your hand face up onto the center pile. If your card's rank matches the top card of the pile, you capture the whole pile; playing a Jack also captures the pile regardless of the top card. Otherwise your card stays on the pile. The first capture also takes the four face-down center cards. When everyone has played their four cards, the dealer deals four more to each from the stock; play continues until the stock is exhausted. The last team or player to make a capture takes any remaining cards. Score after each hand; first to 151 wins.",
+      'Scoring example: Points for captured cards: Jack 1, Ace 1, 2 of Clubs 2, 10 of Diamonds 3; majority of cards 3; pişti (single-card capture by matching rank) 10; double pişti (Jack on Jack) 20. If both take 26 cards, no majority point. First to 151 wins. First to reach 151 or more points at the end of a hand; if both reach 151 on the same hand, the higher score wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pisti-turkish.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to reach 151 points (or first team in partnership play). If both reach 151 on the same hand, the higher score wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pisti-turkish.rules.gameplay',
+        title: 'Turn flow',
+        text: "Each turn, play one card from your hand face up onto the center pile. If your card's rank matches the top card of the pile, you capture the whole pile; playing a Jack also captures the pile regardless of the top card. Otherwise your card stays on the pile. The first capture also takes the four face-down center cards. When everyone has played their four cards, the dealer deals four more to each from the stock; play continues until the stock is exhausted. The last team or player to make a capture takes any remaining cards. Score after each hand; first to 151 wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pisti-turkish.setup.players',
+        title: 'Players',
+        text: '2 players (this variant). Also commonly 4 in partnerships or 4 individuals; rules are the same.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pisti-turkish.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack (French suits, no jokers). Pişti uses the full deck: four cards are dealt face down to the centre, four to each player, and the remainder forms the stock; one centre card is turned face up to start the pile.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pisti-turkish.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card pack (French suits, no jokers). Pişti uses the full deck: four cards are dealt face down to the centre, four to each player, and the remainder forms the stock; one centre card is turned face up to start the pile.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pisti-turkish.setup.dealing',
+        title: 'Deal',
+        text: "Dealer shuffles; player to dealer's left cuts. Dealer deals 4 cards face down to the center, then 4 to each player. Remaining cards form the stock. One of the four center cards is turned face up to start the pile (if it is a Jack, turn until a non-Jack). Player to dealer's right plays first. After all play their 4 cards, dealer deals 4 more to each from stock; repeat until stock is exhausted.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pisti-turkish.score.win-condition',
+        title: 'Win condition',
+        text: 'First to reach 151 or more points at the end of a hand; if both reach 151 on the same hand, the higher score wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pisti-turkish.score.description',
+        title: 'Scoring',
+        text: 'Points for captured cards: Jack 1, Ace 1, 2 of Clubs 2, 10 of Diamonds 3; majority of cards 3; pişti (single-card capture by matching rank) 10; double pişti (Jack on Jack) 20. If both take 26 cards, no majority point. First to 151 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pisti-turkish.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Match the rank of the top card to capture the pile, or play a Jack to capture any pile.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pisti-turkish.rules.key.2',
+        title: 'Key rule 2',
+        text: 'First capture also takes the four face-down center cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pisti-turkish.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Pişti: capturing a single card with a matching rank (not Jack) scores 10 bonus points; Jack on single Jack is double pişti (20 points). No pişti on the very first or very last card of the hand.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pisti-turkish.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Points: Jack 1, Ace 1, 2 of Clubs 2, 10 of Diamonds 3, majority of cards 3, each pişti 10 (double pişti 20).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pisti-turkish.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pisti-turkish.rules.objective',
+          'pisti-turkish.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pisti-turkish.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pisti-turkish.setup.players',
+          'pisti-turkish.setup.deck',
+          'pisti-turkish.setup.equipment',
+          'pisti-turkish.setup.dealing',
+        ],
+      },
+      {
+        id: 'pisti-turkish.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pisti-turkish.rules.key.1',
+          'pisti-turkish.rules.key.2',
+          'pisti-turkish.rules.key.3',
+          'pisti-turkish.rules.key.4',
+        ],
+      },
+      {
+        id: 'pisti-turkish.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pisti-turkish.score.description',
+          'pisti-turkish.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pisti-turkish.setup.dealing',
+        'pisti-turkish.rules.objective',
+      ],
+      play_card: [
+        'pisti-turkish.rules.gameplay',
+      ],
+    },
   },
 }

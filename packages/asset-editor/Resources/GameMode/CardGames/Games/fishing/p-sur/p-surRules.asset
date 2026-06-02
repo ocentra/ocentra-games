@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Pasur. Fishing capture with sum_or_match target 11. Q/K capture same rank only. J captures all tableau except Q/K. Sur scores +5 only when non-jack clears tableau, not in final deal, and not for side already at 50+. Score: clubs majority 7, each Ace 1, each Jack 1, 2C=2, 10D=3, plus net sur.',
-    Player: 'Play one card each turn. Capture by matching Q/K, by making 11 with A-10, or with a Jack that takes all non-face tableau cards. Track clubs and key cards; first to 62 points wins.',
+    LLM: "Players act anticlockwise, playing one card from hand to the tableau. A played card either captures cards (played card plus captured cards move to that player's capture pile) or remains on tableau if no legal capture is taken. Face cards capture by rank (Q takes Q, K takes K). Number cards A-10 capture any chosen set of tableau cards summing with the played card to 11. Jacks capture all tableau cards except kings and queens. At end of final deal, remaining tableau cards go to the last player who made a capture.",
+    Player: "Players act anticlockwise, playing one card from hand to the tableau. A played card either captures cards (played card plus captured cards move to that player's capture pile) or remains on tableau if no legal capture is taken. Face cards capture by rank (Q takes Q, K takes K). Number cards A-10 capture any chosen set of tableau cards summing with the played card to 11. Jacks capture all tableau cards except kings and queens. At end of final deal, remaining tableau cards go to the last player who made a capture.",
     objective: 'Be the first player or team to reach at least 62 cumulative points.',
     gameplay: "Players act anticlockwise, playing one card from hand to the tableau. A played card either captures cards (played card plus captured cards move to that player's capture pile) or remains on tableau if no legal capture is taken. Face cards capture by rank (Q takes Q, K takes K). Number cards A-10 capture any chosen set of tableau cards summing with the played card to 11. Jacks capture all tableau cards except kings and queens. At end of final deal, remaining tableau cards go to the last player who made a capture.",
     keyRules: [
@@ -54,10 +54,177 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal_batch; dealer may use deal, reveal_market before play_loop.',
-      'Scoring check: At round end score captured cards and sur markers: 7 points for clubs majority (Haft Khaj), 1 each Ace, 1 each Jack, 2 for 2 of Clubs, 3 for 10 of Diamonds, and 5 per sur. Expected outcome: 62.',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Be the first player or team to reach at least 62 cumulative points.',
+      "Turn-flow example: Players act anticlockwise, playing one card from hand to the tableau. A played card either captures cards (played card plus captured cards move to that player's capture pile) or remains on tableau if no legal capture is taken. Face cards capture by rank (Q takes Q, K takes K). Number cards A-10 capture any chosen set of tableau cards summing with the played card to 11. Jacks capture all tableau cards except kings and queens. At end of final deal, remaining tableau cards go to the last player who made a capture.",
+      'Scoring example: At round end score captured cards and sur markers: 7 points for clubs majority (Haft Khaj), 1 each Ace, 1 each Jack, 2 for 2 of Clubs, 3 for 10 of Diamonds, and 5 per sur. First player or team with 62 or more cumulative points wins; if multiple reach 62+ simultaneously, highest score wins and ties continue..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'p-sur.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player or team to reach at least 62 cumulative points.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'p-sur.rules.gameplay',
+        title: 'Turn flow',
+        text: "Players act anticlockwise, playing one card from hand to the tableau. A played card either captures cards (played card plus captured cards move to that player's capture pile) or remains on tableau if no legal capture is taken. Face cards capture by rank (Q takes Q, K takes K). Number cards A-10 capture any chosen set of tableau cards summing with the played card to 11. Jacks capture all tableau cards except kings and queens. At end of final deal, remaining tableau cards go to the last player who made a capture.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'p-sur.setup.players',
+        title: 'Players',
+        text: '2 to 4 players. Two-player is standard; 4-player partnership is common with partners opposite.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'p-sur.setup.deck',
+        title: 'Deck',
+        text: 'Single standard 52-card deck without jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'p-sur.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards and a visible running score.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'p-sur.setup.dealing',
+        title: 'Deal',
+        text: 'Deal anticlockwise in packets of 4: four to each player face down, then four face up to the tableau. If tableau starts with more than one jack, more than two queens, or more than two kings, redeal. If exactly one jack appears in tableau, bury it and replace from stock. After all players play their 4 cards, deal 4 more to each player; no new tableau cards are added. Continue until deck is exhausted.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'p-sur.score.win-condition',
+        title: 'Win condition',
+        text: 'First player or team with 62 or more cumulative points wins; if multiple reach 62+ simultaneously, highest score wins and ties continue.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'p-sur.score.description',
+        title: 'Scoring',
+        text: 'At round end score captured cards and sur markers: 7 points for clubs majority (Haft Khaj), 1 each Ace, 1 each Jack, 2 for 2 of Clubs, 3 for 10 of Diamonds, and 5 per sur.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'p-sur.rules.key.1',
+        title: 'Key rule 1',
+        text: 'If your played card can capture, you must take one legal capture set; if multiple sets are legal, you choose one.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'p-sur.rules.key.2',
+        title: 'Key rule 2',
+        text: 'A sur is scored by clearing the tableau with a non-jack capture, except where sur restrictions apply.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'p-sur.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Playing a jack never scores a sur, even if it clears the tableau.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'p-sur.rules.key.4',
+        title: 'Key rule 4',
+        text: 'No sur can be scored in the final deal after the last cards are dealt.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'p-sur.rules.key.5',
+        title: 'Key rule 5',
+        text: 'A side at 50 or more points cannot score a new sur or cancel an opponent sur.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'p-sur.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'p-sur.rules.objective',
+          'p-sur.rules.gameplay',
+        ],
+      },
+      {
+        id: 'p-sur.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'p-sur.setup.players',
+          'p-sur.setup.deck',
+          'p-sur.setup.equipment',
+          'p-sur.setup.dealing',
+        ],
+      },
+      {
+        id: 'p-sur.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'p-sur.rules.key.1',
+          'p-sur.rules.key.2',
+          'p-sur.rules.key.3',
+          'p-sur.rules.key.4',
+          'p-sur.rules.key.5',
+        ],
+      },
+      {
+        id: 'p-sur.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'p-sur.score.description',
+          'p-sur.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'p-sur.setup.dealing',
+        'p-sur.rules.objective',
+      ],
+      deal: [
+        'p-sur.rules.gameplay',
+      ],
+      reveal_market: [
+        'p-sur.rules.gameplay',
+      ],
+      award_pot: [
+        'p-sur.rules.gameplay',
+      ],
+      play_card: [
+        'p-sur.rules.gameplay',
+      ],
+      advance_phase: [
+        'p-sur.rules.gameplay',
+      ],
+    },
   },
 }

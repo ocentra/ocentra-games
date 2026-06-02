@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Young Hunter. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Hunter: play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: "1. Standard trick-taking rules: must follow suit.\n2. **The Catch**: If you play a higher card of the suit led and an opponent plays a Jack on that trick, you 'catch' it for 2 points.\n3. **The Hit**: If you lead a Jack and no one can beat it with a higher card of the same suit, you 'hit' it for 2 points.",
+    Player: "1. Standard trick-taking rules: must follow suit.\n2. **The Catch**: If you play a higher card of the suit led and an opponent plays a Jack on that trick, you 'catch' it for 2 points.\n3. **The Hit**: If you lead a Jack and no one can beat it with a higher card of the same suit, you 'hit' it for 2 points.",
     objective: "Collect the most 'Jacks' (Youngs) by capturing them in tricks.",
     gameplay: "1. Standard trick-taking rules: must follow suit.\n2. **The Catch**: If you play a higher card of the suit led and an opponent plays a Jack on that trick, you 'catch' it for 2 points.\n3. **The Hit**: If you lead a Jack and no one can beat it with a higher card of the same suit, you 'hit' it for 2 points.",
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Scoring in Hunter is resolved as follows: Scoring follows the game-specific point or pot rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      "Rule example: Collect the most 'Jacks' (Youngs) by capturing them in tricks.",
+      "Turn-flow example: 1. Standard trick-taking rules: must follow suit.\n2. **The Catch**: If you play a higher card of the suit led and an opponent plays a Jack on that trick, you 'catch' it for 2 points.\n3. **The Hit**: If you lead a Jack and no one can beat it with a higher card of the same suit, you 'hit' it for 2 points.",
+      'Scoring example: Scoring in Hunter is resolved as follows: Scoring follows the game-specific point or pot rules. Win condition for Hunter: Meet the game winning condition..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hunter.rules.objective',
+        title: 'Objective',
+        text: "Collect the most 'Jacks' (Youngs) by capturing them in tricks.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hunter.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Standard trick-taking rules: must follow suit.\n2. **The Catch**: If you play a higher card of the suit led and an opponent plays a Jack on that trick, you 'catch' it for 2 points.\n3. **The Hit**: If you lead a Jack and no one can beat it with a higher card of the same suit, you 'hit' it for 2 points.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hunter.setup.players',
+        title: 'Players',
+        text: '4 individual players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hunter.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Ranking: A (High) to 2 (Low).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hunter.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. Ranking: A (High) to 2 (Low).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hunter.setup.dealing',
+        title: 'Deal',
+        text: 'Deal all 52 cards (13 per player).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hunter.score.win-condition',
+        title: 'Win condition',
+        text: 'Win condition for Hunter: Meet the game winning condition.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hunter.score.description',
+        title: 'Scoring',
+        text: 'Scoring in Hunter is resolved as follows: Scoring follows the game-specific point or pot rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hunter.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Hunter.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hunter.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: Scoring summary: Scoring follows the game-specific point or pot rules.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hunter.rules.key.3',
+        title: 'Key rule 3',
+        text: "Winning condition: Collect the most 'Jacks' (Youngs) by capturing them in tricks.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hunter.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hunter.rules.objective',
+          'hunter.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hunter.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hunter.setup.players',
+          'hunter.setup.deck',
+          'hunter.setup.equipment',
+          'hunter.setup.dealing',
+        ],
+      },
+      {
+        id: 'hunter.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hunter.rules.key.1',
+          'hunter.rules.key.2',
+          'hunter.rules.key.3',
+        ],
+      },
+      {
+        id: 'hunter.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hunter.score.description',
+          'hunter.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hunter.setup.dealing',
+        'hunter.rules.objective',
+      ],
+      play_card: [
+        'hunter.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Voormsi. Logic: See rules.objective and rules.gameplay.',
-    Player: "Voormsi (Vorms) is the national card game of Greenland. 4 players in 2 teams. 36-card French deck. Related to KarnÃ¶ffel family (Europe's oldest card games). Features unusual card rankings and special card powers: Jâ™£='Toqutsit' (Executioner, highest), Kâ™¥='Voormsi'. Allows double/triple/quadruple tricks.",
+    LLM: "Trick-taking with special card powers. Jâ™£='Toqutsit' (Executioner, strongest). Kâ™¥='Voormsi' (bonus card). 7s, 3â™¦, Kâ™£, Kâ™  have special abilities. Double/triple/quadruple tricks possible. Bust penalty for overshooting.",
+    Player: "Trick-taking with special card powers. Jâ™£='Toqutsit' (Executioner, strongest). Kâ™¥='Voormsi' (bonus card). 7s, 3â™¦, Kâ™£, Kâ™  have special abilities. Double/triple/quadruple tricks possible. Bust penalty for overshooting.",
     objective: 'Score points through tricks and special card plays.',
     gameplay: "Trick-taking with special card powers. Jâ™£='Toqutsit' (Executioner, strongest). Kâ™¥='Voormsi' (bonus card). 7s, 3â™¦, Kâ™£, Kâ™  have special abilities. Double/triple/quadruple tricks possible. Bust penalty for overshooting.",
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: Points for tricks + bonus for Voormsi card. Bust penalty for overshooting. Expected outcome: Score points through tricks and special card plays..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score points through tricks and special card plays.',
+      "Turn-flow example: Trick-taking with special card powers. Jâ™£='Toqutsit' (Executioner, strongest). Kâ™¥='Voormsi' (bonus card). 7s, 3â™¦, Kâ™£, Kâ™  have special abilities. Double/triple/quadruple tricks possible. Bust penalty for overshooting.",
+      'Scoring example: Points for tricks + bonus for Voormsi card. Bust penalty for overshooting. Score points through tricks and special card plays..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'voormsi.rules.objective',
+        title: 'Objective',
+        text: 'Score points through tricks and special card plays.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'voormsi.rules.gameplay',
+        title: 'Turn flow',
+        text: "Trick-taking with special card powers. Jâ™£='Toqutsit' (Executioner, strongest). Kâ™¥='Voormsi' (bonus card). 7s, 3â™¦, Kâ™£, Kâ™  have special abilities. Double/triple/quadruple tricks possible. Bust penalty for overshooting.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'voormsi.setup.players',
+        title: 'Players',
+        text: '4 (2 teams) or 2-3',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'voormsi.setup.deck',
+        title: 'Deck',
+        text: '36-card French pack.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'voormsi.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'voormsi.setup.dealing',
+        title: 'Deal',
+        text: 'Cards dealt. Special card powers apply.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'voormsi.score.win-condition',
+        title: 'Win condition',
+        text: 'Score points through tricks and special card plays.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'voormsi.score.description',
+        title: 'Scoring',
+        text: 'Points for tricks + bonus for Voormsi card. Bust penalty for overshooting.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'voormsi.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Special card powers (Jâ™£, Kâ™¥, 7s)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'voormsi.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Double/triple/quadruple tricks',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'voormsi.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Bust penalty',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'voormsi.rules.key.4',
+        title: 'Key rule 4',
+        text: 'KarnÃ¶ffel family ranking',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'voormsi.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'voormsi.rules.objective',
+          'voormsi.rules.gameplay',
+        ],
+      },
+      {
+        id: 'voormsi.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'voormsi.setup.players',
+          'voormsi.setup.deck',
+          'voormsi.setup.equipment',
+          'voormsi.setup.dealing',
+        ],
+      },
+      {
+        id: 'voormsi.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'voormsi.rules.key.1',
+          'voormsi.rules.key.2',
+          'voormsi.rules.key.3',
+          'voormsi.rules.key.4',
+        ],
+      },
+      {
+        id: 'voormsi.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'voormsi.score.description',
+          'voormsi.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'voormsi.setup.dealing',
+        'voormsi.rules.objective',
+      ],
+      deal: [
+        'voormsi.rules.gameplay',
+      ],
+      play_card: [
+        'voormsi.rules.gameplay',
+      ],
+      draw: [
+        'voormsi.rules.gameplay',
+      ],
+      finish_game: [
+        'voormsi.rules.gameplay',
+      ],
+    },
   },
 }

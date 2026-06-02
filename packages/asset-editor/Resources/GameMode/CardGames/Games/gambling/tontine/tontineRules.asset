@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Basset. Logic: Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
-    Player: 'Basset is a historical Italian gambling card game in which players bet against a banker on ranks that may appear from the pack.',
+    LLM: 'Players use cards and counters in a social gambling structure. Chips move among the players and central pool until one player collects all the chips.',
+    Player: 'Players use cards and counters in a social gambling structure. Chips move among the players and central pool until one player collects all the chips.',
     objective: 'Win all chips in play through the chance-driven card procedure.',
     gameplay: 'Players use cards and counters in a social gambling structure. Chips move among the players and central pool until one player collects all the chips.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 5-12 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Bets are paid or lost against the bank according to the exposed-card result. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win all chips in play through the chance-driven card procedure.',
+      'Turn-flow example: Players use cards and counters in a social gambling structure. Chips move among the players and central pool until one player collects all the chips.',
+      'Scoring example: Bets are paid or lost against the bank according to the exposed-card result. Win stakes by backing ranks that appear in the favourable positions of the banked deal..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tontine.rules.objective',
+        title: 'Objective',
+        text: 'Win all chips in play through the chance-driven card procedure.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tontine.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players use cards and counters in a social gambling structure. Chips move among the players and central pool until one player collects all the chips.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tontine.setup.players',
+        title: 'Players',
+        text: '5-12 players use the table arrangement described for Tontine.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tontine.setup.deck',
+        title: 'Deck',
+        text: 'Playing cards with chips or counters',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tontine.setup.equipment',
+        title: 'Equipment',
+        text: 'Playing cards with chips or counters, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tontine.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Playing cards with chips or counters and deal or lay out cards according to the documented Tontine rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tontine.score.win-condition',
+        title: 'Win condition',
+        text: 'Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tontine.score.description',
+        title: 'Scoring',
+        text: 'Bets are paid or lost against the bank according to the exposed-card result.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tontine.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Played by five to twelve players.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tontine.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The game is pure chance.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tontine.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The winner eventually takes all chips in play.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tontine.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tontine.rules.objective',
+          'tontine.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tontine.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tontine.setup.players',
+          'tontine.setup.deck',
+          'tontine.setup.equipment',
+          'tontine.setup.dealing',
+        ],
+      },
+      {
+        id: 'tontine.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tontine.rules.key.1',
+          'tontine.rules.key.2',
+          'tontine.rules.key.3',
+        ],
+      },
+      {
+        id: 'tontine.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tontine.score.description',
+          'tontine.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tontine.setup.dealing',
+        'tontine.rules.objective',
+      ],
+      play_card: [
+        'tontine.rules.gameplay',
+      ],
+    },
   },
 }

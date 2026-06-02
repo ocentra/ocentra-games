@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Hand and Foot (Canasta variant, partnerships). Deal: 11 hand cards + 11 foot cards per player (5-6 deck). Play hand first, then foot. Melds: sets (3+ same rank). Canasta: 7+ cards = 300-500 points bonus. Scoring: cumulative, first 10,000+ wins.',
-    Player: 'Welcome to Hand and Foot! Deal creates two card holdings: your Hand and your Foot. Meld cards into sets and runs. Form canastas (7+ cards of same rank) for huge bonuses. Work your Hand down, then play your Foot. First partnership to 10,000 points wins!',
+    LLM: 'Turn Structure: 1. Draw: Draw 2 cards from stock OR pick up entire discard pile (if you can immediately use the top card in a meld). 2. Meld: Lay down melds or add to existing partnership melds. 3. Discard: Discard 1 card to end turn. Minimum Initial Meld: Round 1: 50 points, Round 2: 90 points, Round 3: 120 points, Round 4: 150 points. Picking Up Your Foot: After playing all cards from your hand, pick up your foot. If you discard your last hand card, pick up foot on next turn. If you play all hand cards without discarding, immediately pick up foot and continue playing.',
+    Player: 'Turn Structure: 1. Draw: Draw 2 cards from stock OR pick up entire discard pile (if you can immediately use the top card in a meld). 2. Meld: Lay down melds or add to existing partnership melds. 3. Discard: Discard 1 card to end turn. Minimum Initial Meld: Round 1: 50 points, Round 2: 90 points, Round 3: 120 points, Round 4: 150 points. Picking Up Your Foot: After playing all cards from your hand, pick up your foot. If you discard your last hand card, pick up foot on next turn. If you play all hand cards without discarding, immediately pick up foot and continue playing.',
     objective: 'Score the most points over 4 rounds by forming melds and canastas. Be the first partnership to go out (empty hand and foot).',
     gameplay: 'Turn Structure: 1. Draw: Draw 2 cards from stock OR pick up entire discard pile (if you can immediately use the top card in a meld). 2. Meld: Lay down melds or add to existing partnership melds. 3. Discard: Discard 1 card to end turn. Minimum Initial Meld: Round 1: 50 points, Round 2: 90 points, Round 3: 120 points, Round 4: 150 points. Picking Up Your Foot: After playing all cards from your hand, pick up your foot. If you discard your last hand card, pick up foot on next turn. If you play all hand cards without discarding, immediately pick up foot and continue playing.',
     keyRules: [
@@ -55,10 +55,189 @@
       go_out: 'Partnership must have at least 1 clean and 1 dirty canasta. Both partners must have picked up their feet.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 11 card(s) per player, 5 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; role:dealer may use deal before play.',
-      'Scoring check: Points for melds, canastas, cards in hand. Deductions for unmelded cards. Clean canastas worth 500, dirty canastas worth 300. Red Threes +100 if melded, -100 if caught. Game played over 4 rounds. Expected outcome: 10000.',
+      'Setup example: 11 card(s) per player.',
+      'Rule example: Score the most points over 4 rounds by forming melds and canastas. Be the first partnership to go out (empty hand and foot).',
+      'Turn-flow example: Turn Structure: 1. Draw: Draw 2 cards from stock OR pick up entire discard pile (if you can immediately use the top card in a meld). 2. Meld: Lay down melds or add to existing partnership melds. 3. Discard: Discard 1 card to end turn. Minimum Initial Meld: Round 1: 50 points, Round 2: 90 points, Round 3: 120 points, Round 4: 150 points. Picking Up Your Foot: After playing all cards from your hand, pick up your foot. If you discard your last hand card, pick up foot on next turn. If you play all hand cards without discarding, immediately pick up foot and continue playing.',
+      'Scoring example: Points for melds, canastas, cards in hand. Deductions for unmelded cards. Clean canastas worth 500, dirty canastas worth 300. Red Threes +100 if melded, -100 if caught. Game played over 4 rounds. Highest total score after 4 rounds wins. First partnership to 10,000+ points across multiple games wins the session..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hand-and-foot.rules.objective',
+        title: 'Objective',
+        text: 'Score the most points over 4 rounds by forming melds and canastas. Be the first partnership to go out (empty hand and foot).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hand-and-foot.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Turn Structure: 1. Draw: Draw 2 cards from stock OR pick up entire discard pile (if you can immediately use the top card in a meld). 2. Meld: Lay down melds or add to existing partnership melds. 3. Discard: Discard 1 card to end turn. Minimum Initial Meld: Round 1: 50 points, Round 2: 90 points, Round 3: 120 points, Round 4: 150 points. Picking Up Your Foot: After playing all cards from your hand, pick up your foot. If you discard your last hand card, pick up foot on next turn. If you play all hand cards without discarding, immediately pick up foot and continue playing.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hand-and-foot.setup.players',
+        title: 'Players',
+        text: '2-6 players. Best with 4 in partnerships (partners sit opposite).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hand-and-foot.setup.deck',
+        title: 'Deck',
+        text: '5-6 standard 52-card decks + Jokers (typically 5 decks for 4 players).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hand-and-foot.setup.equipment',
+        title: 'Equipment',
+        text: 'Two denominations of chips or counters for scoring.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hand-and-foot.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives TWO sets of cards: Hand (11-15 cards) and Foot (11-15 cards face-down). Remaining cards form the stock. Top card turned face-up to start discard pile (if Red Three or Wild, bury it and turn another).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hand-and-foot.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest total score after 4 rounds wins. First partnership to 10,000+ points across multiple games wins the session.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hand-and-foot.score.description',
+        title: 'Scoring',
+        text: 'Points for melds, canastas, cards in hand. Deductions for unmelded cards. Clean canastas worth 500, dirty canastas worth 300. Red Threes +100 if melded, -100 if caught. Game played over 4 rounds.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hand-and-foot.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if possible; if not, may play any card.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hand-and-foot.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Red Threes: +100 points if melded, -100 if caught in hand/foot.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hand-and-foot.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Black Threes: Cannot be melded; -5 points if caught in hand/foot.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'hand-and-foot.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Clean Canasta (7 natural cards): +500 points.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'hand-and-foot.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Dirty Canasta (with wilds): +300 points.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'hand-and-foot.rules.key.6',
+        title: 'Key rule 6',
+        text: 'To go out: Need at least 1 clean and 1 dirty canasta; both partners must have picked up their feet.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hand-and-foot.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hand-and-foot.rules.objective',
+          'hand-and-foot.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hand-and-foot.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hand-and-foot.setup.players',
+          'hand-and-foot.setup.deck',
+          'hand-and-foot.setup.equipment',
+          'hand-and-foot.setup.dealing',
+        ],
+      },
+      {
+        id: 'hand-and-foot.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hand-and-foot.rules.key.1',
+          'hand-and-foot.rules.key.2',
+          'hand-and-foot.rules.key.3',
+          'hand-and-foot.rules.key.4',
+          'hand-and-foot.rules.key.5',
+          'hand-and-foot.rules.key.6',
+        ],
+      },
+      {
+        id: 'hand-and-foot.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hand-and-foot.score.description',
+          'hand-and-foot.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hand-and-foot.setup.dealing',
+        'hand-and-foot.rules.objective',
+      ],
+      deal: [
+        'hand-and-foot.rules.gameplay',
+      ],
+      award_pot: [
+        'hand-and-foot.rules.gameplay',
+      ],
+      draw: [
+        'hand-and-foot.rules.gameplay',
+      ],
+      discard: [
+        'hand-and-foot.rules.gameplay',
+      ],
+      meld: [
+        'hand-and-foot.rules.gameplay',
+      ],
+      go_out: [
+        'hand-and-foot.rules.gameplay',
+      ],
+    },
   },
 }

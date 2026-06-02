@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win chips from the board by playing specific cards and be the first to empty your hand.',
+      "Turn-flow example: Dealer stakes the board (Pope, Matrimony, Intrigue, Ace, King, Queen, Jack, Game). Fifty-one cards are dealt evenly to players plus one face-down stop hand; the last card of the stop hand is turned for trump. Eldest leads by playing a card face up (any suit, must be lowest held). Players continue the ascending sequence in that suit until a stop (King, 7 of Diamonds, or card whose successor is in the stop hand). The player who played the stop leads the next sequence with lowest card of any suit. The 9 of Diamonds (Pope) acts as any card. Compartments are won by playing the matching trump card or, for Game, by being first to empty one's hand. First out wins the Game stake and receives one counter per card from each opponent (holder of the Pope is excused).",
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pope-joan.rules.objective',
+        title: 'Objective',
+        text: 'Win chips from the board by playing specific cards and be the first to empty your hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pope-joan.rules.gameplay',
+        title: 'Turn flow',
+        text: "Dealer stakes the board (Pope, Matrimony, Intrigue, Ace, King, Queen, Jack, Game). Fifty-one cards are dealt evenly to players plus one face-down stop hand; the last card of the stop hand is turned for trump. Eldest leads by playing a card face up (any suit, must be lowest held). Players continue the ascending sequence in that suit until a stop (King, 7 of Diamonds, or card whose successor is in the stop hand). The player who played the stop leads the next sequence with lowest card of any suit. The 9 of Diamonds (Pope) acts as any card. Compartments are won by playing the matching trump card or, for Game, by being first to empty one's hand. First out wins the Game stake and receives one counter per card from each opponent (holder of the Pope is excused).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pope-joan.setup.players',
+        title: 'Players',
+        text: 'Optimal at 4 or 5.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pope-joan.setup.deck',
+        title: 'Deck',
+        text: '52 cards, REMOVE the 8 of Diamonds.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pope-joan.setup.equipment',
+        title: 'Equipment',
+        text: 'Staking board with eight compartments (Ace, King, Queen, Jack, Game, Pope, Matrimony, Intrigue); counters or chips.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pope-joan.setup.dealing',
+        title: 'Deal',
+        text: "Deal the cards evenly, plus an extra hand (the 'Stop' hand) which remains face-down.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pope-joan.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pope-joan.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pope-joan.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Remove 8 of Diamonds before play; dealer stakes the board and deals 51 cards to players plus one stop hand, last card of stop hand is trump.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pope-joan.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Eldest leads; play must be lowest card of a suit when leading, or next higher in suit when continuing a sequence.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pope-joan.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Kings, 7 of Diamonds, and cards whose successor is in the stop hand are stops; the player who plays a stop leads the next sequence.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pope-joan.rules.key.4',
+        title: 'Key rule 4',
+        text: '9 of Diamonds (Pope) is wild. First to empty hand wins Game stake and one counter per card from each opponent; Pope holder is exempt from payment.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pope-joan.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pope-joan.rules.objective',
+          'pope-joan.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pope-joan.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pope-joan.setup.players',
+          'pope-joan.setup.deck',
+          'pope-joan.setup.equipment',
+          'pope-joan.setup.dealing',
+        ],
+      },
+      {
+        id: 'pope-joan.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pope-joan.rules.key.1',
+          'pope-joan.rules.key.2',
+          'pope-joan.rules.key.3',
+          'pope-joan.rules.key.4',
+        ],
+      },
+      {
+        id: 'pope-joan.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pope-joan.score.description',
+          'pope-joan.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pope-joan.setup.dealing',
+        'pope-joan.rules.objective',
+      ],
+      play_card: [
+        'pope-joan.rules.gameplay',
+      ],
+    },
   },
 }

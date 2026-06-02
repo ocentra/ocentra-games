@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Dom Pedro. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Dom Pedro (Pedro) is a trick-taking card game derived from Pitch. 4-7 players (often partnerships). 52-card deck, 9 dealt. Bid for trump suit. Key scoring cards: Right Pedro (5 of trumps)=5pts, Left Pedro (same-color 5)=5pts, High(A)=1, Low(2)=1, Jack=1, Game(10)=1. Total 14pts per hand. Left Pedro counts as trump. Play to 100.',
+    LLM: 'Bid min 6, max 14. High bidder picks trump. Discard non-trumps to 6. Right Pedro (5â™¦ if â™¦ trump)=5pts. Left Pedro (other same-color 5)=5pts, acts as trump. A=1, 2=1, J=1, 10=1. Follow suit. Always legal to play trump. Set back if bid fails.',
+    Player: 'Bid min 6, max 14. High bidder picks trump. Discard non-trumps to 6. Right Pedro (5â™¦ if â™¦ trump)=5pts. Left Pedro (other same-color 5)=5pts, acts as trump. A=1, 2=1, J=1, 10=1. Follow suit. Always legal to play trump. Set back if bid fails.',
     objective: 'Be the first team or player to reach the agreed target (commonly 100 or 62 points) by winning tricks that contain scoring trumps and by making your bid; failing the bid sets you back.',
     gameplay: 'Bid min 6, max 14. High bidder picks trump. Discard non-trumps to 6. Right Pedro (5â™¦ if â™¦ trump)=5pts. Left Pedro (other same-color 5)=5pts, acts as trump. A=1, 2=1, J=1, 10=1. Follow suit. Always legal to play trump. Set back if bid fails.',
     keyRules: [
@@ -54,10 +54,177 @@
       go_out: 'Dom Pedro does not use go out as a core action in its documented ruleset.',
     },
     exampleHands: [
-      'Opening deal: 4-7 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Right Pedro=5, Left Pedro=5, High=1, Low=1, Jack=1, Game=1. Total=14. Failed bid = -bid amount. Expected outcome: First team/player to 100 points..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first team or player to reach the agreed target (commonly 100 or 62 points) by winning tricks that contain scoring trumps and by making your bid; failing the bid sets you back.',
+      'Turn-flow example: Bid min 6, max 14. High bidder picks trump. Discard non-trumps to 6. Right Pedro (5â™¦ if â™¦ trump)=5pts. Left Pedro (other same-color 5)=5pts, acts as trump. A=1, 2=1, J=1, 10=1. Follow suit. Always legal to play trump. Set back if bid fails.',
+      'Scoring example: Right Pedro=5, Left Pedro=5, High=1, Low=1, Jack=1, Game=1. Total=14. Failed bid = -bid amount. First team/player to 100 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'dom-pedro.rules.objective',
+        title: 'Objective',
+        text: 'Be the first team or player to reach the agreed target (commonly 100 or 62 points) by winning tricks that contain scoring trumps and by making your bid; failing the bid sets you back.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'dom-pedro.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Bid min 6, max 14. High bidder picks trump. Discard non-trumps to 6. Right Pedro (5â™¦ if â™¦ trump)=5pts. Left Pedro (other same-color 5)=5pts, acts as trump. A=1, 2=1, J=1, 10=1. Follow suit. Always legal to play trump. Set back if bid fails.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'dom-pedro.setup.players',
+        title: 'Players',
+        text: '4-7 (partnerships) players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'dom-pedro.setup.deck',
+        title: 'Deck',
+        text: '52 cards. 9 dealt. Left Pedro (same-color 5) is trump.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'dom-pedro.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'dom-pedro.setup.dealing',
+        title: 'Deal',
+        text: '9 each. Discard to 6 after trump chosen.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'dom-pedro.score.win-condition',
+        title: 'Win condition',
+        text: 'First team/player to 100 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'dom-pedro.score.description',
+        title: 'Scoring',
+        text: 'Right Pedro=5, Left Pedro=5, High=1, Low=1, Jack=1, Game=1. Total=14. Failed bid = -bid amount.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'dom-pedro.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two Pedros worth 5pts each',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'dom-pedro.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Left Pedro is trump',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'dom-pedro.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Bid for trump suit',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'dom-pedro.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Set back on failed bid',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'dom-pedro.rules.key.5',
+        title: 'Key rule 5',
+        text: '14 total points per hand',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'dom-pedro.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'dom-pedro.rules.objective',
+          'dom-pedro.rules.gameplay',
+        ],
+      },
+      {
+        id: 'dom-pedro.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'dom-pedro.setup.players',
+          'dom-pedro.setup.deck',
+          'dom-pedro.setup.equipment',
+          'dom-pedro.setup.dealing',
+        ],
+      },
+      {
+        id: 'dom-pedro.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'dom-pedro.rules.key.1',
+          'dom-pedro.rules.key.2',
+          'dom-pedro.rules.key.3',
+          'dom-pedro.rules.key.4',
+          'dom-pedro.rules.key.5',
+        ],
+      },
+      {
+        id: 'dom-pedro.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'dom-pedro.score.description',
+          'dom-pedro.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'dom-pedro.setup.dealing',
+        'dom-pedro.rules.objective',
+      ],
+      deal: [
+        'dom-pedro.rules.gameplay',
+      ],
+      declare: [
+        'dom-pedro.rules.gameplay',
+      ],
+      play_card: [
+        'dom-pedro.rules.gameplay',
+      ],
+      discard: [
+        'dom-pedro.rules.gameplay',
+      ],
+      bid: [
+        'dom-pedro.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Trionfo Beccaccino. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Trionfo Beccaccino (also Marafone Beccaccino) is a 4-player partnership trick-taking game from Romagna, Italy. It combines Tressette scoring (3-2-A ranking) with a trump suit (Trionfa). The 4â™¦ holder chooses trump. The Maraffa/Cricca (A+2+3 of trumps) earns 3 bonus points. Game to 41.',
+    LLM: 'Follow suit. Trump if void. 3-2-A ranking. Maraffa: Declare if holding A+2+3 trumps = 3 bonus pts. Communication: Busso (knock), Striscio (indicate 2), Tiro (indicate A). Total 11 pts/hand + Maraffa.',
+    Player: 'Follow suit. Trump if void. 3-2-A ranking. Maraffa: Declare if holding A+2+3 trumps = 3 bonus pts. Communication: Busso (knock), Striscio (indicate 2), Tiro (indicate A). Total 11 pts/hand + Maraffa.',
     objective: 'Reach 41 points first with your partner; Maraffa and last-trick bonuses apply.',
     gameplay: 'Follow suit. Trump if void. 3-2-A ranking. Maraffa: Declare if holding A+2+3 trumps = 3 bonus pts. Communication: Busso (knock), Striscio (indicate 2), Tiro (indicate A). Total 11 pts/hand + Maraffa.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: A=1, Court=1/3, Last trick=1. Total 11/hand. Maraffa=3 bonus. Expected outcome: First team to 41 points..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Reach 41 points first with your partner; Maraffa and last-trick bonuses apply.',
+      'Turn-flow example: Follow suit. Trump if void. 3-2-A ranking. Maraffa: Declare if holding A+2+3 trumps = 3 bonus pts. Communication: Busso (knock), Striscio (indicate 2), Tiro (indicate A). Total 11 pts/hand + Maraffa.',
+      'Scoring example: A=1, Court=1/3, Last trick=1. Total 11/hand. Maraffa=3 bonus. First team to 41 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'trionfo-beccaccino.rules.objective',
+        title: 'Objective',
+        text: 'Reach 41 points first with your partner; Maraffa and last-trick bonuses apply.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'trionfo-beccaccino.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Follow suit. Trump if void. 3-2-A ranking. Maraffa: Declare if holding A+2+3 trumps = 3 bonus pts. Communication: Busso (knock), Striscio (indicate 2), Tiro (indicate A). Total 11 pts/hand + Maraffa.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'trionfo-beccaccino.setup.players',
+        title: 'Players',
+        text: '4 (partnerships)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'trionfo-beccaccino.setup.deck',
+        title: 'Deck',
+        text: '40 cards (Romagnole). Rank: 3-2-A-K-Kt-J-7-6-5-4. Values: A=1, 3/2/K/Kt/J=1/3.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'trionfo-beccaccino.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'trionfo-beccaccino.setup.dealing',
+        title: 'Deal',
+        text: '10 cards each. 4â™¦ holder chooses trump.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'trionfo-beccaccino.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to 41 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'trionfo-beccaccino.score.description',
+        title: 'Scoring',
+        text: 'A=1, Court=1/3, Last trick=1. Total 11/hand. Maraffa=3 bonus.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'trionfo-beccaccino.rules.key.1',
+        title: 'Key rule 1',
+        text: '4â™¦ holder chooses trump',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'trionfo-beccaccino.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Maraffa/Cricca = 3 bonus pts',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'trionfo-beccaccino.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Signaling: Busso, Striscio, Tiro',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'trionfo-beccaccino.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Game to 41',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'trionfo-beccaccino.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'trionfo-beccaccino.rules.objective',
+          'trionfo-beccaccino.rules.gameplay',
+        ],
+      },
+      {
+        id: 'trionfo-beccaccino.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'trionfo-beccaccino.setup.players',
+          'trionfo-beccaccino.setup.deck',
+          'trionfo-beccaccino.setup.equipment',
+          'trionfo-beccaccino.setup.dealing',
+        ],
+      },
+      {
+        id: 'trionfo-beccaccino.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'trionfo-beccaccino.rules.key.1',
+          'trionfo-beccaccino.rules.key.2',
+          'trionfo-beccaccino.rules.key.3',
+          'trionfo-beccaccino.rules.key.4',
+        ],
+      },
+      {
+        id: 'trionfo-beccaccino.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'trionfo-beccaccino.score.description',
+          'trionfo-beccaccino.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'trionfo-beccaccino.setup.dealing',
+        'trionfo-beccaccino.rules.objective',
+      ],
+      play_card: [
+        'trionfo-beccaccino.rules.gameplay',
+      ],
+    },
   },
 }

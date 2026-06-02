@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: MetaZoo. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'MetaZoo is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players take turns playing cards, paying costs, attacking or contesting opposing cards, and resolving proprietary card effects.',
+    Player: 'Players take turns playing cards, paying costs, attacking or contesting opposing cards, and resolving proprietary card effects.',
     objective: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
     gameplay: 'Players take turns playing cards, paying costs, attacking or contesting opposing cards, and resolving proprietary card effects.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+      'Turn-flow example: Players take turns playing cards, paying costs, attacking or contesting opposing cards, and resolving proprietary card effects.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'metazoo.rules.objective',
+        title: 'Objective',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'metazoo.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players take turns playing cards, paying costs, attacking or contesting opposing cards, and resolving proprietary card effects.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'metazoo.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for MetaZoo.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'metazoo.setup.deck',
+        title: 'Deck',
+        text: 'Constructed MetaZoo decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'metazoo.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed MetaZoo decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'metazoo.setup.dealing',
+        title: 'Deal',
+        text: 'Each player brings a constructed deck, draws an opening hand, and prepares any starting character, resource, faction, or play area required by the rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'metazoo.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'metazoo.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'metazoo.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Commercial collectible or trading card game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'metazoo.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Constructed or product-defined decks.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'metazoo.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Card text defines powers and restrictions.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'metazoo.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Players contest through attacks or objectives.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'metazoo.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Published victory condition ends play.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'metazoo.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'metazoo.rules.objective',
+          'metazoo.rules.gameplay',
+        ],
+      },
+      {
+        id: 'metazoo.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'metazoo.setup.players',
+          'metazoo.setup.deck',
+          'metazoo.setup.equipment',
+          'metazoo.setup.dealing',
+        ],
+      },
+      {
+        id: 'metazoo.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'metazoo.rules.key.1',
+          'metazoo.rules.key.2',
+          'metazoo.rules.key.3',
+          'metazoo.rules.key.4',
+          'metazoo.rules.key.5',
+        ],
+      },
+      {
+        id: 'metazoo.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'metazoo.score.description',
+          'metazoo.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'metazoo.setup.dealing',
+        'metazoo.rules.objective',
+      ],
+      play_card: [
+        'metazoo.rules.gameplay',
+      ],
+    },
   },
 }

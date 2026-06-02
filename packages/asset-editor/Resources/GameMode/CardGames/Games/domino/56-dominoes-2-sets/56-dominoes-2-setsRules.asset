@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: Win by game rules..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Play all tiles first (your side), or have fewest pips if blocked.',
+      "Turn-flow example: All tiles dealt (e.g. 7 each for 4 players). Highest double or bidder leads. Match to open ends; doubles crosswise. First side to empty hand scores opponents' pips; blocked game: lower pip total wins.",
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '56-dominoes-2-sets.rules.objective',
+        title: 'Objective',
+        text: 'Play all tiles first (your side), or have fewest pips if blocked.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '56-dominoes-2-sets.rules.gameplay',
+        title: 'Turn flow',
+        text: "All tiles dealt (e.g. 7 each for 4 players). Highest double or bidder leads. Match to open ends; doubles crosswise. First side to empty hand scores opponents' pips; blocked game: lower pip total wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '56-dominoes-2-sets.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '56-dominoes-2-sets.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '56-dominoes-2-sets.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '56-dominoes-2-sets.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '56-dominoes-2-sets.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '56-dominoes-2-sets.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '56-dominoes-2-sets.rules.key.1',
+        title: 'Key rule 1',
+        text: '56 tiles (two double-6 sets)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '56-dominoes-2-sets.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Match to open ends; doubles crosswise',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '56-dominoes-2-sets.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Partnership; all tiles dealt',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '56-dominoes-2-sets.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '56-dominoes-2-sets.rules.objective',
+          '56-dominoes-2-sets.rules.gameplay',
+        ],
+      },
+      {
+        id: '56-dominoes-2-sets.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '56-dominoes-2-sets.setup.players',
+          '56-dominoes-2-sets.setup.deck',
+          '56-dominoes-2-sets.setup.equipment',
+          '56-dominoes-2-sets.setup.dealing',
+        ],
+      },
+      {
+        id: '56-dominoes-2-sets.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '56-dominoes-2-sets.rules.key.1',
+          '56-dominoes-2-sets.rules.key.2',
+          '56-dominoes-2-sets.rules.key.3',
+        ],
+      },
+      {
+        id: '56-dominoes-2-sets.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '56-dominoes-2-sets.score.description',
+          '56-dominoes-2-sets.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '56-dominoes-2-sets.setup.dealing',
+        '56-dominoes-2-sets.rules.objective',
+      ],
+      play_card: [
+        '56-dominoes-2-sets.rules.gameplay',
+      ],
+    },
   },
 }

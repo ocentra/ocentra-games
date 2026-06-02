@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Bestia. Type: Rams/Gambling. Rules: Must follow, must trump. Evaluation: High Trump = Auto-Play. Low Hand = Fold. Pot Odds calculation required.',
-    Player: 'The pot is 50 chips. You have the King of Trumps and a 7 of a side suit. Do you play? If you win 1 trick, you get 16 chips. If you win 0, you pay 50. With the King, one trick is guaranteed unless... someone voids and trumps you? No, King is high. PLAY!',
+    LLM: "1. **Ante**: Every player contributes a fixed amount to the pot. 2. **Establish Trump**: A card is turned from the stock to name the trump suit. 3. **Participation**: Each player in turn decides to 'Play' or 'Fold'. Those who fold forfeit their ante. 4. **Tricks**: Active players play three tricks. Must follow suit; must trump if void; must over-trump if possible. 5. **Resolution**: The pot is divided into three parts. Each trick won awards one-third of the pot.",
+    Player: "1. **Ante**: Every player contributes a fixed amount to the pot. 2. **Establish Trump**: A card is turned from the stock to name the trump suit. 3. **Participation**: Each player in turn decides to 'Play' or 'Fold'. Those who fold forfeit their ante. 4. **Tricks**: Active players play three tricks. Must follow suit; must trump if void; must over-trump if possible. 5. **Resolution**: The pot is divided into three parts. Each trick won awards one-third of the pot.",
     objective: 'Win at least one trick to earn a share of the pot and avoid the penalty of matching the pot.',
     gameplay: "1. **Ante**: Every player contributes a fixed amount to the pot. 2. **Establish Trump**: A card is turned from the stock to name the trump suit. 3. **Participation**: Each player in turn decides to 'Play' or 'Fold'. Those who fold forfeit their ante. 4. **Tricks**: Active players play three tricks. Must follow suit; must trump if void; must over-trump if possible. 5. **Resolution**: The pot is divided into three parts. Each trick won awards one-third of the pot.",
     keyRules: [
@@ -52,10 +52,165 @@
       go_out: 'The hand terminates for all active players simultaneously after the third trick is finished.',
     },
     exampleHands: [
-      'Opening deal: 4-6 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante_phase; current_player may use ante before dealing.',
-      'Scoring check: Zero-sum gambling chips. Expected outcome: Highest net profit after a set number of deals..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Win at least one trick to earn a share of the pot and avoid the penalty of matching the pot.',
+      "Turn-flow example: 1. **Ante**: Every player contributes a fixed amount to the pot. 2. **Establish Trump**: A card is turned from the stock to name the trump suit. 3. **Participation**: Each player in turn decides to 'Play' or 'Fold'. Those who fold forfeit their ante. 4. **Tricks**: Active players play three tricks. Must follow suit; must trump if void; must over-trump if possible. 5. **Resolution**: The pot is divided into three parts. Each trick won awards one-third of the pot.",
+      'Scoring example: Zero-sum gambling chips. Highest net profit after a set number of deals..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'bestia.rules.objective',
+        title: 'Objective',
+        text: 'Win at least one trick to earn a share of the pot and avoid the penalty of matching the pot.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bestia.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Ante**: Every player contributes a fixed amount to the pot. 2. **Establish Trump**: A card is turned from the stock to name the trump suit. 3. **Participation**: Each player in turn decides to 'Play' or 'Fold'. Those who fold forfeit their ante. 4. **Tricks**: Active players play three tricks. Must follow suit; must trump if void; must over-trump if possible. 5. **Resolution**: The pot is divided into three parts. Each trick won awards one-third of the pot.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bestia.setup.players',
+        title: 'Players',
+        text: '4 to 6 players; 5 is considered the ideal number for balanced play.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bestia.setup.deck',
+        title: 'Deck',
+        text: 'A standard 40-card Italian deck (Swords, Batons, Cups, Coins). With Latin suits, ranks from high to low are: Ace, 3, King (Re), Horse (Cavallo), Jack (Fante), 7, 6, 5, 4, 2. When French suits are used, the Queen replaces the Horse.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bestia.setup.equipment',
+        title: 'Equipment',
+        text: 'Chips or currency for the central pot.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bestia.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 3 cards to each player (usually clockwise). One card is turned face up to determine the Trump suit.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bestia.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest net profit after a set number of deals.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bestia.score.description',
+        title: 'Scoring',
+        text: 'Zero-sum gambling chips.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bestia.rules.key.1',
+        title: 'Key rule 1',
+        text: "If you choose to Play and win 0 tricks, you must pay the 'Bestia' (match the current pot).",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bestia.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The pot carries over if not all tricks are claimed (e.g., if some players fold).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bestia.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning the first trick confers the lead for the next.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bestia.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bestia.rules.objective',
+          'bestia.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bestia.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bestia.setup.players',
+          'bestia.setup.deck',
+          'bestia.setup.equipment',
+          'bestia.setup.dealing',
+        ],
+      },
+      {
+        id: 'bestia.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bestia.rules.key.1',
+          'bestia.rules.key.2',
+          'bestia.rules.key.3',
+        ],
+      },
+      {
+        id: 'bestia.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bestia.score.description',
+          'bestia.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bestia.setup.dealing',
+        'bestia.rules.objective',
+      ],
+      ante: [
+        'bestia.rules.gameplay',
+      ],
+      fold: [
+        'bestia.rules.gameplay',
+      ],
+      play_card: [
+        'bestia.rules.gameplay',
+      ],
+      deal_3_turn_trump: [
+        'bestia.rules.gameplay',
+      ],
+      play: [
+        'bestia.rules.gameplay',
+      ],
+      calculate_trick_shares: [
+        'bestia.rules.gameplay',
+      ],
+      apply_beast_penalty: [
+        'bestia.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Hacker. Logic: Use hacking-themed cards to gain access, score, or advantage under the published deck rules.',
-    Player: 'Hacker is a commercial dedicated-deck card game for three to six players published by Steve Jackson Games.',
+    LLM: 'Players draw and play dedicated deck cards that represent systems, access, attacks, and interference, trying to complete goals while disrupting rivals.',
+    Player: 'Players draw and play dedicated deck cards that represent systems, access, attacks, and interference, trying to complete goals while disrupting rivals.',
     objective: 'Use hacking-themed cards to gain access, score, or advantage under the published deck rules.',
     gameplay: 'Players draw and play dedicated deck cards that represent systems, access, attacks, and interference, trying to complete goals while disrupting rivals.',
     keyRules: [
@@ -54,10 +54,168 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 3-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: Published endgame scoring or victory conditions determine the winner. Expected outcome: Use hacking-themed cards to gain access, score, or advantage under the published deck rules..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Use hacking-themed cards to gain access, score, or advantage under the published deck rules.',
+      'Turn-flow example: Players draw and play dedicated deck cards that represent systems, access, attacks, and interference, trying to complete goals while disrupting rivals.',
+      'Scoring example: Published endgame scoring or victory conditions determine the winner. Use hacking-themed cards to gain access, score, or advantage under the published deck rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hacker.rules.objective',
+        title: 'Objective',
+        text: 'Use hacking-themed cards to gain access, score, or advantage under the published deck rules.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hacker.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players draw and play dedicated deck cards that represent systems, access, attacks, and interference, trying to complete goals while disrupting rivals.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hacker.setup.players',
+        title: 'Players',
+        text: '3-6 players use the table arrangement described for Hacker.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hacker.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Hacker card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hacker.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Hacker card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hacker.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare the dedicated Hacker deck and any shared scoring, resource, or tableau area described by the rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hacker.score.win-condition',
+        title: 'Win condition',
+        text: 'Use hacking-themed cards to gain access, score, or advantage under the published deck rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hacker.score.description',
+        title: 'Scoring',
+        text: 'Published endgame scoring or victory conditions determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hacker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dedicated commercial deck.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hacker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Three to six players.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hacker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Hacking theme.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'hacker.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Take-that effects and access goals.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'hacker.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Published score condition wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hacker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hacker.rules.objective',
+          'hacker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hacker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hacker.setup.players',
+          'hacker.setup.deck',
+          'hacker.setup.equipment',
+          'hacker.setup.dealing',
+        ],
+      },
+      {
+        id: 'hacker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hacker.rules.key.1',
+          'hacker.rules.key.2',
+          'hacker.rules.key.3',
+          'hacker.rules.key.4',
+          'hacker.rules.key.5',
+        ],
+      },
+      {
+        id: 'hacker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hacker.score.description',
+          'hacker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hacker.setup.dealing',
+        'hacker.rules.objective',
+      ],
+      play_card: [
+        'hacker.rules.gameplay',
+      ],
+      flip_top_card: [
+        'hacker.rules.gameplay',
+      ],
+    },
   },
 }

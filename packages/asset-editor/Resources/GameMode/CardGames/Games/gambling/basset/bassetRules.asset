@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Basset. Logic: Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
-    Player: 'Basset is a historical Italian gambling card game in which players bet against a banker on ranks that may appear from the pack.',
+    LLM: 'Players stake on card ranks. The banker turns cards from the pack according to the basset layout, paying or collecting bets depending on whether the backed rank wins or loses in the sequence.',
+    Player: 'Players stake on card ranks. The banker turns cards from the pack according to the basset layout, paying or collecting bets depending on whether the backed rank wins or loses in the sequence.',
     objective: 'Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
     gameplay: 'Players stake on card ranks. The banker turns cards from the pack according to the basset layout, paying or collecting bets depending on whether the backed rank wins or loses in the sequence.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-12 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Bets are paid or lost against the bank according to the exposed-card result. Expected outcome: Win stakes by backing ranks that appear in the favourable positions of the banked deal..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
+      'Turn-flow example: Players stake on card ranks. The banker turns cards from the pack according to the basset layout, paying or collecting bets depending on whether the backed rank wins or loses in the sequence.',
+      'Scoring example: Bets are paid or lost against the bank according to the exposed-card result. Win stakes by backing ranks that appear in the favourable positions of the banked deal..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'basset.rules.objective',
+        title: 'Objective',
+        text: 'Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'basset.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players stake on card ranks. The banker turns cards from the pack according to the basset layout, paying or collecting bets depending on whether the backed rank wins or loses in the sequence.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'basset.setup.players',
+        title: 'Players',
+        text: 'banker and any number of punters players use the table arrangement described for Basset.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'basset.setup.deck',
+        title: 'Deck',
+        text: '52-card Anglo-American pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'basset.setup.equipment',
+        title: 'Equipment',
+        text: '52-card Anglo-American pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'basset.setup.dealing',
+        title: 'Deal',
+        text: 'The banker controls the pack and exposes cards while players place stakes on rank positions before the turn-up sequence resolves.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'basset.score.win-condition',
+        title: 'Win condition',
+        text: 'Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'basset.score.description',
+        title: 'Scoring',
+        text: 'Bets are paid or lost against the bank according to the exposed-card result.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'basset.rules.key.1',
+        title: 'Key rule 1',
+        text: 'One banker plays against all punters.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'basset.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Bets are made on ranks before cards are exposed.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'basset.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Turned cards decide winning and losing rank bets.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'basset.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Play is chance-heavy but bankroll and stake timing matter.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'basset.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'basset.rules.objective',
+          'basset.rules.gameplay',
+        ],
+      },
+      {
+        id: 'basset.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'basset.setup.players',
+          'basset.setup.deck',
+          'basset.setup.equipment',
+          'basset.setup.dealing',
+        ],
+      },
+      {
+        id: 'basset.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'basset.rules.key.1',
+          'basset.rules.key.2',
+          'basset.rules.key.3',
+          'basset.rules.key.4',
+        ],
+      },
+      {
+        id: 'basset.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'basset.score.description',
+          'basset.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'basset.setup.dealing',
+        'basset.rules.objective',
+      ],
+      play_card: [
+        'basset.rules.gameplay',
+      ],
+    },
   },
 }

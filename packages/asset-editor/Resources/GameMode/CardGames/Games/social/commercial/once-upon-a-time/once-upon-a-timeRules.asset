@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Once Upon a Time. Logic: Play all story cards and steer the tale to your ending card.',
-    Player: 'Once Upon a Time is a commercial storytelling card game where players guide a shared fairy tale toward their own ending card.',
+    LLM: 'Players narrate a shared story while playing matching story cards; interruptions and cards transfer storytelling control between players.',
+    Player: 'Players narrate a shared story while playing matching story cards; interruptions and cards transfer storytelling control between players.',
     objective: 'Play all story cards and steer the tale to your ending card.',
     gameplay: 'Players narrate a shared story while playing matching story cards; interruptions and cards transfer storytelling control between players.',
     keyRules: [
@@ -54,10 +54,168 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: Published scoring or victory conditions determine the winner. Expected outcome: Play all story cards and steer the tale to your ending card..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Play all story cards and steer the tale to your ending card.',
+      'Turn-flow example: Players narrate a shared story while playing matching story cards; interruptions and cards transfer storytelling control between players.',
+      'Scoring example: Published scoring or victory conditions determine the winner. Play all story cards and steer the tale to your ending card..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'once-upon-a-time.rules.objective',
+        title: 'Objective',
+        text: 'Play all story cards and steer the tale to your ending card.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'once-upon-a-time.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players narrate a shared story while playing matching story cards; interruptions and cards transfer storytelling control between players.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'once-upon-a-time.setup.players',
+        title: 'Players',
+        text: '2-6 players use the table arrangement described for Once Upon a Time.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'once-upon-a-time.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Once Upon a Time story and ending cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'once-upon-a-time.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Once Upon a Time story and ending cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'once-upon-a-time.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare the dedicated Once Upon a Time cards and any shared table, score, or resource areas from the published rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'once-upon-a-time.score.win-condition',
+        title: 'Win condition',
+        text: 'Play all story cards and steer the tale to your ending card.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'once-upon-a-time.score.description',
+        title: 'Scoring',
+        text: 'Published scoring or victory conditions determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'once-upon-a-time.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Story cards are played through narration.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'once-upon-a-time.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Each player has a secret ending.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'once-upon-a-time.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Players may interrupt with matching cards.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'once-upon-a-time.rules.key.4',
+        title: 'Key rule 4',
+        text: 'The active storyteller controls play.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'once-upon-a-time.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Winning requires completing your ending.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'once-upon-a-time.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'once-upon-a-time.rules.objective',
+          'once-upon-a-time.rules.gameplay',
+        ],
+      },
+      {
+        id: 'once-upon-a-time.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'once-upon-a-time.setup.players',
+          'once-upon-a-time.setup.deck',
+          'once-upon-a-time.setup.equipment',
+          'once-upon-a-time.setup.dealing',
+        ],
+      },
+      {
+        id: 'once-upon-a-time.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'once-upon-a-time.rules.key.1',
+          'once-upon-a-time.rules.key.2',
+          'once-upon-a-time.rules.key.3',
+          'once-upon-a-time.rules.key.4',
+          'once-upon-a-time.rules.key.5',
+        ],
+      },
+      {
+        id: 'once-upon-a-time.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'once-upon-a-time.score.description',
+          'once-upon-a-time.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'once-upon-a-time.setup.dealing',
+        'once-upon-a-time.rules.objective',
+      ],
+      play_card: [
+        'once-upon-a-time.rules.gameplay',
+      ],
+      flip_top_card: [
+        'once-upon-a-time.rules.gameplay',
+      ],
+    },
   },
 }

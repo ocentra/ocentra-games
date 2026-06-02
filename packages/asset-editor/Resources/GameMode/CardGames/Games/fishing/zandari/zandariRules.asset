@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Žandari. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Žandari (Pishpirik) is a Serbian/Balkan fishing card game. 2-4 players. 52-card deck. 4 face-up table + hand cards. Capture by matching rank or summing to played card value. Jack clears entire table. Score: most cards=2pts, most clubs=1pt, 2♣=1pt, 10♦=1pt. First to 11.',
+    LLM: 'Play 1 card. Capture by rank match (single) or sum (multiple). Jack captures ALL table cards. Must capture if possible. Last capturer gets remaining cards.',
+    Player: 'Play 1 card. Capture by rank match (single) or sum (multiple). Jack captures ALL table cards. Must capture if possible. Last capturer gets remaining cards.',
     objective: 'Score points by capturing cards and bonuses (most cards 2 pts, most clubs 1 pt, 2♣ 1 pt, 10♦ 1 pt). The match is played until a player or team reaches the agreed target score (typically 11, 21 or other).',
     gameplay: 'Play 1 card. Capture by rank match (single) or sum (multiple). Jack captures ALL table cards. Must capture if possible. Last capturer gets remaining cards.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Most cards=2pts. Most clubs=1pt. 2♣=1pt. 10♦=1pt. First to 11. Expected outcome: Score most points. First to 11..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score points by capturing cards and bonuses (most cards 2 pts, most clubs 1 pt, 2♣ 1 pt, 10♦ 1 pt). The match is played until a player or team reaches the agreed target score (typically 11, 21 or other).',
+      'Turn-flow example: Play 1 card. Capture by rank match (single) or sum (multiple). Jack captures ALL table cards. Must capture if possible. Last capturer gets remaining cards.',
+      'Scoring example: Most cards=2pts. Most clubs=1pt. 2♣=1pt. 10♦=1pt. First to 11. Score most points. First to 11..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'zandari.rules.objective',
+        title: 'Objective',
+        text: 'Score points by capturing cards and bonuses (most cards 2 pts, most clubs 1 pt, 2♣ 1 pt, 10♦ 1 pt). The match is played until a player or team reaches the agreed target score (typically 11, 21 or other).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'zandari.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Play 1 card. Capture by rank match (single) or sum (multiple). Jack captures ALL table cards. Must capture if possible. Last capturer gets remaining cards.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'zandari.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'zandari.setup.deck',
+        title: 'Deck',
+        text: '52 cards. A=1, 2-10=face. K/Q have no capture value.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'zandari.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'zandari.setup.dealing',
+        title: 'Deal',
+        text: '4 face-up center. Hand cards dealt. Jacks in initial 4 go to cutter.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'zandari.score.win-condition',
+        title: 'Win condition',
+        text: 'Score most points. First to 11.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'zandari.score.description',
+        title: 'Scoring',
+        text: 'Most cards=2pts. Most clubs=1pt. 2♣=1pt. 10♦=1pt. First to 11.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'zandari.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Rank matching or value summing',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'zandari.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Jack clears table',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'zandari.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Must capture if possible',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'zandari.rules.key.4',
+        title: 'Key rule 4',
+        text: '2♣ and 10♦ special',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'zandari.rules.key.5',
+        title: 'Key rule 5',
+        text: 'First to 11 points',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'zandari.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'zandari.rules.objective',
+          'zandari.rules.gameplay',
+        ],
+      },
+      {
+        id: 'zandari.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'zandari.setup.players',
+          'zandari.setup.deck',
+          'zandari.setup.equipment',
+          'zandari.setup.dealing',
+        ],
+      },
+      {
+        id: 'zandari.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'zandari.rules.key.1',
+          'zandari.rules.key.2',
+          'zandari.rules.key.3',
+          'zandari.rules.key.4',
+          'zandari.rules.key.5',
+        ],
+      },
+      {
+        id: 'zandari.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'zandari.score.description',
+          'zandari.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'zandari.setup.dealing',
+        'zandari.rules.objective',
+      ],
+      play_card: [
+        'zandari.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Blackjack Switch. Logic: Beat the dealer on each hand without busting, using the permitted switch to improve both hands.',
-    Player: 'Blackjack Switch is a patented casino blackjack variant where each betting position receives two hands and may switch the second cards between them.',
+    LLM: 'After initial deal, the player may exchange the top cards between their two hands, then each hand is played under blackjack hit, stand, double, and split style rules with adjusted payouts.',
+    Player: 'After initial deal, the player may exchange the top cards between their two hands, then each hand is played under blackjack hit, stand, double, and split style rules with adjusted payouts.',
     objective: 'Beat the dealer on each hand without busting, using the permitted switch to improve both hands.',
     gameplay: 'After initial deal, the player may exchange the top cards between their two hands, then each hand is played under blackjack hit, stand, double, and split style rules with adjusted payouts.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-7 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Each hand resolves against the dealer with blackjack-variant payouts and pushes. Expected outcome: Beat the dealer on each hand without busting, using the permitted switch to improve both hands..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Beat the dealer on each hand without busting, using the permitted switch to improve both hands.',
+      'Turn-flow example: After initial deal, the player may exchange the top cards between their two hands, then each hand is played under blackjack hit, stand, double, and split style rules with adjusted payouts.',
+      'Scoring example: Each hand resolves against the dealer with blackjack-variant payouts and pushes. Beat the dealer on each hand without busting, using the permitted switch to improve both hands..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'blackjack-switch.rules.objective',
+        title: 'Objective',
+        text: 'Beat the dealer on each hand without busting, using the permitted switch to improve both hands.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'blackjack-switch.rules.gameplay',
+        title: 'Turn flow',
+        text: 'After initial deal, the player may exchange the top cards between their two hands, then each hand is played under blackjack hit, stand, double, and split style rules with adjusted payouts.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'blackjack-switch.setup.players',
+        title: 'Players',
+        text: '1-7 against dealer players use the table arrangement described for Blackjack Switch.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'blackjack-switch.setup.deck',
+        title: 'Deck',
+        text: 'Multiple standard 52-card decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'blackjack-switch.setup.equipment',
+        title: 'Equipment',
+        text: 'Multiple standard 52-card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'blackjack-switch.setup.dealing',
+        title: 'Deal',
+        text: 'Each player position receives two blackjack hands against the dealer before the switch decision is offered.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'blackjack-switch.score.win-condition',
+        title: 'Win condition',
+        text: 'Beat the dealer on each hand without busting, using the permitted switch to improve both hands.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'blackjack-switch.score.description',
+        title: 'Scoring',
+        text: 'Each hand resolves against the dealer with blackjack-variant payouts and pushes.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'blackjack-switch.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Each position plays two hands.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'blackjack-switch.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The second cards may be switched between the hands.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'blackjack-switch.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Natural blackjacks pay 1:1 rather than 3:2.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'blackjack-switch.rules.key.4',
+        title: 'Key rule 4',
+        text: 'A dealer 22 commonly pushes non-blackjack player hands.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'blackjack-switch.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'blackjack-switch.rules.objective',
+          'blackjack-switch.rules.gameplay',
+        ],
+      },
+      {
+        id: 'blackjack-switch.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'blackjack-switch.setup.players',
+          'blackjack-switch.setup.deck',
+          'blackjack-switch.setup.equipment',
+          'blackjack-switch.setup.dealing',
+        ],
+      },
+      {
+        id: 'blackjack-switch.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'blackjack-switch.rules.key.1',
+          'blackjack-switch.rules.key.2',
+          'blackjack-switch.rules.key.3',
+          'blackjack-switch.rules.key.4',
+        ],
+      },
+      {
+        id: 'blackjack-switch.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'blackjack-switch.score.description',
+          'blackjack-switch.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'blackjack-switch.setup.dealing',
+        'blackjack-switch.rules.objective',
+      ],
+      play_card: [
+        'blackjack-switch.rules.gameplay',
+      ],
+    },
   },
 }

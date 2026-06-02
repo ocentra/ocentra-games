@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Lexicon. Logic: Score best by forming legal words from letter cards.',
-    Player: 'Lexicon is a British commercial word game using cards rather than tiles, with players forming and scoring words.',
+    LLM: 'Players draw and arrange letter cards into words, scoring according to the word-game rules and available letter values.',
+    Player: 'Players draw and arrange letter cards into words, scoring according to the word-game rules and available letter values.',
     objective: 'Score best by forming legal words from letter cards.',
     gameplay: 'Players draw and arrange letter cards into words, scoring according to the word-game rules and available letter values.',
     keyRules: [
@@ -54,10 +54,186 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_cards before round end.',
-      'Scoring check: Published scoring or victory conditions determine the winner. Expected outcome: Score best by forming legal words from letter cards..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score best by forming legal words from letter cards.',
+      'Turn-flow example: Players draw and arrange letter cards into words, scoring according to the word-game rules and available letter values.',
+      'Scoring example: Published scoring or victory conditions determine the winner. Score best by forming legal words from letter cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'lexicon.rules.objective',
+        title: 'Objective',
+        text: 'Score best by forming legal words from letter cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'lexicon.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players draw and arrange letter cards into words, scoring according to the word-game rules and available letter values.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'lexicon.setup.players',
+        title: 'Players',
+        text: '2-4 or more with another deck players use the table arrangement described for Lexicon.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'lexicon.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Lexicon letter cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'lexicon.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Lexicon letter cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'lexicon.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare the dedicated Lexicon cards and any shared table, score, or resource areas from the published rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'lexicon.score.win-condition',
+        title: 'Win condition',
+        text: 'Score best by forming legal words from letter cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'lexicon.score.description',
+        title: 'Scoring',
+        text: 'Published scoring or victory conditions determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'lexicon.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dedicated letter-card deck.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'lexicon.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Two to four players.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'lexicon.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Words are the scoring units.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'lexicon.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Additional decks can support more players.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'lexicon.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Best word score wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'lexicon.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'lexicon.rules.objective',
+          'lexicon.rules.gameplay',
+        ],
+      },
+      {
+        id: 'lexicon.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'lexicon.setup.players',
+          'lexicon.setup.deck',
+          'lexicon.setup.equipment',
+          'lexicon.setup.dealing',
+        ],
+      },
+      {
+        id: 'lexicon.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'lexicon.rules.key.1',
+          'lexicon.rules.key.2',
+          'lexicon.rules.key.3',
+          'lexicon.rules.key.4',
+          'lexicon.rules.key.5',
+        ],
+      },
+      {
+        id: 'lexicon.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'lexicon.score.description',
+          'lexicon.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'lexicon.setup.dealing',
+        'lexicon.rules.objective',
+      ],
+      deal_cards: [
+        'lexicon.rules.gameplay',
+      ],
+      ask_for_rank: [
+        'lexicon.rules.gameplay',
+      ],
+      draw_stock: [
+        'lexicon.rules.gameplay',
+      ],
+      check_books: [
+        'lexicon.rules.gameplay',
+      ],
+      give_cards: [
+        'lexicon.rules.gameplay',
+      ],
+      say_go_fish: [
+        'lexicon.rules.gameplay',
+      ],
+      lay_down_book: [
+        'lexicon.rules.gameplay',
+      ],
+      check_game_end: [
+        'lexicon.rules.gameplay',
+      ],
+    },
   },
 }

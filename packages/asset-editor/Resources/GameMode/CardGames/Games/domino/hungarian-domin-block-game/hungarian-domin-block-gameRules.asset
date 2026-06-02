@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Hungarian DominÃ³ (Block). 2-4 players, 28-tile Double-Six dominoes. Deal: 2p=12 tiles, 3p=8 tiles, 4p=6 tiles each. Highest double leads. Play: Match pips at chain ends. Pass if no legal move. Block: Both chain ends same number = board block. Scoring: Winner takes opponent pip totals. Avoidance: Lowest score wins.',
-    Player: "Welcome to Hungarian DominÃ³. You're playing the Block variantâ€”no boneyard, just pure hand management. Build a linear chain of matching dominoes. Try to force your opponents to pass while you empty your hand. In traditional play, lowest score winsâ€”it's an avoidance game. Watch what your opponents pass on; that tells you their weaknesses.",
+    LLM: '1. The player with the highest double leads (or highest tile if no doubles).\n2. Players must match the pips of an open end of the linear layout.\n3. **Blocking**: If you cannot match an end, you pass your turn.\n4. The layout is restricted to two ends; doubles are placed crosswise but do not create new lines.',
+    Player: '1. The player with the highest double leads (or highest tile if no doubles).\n2. Players must match the pips of an open end of the linear layout.\n3. **Blocking**: If you cannot match an end, you pass your turn.\n4. The layout is restricted to two ends; doubles are placed crosswise but do not create new lines.',
     objective: 'Win the round by playing all tiles in your hand, or by having the lowest total pips when the game is blocked.',
     gameplay: '1. The player with the highest double leads (or highest tile if no doubles).\n2. Players must match the pips of an open end of the linear layout.\n3. **Blocking**: If you cannot match an end, you pass your turn.\n4. The layout is restricted to two ends; doubles are placed crosswise but do not create new lines.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before first_play.',
-      "Scoring check: Players score based on pips remaining in opponents' hands. In avoidance variants, lowest score wins. Expected outcome: NA.",
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Win the round by playing all tiles in your hand, or by having the lowest total pips when the game is blocked.',
+      'Turn-flow example: 1. The player with the highest double leads (or highest tile if no doubles).\n2. Players must match the pips of an open end of the linear layout.\n3. **Blocking**: If you cannot match an end, you pass your turn.\n4. The layout is restricted to two ends; doubles are placed crosswise but do not create new lines.',
+      "Scoring example: Players score based on pips remaining in opponents' hands. In avoidance variants, lowest score wins. First player to empty hand, or lowest pip total if game blocks..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hungarian-domin-block-game.rules.objective',
+        title: 'Objective',
+        text: 'Win the round by playing all tiles in your hand, or by having the lowest total pips when the game is blocked.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hungarian-domin-block-game.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. The player with the highest double leads (or highest tile if no doubles).\n2. Players must match the pips of an open end of the linear layout.\n3. **Blocking**: If you cannot match an end, you pass your turn.\n4. The layout is restricted to two ends; doubles are placed crosswise but do not create new lines.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hungarian-domin-block-game.setup.players',
+        title: 'Players',
+        text: '2 to 4 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hungarian-domin-block-game.setup.deck',
+        title: 'Deck',
+        text: 'Standard Double-Six (28 tiles).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hungarian-domin-block-game.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard Double-Six (28 tiles).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hungarian-domin-block-game.setup.dealing',
+        title: 'Deal',
+        text: '- 2 players: 12 tiles each (4 tiles remain out).\n- 3 players: 8 tiles each (4 tiles remain out).\n- 4 players: 6 tiles each (4 tiles remain out).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hungarian-domin-block-game.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to empty hand, or lowest pip total if game blocks.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hungarian-domin-block-game.score.description',
+        title: 'Scoring',
+        text: "Players score based on pips remaining in opponents' hands. In avoidance variants, lowest score wins.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hungarian-domin-block-game.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Hungarian DominÃ³ (Block).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hungarian-domin-block-game.rules.key.2',
+        title: 'Key rule 2',
+        text: "Round outcome is resolved by the scoring method: The winner scores the total sum of pips remaining in all opponents' hands.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hungarian-domin-block-game.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Win the round by playing all tiles in your hand, or by having the lowest total pips when the game is blocked.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hungarian-domin-block-game.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hungarian-domin-block-game.rules.objective',
+          'hungarian-domin-block-game.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hungarian-domin-block-game.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hungarian-domin-block-game.setup.players',
+          'hungarian-domin-block-game.setup.deck',
+          'hungarian-domin-block-game.setup.equipment',
+          'hungarian-domin-block-game.setup.dealing',
+        ],
+      },
+      {
+        id: 'hungarian-domin-block-game.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hungarian-domin-block-game.rules.key.1',
+          'hungarian-domin-block-game.rules.key.2',
+          'hungarian-domin-block-game.rules.key.3',
+        ],
+      },
+      {
+        id: 'hungarian-domin-block-game.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hungarian-domin-block-game.score.description',
+          'hungarian-domin-block-game.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hungarian-domin-block-game.setup.dealing',
+        'hungarian-domin-block-game.rules.objective',
+      ],
+      deal: [
+        'hungarian-domin-block-game.rules.gameplay',
+      ],
+      pass: [
+        'hungarian-domin-block-game.rules.gameplay',
+      ],
+      play_tile: [
+        'hungarian-domin-block-game.rules.gameplay',
+      ],
+      score_round: [
+        'hungarian-domin-block-game.rules.gameplay',
+      ],
+    },
   },
 }

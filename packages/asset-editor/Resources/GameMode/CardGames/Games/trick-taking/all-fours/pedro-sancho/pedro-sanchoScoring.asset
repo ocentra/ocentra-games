@@ -10,7 +10,26 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Scoring trumps: high (A) 1, low (2) 1, jack 1, game (10) 1, pedro (5) 5, sancho (9) 9; total 18 per deal. Counted in that order. If bid is made, team scores points won; if bid fails, bidder loses the amount bid. First to 100 wins.',
+      winCondition: "First player or team to reach 100 points. If bid is made, add points won to total; if bid fails, subtract the bid from bidder's total.",
+      targetScore: 100,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        cardValues: 'Points are awarded for tricks (high, low, jack, game, pedro, sancho); per-card values are in trickConfig.pointValues.',
+      },
+      splitRules: '',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

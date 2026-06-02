@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Patruni e Sutta. Logic: Control the social drinking roles and direct who drinks under the hand result.',
-    Player: 'Patruni e Sutta is an Italian drinking card game from Calabria, Sicily, and the province of Taranto, usually played in teams.',
+    LLM: 'Teams play cards to determine the master and subordinate roles, then apply the drinking instructions or social penalties attached to those roles.',
+    Player: 'Teams play cards to determine the master and subordinate roles, then apply the drinking instructions or social penalties attached to those roles.',
     objective: 'Control the social drinking roles and direct who drinks under the hand result.',
     gameplay: 'Teams play cards to determine the master and subordinate roles, then apply the drinking instructions or social penalties attached to those roles.',
     keyRules: [
@@ -54,10 +54,168 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 4-8 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: The game is social-role based; drinking assignments rather than numeric points resolve the hand. Expected outcome: Control the social drinking roles and direct who drinks under the hand result..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Control the social drinking roles and direct who drinks under the hand result.',
+      'Turn-flow example: Teams play cards to determine the master and subordinate roles, then apply the drinking instructions or social penalties attached to those roles.',
+      'Scoring example: The game is social-role based; drinking assignments rather than numeric points resolve the hand. Control the social drinking roles and direct who drinks under the hand result..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'patruni-e-sutta.rules.objective',
+        title: 'Objective',
+        text: 'Control the social drinking roles and direct who drinks under the hand result.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'patruni-e-sutta.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Teams play cards to determine the master and subordinate roles, then apply the drinking instructions or social penalties attached to those roles.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'patruni-e-sutta.setup.players',
+        title: 'Players',
+        text: '4, 6, or 8 in two teams players use the table arrangement described for Patruni e Sutta.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'patruni-e-sutta.setup.deck',
+        title: 'Deck',
+        text: 'Italian, Sicilian, or French cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'patruni-e-sutta.setup.equipment',
+        title: 'Equipment',
+        text: 'Italian, Sicilian, or French cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'patruni-e-sutta.setup.dealing',
+        title: 'Deal',
+        text: 'Deal to two teams according to the local pack and player count.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'patruni-e-sutta.score.win-condition',
+        title: 'Win condition',
+        text: 'Control the social drinking roles and direct who drinks under the hand result.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'patruni-e-sutta.score.description',
+        title: 'Scoring',
+        text: 'The game is social-role based; drinking assignments rather than numeric points resolve the hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'patruni-e-sutta.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Italian drinking card game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'patruni-e-sutta.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Played with 4, 6, or 8 players.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'patruni-e-sutta.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Two teams are common.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'patruni-e-sutta.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Regional packs may be used.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'patruni-e-sutta.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Cards determine drinking roles.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'patruni-e-sutta.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'patruni-e-sutta.rules.objective',
+          'patruni-e-sutta.rules.gameplay',
+        ],
+      },
+      {
+        id: 'patruni-e-sutta.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'patruni-e-sutta.setup.players',
+          'patruni-e-sutta.setup.deck',
+          'patruni-e-sutta.setup.equipment',
+          'patruni-e-sutta.setup.dealing',
+        ],
+      },
+      {
+        id: 'patruni-e-sutta.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'patruni-e-sutta.rules.key.1',
+          'patruni-e-sutta.rules.key.2',
+          'patruni-e-sutta.rules.key.3',
+          'patruni-e-sutta.rules.key.4',
+          'patruni-e-sutta.rules.key.5',
+        ],
+      },
+      {
+        id: 'patruni-e-sutta.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'patruni-e-sutta.score.description',
+          'patruni-e-sutta.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'patruni-e-sutta.setup.dealing',
+        'patruni-e-sutta.rules.objective',
+      ],
+      play_card: [
+        'patruni-e-sutta.rules.gameplay',
+      ],
+      flip_top_card: [
+        'patruni-e-sutta.rules.gameplay',
+      ],
+    },
   },
 }

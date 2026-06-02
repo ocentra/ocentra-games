@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Ugly. Logic: See rules.objective and rules.gameplay.',
-    Player: "Ugly is an Australian trick-taking/avoidance game similar to Hearts. 3-4 players, 52-card deck. Players choose trumps each round. Jacks are negative. The 7â™¦ (Ugly Card) doubles Jack penalties OR doubles trick scores if no Jacks captured. The 7â™£ (Charm Card) cancels Ugly's doubling. Card passing escalates each round.",
+    LLM: "Dealer's left picks trump (or no trump). Pass cards (increases each round). Win tricks for +1 pt each. Avoid Jacks (negative). 7â™¦ (Ugly): doubles Jack penalties. 7â™¦ + no Jacks = double trick score. 7â™£ (Charm): cancels Ugly's doubling. Both Ugly+Charm + no Jacks = 4x trick score.",
+    Player: "Dealer's left picks trump (or no trump). Pass cards (increases each round). Win tricks for +1 pt each. Avoid Jacks (negative). 7â™¦ (Ugly): doubles Jack penalties. 7â™¦ + no Jacks = double trick score. 7â™£ (Charm): cancels Ugly's doubling. Both Ugly+Charm + no Jacks = 4x trick score.",
     objective: 'Accumulate the highest total score over multiple hands; win tricks for +1 point each while avoiding Jacks (negative points) and using the Ugly and Charm cards to modify scoring.',
     gameplay: "Dealer's left picks trump (or no trump). Pass cards (increases each round). Win tricks for +1 pt each. Avoid Jacks (negative). 7â™¦ (Ugly): doubles Jack penalties. 7â™¦ + no Jacks = double trick score. 7â™£ (Charm): cancels Ugly's doubling. Both Ugly+Charm + no Jacks = 4x trick score.",
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Tricks=+1. Jacks=negative. 7â™¦ doubles effect. 7â™£ cancels doubling. Expected outcome: Highest score over multiple rounds..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Accumulate the highest total score over multiple hands; win tricks for +1 point each while avoiding Jacks (negative points) and using the Ugly and Charm cards to modify scoring.',
+      "Turn-flow example: Dealer's left picks trump (or no trump). Pass cards (increases each round). Win tricks for +1 pt each. Avoid Jacks (negative). 7â™¦ (Ugly): doubles Jack penalties. 7â™¦ + no Jacks = double trick score. 7â™£ (Charm): cancels Ugly's doubling. Both Ugly+Charm + no Jacks = 4x trick score.",
+      'Scoring example: Tricks=+1. Jacks=negative. 7â™¦ doubles effect. 7â™£ cancels doubling. Highest score over multiple rounds..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'ugly.rules.objective',
+        title: 'Objective',
+        text: 'Accumulate the highest total score over multiple hands; win tricks for +1 point each while avoiding Jacks (negative points) and using the Ugly and Charm cards to modify scoring.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'ugly.rules.gameplay',
+        title: 'Turn flow',
+        text: "Dealer's left picks trump (or no trump). Pass cards (increases each round). Win tricks for +1 pt each. Avoid Jacks (negative). 7â™¦ (Ugly): doubles Jack penalties. 7â™¦ + no Jacks = double trick score. 7â™£ (Charm): cancels Ugly's doubling. Both Ugly+Charm + no Jacks = 4x trick score.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'ugly.setup.players',
+        title: 'Players',
+        text: '3-4 (3p: remove 2â™ )',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'ugly.setup.deck',
+        title: 'Deck',
+        text: '52 cards. A high.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'ugly.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, scoresheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'ugly.setup.dealing',
+        title: 'Deal',
+        text: 'All cards dealt. Pass cards (escalating each round).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'ugly.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest score over multiple rounds.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'ugly.score.description',
+        title: 'Scoring',
+        text: 'Tricks=+1. Jacks=negative. 7â™¦ doubles effect. 7â™£ cancels doubling.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'ugly.rules.key.1',
+        title: 'Key rule 1',
+        text: '7â™¦ = Ugly Card (doubles Jacks or tricks)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'ugly.rules.key.2',
+        title: 'Key rule 2',
+        text: '7â™£ = Charm Card (cancels Ugly)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'ugly.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Both + no Jacks = 4x scoring',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'ugly.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Escalating card pass',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'ugly.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'ugly.rules.objective',
+          'ugly.rules.gameplay',
+        ],
+      },
+      {
+        id: 'ugly.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'ugly.setup.players',
+          'ugly.setup.deck',
+          'ugly.setup.equipment',
+          'ugly.setup.dealing',
+        ],
+      },
+      {
+        id: 'ugly.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'ugly.rules.key.1',
+          'ugly.rules.key.2',
+          'ugly.rules.key.3',
+          'ugly.rules.key.4',
+        ],
+      },
+      {
+        id: 'ugly.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'ugly.score.description',
+          'ugly.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'ugly.setup.dealing',
+        'ugly.rules.objective',
+      ],
+      play_card: [
+        'ugly.rules.gameplay',
+      ],
+    },
   },
 }

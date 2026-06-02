@@ -11,7 +11,11 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Points for captured cards: Jack 1, Ace 1, 2 of Clubs 2, 10 of Diamonds 3; majority of cards 3; pişti (single-card capture by matching rank) 10; double pişti (Jack on Jack) 20. If both take 26 cards, no majority point. First to 151 wins.',
+      winCondition: 'First to reach 151 or more points at the end of a hand; if both reach 151 on the same hand, the higher score wins.',
+      targetScore: 151,
+      scoringDirection: 'high_wins',
+      cardValues: {
         Jack: '1 point each',
         Ace: '1 point each',
         '2_of_clubs': '2 points',
@@ -20,6 +24,31 @@
         pisti: '10 points',
         double_pisti: '20 points',
       },
+      sourceCardValues: {
+        raw: {
+          Jack: '1 point each',
+          Ace: '1 point each',
+          '2_of_clubs': '2 points',
+          '10_of_diamonds': '3 points',
+          majority_of_cards: '3 points',
+          pisti: '10 points',
+          double_pisti: '20 points',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: '',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,

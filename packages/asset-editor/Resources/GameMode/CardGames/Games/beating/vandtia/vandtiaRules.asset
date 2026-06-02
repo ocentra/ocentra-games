@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: VÃ¤ndtia. Logic: See rules.objective and rules.gameplay.',
-    Player: 'VÃ¤ndtia (Swedish Shithead) is a popular Swedish shedding game. 2-4 players, 52 cards. 9 cards each: 3 face-down, 3 face-up on top, 3 in hand. Must play equal/higher rank. 2=resets pile, 10=burns pile. Four-of-a-kind clears. Must draw to 3 from stock. Endgame plays face-up then blind face-down cards.',
+    LLM: "Play equal/higher rank. Draw to 3 while stock lasts. Can't play = pick up pile. 2=reset (any card next). 10=burn pile. Four-of-a-kind=burn. After hand empty: play face-up cards, then blind face-down.",
+    Player: "Play equal/higher rank. Draw to 3 while stock lasts. Can't play = pick up pile. 2=reset (any card next). 10=burn pile. Four-of-a-kind=burn. After hand empty: play face-up cards, then blind face-down.",
     objective: 'Shed all cards (hand, face-up, face-down). Last player loses.',
     gameplay: "Play equal/higher rank. Draw to 3 while stock lasts. Can't play = pick up pile. 2=reset (any card next). 10=burn pile. Four-of-a-kind=burn. After hand empty: play face-up cards, then blind face-down.",
     keyRules: [
@@ -54,10 +54,171 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: First out wins. Last = loser. Expected outcome: Shed all cards (hand, face-up, face-down). Last player loses..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Shed all cards (hand, face-up, face-down). Last player loses.',
+      "Turn-flow example: Play equal/higher rank. Draw to 3 while stock lasts. Can't play = pick up pile. 2=reset (any card next). 10=burn pile. Four-of-a-kind=burn. After hand empty: play face-up cards, then blind face-down.",
+      'Scoring example: First out wins. Last = loser. Shed all cards (hand, face-up, face-down). Last player loses..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'vandtia.rules.objective',
+        title: 'Objective',
+        text: 'Shed all cards (hand, face-up, face-down). Last player loses.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'vandtia.rules.gameplay',
+        title: 'Turn flow',
+        text: "Play equal/higher rank. Draw to 3 while stock lasts. Can't play = pick up pile. 2=reset (any card next). 10=burn pile. Four-of-a-kind=burn. After hand empty: play face-up cards, then blind face-down.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'vandtia.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'vandtia.setup.deck',
+        title: 'Deck',
+        text: '52 cards. A high, 2 low (but special).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'vandtia.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'vandtia.setup.dealing',
+        title: 'Deal',
+        text: '3 face-down + 3 face-up on top + 3 in hand. May swap hand/face-up before play.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'vandtia.score.win-condition',
+        title: 'Win condition',
+        text: 'Shed all cards (hand, face-up, face-down). Last player loses.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'vandtia.score.description',
+        title: 'Scoring',
+        text: 'First out wins. Last = loser.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'vandtia.rules.key.1',
+        title: 'Key rule 1',
+        text: '3 layers: hand â†’ face-up â†’ face-down',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'vandtia.rules.key.2',
+        title: 'Key rule 2',
+        text: '2 = reset',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'vandtia.rules.key.3',
+        title: 'Key rule 3',
+        text: '10 = burn pile',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'vandtia.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Four-of-a-kind = burn',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'vandtia.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Blind face-down cards',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'vandtia.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'vandtia.rules.objective',
+          'vandtia.rules.gameplay',
+        ],
+      },
+      {
+        id: 'vandtia.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'vandtia.setup.players',
+          'vandtia.setup.deck',
+          'vandtia.setup.equipment',
+          'vandtia.setup.dealing',
+        ],
+      },
+      {
+        id: 'vandtia.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'vandtia.rules.key.1',
+          'vandtia.rules.key.2',
+          'vandtia.rules.key.3',
+          'vandtia.rules.key.4',
+          'vandtia.rules.key.5',
+        ],
+      },
+      {
+        id: 'vandtia.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'vandtia.score.description',
+          'vandtia.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'vandtia.setup.dealing',
+        'vandtia.rules.objective',
+      ],
+      deal: [
+        'vandtia.rules.gameplay',
+      ],
+      play_card: [
+        'vandtia.rules.gameplay',
+      ],
+      finish_game: [
+        'vandtia.rules.gameplay',
+      ],
+    },
   },
 }

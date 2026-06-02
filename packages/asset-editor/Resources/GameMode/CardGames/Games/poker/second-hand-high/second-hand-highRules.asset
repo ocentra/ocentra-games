@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Second Hand High. Logic: See rules.objective and rules.gameplay.',
-    Player: "Second Hand High: 7-card stud variant where at showdown the second-highest hand wins the pot. Same deal and betting as 7-card stud; if all but one fold, the survivor wins. USA; dealer's choice.",
+    LLM: 'Deal and betting as in 7-card stud. At showdown, the second-highest five-card hand wins the pot. If all but one fold, that player wins. If there is a tie for first, none of those hands wins and the next highest hand takes the pot; if there is a tie for second, the equal hands split the pot.',
+    Player: 'Deal and betting as in 7-card stud. At showdown, the second-highest five-card hand wins the pot. If all but one fold, that player wins. If there is a tie for first, none of those hands wins and the next highest hand takes the pot; if there is a tie for second, the equal hands split the pot.',
     objective: 'Win the pot by having the second-best hand at showdown; the second-highest hand takes the entire pot.',
     gameplay: 'Deal and betting as in 7-card stud. At showdown, the second-highest five-card hand wins the pot. If all but one fold, that player wins. If there is a tie for first, none of those hands wins and the next highest hand takes the pot; if there is a tie for second, the equal hands split the pot.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The second-highest hand at showdown wins the entire pot; ties for second split the pot. Expected outcome: Win the pot with the second-best hand at showdown; the second-highest hand takes the pot..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the pot by having the second-best hand at showdown; the second-highest hand takes the entire pot.',
+      'Turn-flow example: Deal and betting as in 7-card stud. At showdown, the second-highest five-card hand wins the pot. If all but one fold, that player wins. If there is a tie for first, none of those hands wins and the next highest hand takes the pot; if there is a tie for second, the equal hands split the pot.',
+      'Scoring example: The second-highest hand at showdown wins the entire pot; ties for second split the pot. Win the pot with the second-best hand at showdown; the second-highest hand takes the pot..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'second-hand-high.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the second-best hand at showdown; the second-highest hand takes the entire pot.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'second-hand-high.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Deal and betting as in 7-card stud. At showdown, the second-highest five-card hand wins the pot. If all but one fold, that player wins. If there is a tie for first, none of those hands wins and the next highest hand takes the pot; if there is a tie for second, the equal hands split the pot.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'second-hand-high.setup.players',
+        title: 'Players',
+        text: 'A standard 52-pack is used and from 2 to 8 players can take part. The game is best for 5 to 7 players. When 8 play there is the problem that the cards may run out towards the end of the deal.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'second-hand-high.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. No jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'second-hand-high.setup.equipment',
+        title: 'Equipment',
+        text: 'Chips; table space.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'second-hand-high.setup.dealing',
+        title: 'Deal',
+        text: 'Same as 7-card stud. No wilds.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'second-hand-high.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the pot with the second-best hand at showdown; the second-highest hand takes the pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'second-hand-high.score.description',
+        title: 'Scoring',
+        text: 'The second-highest hand at showdown wins the entire pot; ties for second split the pot.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'second-hand-high.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Second-highest hand at showdown wins the pot',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'second-hand-high.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Standard 7-card stud deal and betting',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'second-hand-high.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Tie for first: next highest wins; tie for second: split pot',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'second-hand-high.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'second-hand-high.rules.objective',
+          'second-hand-high.rules.gameplay',
+        ],
+      },
+      {
+        id: 'second-hand-high.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'second-hand-high.setup.players',
+          'second-hand-high.setup.deck',
+          'second-hand-high.setup.equipment',
+          'second-hand-high.setup.dealing',
+        ],
+      },
+      {
+        id: 'second-hand-high.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'second-hand-high.rules.key.1',
+          'second-hand-high.rules.key.2',
+          'second-hand-high.rules.key.3',
+        ],
+      },
+      {
+        id: 'second-hand-high.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'second-hand-high.score.description',
+          'second-hand-high.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'second-hand-high.setup.dealing',
+        'second-hand-high.rules.objective',
+      ],
+      play_card: [
+        'second-hand-high.rules.gameplay',
+      ],
+    },
   },
 }

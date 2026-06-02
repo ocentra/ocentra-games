@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kemps. See rules.objective and rules.gameplay for details.',
-    Player: "Kemps (also known as Kent or Cash) is a fast-paced partnership card game where teams try to collect four-of-a-kind and signal their partner to call 'Kemps!' The game involves secret signals, quick card exchanges, and trying to intercept opponents' signals.",
+    LLM: "1. Partners secretly agree on a signal (gesture, word, or movement) to indicate they have four-of-a-kind\n2. Each player receives 4 cards\n3. Four cards are placed face-up in the center\n4. When play begins, players simultaneously exchange cards with the center\n5. Players can swap any number of cards (1-for-1, 2-for-2, etc.)\n6. No turns - it's a free-for-all\n7. Players try to collect four-of-a-kind in their hand\n8. When a player gets four-of-a-kind, they give their secret signal to their partner\n9. The partner calls 'Kemps!' to score a point\n10. If 'Kemps' is correct, the team scores\n11. If 'Kemps' is wrong (false alarm), the team loses a point\n12. Opponents can call 'Stop Kemps' or 'Counter-Kemps' if they think someone is signaling\n13. If a 'Stop Kemps' is correct, the calling team scores; if wrong, they lose a point",
+    Player: "1. Partners secretly agree on a signal (gesture, word, or movement) to indicate they have four-of-a-kind\n2. Each player receives 4 cards\n3. Four cards are placed face-up in the center\n4. When play begins, players simultaneously exchange cards with the center\n5. Players can swap any number of cards (1-for-1, 2-for-2, etc.)\n6. No turns - it's a free-for-all\n7. Players try to collect four-of-a-kind in their hand\n8. When a player gets four-of-a-kind, they give their secret signal to their partner\n9. The partner calls 'Kemps!' to score a point\n10. If 'Kemps' is correct, the team scores\n11. If 'Kemps' is wrong (false alarm), the team loses a point\n12. Opponents can call 'Stop Kemps' or 'Counter-Kemps' if they think someone is signaling\n13. If a 'Stop Kemps' is correct, the calling team scores; if wrong, they lose a point",
     objective: "Be the first team to score a predetermined number of points (usually 5) by successfully calling 'Kemps' when your partner has four-of-a-kind, or by calling 'Stop Kemps' when an opponent is about to call.",
     gameplay: "1. Partners secretly agree on a signal (gesture, word, or movement) to indicate they have four-of-a-kind\n2. Each player receives 4 cards\n3. Four cards are placed face-up in the center\n4. When play begins, players simultaneously exchange cards with the center\n5. Players can swap any number of cards (1-for-1, 2-for-2, etc.)\n6. No turns - it's a free-for-all\n7. Players try to collect four-of-a-kind in their hand\n8. When a player gets four-of-a-kind, they give their secret signal to their partner\n9. The partner calls 'Kemps!' to score a point\n10. If 'Kemps' is correct, the team scores\n11. If 'Kemps' is wrong (false alarm), the team loses a point\n12. Opponents can call 'Stop Kemps' or 'Counter-Kemps' if they think someone is signaling\n13. If a 'Stop Kemps' is correct, the calling team scores; if wrong, they lose a point",
     keyRules: [
@@ -57,10 +57,201 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-6 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      "Scoring check: Be the first team to score a predetermined number of points (usually 5) by successfully calling 'Kemps' when your partner has four-of-a-kind, or by calling 'Stop Kemps' when an opponent is about to call. Expected outcome: NA.",
+      'Setup example: 4 card(s) per player.',
+      "Rule example: Be the first team to score a predetermined number of points (usually 5) by successfully calling 'Kemps' when your partner has four-of-a-kind, or by calling 'Stop Kemps' when an opponent is about to call.",
+      "Turn-flow example: 1. Partners secretly agree on a signal (gesture, word, or movement) to indicate they have four-of-a-kind\n2. Each player receives 4 cards\n3. Four cards are placed face-up in the center\n4. When play begins, players simultaneously exchange cards with the center\n5. Players can swap any number of cards (1-for-1, 2-for-2, etc.)\n6. No turns - it's a free-for-all\n7. Players try to collect four-of-a-kind in their hand\n8. When a player gets four-of-a-kind, they give their secret signal to their partner\n9. The partner calls 'Kemps!' to score a point\n10. If 'Kemps' is correct, the team scores\n11. If 'Kemps' is wrong (false alarm), the team loses a point\n12. Opponents can call 'Stop Kemps' or 'Counter-Kemps' if they think someone is signaling\n13. If a 'Stop Kemps' is correct, the calling team scores; if wrong, they lose a point",
+      "Scoring example: Be the first team to score a predetermined number of points (usually 5) by successfully calling 'Kemps' when your partner has four-of-a-kind, or by calling 'Stop Kemps' when an opponent is about to call. Be the first team to score a predetermined number of points (usually 5) by successfully calling 'Kemps' when your partner has four-of-a-kind, or by calling 'Stop Kemps' when an opponent is about to call..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'kemps.rules.objective',
+        title: 'Objective',
+        text: "Be the first team to score a predetermined number of points (usually 5) by successfully calling 'Kemps' when your partner has four-of-a-kind, or by calling 'Stop Kemps' when an opponent is about to call.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kemps.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Partners secretly agree on a signal (gesture, word, or movement) to indicate they have four-of-a-kind\n2. Each player receives 4 cards\n3. Four cards are placed face-up in the center\n4. When play begins, players simultaneously exchange cards with the center\n5. Players can swap any number of cards (1-for-1, 2-for-2, etc.)\n6. No turns - it's a free-for-all\n7. Players try to collect four-of-a-kind in their hand\n8. When a player gets four-of-a-kind, they give their secret signal to their partner\n9. The partner calls 'Kemps!' to score a point\n10. If 'Kemps' is correct, the team scores\n11. If 'Kemps' is wrong (false alarm), the team loses a point\n12. Opponents can call 'Stop Kemps' or 'Counter-Kemps' if they think someone is signaling\n13. If a 'Stop Kemps' is correct, the calling team scores; if wrong, they lose a point",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kemps.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 4\nMaximum Players: 6+ (in teams of 2)\nOptimal Players: 4\nPartnerships: Yes (teams of 2, partners sit opposite)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kemps.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck (2 decks for 8+ players)\nNumber of Decks: 1 (or 2 for larger groups)\nJokers: No',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kemps.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nTable space for 4 face-up cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kemps.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: 4\nDealing Pattern: 4 cards to each player\nCenter: 4 cards dealt face-up in the middle',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kemps.score.win-condition',
+        title: 'Win condition',
+        text: "Be the first team to score a predetermined number of points (usually 5) by successfully calling 'Kemps' when your partner has four-of-a-kind, or by calling 'Stop Kemps' when an opponent is about to call.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kemps.score.description',
+        title: 'Scoring',
+        text: "Be the first team to score a predetermined number of points (usually 5) by successfully calling 'Kemps' when your partner has four-of-a-kind, or by calling 'Stop Kemps' when an opponent is about to call.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kemps.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Partners must agree on a secret signal before play',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kemps.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Signals can be gestures, sounds, or movements - but not words with meaning',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kemps.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Players must maintain exactly 4 cards in hand',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kemps.rules.key.4',
+        title: 'Key rule 4',
+        text: 'The center must always have exactly 4 cards',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'kemps.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Card swapping is simultaneous - no turns',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'kemps.rules.key.6',
+        title: 'Key rule 6',
+        text: "First to touch a center card gets it if there's a dispute",
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'kemps.rules.key.7',
+        title: 'Key rule 7',
+        text: "'Kemps' must be called by the partner, not the player with four-of-a-kind",
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+      {
+        id: 'kemps.rules.key.8',
+        title: 'Key rule 8',
+        text: "'Stop Kemps' can be called at any time",
+        sourceFields: [
+          'rules.keyRules.7',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kemps.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kemps.rules.objective',
+          'kemps.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kemps.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kemps.setup.players',
+          'kemps.setup.deck',
+          'kemps.setup.equipment',
+          'kemps.setup.dealing',
+        ],
+      },
+      {
+        id: 'kemps.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kemps.rules.key.1',
+          'kemps.rules.key.2',
+          'kemps.rules.key.3',
+          'kemps.rules.key.4',
+          'kemps.rules.key.5',
+          'kemps.rules.key.6',
+          'kemps.rules.key.7',
+          'kemps.rules.key.8',
+        ],
+      },
+      {
+        id: 'kemps.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kemps.score.description',
+          'kemps.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kemps.setup.dealing',
+        'kemps.rules.objective',
+      ],
+      deal: [
+        'kemps.rules.gameplay',
+      ],
+      declare: [
+        'kemps.rules.gameplay',
+      ],
+      play_card: [
+        'kemps.rules.gameplay',
+      ],
+      draw: [
+        'kemps.rules.gameplay',
+      ],
+    },
   },
 }

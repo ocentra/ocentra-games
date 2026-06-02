@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Basset. Logic: Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
-    Player: 'Basset is a historical Italian gambling card game in which players bet against a banker on ranks that may appear from the pack.',
+    LLM: 'Players bet on card outcomes in a Pharaoh-like banking structure, but without the more elaborate lappe or paroli features of Basset and Faro.',
+    Player: 'Players bet on card outcomes in a Pharaoh-like banking structure, but without the more elaborate lappe or paroli features of Basset and Faro.',
     objective: 'Win stakes from the banker through the simplified draw-and-bet procedure.',
     gameplay: 'Players bet on card outcomes in a Pharaoh-like banking structure, but without the more elaborate lappe or paroli features of Basset and Faro.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Bets are paid or lost against the bank according to the exposed-card result. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win stakes from the banker through the simplified draw-and-bet procedure.',
+      'Turn-flow example: Players bet on card outcomes in a Pharaoh-like banking structure, but without the more elaborate lappe or paroli features of Basset and Faro.',
+      'Scoring example: Bets are paid or lost against the bank according to the exposed-card result. Win stakes by backing ranks that appear in the favourable positions of the banked deal..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tempeln.rules.objective',
+        title: 'Objective',
+        text: 'Win stakes from the banker through the simplified draw-and-bet procedure.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tempeln.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players bet on card outcomes in a Pharaoh-like banking structure, but without the more elaborate lappe or paroli features of Basset and Faro.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tempeln.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Tempeln.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tempeln.setup.deck',
+        title: 'Deck',
+        text: 'French or German-suited playing cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tempeln.setup.equipment',
+        title: 'Equipment',
+        text: 'French or German-suited playing cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tempeln.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare French or German-suited playing cards and deal or lay out cards according to the documented Tempeln rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tempeln.score.win-condition',
+        title: 'Win condition',
+        text: 'Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tempeln.score.description',
+        title: 'Scoring',
+        text: 'Bets are paid or lost against the bank according to the exposed-card result.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tempeln.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Historical German gambling game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tempeln.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Simpler than Basset and Faro.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tempeln.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Known in a 32-card form as Naschi Waschi or German Pharaoh.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tempeln.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tempeln.rules.objective',
+          'tempeln.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tempeln.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tempeln.setup.players',
+          'tempeln.setup.deck',
+          'tempeln.setup.equipment',
+          'tempeln.setup.dealing',
+        ],
+      },
+      {
+        id: 'tempeln.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tempeln.rules.key.1',
+          'tempeln.rules.key.2',
+          'tempeln.rules.key.3',
+        ],
+      },
+      {
+        id: 'tempeln.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tempeln.score.description',
+          'tempeln.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tempeln.setup.dealing',
+        'tempeln.rules.objective',
+      ],
+      play_card: [
+        'tempeln.rules.gameplay',
+      ],
+    },
   },
 }

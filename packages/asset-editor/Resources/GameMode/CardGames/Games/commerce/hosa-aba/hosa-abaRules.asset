@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Hosa Aba. Objective: Avoid having the lowest hand value (sum of cards in one suit) at the end of the round.',
-    Player: 'Hosa Aba: play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: "1. The dealer can swap their hand for 'The Window' before revealing it to the group.\n2. In turn, players can: - **Swap ONE**: Exchange one hand card with one center card. - **Swap ALL**: Exchange the entire hand. - **Pass**: Do nothing for the turn. - **Close (Knock)**: Signal the final round. All other players get ONE more turn.\n3. **Hosa Aba (31)**: If a player reaches 31, they reveal immediately and the round ends instantly.",
+    Player: "1. The dealer can swap their hand for 'The Window' before revealing it to the group.\n2. In turn, players can: - **Swap ONE**: Exchange one hand card with one center card. - **Swap ALL**: Exchange the entire hand. - **Pass**: Do nothing for the turn. - **Close (Knock)**: Signal the final round. All other players get ONE more turn.\n3. **Hosa Aba (31)**: If a player reaches 31, they reveal immediately and the round ends instantly.",
     objective: "Avoid having the lowest hand value (sum of cards in one suit) at the end of the round. Players start with 3 'lives'.",
     gameplay: "1. The dealer can swap their hand for 'The Window' before revealing it to the group.\n2. In turn, players can: - **Swap ONE**: Exchange one hand card with one center card. - **Swap ALL**: Exchange the entire hand. - **Pass**: Do nothing for the turn. - **Close (Knock)**: Signal the final round. All other players get ONE more turn.\n3. **Hosa Aba (31)**: If a player reaches 31, they reveal immediately and the round ends instantly.",
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      "Scoring check: When the play is over, all the players' cards are exposed. Expected outcome: NA.",
+      'Setup example: 0 card(s) per player.',
+      "Rule example: Avoid having the lowest hand value (sum of cards in one suit) at the end of the round. Players start with 3 'lives'.",
+      "Turn-flow example: 1. The dealer can swap their hand for 'The Window' before revealing it to the group.\n2. In turn, players can: - **Swap ONE**: Exchange one hand card with one center card. - **Swap ALL**: Exchange the entire hand. - **Pass**: Do nothing for the turn. - **Close (Knock)**: Signal the final round. All other players get ONE more turn.\n3. **Hosa Aba (31)**: If a player reaches 31, they reveal immediately and the round ends instantly.",
+      "Scoring example: When the play is over, all the players' cards are exposed. When the play is over, all the players' cards are exposed..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hosa-aba.rules.objective',
+        title: 'Objective',
+        text: "Avoid having the lowest hand value (sum of cards in one suit) at the end of the round. Players start with 3 'lives'.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hosa-aba.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. The dealer can swap their hand for 'The Window' before revealing it to the group.\n2. In turn, players can: - **Swap ONE**: Exchange one hand card with one center card. - **Swap ALL**: Exchange the entire hand. - **Pass**: Do nothing for the turn. - **Close (Knock)**: Signal the final round. All other players get ONE more turn.\n3. **Hosa Aba (31)**: If a player reaches 31, they reveal immediately and the round ends instantly.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hosa-aba.setup.players',
+        title: 'Players',
+        text: '3 to 8 players is ideal.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hosa-aba.setup.deck',
+        title: 'Deck',
+        text: '36-card Swiss-German deck (6-10, Under, Ober, King, Ace).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hosa-aba.setup.equipment',
+        title: 'Equipment',
+        text: '36-card Swiss-German deck (6-10, Under, Ober, King, Ace).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hosa-aba.setup.dealing',
+        title: 'Deal',
+        text: "Deal 3 cards to each player and 3 cards face-down in the center ('The Window').",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hosa-aba.score.win-condition',
+        title: 'Win condition',
+        text: "When the play is over, all the players' cards are exposed.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hosa-aba.score.description',
+        title: 'Scoring',
+        text: "When the play is over, all the players' cards are exposed.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hosa-aba.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Hosa Aba.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hosa-aba.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: - Only cards of the SAME SUIT are summed.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hosa-aba.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Avoid having the lowest hand value (sum of cards in one suit) at the end of the round.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hosa-aba.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hosa-aba.rules.objective',
+          'hosa-aba.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hosa-aba.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hosa-aba.setup.players',
+          'hosa-aba.setup.deck',
+          'hosa-aba.setup.equipment',
+          'hosa-aba.setup.dealing',
+        ],
+      },
+      {
+        id: 'hosa-aba.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hosa-aba.rules.key.1',
+          'hosa-aba.rules.key.2',
+          'hosa-aba.rules.key.3',
+        ],
+      },
+      {
+        id: 'hosa-aba.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hosa-aba.score.description',
+          'hosa-aba.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hosa-aba.setup.dealing',
+        'hosa-aba.rules.objective',
+      ],
+      play_card: [
+        'hosa-aba.rules.gameplay',
+      ],
+    },
   },
 }

@@ -52,10 +52,180 @@
       go_out: 'Double Draw (Lowball) is modeled as a Poker flow; go out is not a core player action in its documented rules.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before main_play.',
-      'Scoring check: Scoring uses the documented rules for Double Draw (Lowball) and determines round or match winners accordingly. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Complete the lowest possible 5-card hand (Lowball) or highest possible (High) after two drawing rounds.',
+      'Turn-flow example: 1. Opening: First betting round occurs after the initial 5 cards are dealt.\n2. First Draw: Players may discard any number of cards and receive new ones from the dealer.\n3. Second Betting: A second round of betting takes place.\n4. Second Draw: Players may discard and draw a second time.\n5. Final Betting: The final round of betting occurs before the showdown.',
+      'Scoring example: Scoring uses the documented rules for Double Draw (Lowball) and determines round or match winners accordingly. Complete the lowest possible 5-card hand (Lowball) or highest possible (High) after two drawing rounds..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'double-draw.rules.objective',
+        title: 'Objective',
+        text: 'Complete the lowest possible 5-card hand (Lowball) or highest possible (High) after two drawing rounds.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'double-draw.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Opening: First betting round occurs after the initial 5 cards are dealt.\n2. First Draw: Players may discard any number of cards and receive new ones from the dealer.\n3. Second Betting: A second round of betting takes place.\n4. Second Draw: Players may discard and draw a second time.\n5. Final Betting: The final round of betting occurs before the showdown.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'double-draw.setup.players',
+        title: 'Players',
+        text: '2 to 6 players. Usually played with Blinds (Small and Big).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'double-draw.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52ndcard deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'double-draw.setup.equipment',
+        title: 'Equipment',
+        text: 'Poker chips, dealer button, standard deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'double-draw.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 5 cards face-down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'double-draw.score.win-condition',
+        title: 'Win condition',
+        text: 'Complete the lowest possible 5-card hand (Lowball) or highest possible (High) after two drawing rounds.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'double-draw.score.description',
+        title: 'Scoring',
+        text: 'Scoring uses the documented rules for Double Draw (Lowball) and determines round or match winners accordingly.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'double-draw.rules.key.1',
+        title: 'Key rule 1',
+        text: "Players are not required to discard; they can 'stand pat' on either draw.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'double-draw.rules.key.2',
+        title: 'Key rule 2',
+        text: "If the deck runs out of cards during a draw, the discarded cards (excluding the current player's discards) are reshuffled to create a new deck.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'double-draw.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The bet size usually doubles in the final betting round.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'double-draw.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'double-draw.rules.objective',
+          'double-draw.rules.gameplay',
+        ],
+      },
+      {
+        id: 'double-draw.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'double-draw.setup.players',
+          'double-draw.setup.deck',
+          'double-draw.setup.equipment',
+          'double-draw.setup.dealing',
+        ],
+      },
+      {
+        id: 'double-draw.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'double-draw.rules.key.1',
+          'double-draw.rules.key.2',
+          'double-draw.rules.key.3',
+        ],
+      },
+      {
+        id: 'double-draw.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'double-draw.score.description',
+          'double-draw.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'double-draw.setup.dealing',
+        'double-draw.rules.objective',
+      ],
+      ante: [
+        'double-draw.rules.gameplay',
+      ],
+      deal: [
+        'double-draw.rules.gameplay',
+      ],
+      fold: [
+        'double-draw.rules.gameplay',
+      ],
+      check: [
+        'double-draw.rules.gameplay',
+      ],
+      call: [
+        'double-draw.rules.gameplay',
+      ],
+      bet: [
+        'double-draw.rules.gameplay',
+      ],
+      raise: [
+        'double-draw.rules.gameplay',
+      ],
+      reveal_hand: [
+        'double-draw.rules.gameplay',
+      ],
+      award_pot: [
+        'double-draw.rules.gameplay',
+      ],
+      play_card: [
+        'double-draw.rules.gameplay',
+      ],
+      draw: [
+        'double-draw.rules.gameplay',
+      ],
+      discard: [
+        'double-draw.rules.gameplay',
+      ],
+    },
   },
 }

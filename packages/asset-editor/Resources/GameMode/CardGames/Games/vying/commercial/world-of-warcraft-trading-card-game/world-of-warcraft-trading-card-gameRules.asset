@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players use constructed decks built around heroes and classes. The game supports player-versus-player and cooperative raid boss modes, with exact effects controlled by official card text.',
+    Player: 'Players use constructed decks built around heroes and classes. The game supports player-versus-player and cooperative raid boss modes, with exact effects controlled by official card text.',
     objective: 'Defeat opponents or raid bosses using hero, ability, ally, equipment, and quest cards.',
     gameplay: 'Players use constructed decks built around heroes and classes. The game supports player-versus-player and cooperative raid boss modes, with exact effects controlled by official card text.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Defeat opponents or raid bosses using hero, ability, ally, equipment, and quest cards.',
+      'Turn-flow example: Players use constructed decks built around heroes and classes. The game supports player-versus-player and cooperative raid boss modes, with exact effects controlled by official card text.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'world-of-warcraft-trading-card-game.rules.objective',
+        title: 'Objective',
+        text: 'Defeat opponents or raid bosses using hero, ability, ally, equipment, and quest cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'world-of-warcraft-trading-card-game.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players use constructed decks built around heroes and classes. The game supports player-versus-player and cooperative raid boss modes, with exact effects controlled by official card text.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'world-of-warcraft-trading-card-game.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for World of Warcraft Trading Card Game.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'world-of-warcraft-trading-card-game.setup.deck',
+        title: 'Deck',
+        text: 'Constructed World of Warcraft TCG decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'world-of-warcraft-trading-card-game.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed World of Warcraft TCG decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'world-of-warcraft-trading-card-game.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Constructed World of Warcraft TCG decks and deal or lay out cards according to the documented World of Warcraft Trading Card Game rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'world-of-warcraft-trading-card-game.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'world-of-warcraft-trading-card-game.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'world-of-warcraft-trading-card-game.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Based on World of Warcraft.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'world-of-warcraft-trading-card-game.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Supports one-on-one and raid boss play.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'world-of-warcraft-trading-card-game.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The TCG was discontinued after the license ended.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'world-of-warcraft-trading-card-game.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'world-of-warcraft-trading-card-game.rules.objective',
+          'world-of-warcraft-trading-card-game.rules.gameplay',
+        ],
+      },
+      {
+        id: 'world-of-warcraft-trading-card-game.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'world-of-warcraft-trading-card-game.setup.players',
+          'world-of-warcraft-trading-card-game.setup.deck',
+          'world-of-warcraft-trading-card-game.setup.equipment',
+          'world-of-warcraft-trading-card-game.setup.dealing',
+        ],
+      },
+      {
+        id: 'world-of-warcraft-trading-card-game.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'world-of-warcraft-trading-card-game.rules.key.1',
+          'world-of-warcraft-trading-card-game.rules.key.2',
+          'world-of-warcraft-trading-card-game.rules.key.3',
+        ],
+      },
+      {
+        id: 'world-of-warcraft-trading-card-game.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'world-of-warcraft-trading-card-game.score.description',
+          'world-of-warcraft-trading-card-game.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'world-of-warcraft-trading-card-game.setup.dealing',
+        'world-of-warcraft-trading-card-game.rules.objective',
+      ],
+      play_card: [
+        'world-of-warcraft-trading-card-game.rules.gameplay',
+      ],
+    },
   },
 }

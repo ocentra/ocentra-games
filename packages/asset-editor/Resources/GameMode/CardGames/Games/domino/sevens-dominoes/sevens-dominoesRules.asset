@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Sevens Dominoes. Enforce highest-double opening, strict triangle placement legality, and forced play-before-draw rules.',
-    Player: 'In Sevens Dominoes, preserve tiles that keep multiple future triangle placements available and avoid forced draws from the boneyard.',
+    LLM: 'Highest double leads; if no one has a double, redeal. Players then place tiles into the Sevens triangle pattern: doubles progress by adjacent rank on the top row, while non-doubles are placed beneath according to the one-step pip progression pattern. If a player can play, they must play. If not, they draw one tile from boneyard; when boneyard is empty and no play is possible, they pass.',
+    Player: 'Highest double leads; if no one has a double, redeal. Players then place tiles into the Sevens triangle pattern: doubles progress by adjacent rank on the top row, while non-doubles are placed beneath according to the one-step pip progression pattern. If a player can play, they must play. If not, they draw one tile from boneyard; when boneyard is empty and no play is possible, they pass.',
     objective: 'Be the first player to domino by playing all tiles.',
     gameplay: 'Highest double leads; if no one has a double, redeal. Players then place tiles into the Sevens triangle pattern: doubles progress by adjacent rank on the top row, while non-doubles are placed beneath according to the one-step pip progression pattern. If a player can play, they must play. If not, they draw one tile from boneyard; when boneyard is empty and no play is possible, they pass.',
     keyRules: [
@@ -53,10 +53,168 @@
       go_out: 'Hand ends when a player dominoes (plays last tile) or game is blocked.',
     },
     exampleHands: [
-      'Opening deal: 2-3 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play_tiles.',
-      'Scoring check: No running points are required in the core rules; the hand winner is the first player to domino. Expected outcome: Be first to play all tiles..',
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Be the first player to domino by playing all tiles.',
+      'Turn-flow example: Highest double leads; if no one has a double, redeal. Players then place tiles into the Sevens triangle pattern: doubles progress by adjacent rank on the top row, while non-doubles are placed beneath according to the one-step pip progression pattern. If a player can play, they must play. If not, they draw one tile from boneyard; when boneyard is empty and no play is possible, they pass.',
+      'Scoring example: No running points are required in the core rules; the hand winner is the first player to domino. Be first to play all tiles..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'sevens-dominoes.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to domino by playing all tiles.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'sevens-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Highest double leads; if no one has a double, redeal. Players then place tiles into the Sevens triangle pattern: doubles progress by adjacent rank on the top row, while non-doubles are placed beneath according to the one-step pip progression pattern. If a player can play, they must play. If not, they draw one tile from boneyard; when boneyard is empty and no play is possible, they pass.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'sevens-dominoes.setup.players',
+        title: 'Players',
+        text: 'Best for 2-3 players; 4 players leave no boneyard.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'sevens-dominoes.setup.deck',
+        title: 'Deck',
+        text: 'Standard 28-tile double-six set, from 0-0 to 6-6.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'sevens-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'Double-six dominoes and table space for a triangle layout.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'sevens-dominoes.setup.dealing',
+        title: 'Deal',
+        text: 'Each player draws 7 tiles; remaining tiles form a boneyard.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'sevens-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'Be first to play all tiles.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'sevens-dominoes.score.description',
+        title: 'Scoring',
+        text: 'No running points are required in the core rules; the hand winner is the first player to domino.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'sevens-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Highest double starts the hand.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'sevens-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If no double is held by any player, redeal.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'sevens-dominoes.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Must play if able.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'sevens-dominoes.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Draw from boneyard when blocked; pass only when boneyard is empty.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'sevens-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'sevens-dominoes.rules.objective',
+          'sevens-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: 'sevens-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'sevens-dominoes.setup.players',
+          'sevens-dominoes.setup.deck',
+          'sevens-dominoes.setup.equipment',
+          'sevens-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: 'sevens-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'sevens-dominoes.rules.key.1',
+          'sevens-dominoes.rules.key.2',
+          'sevens-dominoes.rules.key.3',
+          'sevens-dominoes.rules.key.4',
+        ],
+      },
+      {
+        id: 'sevens-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'sevens-dominoes.score.description',
+          'sevens-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'sevens-dominoes.setup.dealing',
+        'sevens-dominoes.rules.objective',
+      ],
+      deal: [
+        'sevens-dominoes.rules.gameplay',
+      ],
+      award_pot: [
+        'sevens-dominoes.rules.gameplay',
+      ],
+      play_card: [
+        'sevens-dominoes.rules.gameplay',
+      ],
+      draw: [
+        'sevens-dominoes.rules.gameplay',
+      ],
+      pass: [
+        'sevens-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

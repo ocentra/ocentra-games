@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: P'yanitsa. War variant. 6 beats Ace. Simultaneous reveal. Winner takes all. Disputes: add face-down then face-up; high face-up wins pile.",
-    Player: "P'yanitsa: Turn your top card. Highest wins the trickâ€”except 6 beats Ace! Put won cards at the bottom. First to get all cards wins.",
+    LLM: "1. Each player turns over their top card simultaneously. 2. The highest card wins all cards in the trick. 3. Winning cards are placed at the bottom of the winner's deck. 4. Exception: An Ace is the highest card, UNLESS a 6 is played against it. A 6 beats an Ace (but loses to every other card).",
+    Player: "1. Each player turns over their top card simultaneously. 2. The highest card wins all cards in the trick. 3. Winning cards are placed at the bottom of the winner's deck. 4. Exception: An Ace is the highest card, UNLESS a 6 is played against it. A 6 beats an Ace (but loses to every other card).",
     objective: 'Capture the entire deck by winning tricks: each round players reveal the top card simultaneously; the higher rank takes the trick (six beats ace). The player who collects all the cards wins; the opponent left with no cards is the loser, the drunkard.',
     gameplay: "1. Each player turns over their top card simultaneously. 2. The highest card wins all cards in the trick. 3. Winning cards are placed at the bottom of the winner's deck. 4. Exception: An Ace is the highest card, UNLESS a 6 is played against it. A 6 beats an Ace (but loses to every other card).",
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in reveal; all_simultaneous may use reveal_top before capture.',
-      'Scoring check: No point scoring. Goal is to capture the entire deck. Expected outcome: Last player with cards wins; or in Giveaway variant, first to lose all cards wins..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Capture the entire deck by winning tricks: each round players reveal the top card simultaneously; the higher rank takes the trick (six beats ace). The player who collects all the cards wins; the opponent left with no cards is the loser, the drunkard.',
+      "Turn-flow example: 1. Each player turns over their top card simultaneously. 2. The highest card wins all cards in the trick. 3. Winning cards are placed at the bottom of the winner's deck. 4. Exception: An Ace is the highest card, UNLESS a 6 is played against it. A 6 beats an Ace (but loses to every other card).",
+      'Scoring example: No point scoring. Goal is to capture the entire deck. Last player with cards wins; or in Giveaway variant, first to lose all cards wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pyanitsa-drunkard.rules.objective',
+        title: 'Objective',
+        text: 'Capture the entire deck by winning tricks: each round players reveal the top card simultaneously; the higher rank takes the trick (six beats ace). The player who collects all the cards wins; the opponent left with no cards is the loser, the drunkard.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pyanitsa-drunkard.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Each player turns over their top card simultaneously. 2. The highest card wins all cards in the trick. 3. Winning cards are placed at the bottom of the winner's deck. 4. Exception: An Ace is the highest card, UNLESS a 6 is played against it. A 6 beats an Ace (but loses to every other card).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pyanitsa-drunkard.setup.players',
+        title: 'Players',
+        text: '2 is standard; up to 4 is possible.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pyanitsa-drunkard.setup.deck',
+        title: 'Deck',
+        text: '36 cards (6, 7, 8, 9, 10, J, Q, K, A).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pyanitsa-drunkard.setup.equipment',
+        title: 'Equipment',
+        text: '36-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pyanitsa-drunkard.setup.dealing',
+        title: 'Deal',
+        text: 'The entire deck is dealt face-down to all players. Players do not look at their cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pyanitsa-drunkard.score.win-condition',
+        title: 'Win condition',
+        text: 'Last player with cards wins; or in Giveaway variant, first to lose all cards wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pyanitsa-drunkard.score.description',
+        title: 'Scoring',
+        text: 'No point scoring. Goal is to capture the entire deck.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pyanitsa-drunkard.rules.key.1',
+        title: 'Key rule 1',
+        text: '6 beats Ace (but loses to all other cards).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pyanitsa-drunkard.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Disputes: same rank playedâ€”each adds one face-down, one face-up; highest face-up wins pile.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pyanitsa-drunkard.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Last player with cards wins.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pyanitsa-drunkard.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pyanitsa-drunkard.rules.objective',
+          'pyanitsa-drunkard.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pyanitsa-drunkard.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pyanitsa-drunkard.setup.players',
+          'pyanitsa-drunkard.setup.deck',
+          'pyanitsa-drunkard.setup.equipment',
+          'pyanitsa-drunkard.setup.dealing',
+        ],
+      },
+      {
+        id: 'pyanitsa-drunkard.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pyanitsa-drunkard.rules.key.1',
+          'pyanitsa-drunkard.rules.key.2',
+          'pyanitsa-drunkard.rules.key.3',
+        ],
+      },
+      {
+        id: 'pyanitsa-drunkard.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pyanitsa-drunkard.score.description',
+          'pyanitsa-drunkard.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pyanitsa-drunkard.setup.dealing',
+        'pyanitsa-drunkard.rules.objective',
+      ],
+      reveal_top: [
+        'pyanitsa-drunkard.rules.gameplay',
+      ],
+      award_trick: [
+        'pyanitsa-drunkard.rules.gameplay',
+      ],
+      add_face_down: [
+        'pyanitsa-drunkard.rules.gameplay',
+      ],
+      add_face_up: [
+        'pyanitsa-drunkard.rules.gameplay',
+      ],
+    },
   },
 }

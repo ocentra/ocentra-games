@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Gong Zhu (Chase the Pig). 4-5 players. Setup: Deal 13 cards (4-player) or 10 cards (5-player, remove 2â™£ 2â™¦). Before play: Expose optional cards (Aâ™¥, Qâ™ , Jâ™¦, 10â™£) to double their values (quadruple for 10â™£). Play: Holder of 2â™  leads; play tricks following suit. Scoring: Penalty cards taken count against you (-100 Qâ™ , -50 Aâ™¥, -40 Kâ™¥, etc.). Bonuses: Jâ™¦=+100, 10â™£=+50 alone or doubles all other scoring. Taking all hearts=+200. Game ends when player reaches -1000 (the 'pig', loser).",
-    Player: "Welcome to Gong Zhu (Chase the Pig), the Chinese card game! Before play, you may expose penalty cards (Aâ™¥, Qâ™ ) or bonus cards (Jâ™¦, 10â™£) to double their values. Play tricks avoiding penalties: Qâ™ =-100, Aâ™¥=-50, Kâ™¥=-40, etc. Jack of Diamonds=+100! Ten of Clubs doubles all your other scoring cards. The first player to reach -1000 becomes the 'pig' and loses. Or try to take ALL hearts for +200 bonus!",
+    LLM: '1. Before play, players may expose certain cards to double their values\n2. Holder of 2â™  leads first hand; thereafter, holder of Qâ™  (pig) from previous hand leads\n3. Any card may be led (no restriction on hearts/spades)\n4. Must follow suit if possible; may play any card if cannot follow\n5. Highest card of led suit wins trick\n6. Winner leads to next trick',
+    Player: '1. Before play, players may expose certain cards to double their values\n2. Holder of 2â™  leads first hand; thereafter, holder of Qâ™  (pig) from previous hand leads\n3. Any card may be led (no restriction on hearts/spades)\n4. Must follow suit if possible; may play any card if cannot follow\n5. Highest card of led suit wins trick\n6. Winner leads to next trick',
     objective: 'Avoid taking penalty cards (hearts and Queen of Spades). Collect the Jack of Diamonds for a bonus. The Ten of Clubs doubles all your scoring cards if you take any other scoring card, or scores +50 alone.',
     gameplay: '1. Before play, players may expose certain cards to double their values\n2. Holder of 2â™  leads first hand; thereafter, holder of Qâ™  (pig) from previous hand leads\n3. Any card may be led (no restriction on hearts/spades)\n4. Must follow suit if possible; may play any card if cannot follow\n5. Highest card of led suit wins trick\n6. Winner leads to next trick',
     keyRules: [
@@ -54,10 +54,189 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-5 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in expose_cards; all_simultaneous may use expose_ace_hearts, expose_queen_spades, expose_jack_diamonds, expose_ten_clubs, skip_expose before round end.',
-      'Scoring check: Penalty-based scoring where negative points accumulate. Special bonus for taking all hearts and the sheep (Jack of Diamonds). Game ends when a player reaches -1000. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Avoid taking penalty cards (hearts and Queen of Spades). Collect the Jack of Diamonds for a bonus. The Ten of Clubs doubles all your scoring cards if you take any other scoring card, or scores +50 alone.',
+      'Turn-flow example: 1. Before play, players may expose certain cards to double their values\n2. Holder of 2â™  leads first hand; thereafter, holder of Qâ™  (pig) from previous hand leads\n3. Any card may be led (no restriction on hearts/spades)\n4. Must follow suit if possible; may play any card if cannot follow\n5. Highest card of led suit wins trick\n6. Winner leads to next trick',
+      "Scoring example: Penalty-based scoring where negative points accumulate. Special bonus for taking all hearts and the sheep (Jack of Diamonds). Game ends when a player reaches -1000. Avoid reaching -1000 points (loser is the 'pig'). Game continues until one player accumulates -1000 or more. Lowest score at end of session wins..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'gong-zhu.rules.objective',
+        title: 'Objective',
+        text: 'Avoid taking penalty cards (hearts and Queen of Spades). Collect the Jack of Diamonds for a bonus. The Ten of Clubs doubles all your scoring cards if you take any other scoring card, or scores +50 alone.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'gong-zhu.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Before play, players may expose certain cards to double their values\n2. Holder of 2â™  leads first hand; thereafter, holder of Qâ™  (pig) from previous hand leads\n3. Any card may be led (no restriction on hearts/spades)\n4. Must follow suit if possible; may play any card if cannot follow\n5. Highest card of led suit wins trick\n6. Winner leads to next trick',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'gong-zhu.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 4\nMaximum Players: 5\nOptimal Players: 4\nPartnerships: Optional (4 players can play as partners)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'gong-zhu.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card\nNumber of Decks: 1\nSpecial: Remove 2â™£ and 2â™¦ for 5-player game',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'gong-zhu.setup.equipment',
+        title: 'Equipment',
+        text: "Standard deck\nScore sheet\nPaper strips for 'pig' penalty (optional)",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'gong-zhu.setup.dealing',
+        title: 'Deal',
+        text: 'All cards dealt equally to players\n4 players: 13 cards each\n5 players: 10 cards each (after removing 2 cards)\nChinese style: Players draw cards from stacked deck rather than dealer distributing',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'gong-zhu.score.win-condition',
+        title: 'Win condition',
+        text: "Avoid reaching -1000 points (loser is the 'pig'). Game continues until one player accumulates -1000 or more. Lowest score at end of session wins.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'gong-zhu.score.description',
+        title: 'Scoring',
+        text: 'Penalty-based scoring where negative points accumulate. Special bonus for taking all hearts and the sheep (Jack of Diamonds). Game ends when a player reaches -1000.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'gong-zhu.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Four cards may be exposed before play: Aâ™¥, Qâ™ , Jâ™¦, 10â™£',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'gong-zhu.rules.key.2',
+        title: 'Key rule 2',
+        text: "Exposing doubles the card's value (or quadruples for 10â™£)",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'gong-zhu.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Exposed cards cannot be played first time their suit is led',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'gong-zhu.rules.key.4',
+        title: 'Key rule 4',
+        text: 'No passing of cards (unlike Western Hearts)',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'gong-zhu.rules.key.5',
+        title: 'Key rule 5',
+        text: "Game ends when a player reaches -1000; that player is the 'pig'",
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'gong-zhu.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'gong-zhu.rules.objective',
+          'gong-zhu.rules.gameplay',
+        ],
+      },
+      {
+        id: 'gong-zhu.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'gong-zhu.setup.players',
+          'gong-zhu.setup.deck',
+          'gong-zhu.setup.equipment',
+          'gong-zhu.setup.dealing',
+        ],
+      },
+      {
+        id: 'gong-zhu.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'gong-zhu.rules.key.1',
+          'gong-zhu.rules.key.2',
+          'gong-zhu.rules.key.3',
+          'gong-zhu.rules.key.4',
+          'gong-zhu.rules.key.5',
+        ],
+      },
+      {
+        id: 'gong-zhu.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'gong-zhu.score.description',
+          'gong-zhu.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'gong-zhu.setup.dealing',
+        'gong-zhu.rules.objective',
+      ],
+      play_card: [
+        'gong-zhu.rules.gameplay',
+      ],
+      expose_ace_hearts: [
+        'gong-zhu.rules.gameplay',
+      ],
+      expose_queen_spades: [
+        'gong-zhu.rules.gameplay',
+      ],
+      expose_jack_diamonds: [
+        'gong-zhu.rules.gameplay',
+      ],
+      expose_ten_clubs: [
+        'gong-zhu.rules.gameplay',
+      ],
+      skip_expose: [
+        'gong-zhu.rules.gameplay',
+      ],
+      deal_cards: [
+        'gong-zhu.rules.gameplay',
+      ],
+      follow_suit: [
+        'gong-zhu.rules.gameplay',
+      ],
+      complete_scoring: [
+        'gong-zhu.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kaiserspiel. Logic: Win the tricks, card points, or contract result required by the local form of the game.',
-    Player: 'Kaiserspiel is a traditional trick-taking card game using 40 or 48-card Swiss Kaiserspiel deck for 2, 4, or 6 players. It uses one chosen suit and belongs to the Karnöffel environment.',
+    LLM: 'Players must follow suit if possible, and trump rocket cards can win tricks. Before each mission, task cards assign required captures. Communication is restricted to limited information tokens.',
+    Player: 'Players must follow suit if possible, and trump rocket cards can win tricks. Before each mission, task cards assign required captures. Communication is restricted to limited information tokens.',
     objective: 'Complete the mission by ensuring specific players win assigned task cards in tricks.',
     gameplay: 'Players must follow suit if possible, and trump rocket cards can win tricks. Before each mission, task cards assign required captures. Communication is restricted to limited information tokens.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Tricks, card points, or contract success determine scoring. Expected outcome: 1.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Complete the mission by ensuring specific players win assigned task cards in tricks.',
+      'Turn-flow example: Players must follow suit if possible, and trump rocket cards can win tricks. Before each mission, task cards assign required captures. Communication is restricted to limited information tokens.',
+      'Scoring example: Tricks, card points, or contract success determine scoring. Win the tricks, card points, or contract result required by the local form of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'the-crew.rules.objective',
+        title: 'Objective',
+        text: 'Complete the mission by ensuring specific players win assigned task cards in tricks.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'the-crew.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players must follow suit if possible, and trump rocket cards can win tricks. Before each mission, task cards assign required captures. Communication is restricted to limited information tokens.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'the-crew.setup.players',
+        title: 'Players',
+        text: '2-5 players use the table arrangement described for The Crew.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'the-crew.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated four-suit numbered deck plus trump rocket cards and task cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'the-crew.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated four-suit numbered deck plus trump rocket cards and task cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'the-crew.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated four-suit numbered deck plus trump rocket cards and task cards and deal or lay out cards according to the documented The Crew rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'the-crew.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'the-crew.score.description',
+        title: 'Scoring',
+        text: 'Tricks, card points, or contract success determine scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'the-crew.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Cooperative trick-taking across missions.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'the-crew.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players must follow suit when able.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'the-crew.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Task cards specify which player must win particular cards.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'the-crew.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'the-crew.rules.objective',
+          'the-crew.rules.gameplay',
+        ],
+      },
+      {
+        id: 'the-crew.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'the-crew.setup.players',
+          'the-crew.setup.deck',
+          'the-crew.setup.equipment',
+          'the-crew.setup.dealing',
+        ],
+      },
+      {
+        id: 'the-crew.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'the-crew.rules.key.1',
+          'the-crew.rules.key.2',
+          'the-crew.rules.key.3',
+        ],
+      },
+      {
+        id: 'the-crew.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'the-crew.score.description',
+          'the-crew.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'the-crew.setup.dealing',
+        'the-crew.rules.objective',
+      ],
+      play_card: [
+        'the-crew.rules.gameplay',
+      ],
+      discard: [
+        'the-crew.rules.gameplay',
+      ],
+      pass: [
+        'the-crew.rules.gameplay',
+      ],
+      bid: [
+        'the-crew.rules.gameplay',
+      ],
+    },
   },
 }

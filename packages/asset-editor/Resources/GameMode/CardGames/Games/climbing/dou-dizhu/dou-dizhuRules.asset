@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Dou Dizhu. Objective: Primary objective: Meet the game winning condition.',
-    Player: 'Dou Dizhu: play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: 'After the deal, an auction (bids 1, 2 or 3) determines the landlord; the player who drew the face-up card bids first. The highest bidder takes the three face-down cards (20 total) and leads. Each player in turn must pass or beat the previous play with a higher combination of the same type and same number of cards. Rocket (two jokers) beats anything; a bomb (four of a kind) beats any non-rocket combination. When two consecutive players pass, the cards are put aside and the last player to play leads any card or combination. Play continues until one side has no cards left.',
+    Player: 'After the deal, an auction (bids 1, 2 or 3) determines the landlord; the player who drew the face-up card bids first. The highest bidder takes the three face-down cards (20 total) and leads. Each player in turn must pass or beat the previous play with a higher combination of the same type and same number of cards. Rocket (two jokers) beats anything; a bomb (four of a kind) beats any non-rocket combination. When two consecutive players pass, the cards are put aside and the last player to play leads any card or combination. Play continues until one side has no cards left.',
     objective: 'The landlord aims to be the first to play out all their cards in valid combinations. The opposing team wins if either of them empties their hand before the landlord.',
     gameplay: 'After the deal, an auction (bids 1, 2 or 3) determines the landlord; the player who drew the face-up card bids first. The highest bidder takes the three face-down cards (20 total) and leads. Each player in turn must pass or beat the previous play with a higher combination of the same type and same number of cards. Rocket (two jokers) beats anything; a bomb (four of a kind) beats any non-rocket combination. When two consecutive players pass, the cards are put aside and the last player to play leads any card or combination. Play continues until one side has no cards left.',
     keyRules: [
@@ -53,10 +53,168 @@
       go_out: 'A player wins the round automatically upon playing their last card; no separate go-out action is required.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 17 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before auction.',
-      'Scoring check: If the landlord runs out of cards first he has won, and each opponent pays him the amount of the bid - 1, 2 or 3 units - provided that no bomb or rocket was played. Expected outcome: 1000.',
+      'Setup example: 17 card(s) per player.',
+      'Rule example: The landlord aims to be the first to play out all their cards in valid combinations. The opposing team wins if either of them empties their hand before the landlord.',
+      'Turn-flow example: After the deal, an auction (bids 1, 2 or 3) determines the landlord; the player who drew the face-up card bids first. The highest bidder takes the three face-down cards (20 total) and leads. Each player in turn must pass or beat the previous play with a higher combination of the same type and same number of cards. Rocket (two jokers) beats anything; a bomb (four of a kind) beats any non-rocket combination. When two consecutive players pass, the cards are put aside and the last player to play leads any card or combination. Play continues until one side has no cards left.',
+      'Scoring example: If the landlord runs out of cards first he has won, and each opponent pays him the amount of the bid - 1, 2 or 3 units - provided that no bomb or rocket was played. If the landlord runs out of cards first he has won, and each opponent pays him the amount of the bid - 1, 2 or 3 units - provided that no bomb or rocket was played..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'dou-dizhu.rules.objective',
+        title: 'Objective',
+        text: 'The landlord aims to be the first to play out all their cards in valid combinations. The opposing team wins if either of them empties their hand before the landlord.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'dou-dizhu.rules.gameplay',
+        title: 'Turn flow',
+        text: 'After the deal, an auction (bids 1, 2 or 3) determines the landlord; the player who drew the face-up card bids first. The highest bidder takes the three face-down cards (20 total) and leads. Each player in turn must pass or beat the previous play with a higher combination of the same type and same number of cards. Rocket (two jokers) beats anything; a bomb (four of a kind) beats any non-rocket combination. When two consecutive players pass, the cards are put aside and the last player to play leads any card or combination. Play continues until one side has no cards left.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'dou-dizhu.setup.players',
+        title: 'Players',
+        text: 'Three players; four-player variant uses a double deck.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'dou-dizhu.setup.deck',
+        title: 'Deck',
+        text: '54-card pack: standard 52 cards plus two jokers (red and black). Suits are irrelevant; rank from high to low is red joker, black joker, 2, A, K, Q, J, 10 down to 3.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'dou-dizhu.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck plus two jokers (red and black).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'dou-dizhu.setup.dealing',
+        title: 'Deal',
+        text: 'One player shuffles and gives the deck to the player to his left to cut. Cards are stacked face down in the centre. One card is turned face up and inserted near the middle to determine who starts the auction. Players then draw from the top counter-clockwise: each looks at their card without showing. Drawing continues until each player has 17 cards. The last three cards remain face down until after the auction; the winning bidder (landlord) adds them to their hand for 20 cards total.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'dou-dizhu.score.win-condition',
+        title: 'Win condition',
+        text: 'If the landlord runs out of cards first he has won, and each opponent pays him the amount of the bid - 1, 2 or 3 units - provided that no bomb or rocket was played.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'dou-dizhu.score.description',
+        title: 'Scoring',
+        text: 'If the landlord runs out of cards first he has won, and each opponent pays him the amount of the bid - 1, 2 or 3 units - provided that no bomb or rocket was played.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'dou-dizhu.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Thirteen combination types: single, pair, triplet, triplet with single, triplet with pair, sequence (5+), sequence of pairs (3+), sequence of triplets (2+), sequence of triplets with attached cards, sequence of triplets with attached pairs, bomb (four of a kind), rocket (two jokers), quadplex set (quad plus two singles or two pairs).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'dou-dizhu.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Rocket beats everything; bomb beats everything except rocket or a higher bomb.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'dou-dizhu.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Landlord runs out first: each opponent pays the landlord the bid (1, 2 or 3 units); each bomb or rocket played doubles the payment. Opponent runs out first: landlord pays the bid to each opponent, again doubled per bomb or rocket.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'dou-dizhu.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Spring bonus: if opponents play no cards, payment to landlord is doubled; if landlord plays only their first lead and opponents win, landlord payment to opponents is doubled.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'dou-dizhu.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'dou-dizhu.rules.objective',
+          'dou-dizhu.rules.gameplay',
+        ],
+      },
+      {
+        id: 'dou-dizhu.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'dou-dizhu.setup.players',
+          'dou-dizhu.setup.deck',
+          'dou-dizhu.setup.equipment',
+          'dou-dizhu.setup.dealing',
+        ],
+      },
+      {
+        id: 'dou-dizhu.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'dou-dizhu.rules.key.1',
+          'dou-dizhu.rules.key.2',
+          'dou-dizhu.rules.key.3',
+          'dou-dizhu.rules.key.4',
+        ],
+      },
+      {
+        id: 'dou-dizhu.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'dou-dizhu.score.description',
+          'dou-dizhu.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'dou-dizhu.setup.dealing',
+        'dou-dizhu.rules.objective',
+      ],
+      deal: [
+        'dou-dizhu.rules.gameplay',
+      ],
+      award_pot: [
+        'dou-dizhu.rules.gameplay',
+      ],
+      play_card: [
+        'dou-dizhu.rules.gameplay',
+      ],
+      pass: [
+        'dou-dizhu.rules.gameplay',
+      ],
+      bid: [
+        'dou-dizhu.rules.gameplay',
+      ],
+    },
   },
 }

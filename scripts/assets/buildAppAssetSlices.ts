@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import { createHash, randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { TextDecoder } from 'node:util';
 import JSON5 from 'json5';
 import { resolveAssetSourceRoot } from './assetSourceRoot';
 import { AssetContentSlicePath } from '@ocentra/game-asset-domain/constants/content-slices';
@@ -72,6 +73,96 @@ function asRecord(value: unknown): Record<string, unknown> | null {
 
 function asString(value: unknown): string | undefined {
   return typeof value === 'string' && value.length > 0 ? value : undefined;
+}
+
+const WINDOWS_1252_REVERSE = new Map<string, number>([
+  ['€', 0x80],
+  ['‚', 0x82],
+  ['ƒ', 0x83],
+  ['„', 0x84],
+  ['…', 0x85],
+  ['†', 0x86],
+  ['‡', 0x87],
+  ['ˆ', 0x88],
+  ['‰', 0x89],
+  ['Š', 0x8a],
+  ['‹', 0x8b],
+  ['Œ', 0x8c],
+  ['Ž', 0x8e],
+  ['‘', 0x91],
+  ['’', 0x92],
+  ['“', 0x93],
+  ['”', 0x94],
+  ['•', 0x95],
+  ['–', 0x96],
+  ['—', 0x97],
+  ['˜', 0x98],
+  ['™', 0x99],
+  ['š', 0x9a],
+  ['›', 0x9b],
+  ['œ', 0x9c],
+  ['ž', 0x9e],
+  ['Ÿ', 0x9f],
+]);
+const UTF8_DECODER = new TextDecoder('utf-8', { fatal: false });
+const MOJIBAKE_MARKER = /[ÃÂâÄÅ]/u;
+
+function repairDisplayTextOnce(value: string): string {
+  if (!MOJIBAKE_MARKER.test(value)) {
+    return value;
+  }
+
+  const bytes: number[] = [];
+  for (const char of value) {
+    const mapped = WINDOWS_1252_REVERSE.get(char);
+    if (mapped !== undefined) {
+      bytes.push(mapped);
+      continue;
+    }
+
+    const codePoint = char.codePointAt(0);
+    if (codePoint !== undefined && codePoint <= 0xff) {
+      bytes.push(codePoint);
+      continue;
+    }
+
+    return value;
+  }
+
+  const repaired = UTF8_DECODER.decode(new Uint8Array(bytes));
+  return repaired.includes('\uFFFD') ? value : repaired;
+}
+
+function repairDisplayText(value: string | undefined): string | undefined {
+  if (!value) {
+    return value;
+  }
+
+  let repaired = value;
+  for (let pass = 0; pass < 3; pass += 1) {
+    const next = repairDisplayTextOnce(repaired);
+    if (next === repaired) {
+      return repaired;
+    }
+    repaired = next;
+  }
+  return repaired;
+}
+
+function repairDisplayValue(value: unknown): unknown {
+  if (typeof value === 'string') {
+    return repairDisplayText(value);
+  }
+  if (Array.isArray(value)) {
+    return value.map(item => repairDisplayValue(item));
+  }
+  const record = asRecord(value);
+  if (!record) {
+    return value;
+  }
+  return Object.fromEntries(
+    Object.entries(record).map(([key, entryValue]) => [key, repairDisplayValue(entryValue)])
+  );
 }
 
 function asNullableString(value: unknown): string | null | undefined {
@@ -419,7 +510,7 @@ function buildGameCatalogEntry(
 ): GameCatalogEntry {
   return GameCatalogEntrySchema.parse({
     gameId: gameHome.gameId,
-    displayName: gameHome.name,
+    displayName: repairDisplayText(gameHome.name) ?? gameHome.name,
     guid: resource.guid,
     path: resource.path,
     assetType: resource.assetType,
@@ -427,14 +518,15 @@ function buildGameCatalogEntry(
     enabled: gameHome.enabled,
     releaseStatus: gameHome.releaseStatus ?? null,
     tags: gameHome.tags,
-    category: gameHome.gameCategory ?? null,
-    subcategory: gameHome.subcategory ?? null,
-    difficulty: gameHome.difficulty ?? null,
-    duration: gameHome.duration ?? null,
-    deck: gameHome.deck ?? null,
-    playersDisplay: gameHome.playersDisplay ?? null,
+    category: repairDisplayText(gameHome.gameCategory) ?? null,
+    subcategory: repairDisplayText(gameHome.subcategory ?? undefined) ?? null,
+    difficulty: repairDisplayText(gameHome.difficulty) ?? null,
+    duration: repairDisplayText(gameHome.duration) ?? null,
+    deck: repairDisplayText(gameHome.deck) ?? null,
+    playersDisplay: repairDisplayText(gameHome.playersDisplay) ?? null,
     playerMode: null,
-    quality: gameHome.quality ?? null,
+    quality: repairDisplayText(gameHome.quality) ?? null,
+    description: repairDisplayText(gameHome.shortDescription ?? gameHome.description),
   });
 }
 
@@ -464,18 +556,18 @@ async function buildGameArtifacts(
   const gameHome = GameHomeSchema.parse({
     gameId,
     guid: resource.guid,
-    name: asString(hero?.title) ?? resource.displayName ?? gameId,
+    name: repairDisplayText(asString(hero?.title) ?? resource.displayName ?? gameId) ?? gameId,
     enabled,
     releaseStatus,
-    tags: asStringArray(gameInfoData.tags),
+    tags: asStringArray(gameInfoData.tags)?.map(tag => repairDisplayText(tag) ?? tag),
     comingSoon: releaseStatus === GameModeStatus.ComingSoon,
     bannerImage: asString(gameData.bannerImage),
     carouselImages: carouselMeta.hashes,
     gameIcon: asString(gameData.gameIcon),
-    tagline: asString(hero?.subtitle) ?? asString(gameInfoData.tagline),
-    tagline2: asString(gameInfoData.tagline2),
-    shortDescription: asString(gameInfoData.shortDescription),
-    description: asString(gameInfoData.description),
+    tagline: repairDisplayText(asString(hero?.subtitle) ?? asString(gameInfoData.tagline)),
+    tagline2: repairDisplayText(asString(gameInfoData.tagline2)),
+    shortDescription: repairDisplayText(asString(gameInfoData.shortDescription)),
+    description: repairDisplayText(asString(gameInfoData.description)),
     featuredTopBadges: asGameHomeBadges(gameInfoData.featuredTopBadges),
     featuredBottomBadges: asGameHomeBadges(gameInfoData.featuredBottomBadges),
     textImageUrl: asString(gameInfoData.gameIconImage),
@@ -490,7 +582,7 @@ async function buildGameArtifacts(
     carouselTransitionType: carouselMeta.transitionType,
     carouselTransitionDurationMs: carouselMeta.transitionDurationMs,
     bannerLogoImage: carouselMeta.logoImageHash,
-    bannerLogoAlt: carouselMeta.logoAlt,
+    bannerLogoAlt: repairDisplayText(carouselMeta.logoAlt),
     bannerLogoStartMs: carouselMeta.logoStartMs,
     bannerLogoDurationMs: carouselMeta.logoDurationMs,
     bannerLogoScaleFrom: carouselMeta.logoScaleFrom,
@@ -499,7 +591,7 @@ async function buildGameArtifacts(
     bannerLogoOpacityTo: carouselMeta.logoOpacityTo,
     bannerLogoVisibleFromIndex: carouselMeta.logoVisibleFromIndex,
     bannerLogoVisibleToIndex: carouselMeta.logoVisibleToIndex,
-    bannerTitleText: carouselMeta.titleText,
+    bannerTitleText: repairDisplayText(carouselMeta.titleText),
     bannerTitleColor: carouselMeta.titleTextColor,
     bannerTitleStartMs: carouselMeta.titleTextStartMs,
     bannerTitleDurationMs: carouselMeta.titleTextDurationMs,
@@ -513,13 +605,13 @@ async function buildGameArtifacts(
     bannerOverlayTintOpacity: carouselMeta.overlayTintOpacity,
     bannerVignetteOpacity: carouselMeta.vignetteOpacity,
     bannerFadeToBlackOpacity: carouselMeta.fadeToBlackOpacity,
-    gameCategory: asString(gameInfoData.gameCategory) ?? asString(gameSystem.gameModeCategory),
-    subcategory: asNullableString(gameInfoData.subcategory),
-    difficulty: asString(gameInfoData.difficulty),
-    duration: asString(gameInfoData.duration),
-    deck: asString(gameInfoData.deck),
-    playersDisplay: asString(gameInfoData.playersDisplay),
-    quality: asString(gameInfoData.quality),
+    gameCategory: repairDisplayText(asString(gameInfoData.gameCategory) ?? asString(gameSystem.gameModeCategory)),
+    subcategory: repairDisplayText(asNullableString(gameInfoData.subcategory) ?? undefined) ?? null,
+    difficulty: repairDisplayText(asString(gameInfoData.difficulty)),
+    duration: repairDisplayText(asString(gameInfoData.duration)),
+    deck: repairDisplayText(asString(gameInfoData.deck)),
+    playersDisplay: repairDisplayText(asString(gameInfoData.playersDisplay)),
+    quality: repairDisplayText(asString(gameInfoData.quality)),
     completeness: asRecord(gameInfoData.completeness) as Record<string, boolean> | undefined,
   });
 
@@ -529,7 +621,7 @@ async function buildGameArtifacts(
     maxPlayers: gameHome.maxPlayers ?? 4,
     gameInfoAsset: asRecord(gameData.gameInfoAsset) ?? undefined,
     gameInfoAssetGuid: readGuidLike(gameData.gameInfoAsset),
-    sections: Array.isArray(gameInfoData.sections) ? gameInfoData.sections : undefined,
+    sections: Array.isArray(gameInfoData.sections) ? repairDisplayValue(gameInfoData.sections) : undefined,
   });
 
   const gameEngine = GameEngineSchema.parse({

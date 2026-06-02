@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Knorri (HÃ¶rri). Objective: Avoid being the last player left with cards in your hand at the end of the second phase.',
-    Player: 'Knorri (HÃ¶rri): play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: 'Knorri (HÃ¶rri) proceeds through deal, legal play actions, and end-of-round resolution. Play proceeds through legal actions until round resolution.',
+    Player: 'Knorri (HÃ¶rri) proceeds through deal, legal play actions, and end-of-round resolution. Play proceeds through legal actions until round resolution.',
     objective: 'Avoid being the last player left with cards in your hand at the end of the second phase.',
     gameplay: 'Knorri (HÃ¶rri) proceeds through deal, legal play actions, and end-of-round resolution. Play proceeds through legal actions until round resolution.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: First Phase The player to the left of the dealer begins after which players take turns in clockwise order. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Avoid being the last player left with cards in your hand at the end of the second phase.',
+      'Turn-flow example: Knorri (HÃ¶rri) proceeds through deal, legal play actions, and end-of-round resolution. Play proceeds through legal actions until round resolution.',
+      'Scoring example: First Phase The player to the left of the dealer begins after which players take turns in clockwise order. First Phase The player to the left of the dealer begins after which players take turns in clockwise order..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'knorri.rules.objective',
+        title: 'Objective',
+        text: 'Avoid being the last player left with cards in your hand at the end of the second phase.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'knorri.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Knorri (HÃ¶rri) proceeds through deal, legal play actions, and end-of-round resolution. Play proceeds through legal actions until round resolution.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'knorri.setup.players',
+        title: 'Players',
+        text: 'Best with 4-5 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'knorri.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Diamonds are **Trumps**. Clubs are **Hard/Anti-Trump** (Anti-Truff).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'knorri.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. Diamonds are **Trumps**. Clubs are **Hard/Anti-Trump** (Anti-Truff).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'knorri.setup.dealing',
+        title: 'Deal',
+        text: 'No cards are dealt to players. 9 cards are placed face-up on the table to start. The rest form a draw pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'knorri.score.win-condition',
+        title: 'Win condition',
+        text: 'First Phase The player to the left of the dealer begins after which players take turns in clockwise order.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'knorri.score.description',
+        title: 'Scoring',
+        text: 'First Phase The player to the left of the dealer begins after which players take turns in clockwise order.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'knorri.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Knorri (HÃ¶rri).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'knorri.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: Scoring summary: Scoring follows the game-specific point or pot rules.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'knorri.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Avoid being the last player left with cards in your hand at the end of the second phase.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'knorri.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'knorri.rules.objective',
+          'knorri.rules.gameplay',
+        ],
+      },
+      {
+        id: 'knorri.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'knorri.setup.players',
+          'knorri.setup.deck',
+          'knorri.setup.equipment',
+          'knorri.setup.dealing',
+        ],
+      },
+      {
+        id: 'knorri.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'knorri.rules.key.1',
+          'knorri.rules.key.2',
+          'knorri.rules.key.3',
+        ],
+      },
+      {
+        id: 'knorri.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'knorri.score.description',
+          'knorri.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'knorri.setup.dealing',
+        'knorri.rules.objective',
+      ],
+      play_card: [
+        'knorri.rules.gameplay',
+      ],
+    },
   },
 }

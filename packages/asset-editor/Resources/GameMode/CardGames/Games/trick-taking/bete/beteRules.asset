@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Bete. Logic: Win the required tricks and avoid creating or increasing a penalty stake.',
-    Player: 'Bete is a historical French plain-trick game of the l Homme family in which failing a contract creates a bete or penalty stake.',
+    LLM: 'Players follow suit where possible. The player under contract must make the required result; failure produces a penalty stake for later play.',
+    Player: 'Players follow suit where possible. The player under contract must make the required result; failure produces a penalty stake for later play.',
     objective: 'Win the required tricks and avoid creating or increasing a penalty stake.',
     gameplay: 'Players follow suit where possible. The player under contract must make the required result; failure produces a penalty stake for later play.',
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-5 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Successful hands win stakes; failed contracts create or pay a bete penalty. Expected outcome: Win the required tricks and avoid creating or increasing a penalty stake..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win the required tricks and avoid creating or increasing a penalty stake.',
+      'Turn-flow example: Players follow suit where possible. The player under contract must make the required result; failure produces a penalty stake for later play.',
+      'Scoring example: Successful hands win stakes; failed contracts create or pay a bete penalty. Win the required tricks and avoid creating or increasing a penalty stake..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'bete.rules.objective',
+        title: 'Objective',
+        text: 'Win the required tricks and avoid creating or increasing a penalty stake.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bete.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players follow suit where possible. The player under contract must make the required result; failure produces a penalty stake for later play.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bete.setup.players',
+        title: 'Players',
+        text: '3-5 players use the table arrangement described for Bete.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bete.setup.deck',
+        title: 'Deck',
+        text: 'French-suited pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bete.setup.equipment',
+        title: 'Equipment',
+        text: 'French-suited pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bete.setup.dealing',
+        title: 'Deal',
+        text: 'Deal hands from the agreed French-suited pack and establish the player or contract at risk for the hand.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bete.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the required tricks and avoid creating or increasing a penalty stake.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bete.score.description',
+        title: 'Scoring',
+        text: 'Successful hands win stakes; failed contracts create or pay a bete penalty.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bete.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Plain-trick structure.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bete.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Three to five players.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bete.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Contract failure creates a penalty stake.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'bete.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Related to l Homme games.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bete.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bete.rules.objective',
+          'bete.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bete.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bete.setup.players',
+          'bete.setup.deck',
+          'bete.setup.equipment',
+          'bete.setup.dealing',
+        ],
+      },
+      {
+        id: 'bete.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bete.rules.key.1',
+          'bete.rules.key.2',
+          'bete.rules.key.3',
+          'bete.rules.key.4',
+        ],
+      },
+      {
+        id: 'bete.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bete.score.description',
+          'bete.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bete.setup.dealing',
+        'bete.rules.objective',
+      ],
+      play_card: [
+        'bete.rules.gameplay',
+      ],
+      discard: [
+        'bete.rules.gameplay',
+      ],
+      pass: [
+        'bete.rules.gameplay',
+      ],
+      bid: [
+        'bete.rules.gameplay',
+      ],
+    },
   },
 }

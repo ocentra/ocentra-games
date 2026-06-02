@@ -11,7 +11,11 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Points are awarded based on cards captured and whether the contract was made. Target is majority of 157 points (81+).',
+      winCondition: 'Win at least 81 of the 157 available points.',
+      targetScore: null,
+      scoringDirection: null,
+      cardValues: {
         '9': '0 points (14 if trump)',
         Ace: '11 points',
         King: '4 points',
@@ -20,6 +24,33 @@
         Banner: '10 points',
         'Last trick': '5 points',
       },
+      sourceCardValues: {
+        raw: {
+          '9': '0 points (14 if trump)',
+          Ace: '11 points',
+          King: '4 points',
+          Ober: '3 points',
+          Under: '2 points (20 if trump)',
+          Banner: '10 points',
+          'Last trick': '5 points',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        targetScore: 'No fixed target score; play by game rules.',
+        scoringDirection: 'Scoring direction is not applicable; winner is determined by game rules.',
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: '',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,

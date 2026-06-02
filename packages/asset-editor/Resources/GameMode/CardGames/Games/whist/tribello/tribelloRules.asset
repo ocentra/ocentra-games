@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tribello. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Tribello is a 3-player trick-taking game from Illinois, USA with 4 distinct rounds over 12 deals. Each round changes the trump rules and objectives: Round 1 (cut trump), Round 2 (dealer picks trump), Round 3 (no trump), Round 4 (Nullo â€” avoid tricks). Players have positional trick quotas and score +/- based on performance vs quota.',
+    LLM: 'Exchange with pickup. Play 13 tricks. Quotas: Dealer=6, Left=4, Right=3. Rounds: 1=Cut trump, 2=Dealer picks, 3=No trump, 4=Nullo (avoid tricks, reversed quotas).',
+    Player: 'Exchange with pickup. Play 13 tricks. Quotas: Dealer=6, Left=4, Right=3. Rounds: 1=Cut trump, 2=Dealer picks, 3=No trump, 4=Nullo (avoid tricks, reversed quotas).',
     objective: 'Highest total score after 12 deals (4 rounds x 3 deals).',
     gameplay: 'Exchange with pickup. Play 13 tricks. Quotas: Dealer=6, Left=4, Right=3. Rounds: 1=Cut trump, 2=Dealer picks, 3=No trump, 4=Nullo (avoid tricks, reversed quotas).',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: +1 per trick above quota. -1 per trick below quota. Round 4: reversed. Expected outcome: Highest total score after 12 deals (4 rounds x 3 deals)..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Highest total score after 12 deals (4 rounds x 3 deals).',
+      'Turn-flow example: Exchange with pickup. Play 13 tricks. Quotas: Dealer=6, Left=4, Right=3. Rounds: 1=Cut trump, 2=Dealer picks, 3=No trump, 4=Nullo (avoid tricks, reversed quotas).',
+      'Scoring example: +1 per trick above quota. -1 per trick below quota. Round 4: reversed. Highest total score after 12 deals (4 rounds x 3 deals)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tribello.rules.objective',
+        title: 'Objective',
+        text: 'Highest total score after 12 deals (4 rounds x 3 deals).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tribello.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Exchange with pickup. Play 13 tricks. Quotas: Dealer=6, Left=4, Right=3. Rounds: 1=Cut trump, 2=Dealer picks, 3=No trump, 4=Nullo (avoid tricks, reversed quotas).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tribello.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tribello.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Deal 4 hands of 13 (3 players + 1 pickup/widow).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tribello.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, score sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tribello.setup.dealing',
+        title: 'Deal',
+        text: '13 cards each + 13-card pickup. Players exchange with pickup.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tribello.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest total score after 12 deals (4 rounds x 3 deals).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tribello.score.description',
+        title: 'Scoring',
+        text: '+1 per trick above quota. -1 per trick below quota. Round 4: reversed.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tribello.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Positional trick quotas',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tribello.rules.key.2',
+        title: 'Key rule 2',
+        text: '4 different round types',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tribello.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Pickup/Widow exchange',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tribello.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Nullo round',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tribello.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tribello.rules.objective',
+          'tribello.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tribello.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tribello.setup.players',
+          'tribello.setup.deck',
+          'tribello.setup.equipment',
+          'tribello.setup.dealing',
+        ],
+      },
+      {
+        id: 'tribello.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tribello.rules.key.1',
+          'tribello.rules.key.2',
+          'tribello.rules.key.3',
+          'tribello.rules.key.4',
+        ],
+      },
+      {
+        id: 'tribello.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tribello.score.description',
+          'tribello.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tribello.setup.dealing',
+        'tribello.rules.objective',
+      ],
+      play_card: [
+        'tribello.rules.gameplay',
+      ],
+    },
   },
 }

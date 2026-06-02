@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Grasobern. Logic: Avoid taking the penalty card or penalty tricks specified by the Grasobern deal.',
-    Player: 'Grasobern is a Bavarian trick-avoidance plain-trick game where players try to avoid the Grasober and related penalties.',
+    LLM: 'Players lead one card to each trick, follow suit when able, and compare the led suit and trump or rank hierarchy to decide the trick winner.',
+    Player: 'Players lead one card to each trick, follow suit when able, and compare the led suit and trump or rank hierarchy to decide the trick winner.',
     objective: 'Avoid taking the penalty card or penalty tricks specified by the Grasobern deal.',
     gameplay: 'Players lead one card to each trick, follow suit when able, and compare the led suit and trump or rank hierarchy to decide the trick winner.',
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Captured tricks, card points, or the active contract determine the score. Expected outcome: Avoid taking the penalty card or penalty tricks specified by the Grasobern deal..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Avoid taking the penalty card or penalty tricks specified by the Grasobern deal.',
+      'Turn-flow example: Players lead one card to each trick, follow suit when able, and compare the led suit and trump or rank hierarchy to decide the trick winner.',
+      'Scoring example: Captured tricks, card points, or the active contract determine the score. Avoid taking the penalty card or penalty tricks specified by the Grasobern deal..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'grasobern.rules.objective',
+        title: 'Objective',
+        text: 'Avoid taking the penalty card or penalty tricks specified by the Grasobern deal.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'grasobern.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players lead one card to each trick, follow suit when able, and compare the led suit and trump or rank hierarchy to decide the trick winner.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'grasobern.setup.players',
+        title: 'Players',
+        text: '4 players use the table arrangement described for Grasobern.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'grasobern.setup.deck',
+        title: 'Deck',
+        text: '32-card German pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'grasobern.setup.equipment',
+        title: 'Equipment',
+        text: '32-card German pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'grasobern.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 32-card German pack for 4 players according to the local rules before the first trick.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'grasobern.score.win-condition',
+        title: 'Win condition',
+        text: 'Avoid taking the penalty card or penalty tricks specified by the Grasobern deal.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'grasobern.score.description',
+        title: 'Scoring',
+        text: 'Captured tricks, card points, or the active contract determine the score.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'grasobern.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Trick-taking structure.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'grasobern.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players follow suit when able.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'grasobern.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trump or rank hierarchy decides contested tricks.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'grasobern.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Captured tricks or card points determine the result.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'grasobern.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'grasobern.rules.objective',
+          'grasobern.rules.gameplay',
+        ],
+      },
+      {
+        id: 'grasobern.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'grasobern.setup.players',
+          'grasobern.setup.deck',
+          'grasobern.setup.equipment',
+          'grasobern.setup.dealing',
+        ],
+      },
+      {
+        id: 'grasobern.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'grasobern.rules.key.1',
+          'grasobern.rules.key.2',
+          'grasobern.rules.key.3',
+          'grasobern.rules.key.4',
+        ],
+      },
+      {
+        id: 'grasobern.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'grasobern.score.description',
+          'grasobern.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'grasobern.setup.dealing',
+        'grasobern.rules.objective',
+      ],
+      play_card: [
+        'grasobern.rules.gameplay',
+      ],
+      discard: [
+        'grasobern.rules.gameplay',
+      ],
+      pass: [
+        'grasobern.rules.gameplay',
+      ],
+      bid: [
+        'grasobern.rules.gameplay',
+      ],
+    },
   },
 }

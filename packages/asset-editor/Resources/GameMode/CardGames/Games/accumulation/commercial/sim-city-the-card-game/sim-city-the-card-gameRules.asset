@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Twenty-Four. Logic: See rules.objective and rules.gameplay.',
-    Player: '24 is a mathematical card game: use four numbers (from four cards) and only +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· (and parentheses) to make exactly 24. All four numbers must be used once. First to call a correct solution wins the four cards (or they go to opponent); play until one player has no cards. Popular in China since at least the 1960s (Shanghai); also played in North America.',
+    LLM: 'Players play cards representing city blocks and develop a city tableau. Profit and city growth determine success under the published card rules.',
+    Player: 'Players play cards representing city blocks and develop a city tableau. Profit and city growth determine success under the published card rules.',
     objective: 'Build the most successful city by playing city-block cards and collecting profit.',
     gameplay: 'Players play cards representing city blocks and develop a city tableau. Profit and city growth determine success under the published card rules.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: None; win = other player has no cards. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Build the most successful city by playing city-block cards and collecting profit.',
+      'Turn-flow example: Players play cards representing city blocks and develop a city tableau. Profit and city growth determine success under the published card rules.',
+      "Scoring example: None; win = other player has no cards. Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'sim-city-the-card-game.rules.objective',
+        title: 'Objective',
+        text: 'Build the most successful city by playing city-block cards and collecting profit.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'sim-city-the-card-game.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play cards representing city blocks and develop a city tableau. Profit and city growth determine success under the published card rules.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'sim-city-the-card-game.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Sim City The Card Game.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'sim-city-the-card-game.setup.deck',
+        title: 'Deck',
+        text: 'Proprietary Sim City card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'sim-city-the-card-game.setup.equipment',
+        title: 'Equipment',
+        text: 'Proprietary Sim City card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'sim-city-the-card-game.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Proprietary Sim City card deck and deal or lay out cards according to the documented Sim City The Card Game rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'sim-city-the-card-game.score.win-condition',
+        title: 'Win condition',
+        text: "Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'sim-city-the-card-game.score.description',
+        title: 'Scoring',
+        text: 'None; win = other player has no cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'sim-city-the-card-game.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Out-of-print collectible card game based on SimCity.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'sim-city-the-card-game.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Cards represent city blocks and development.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'sim-city-the-card-game.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Long cards and standard cards appear in the original product.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'sim-city-the-card-game.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'sim-city-the-card-game.rules.objective',
+          'sim-city-the-card-game.rules.gameplay',
+        ],
+      },
+      {
+        id: 'sim-city-the-card-game.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'sim-city-the-card-game.setup.players',
+          'sim-city-the-card-game.setup.deck',
+          'sim-city-the-card-game.setup.equipment',
+          'sim-city-the-card-game.setup.dealing',
+        ],
+      },
+      {
+        id: 'sim-city-the-card-game.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'sim-city-the-card-game.rules.key.1',
+          'sim-city-the-card-game.rules.key.2',
+          'sim-city-the-card-game.rules.key.3',
+        ],
+      },
+      {
+        id: 'sim-city-the-card-game.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'sim-city-the-card-game.score.description',
+          'sim-city-the-card-game.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'sim-city-the-card-game.setup.dealing',
+        'sim-city-the-card-game.rules.objective',
+      ],
+      play_card: [
+        'sim-city-the-card-game.rules.gameplay',
+      ],
+    },
   },
 }

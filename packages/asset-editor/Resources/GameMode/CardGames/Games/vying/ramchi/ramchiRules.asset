@@ -52,10 +52,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 17 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before form_combos.',
-      'Scoring check: Chips per round. Round 1 = 1, round 2 = 2, â€¦, round 5 = 5. Expected outcome: NA.',
+      'Setup example: 17 card(s) per player.',
+      'Rule example: Win the most chips. Form 3-card combinations; win rounds; round N pays N chips.',
+      "Turn-flow example: 1. Check for four of a kind (instant win). 2. Form up to 5 combinations: trips > straight flush > straight > flush > unrelated. 3. Discard at least 2. 4. Player to dealer's right leads; anticlockwise. 5. Each plays highest combo; highest wins round. 6. Round 1 = 1 chip, round 2 = 2 chips, etc. 7. Winner of round leads next. 8. Players with no combos sit out.",
+      'Scoring example: Chips per round. Round 1 = 1, round 2 = 2, â€¦, round 5 = 5. Most chips when game ends..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'ramchi.rules.objective',
+        title: 'Objective',
+        text: 'Win the most chips. Form 3-card combinations; win rounds; round N pays N chips.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'ramchi.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Check for four of a kind (instant win). 2. Form up to 5 combinations: trips > straight flush > straight > flush > unrelated. 3. Discard at least 2. 4. Player to dealer's right leads; anticlockwise. 5. Each plays highest combo; highest wins round. 6. Round 1 = 1 chip, round 2 = 2 chips, etc. 7. Winner of round leads next. 8. Players with no combos sit out.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'ramchi.setup.players',
+        title: 'Players',
+        text: 'Three players (or four in a variant with 13 cards each and up to four combinations).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'ramchi.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack (international pattern). Fifty-one cards are dealt in Ramchi: 17 each to three players, with one card placed face up; the holder of the two of diamonds may exchange it for the face-up card.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'ramchi.setup.equipment',
+        title: 'Equipment',
+        text: 'Deck, chips.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'ramchi.setup.dealing',
+        title: 'Deal',
+        text: '17 cards each; 1 card placed face up. Holder of 2♦ may exchange it for the face-up card. Four of a kind wins the hand immediately with no play.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'ramchi.score.win-condition',
+        title: 'Win condition',
+        text: 'Most chips when game ends.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'ramchi.score.description',
+        title: 'Scoring',
+        text: 'Chips per round. Round 1 = 1, round 2 = 2, â€¦, round 5 = 5.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'ramchi.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Combinations: trips (AAA highest), straight flush (Ramchi = A-2-3 same suit), straight, flush, unrelated.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'ramchi.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round N winner collects N chips from each opponent.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'ramchi.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Four of a kind wins whole hand.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'ramchi.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'ramchi.rules.objective',
+          'ramchi.rules.gameplay',
+        ],
+      },
+      {
+        id: 'ramchi.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'ramchi.setup.players',
+          'ramchi.setup.deck',
+          'ramchi.setup.equipment',
+          'ramchi.setup.dealing',
+        ],
+      },
+      {
+        id: 'ramchi.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'ramchi.rules.key.1',
+          'ramchi.rules.key.2',
+          'ramchi.rules.key.3',
+        ],
+      },
+      {
+        id: 'ramchi.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'ramchi.score.description',
+          'ramchi.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'ramchi.setup.dealing',
+        'ramchi.rules.objective',
+      ],
+      deal: [
+        'ramchi.rules.gameplay',
+      ],
+      discard: [
+        'ramchi.rules.gameplay',
+      ],
+      form_combinations: [
+        'ramchi.rules.gameplay',
+      ],
+      play_combo: [
+        'ramchi.rules.gameplay',
+      ],
+      collect_chips: [
+        'ramchi.rules.gameplay',
+      ],
+    },
   },
 }

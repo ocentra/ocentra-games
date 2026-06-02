@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Highlander The Card Game. Logic: Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
-    Player: 'Highlander The Card Game is a commercial collectible or trading card battle game using constructed decks, proprietary card text, and direct player conflict.',
+    LLM: 'Players take turns playing cards from hand, paying costs or meeting requirements, attacking or contesting opposing cards, and resolving printed effects from the proprietary deck.',
+    Player: 'Players take turns playing cards from hand, paying costs or meeting requirements, attacking or contesting opposing cards, and resolving printed effects from the proprietary deck.',
     objective: 'Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
     gameplay: 'Players take turns playing cards from hand, paying costs or meeting requirements, attacking or contesting opposing cards, and resolving printed effects from the proprietary deck.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario victory condition determines the winner. Expected outcome: Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
+      'Turn-flow example: Players take turns playing cards from hand, paying costs or meeting requirements, attacking or contesting opposing cards, and resolving printed effects from the proprietary deck.',
+      'Scoring example: The published duel or scenario victory condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'highlander-the-card-game.rules.objective',
+        title: 'Objective',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'highlander-the-card-game.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players take turns playing cards from hand, paying costs or meeting requirements, attacking or contesting opposing cards, and resolving printed effects from the proprietary deck.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'highlander-the-card-game.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Highlander The Card Game.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'highlander-the-card-game.setup.deck',
+        title: 'Deck',
+        text: 'Constructed Highlander The Card Game decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'highlander-the-card-game.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed Highlander The Card Game decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'highlander-the-card-game.setup.dealing',
+        title: 'Deal',
+        text: 'Each player brings a constructed deck or product-defined deck, draws an opening hand, and prepares any starting character, resource, or play area required by the rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'highlander-the-card-game.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'highlander-the-card-game.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario victory condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'highlander-the-card-game.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Uses proprietary commercial cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'highlander-the-card-game.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Constructed or product-defined decks.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'highlander-the-card-game.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Card text defines powers and restrictions.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'highlander-the-card-game.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Players contest directly through attacks, challenges, or objectives.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'highlander-the-card-game.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Published victory condition ends the game.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'highlander-the-card-game.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'highlander-the-card-game.rules.objective',
+          'highlander-the-card-game.rules.gameplay',
+        ],
+      },
+      {
+        id: 'highlander-the-card-game.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'highlander-the-card-game.setup.players',
+          'highlander-the-card-game.setup.deck',
+          'highlander-the-card-game.setup.equipment',
+          'highlander-the-card-game.setup.dealing',
+        ],
+      },
+      {
+        id: 'highlander-the-card-game.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'highlander-the-card-game.rules.key.1',
+          'highlander-the-card-game.rules.key.2',
+          'highlander-the-card-game.rules.key.3',
+          'highlander-the-card-game.rules.key.4',
+          'highlander-the-card-game.rules.key.5',
+        ],
+      },
+      {
+        id: 'highlander-the-card-game.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'highlander-the-card-game.score.description',
+          'highlander-the-card-game.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'highlander-the-card-game.setup.dealing',
+        'highlander-the-card-game.rules.objective',
+      ],
+      play_card: [
+        'highlander-the-card-game.rules.gameplay',
+      ],
+    },
   },
 }

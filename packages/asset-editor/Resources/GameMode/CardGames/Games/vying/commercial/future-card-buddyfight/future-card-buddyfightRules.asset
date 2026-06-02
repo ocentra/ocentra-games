@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Future Card Buddyfight. Logic: Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
-    Player: 'Future Card Buddyfight is a commercial collectible or trading card battle game using constructed decks, proprietary card text, and direct player conflict.',
+    LLM: 'Players take turns playing cards from hand, paying costs or meeting requirements, attacking or contesting opposing cards, and resolving printed effects from the proprietary deck.',
+    Player: 'Players take turns playing cards from hand, paying costs or meeting requirements, attacking or contesting opposing cards, and resolving printed effects from the proprietary deck.',
     objective: 'Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
     gameplay: 'Players take turns playing cards from hand, paying costs or meeting requirements, attacking or contesting opposing cards, and resolving printed effects from the proprietary deck.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario victory condition determines the winner. Expected outcome: Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
+      'Turn-flow example: Players take turns playing cards from hand, paying costs or meeting requirements, attacking or contesting opposing cards, and resolving printed effects from the proprietary deck.',
+      'Scoring example: The published duel or scenario victory condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'future-card-buddyfight.rules.objective',
+        title: 'Objective',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'future-card-buddyfight.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players take turns playing cards from hand, paying costs or meeting requirements, attacking or contesting opposing cards, and resolving printed effects from the proprietary deck.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'future-card-buddyfight.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Future Card Buddyfight.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'future-card-buddyfight.setup.deck',
+        title: 'Deck',
+        text: 'Constructed Future Card Buddyfight decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'future-card-buddyfight.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed Future Card Buddyfight decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'future-card-buddyfight.setup.dealing',
+        title: 'Deal',
+        text: 'Each player brings a constructed deck or product-defined deck, draws an opening hand, and prepares any starting character, resource, or play area required by the rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'future-card-buddyfight.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play, resource timing, and board control.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'future-card-buddyfight.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario victory condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'future-card-buddyfight.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Uses proprietary commercial cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'future-card-buddyfight.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Constructed or product-defined decks.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'future-card-buddyfight.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Card text defines powers and restrictions.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'future-card-buddyfight.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Players contest directly through attacks, challenges, or objectives.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'future-card-buddyfight.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Published victory condition ends the game.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'future-card-buddyfight.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'future-card-buddyfight.rules.objective',
+          'future-card-buddyfight.rules.gameplay',
+        ],
+      },
+      {
+        id: 'future-card-buddyfight.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'future-card-buddyfight.setup.players',
+          'future-card-buddyfight.setup.deck',
+          'future-card-buddyfight.setup.equipment',
+          'future-card-buddyfight.setup.dealing',
+        ],
+      },
+      {
+        id: 'future-card-buddyfight.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'future-card-buddyfight.rules.key.1',
+          'future-card-buddyfight.rules.key.2',
+          'future-card-buddyfight.rules.key.3',
+          'future-card-buddyfight.rules.key.4',
+          'future-card-buddyfight.rules.key.5',
+        ],
+      },
+      {
+        id: 'future-card-buddyfight.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'future-card-buddyfight.score.description',
+          'future-card-buddyfight.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'future-card-buddyfight.setup.dealing',
+        'future-card-buddyfight.rules.objective',
+      ],
+      play_card: [
+        'future-card-buddyfight.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 98. Logic: See rules.objective and rules.gameplay.',
-    Player: '98: adding game. Play one card to a central pile and announce new total. A-9 add face value; 10 subtracts 10; J/Q no change; K sets pile to 98. Avoid exceeding 98; first to push total over 98 loses. Often played as drinking game.',
+    LLM: 'Play one card per turn; add (A-9), subtract (10), hold (J/Q), or set to 98 (K). Announce new total; over 98 = lose.',
+    Player: 'Play one card per turn; add (A-9), subtract (10), hold (J/Q), or set to 98 (K). Announce new total; over 98 = lose.',
     objective: 'Avoid being the player who pushes the central total over 98.',
     gameplay: 'Play one card per turn; add (A-9), subtract (10), hold (J/Q), or set to 98 (K). Announce new total; over 98 = lose.',
     keyRules: [
@@ -51,10 +51,138 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Elimination; last remaining wins. Expected outcome: 98.',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Avoid being the player who pushes the central total over 98.',
+      'Turn-flow example: Play one card per turn; add (A-9), subtract (10), hold (J/Q), or set to 98 (K). Announce new total; over 98 = lose.',
+      'Scoring example: Elimination; last remaining wins. Avoid being the player who pushes the central total over 98..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '98.rules.objective',
+        title: 'Objective',
+        text: 'Avoid being the player who pushes the central total over 98.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '98.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Play one card per turn; add (A-9), subtract (10), hold (J/Q), or set to 98 (K). Announce new total; over 98 = lose.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '98.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '98.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '98.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '98.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '98.score.win-condition',
+        title: 'Win condition',
+        text: 'Avoid being the player who pushes the central total over 98.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '98.score.description',
+        title: 'Scoring',
+        text: 'Elimination; last remaining wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '98.rules.key.1',
+        title: 'Key rule 1',
+        text: 'A-9 add face value; 10 subtracts 10; J/Q no change; K sets to 98',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '98.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Going over 98 loses',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '98.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '98.rules.objective',
+          '98.rules.gameplay',
+        ],
+      },
+      {
+        id: '98.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '98.setup.players',
+          '98.setup.deck',
+          '98.setup.equipment',
+          '98.setup.dealing',
+        ],
+      },
+      {
+        id: '98.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '98.rules.key.1',
+          '98.rules.key.2',
+        ],
+      },
+      {
+        id: '98.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '98.score.description',
+          '98.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '98.setup.dealing',
+        '98.rules.objective',
+      ],
+      play_card: [
+        '98.rules.gameplay',
+      ],
+    },
   },
 }

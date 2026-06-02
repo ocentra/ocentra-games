@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 6 Card Omaha. Logic: See rules.objective and rules.gameplay.',
-    Player: '6 Card Omaha: six hole cards each, five community cards. Use exactly two hole cards and three board cards for best five-card hand. Pot Limit common; more drawing and stronger hands than 4-card Omaha. 2-9 players.',
+    LLM: 'Preflop betting (player to left of big blind starts; big blind acts last). Dealer burns one, deals three community cards (flop); betting round. Burn one, deal one (turn); betting round. Burn one, deal one (river); final betting round. Showdown: active players show all six hole cards; best five-card hand using exactly two hole and three board wins. Pot Limit common.',
+    Player: 'Preflop betting (player to left of big blind starts; big blind acts last). Dealer burns one, deals three community cards (flop); betting round. Burn one, deal one (turn); betting round. Burn one, deal one (river); final betting round. Showdown: active players show all six hole cards; best five-card hand using exactly two hole and three board wins. Pot Limit common.',
     objective: 'Make the best five-card hand using exactly two of your six hole cards and three of the five board cards. Win the pot at showdown.',
     gameplay: 'Preflop betting (player to left of big blind starts; big blind acts last). Dealer burns one, deals three community cards (flop); betting round. Burn one, deal one (turn); betting round. Burn one, deal one (river); final betting round. Showdown: active players show all six hole cards; best five-card hand using exactly two hole and three board wins. Pot Limit common.',
     keyRules: [
@@ -53,10 +53,180 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-9 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in preflop_bet; each_player_clockwise may use fold, check, call, bet, raise before flop_deal.',
-      'Scoring check: Pot to best hand at showdown. Expected outcome: Make the best five-card hand using exactly two hole cards and three board cards. Win the pot at showdown..',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Make the best five-card hand using exactly two of your six hole cards and three of the five board cards. Win the pot at showdown.',
+      'Turn-flow example: Preflop betting (player to left of big blind starts; big blind acts last). Dealer burns one, deals three community cards (flop); betting round. Burn one, deal one (turn); betting round. Burn one, deal one (river); final betting round. Showdown: active players show all six hole cards; best five-card hand using exactly two hole and three board wins. Pot Limit common.',
+      'Scoring example: Pot to best hand at showdown. Make the best five-card hand using exactly two hole cards and three board cards. Win the pot at showdown..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '6-card-omaha.rules.objective',
+        title: 'Objective',
+        text: 'Make the best five-card hand using exactly two of your six hole cards and three of the five board cards. Win the pot at showdown.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '6-card-omaha.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Preflop betting (player to left of big blind starts; big blind acts last). Dealer burns one, deals three community cards (flop); betting round. Burn one, deal one (turn); betting round. Burn one, deal one (river); final betting round. Showdown: active players show all six hole cards; best five-card hand using exactly two hole and three board wins. Pot Limit common.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '6-card-omaha.setup.players',
+        title: 'Players',
+        text: 'Two to nine players. Optimal four to six.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '6-card-omaha.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '6-card-omaha.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck, chips, table space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '6-card-omaha.setup.dealing',
+        title: 'Deal',
+        text: 'Six hole cards each, face down; then five community cards (flop three, turn one, river one). Dealing clockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '6-card-omaha.score.win-condition',
+        title: 'Win condition',
+        text: 'Make the best five-card hand using exactly two hole cards and three board cards. Win the pot at showdown.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '6-card-omaha.score.description',
+        title: 'Scoring',
+        text: 'Pot to best hand at showdown.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '6-card-omaha.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Six hole cards; five community cards',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '6-card-omaha.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must use exactly two hole and three board for hand',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '6-card-omaha.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Standard poker hand ranking',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: '6-card-omaha.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Pot Limit typical; other limits possible',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '6-card-omaha.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '6-card-omaha.rules.objective',
+          '6-card-omaha.rules.gameplay',
+        ],
+      },
+      {
+        id: '6-card-omaha.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '6-card-omaha.setup.players',
+          '6-card-omaha.setup.deck',
+          '6-card-omaha.setup.equipment',
+          '6-card-omaha.setup.dealing',
+        ],
+      },
+      {
+        id: '6-card-omaha.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '6-card-omaha.rules.key.1',
+          '6-card-omaha.rules.key.2',
+          '6-card-omaha.rules.key.3',
+          '6-card-omaha.rules.key.4',
+        ],
+      },
+      {
+        id: '6-card-omaha.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '6-card-omaha.score.description',
+          '6-card-omaha.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '6-card-omaha.setup.dealing',
+        '6-card-omaha.rules.objective',
+      ],
+      fold: [
+        '6-card-omaha.rules.gameplay',
+      ],
+      check: [
+        '6-card-omaha.rules.gameplay',
+      ],
+      call: [
+        '6-card-omaha.rules.gameplay',
+      ],
+      bet: [
+        '6-card-omaha.rules.gameplay',
+      ],
+      raise: [
+        '6-card-omaha.rules.gameplay',
+      ],
+      reveal_hand: [
+        '6-card-omaha.rules.gameplay',
+      ],
+      deal_flop: [
+        '6-card-omaha.rules.gameplay',
+      ],
+      deal_turn: [
+        '6-card-omaha.rules.gameplay',
+      ],
+      deal_river: [
+        '6-card-omaha.rules.gameplay',
+      ],
+    },
   },
 }

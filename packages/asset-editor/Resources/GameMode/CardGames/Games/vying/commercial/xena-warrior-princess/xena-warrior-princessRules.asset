@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players use a simplified Deckmaster-style system with four card types. Combat and card interactions are controlled by the licensed published card text.',
+    Player: 'Players use a simplified Deckmaster-style system with four card types. Combat and card interactions are controlled by the licensed published card text.',
     objective: 'Defeat the opponent using resource, character, combat, and action cards under the ARC System.',
     gameplay: 'Players use a simplified Deckmaster-style system with four card types. Combat and card interactions are controlled by the licensed published card text.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Defeat the opponent using resource, character, combat, and action cards under the ARC System.',
+      'Turn-flow example: Players use a simplified Deckmaster-style system with four card types. Combat and card interactions are controlled by the licensed published card text.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'xena-warrior-princess.rules.objective',
+        title: 'Objective',
+        text: 'Defeat the opponent using resource, character, combat, and action cards under the ARC System.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'xena-warrior-princess.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players use a simplified Deckmaster-style system with four card types. Combat and card interactions are controlled by the licensed published card text.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'xena-warrior-princess.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Xena Warrior Princess.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'xena-warrior-princess.setup.deck',
+        title: 'Deck',
+        text: 'Constructed Xena Warrior Princess CCG decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'xena-warrior-princess.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed Xena Warrior Princess CCG decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'xena-warrior-princess.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Constructed Xena Warrior Princess CCG decks and deal or lay out cards according to the documented Xena Warrior Princess rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'xena-warrior-princess.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'xena-warrior-princess.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'xena-warrior-princess.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Uses Resource, Character, Combat, and Action cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'xena-warrior-princess.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Built on the ARC System.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'xena-warrior-princess.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Licensed television property and card text are protected.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'xena-warrior-princess.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'xena-warrior-princess.rules.objective',
+          'xena-warrior-princess.rules.gameplay',
+        ],
+      },
+      {
+        id: 'xena-warrior-princess.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'xena-warrior-princess.setup.players',
+          'xena-warrior-princess.setup.deck',
+          'xena-warrior-princess.setup.equipment',
+          'xena-warrior-princess.setup.dealing',
+        ],
+      },
+      {
+        id: 'xena-warrior-princess.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'xena-warrior-princess.rules.key.1',
+          'xena-warrior-princess.rules.key.2',
+          'xena-warrior-princess.rules.key.3',
+        ],
+      },
+      {
+        id: 'xena-warrior-princess.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'xena-warrior-princess.score.description',
+          'xena-warrior-princess.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'xena-warrior-princess.setup.dealing',
+        'xena-warrior-princess.rules.objective',
+      ],
+      play_card: [
+        'xena-warrior-princess.rules.gameplay',
+      ],
+    },
   },
 }

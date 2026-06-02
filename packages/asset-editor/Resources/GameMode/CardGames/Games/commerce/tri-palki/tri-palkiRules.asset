@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tri Palki. Logic: See rules.objective and rules.gameplay.',
-    Player: "Tri Palki (Ð¢Ñ€Ð¸ Ð¿Ð°Ð»ÐºÐ¸, 'Three Sticks') is a Russian card game where players try to avoid busting past 31 points. Each player holds 4 cards and plays one card per turn, adding to a running total. If your card pushes the total over 31, you earn a 'palka' (stick). Three sticks and you're out.",
+    LLM: "1. Play a card to the center. 2. Add its value to running total. 3. Draw a replacement card. 4. If total > 31, earn a 'palka' (stick). Total resets. 5. Three sticks = out.",
+    Player: "1. Play a card to the center. 2. Add its value to running total. 3. Draw a replacement card. 4. If total > 31, earn a 'palka' (stick). Total resets. 5. Three sticks = out.",
     objective: 'Collect cards of one suit totalling 31 points or a special hand; avoid having the lowest score to avoid receiving sticks; three sticks mean elimination; last player left wins.',
     gameplay: "1. Play a card to the center. 2. Add its value to running total. 3. Draw a replacement card. 4. If total > 31, earn a 'palka' (stick). Total resets. 5. Three sticks = out.",
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      "Scoring check: Palki (sticks) are penalty points. 3 = elimination. Last player standing wins. Expected outcome: Avoid exceeding 31. Three 'palki' = elimination..",
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Collect cards of one suit totalling 31 points or a special hand; avoid having the lowest score to avoid receiving sticks; three sticks mean elimination; last player left wins.',
+      "Turn-flow example: 1. Play a card to the center. 2. Add its value to running total. 3. Draw a replacement card. 4. If total > 31, earn a 'palka' (stick). Total resets. 5. Three sticks = out.",
+      "Scoring example: Palki (sticks) are penalty points. 3 = elimination. Last player standing wins. Avoid exceeding 31. Three 'palki' = elimination..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tri-palki.rules.objective',
+        title: 'Objective',
+        text: 'Collect cards of one suit totalling 31 points or a special hand; avoid having the lowest score to avoid receiving sticks; three sticks mean elimination; last player left wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tri-palki.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Play a card to the center. 2. Add its value to running total. 3. Draw a replacement card. 4. If total > 31, earn a 'palka' (stick). Total resets. 5. Three sticks = out.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tri-palki.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tri-palki.setup.deck',
+        title: 'Deck',
+        text: '36 cards (6-A). Values: A=11, K=4, Q=3, J=2, 10=-10, 9=0, 6-8=Face value.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tri-palki.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tri-palki.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 4 cards each.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tri-palki.score.win-condition',
+        title: 'Win condition',
+        text: "Avoid exceeding 31. Three 'palki' = elimination.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tri-palki.score.description',
+        title: 'Scoring',
+        text: 'Palki (sticks) are penalty points. 3 = elimination. Last player standing wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tri-palki.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Running total must not exceed 31',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tri-palki.rules.key.2',
+        title: 'Key rule 2',
+        text: '10 is MINUS 10 (reduces total)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tri-palki.rules.key.3',
+        title: 'Key rule 3',
+        text: '9 is 0 (safe play)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tri-palki.rules.key.4',
+        title: 'Key rule 4',
+        text: '3 palki = elimination',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tri-palki.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tri-palki.rules.objective',
+          'tri-palki.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tri-palki.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tri-palki.setup.players',
+          'tri-palki.setup.deck',
+          'tri-palki.setup.equipment',
+          'tri-palki.setup.dealing',
+        ],
+      },
+      {
+        id: 'tri-palki.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tri-palki.rules.key.1',
+          'tri-palki.rules.key.2',
+          'tri-palki.rules.key.3',
+          'tri-palki.rules.key.4',
+        ],
+      },
+      {
+        id: 'tri-palki.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tri-palki.score.description',
+          'tri-palki.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tri-palki.setup.dealing',
+        'tri-palki.rules.objective',
+      ],
+      play_card: [
+        'tri-palki.rules.gameplay',
+      ],
+    },
   },
 }

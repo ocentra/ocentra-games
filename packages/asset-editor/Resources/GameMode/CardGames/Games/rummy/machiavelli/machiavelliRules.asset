@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Machiavelli. Type: Rummy/Manipulation. Rules: Play cards to sets (3-4 same rank) or sequences (3+ consecutive same suit). Can manipulate existing table melds. Must play at least one new card from hand per turn or draw. Two decks (104 cards).',
-    Player: 'Welcome to Machiavelli. Play cards to the table by forming sets or sequences. The twist? You can rearrange ANY cards already on the table to help you play. Just make sure all cards form valid melds when you finish your turn.',
+    LLM: 'On your turn, you must either: 1. Play at least one card from your hand into a valid meld (new or existing). 2. Draw one card from the stock and end your turn.',
+    Player: 'On your turn, you must either: 1. Play at least one card from your hand into a valid meld (new or existing). 2. Draw one card from the stock and end your turn.',
     objective: 'Be the first to play all cards from your hand onto the table.',
     gameplay: 'On your turn, you must either: 1. Play at least one card from your hand into a valid meld (new or existing). 2. Draw one card from the stock and end your turn.',
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'Must have no cards remaining in hand.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 13 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card, meld, draw before round end.',
-      'Scoring check: After a player goes out, remaining players count points in their hands. Face cards = 10, Ace = 1 or 11, number cards = face value. Expected outcome: First player to play all cards from their hand wins the round..',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Be the first to play all cards from your hand onto the table.',
+      'Turn-flow example: On your turn, you must either: 1. Play at least one card from your hand into a valid meld (new or existing). 2. Draw one card from the stock and end your turn.',
+      'Scoring example: After a player goes out, remaining players count points in their hands. Face cards = 10, Ace = 1 or 11, number cards = face value. First player to play all cards from their hand wins the round..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'machiavelli.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to play all cards from your hand onto the table.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'machiavelli.rules.gameplay',
+        title: 'Turn flow',
+        text: 'On your turn, you must either: 1. Play at least one card from your hand into a valid meld (new or existing). 2. Draw one card from the stock and end your turn.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'machiavelli.setup.players',
+        title: 'Players',
+        text: '2-5 players individually.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'machiavelli.setup.deck',
+        title: 'Deck',
+        text: '104 cards (Two standard decks).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'machiavelli.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard decks, playing surface for melds.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'machiavelli.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 13 cards (variants range from 11 to 15).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'machiavelli.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to play all cards from their hand wins the round.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'machiavelli.score.description',
+        title: 'Scoring',
+        text: 'After a player goes out, remaining players count points in their hands. Face cards = 10, Ace = 1 or 11, number cards = face value.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'machiavelli.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must play at least one new card from hand each turn you play',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'machiavelli.rules.key.2',
+        title: 'Key rule 2',
+        text: 'All table cards must form valid melds at end of turn',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'machiavelli.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Can manipulate any existing melds on the table',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'machiavelli.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Draw one card if unable or unwilling to play',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'machiavelli.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'machiavelli.rules.objective',
+          'machiavelli.rules.gameplay',
+        ],
+      },
+      {
+        id: 'machiavelli.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'machiavelli.setup.players',
+          'machiavelli.setup.deck',
+          'machiavelli.setup.equipment',
+          'machiavelli.setup.dealing',
+        ],
+      },
+      {
+        id: 'machiavelli.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'machiavelli.rules.key.1',
+          'machiavelli.rules.key.2',
+          'machiavelli.rules.key.3',
+          'machiavelli.rules.key.4',
+        ],
+      },
+      {
+        id: 'machiavelli.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'machiavelli.score.description',
+          'machiavelli.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'machiavelli.setup.dealing',
+        'machiavelli.rules.objective',
+      ],
+      play_card: [
+        'machiavelli.rules.gameplay',
+      ],
+      draw: [
+        'machiavelli.rules.gameplay',
+      ],
+      meld: [
+        'machiavelli.rules.gameplay',
+      ],
+      go_out: [
+        'machiavelli.rules.gameplay',
+      ],
+    },
   },
 }

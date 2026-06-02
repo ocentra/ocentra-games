@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Biriba. Greek rummy. 108 cards (2×52 + 4 Jokers). 4 players in partnerships. Meld sets and runs. Jokers/2s are wild. Complete a 'biriba' (7+ card meld) to go out. Clean biriba=500, dirty=300. Going out=100. Cards in hand are penalties. Play anti-clockwise. Target score: 2500 or 5000.",
-    Player: "Your team has a run of 5♠ 6♠ 7♠ 8♠ 9♠ — two more cards and it's a clean biriba (500 pts)! You draw 10♠ from the stock. Do you add it to the run (now 6 cards, need one more) or hold it, hoping for 4♠ as well to maximize your options?",
+    LLM: "1. **Draw**: Take from stock or pick up the entire discard pile (if the top card is immediately melded). 2. **Meld**: Place sets (same rank) or runs (same suit sequence) on the table. 3. **Discard**: End turn by placing one card face up on the pile. 4. **Pot**: The first player to empty their hand takes the first 'pot' hand. 5. **End**: Round ends when a player with at least one biriba empties their hand again.",
+    Player: "1. **Draw**: Take from stock or pick up the entire discard pile (if the top card is immediately melded). 2. **Meld**: Place sets (same rank) or runs (same suit sequence) on the table. 3. **Discard**: End turn by placing one card face up on the pile. 4. **Pot**: The first player to empty their hand takes the first 'pot' hand. 5. **End**: Round ends when a player with at least one biriba empties their hand again.",
     objective: "Score points through melds and go out. You must complete at least one 'biriba' (meld of 7+ cards) to be eligible to go out.",
     gameplay: "1. **Draw**: Take from stock or pick up the entire discard pile (if the top card is immediately melded). 2. **Meld**: Place sets (same rank) or runs (same suit sequence) on the table. 3. **Discard**: End turn by placing one card face up on the pile. 4. **Pot**: The first player to empty their hand takes the first 'pot' hand. 5. **End**: Round ends when a player with at least one biriba empties their hand again.",
     keyRules: [
@@ -53,10 +53,195 @@
       go_out: 'Requires at least one biriba to have been melded by the team.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 11 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in dealing; system may use deal_11_each, create_pots before play_loop.',
-      'Scoring check: Clean biriba = 500, Dirty biriba = 300, Going out = 100. Card values: Joker 20, 2s 10, Aces 15, 8-K 10, 3-7 5, matching the standard Pagat rules. Cards left in hand are subtracted. Expected outcome: 2500.',
+      'Setup example: 11 card(s) per player.',
+      "Rule example: Score points through melds and go out. You must complete at least one 'biriba' (meld of 7+ cards) to be eligible to go out.",
+      "Turn-flow example: 1. **Draw**: Take from stock or pick up the entire discard pile (if the top card is immediately melded). 2. **Meld**: Place sets (same rank) or runs (same suit sequence) on the table. 3. **Discard**: End turn by placing one card face up on the pile. 4. **Pot**: The first player to empty their hand takes the first 'pot' hand. 5. **End**: Round ends when a player with at least one biriba empties their hand again.",
+      'Scoring example: Clean biriba = 500, Dirty biriba = 300, Going out = 100. Card values: Joker 20, 2s 10, Aces 15, 8-K 10, 3-7 5, matching the standard Pagat rules. Cards left in hand are subtracted. First team to reach target score (typically 2,500 or 5,000 points)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'biriba.rules.objective',
+        title: 'Objective',
+        text: "Score points through melds and go out. You must complete at least one 'biriba' (meld of 7+ cards) to be eligible to go out.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'biriba.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Draw**: Take from stock or pick up the entire discard pile (if the top card is immediately melded). 2. **Meld**: Place sets (same rank) or runs (same suit sequence) on the table. 3. **Discard**: End turn by placing one card face up on the pile. 4. **Pot**: The first player to empty their hand takes the first 'pot' hand. 5. **End**: Round ends when a player with at least one biriba empties their hand again.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'biriba.setup.players',
+        title: 'Players',
+        text: '4 players in two fixed partnerships (North-South vs East-West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'biriba.setup.deck',
+        title: 'Deck',
+        text: '108 cards: Two standard 52-card decks plus four Jokers. Jokers and 2s are wild.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'biriba.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack with jokers, score pad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'biriba.setup.dealing',
+        title: 'Deal',
+        text: "Deal 11 cards to each player. Two 'pots' (reserve hands) of 11 cards each are placed face down. Remaining cards form the stock.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'biriba.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to reach target score (typically 2,500 or 5,000 points).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'biriba.score.description',
+        title: 'Scoring',
+        text: 'Clean biriba = 500, Dirty biriba = 300, Going out = 100. Card values: Joker 20, 2s 10, Aces 15, 8-K 10, 3-7 5, matching the standard Pagat rules. Cards left in hand are subtracted.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'biriba.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Jokers and 2s are wild cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'biriba.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Clean Biriba (no wilds) = 500 pts. Dirty Biriba (with wilds) = 300 pts.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'biriba.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Going out awards 100 points.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'biriba.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Cards left in hand are negative points.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'biriba.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'biriba.rules.objective',
+          'biriba.rules.gameplay',
+        ],
+      },
+      {
+        id: 'biriba.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'biriba.setup.players',
+          'biriba.setup.deck',
+          'biriba.setup.equipment',
+          'biriba.setup.dealing',
+        ],
+      },
+      {
+        id: 'biriba.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'biriba.rules.key.1',
+          'biriba.rules.key.2',
+          'biriba.rules.key.3',
+          'biriba.rules.key.4',
+        ],
+      },
+      {
+        id: 'biriba.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'biriba.score.description',
+          'biriba.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'biriba.setup.dealing',
+        'biriba.rules.objective',
+      ],
+      declare: [
+        'biriba.rules.gameplay',
+      ],
+      draw: [
+        'biriba.rules.gameplay',
+      ],
+      discard: [
+        'biriba.rules.gameplay',
+      ],
+      meld: [
+        'biriba.rules.gameplay',
+      ],
+      go_out: [
+        'biriba.rules.gameplay',
+      ],
+      draw_card: [
+        'biriba.rules.gameplay',
+      ],
+      pick_up_pile: [
+        'biriba.rules.gameplay',
+      ],
+      meld_set: [
+        'biriba.rules.gameplay',
+      ],
+      meld_run: [
+        'biriba.rules.gameplay',
+      ],
+      assign_pot_to_player: [
+        'biriba.rules.gameplay',
+      ],
+      deal_11_each: [
+        'biriba.rules.gameplay',
+      ],
+      create_pots: [
+        'biriba.rules.gameplay',
+      ],
+      pick_up_pot: [
+        'biriba.rules.gameplay',
+      ],
+      calculate_deal_points: [
+        'biriba.rules.gameplay',
+      ],
+    },
   },
 }

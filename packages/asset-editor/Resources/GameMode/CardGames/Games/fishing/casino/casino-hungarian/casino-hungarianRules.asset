@@ -55,10 +55,177 @@
       go_out: 'This action does not apply to this game.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: Points for cards and sweeps; first to target (e.g. 21) wins. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Capture cards from the layout. Score points by capturing specific cards and achieving majority of cards/spades.',
+      'Turn-flow example: Hungarian Casino follows Royal Casino rules: All cards have numerical values. Players capture by matching card values or sums. Building allowed: single builds (sum=value) and potentially multiple builds. Picture cards participate in numerical captures and builds. Ace flexible at 1 or 14.',
+      'Scoring example: Points for cards and sweeps; first to target (e.g. 21) wins. Reach agreed point target first to win..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'casino-hungarian.rules.objective',
+        title: 'Objective',
+        text: 'Capture cards from the layout. Score points by capturing specific cards and achieving majority of cards/spades.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'casino-hungarian.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Hungarian Casino follows Royal Casino rules: All cards have numerical values. Players capture by matching card values or sums. Building allowed: single builds (sum=value) and potentially multiple builds. Picture cards participate in numerical captures and builds. Ace flexible at 1 or 14.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'casino-hungarian.setup.players',
+        title: 'Players',
+        text: '2-4 players, typically playing individually.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'casino-hungarian.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack. Card values: 2-10=face value, J=11, Q=12, K=13, A=1 or 14.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'casino-hungarian.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, score sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'casino-hungarian.setup.dealing',
+        title: 'Deal',
+        text: 'Standard Casino dealing: cards to players and to table layout.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'casino-hungarian.score.win-condition',
+        title: 'Win condition',
+        text: 'Reach agreed point target first to win.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'casino-hungarian.score.description',
+        title: 'Scoring',
+        text: 'Points for cards and sweeps; first to target (e.g. 21) wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'casino-hungarian.rules.key.1',
+        title: 'Key rule 1',
+        text: '2-4 players',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'casino-hungarian.rules.key.2',
+        title: 'Key rule 2',
+        text: 'All cards have numerical values',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'casino-hungarian.rules.key.3',
+        title: 'Key rule 3',
+        text: 'J=11, Q=12, K=13, A=1/14',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'casino-hungarian.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Capture by matching or summing to played card value',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'casino-hungarian.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Building allowed',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'casino-hungarian.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Standard Casino scoring',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'casino-hungarian.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'casino-hungarian.rules.objective',
+          'casino-hungarian.rules.gameplay',
+        ],
+      },
+      {
+        id: 'casino-hungarian.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'casino-hungarian.setup.players',
+          'casino-hungarian.setup.deck',
+          'casino-hungarian.setup.equipment',
+          'casino-hungarian.setup.dealing',
+        ],
+      },
+      {
+        id: 'casino-hungarian.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'casino-hungarian.rules.key.1',
+          'casino-hungarian.rules.key.2',
+          'casino-hungarian.rules.key.3',
+          'casino-hungarian.rules.key.4',
+          'casino-hungarian.rules.key.5',
+          'casino-hungarian.rules.key.6',
+        ],
+      },
+      {
+        id: 'casino-hungarian.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'casino-hungarian.score.description',
+          'casino-hungarian.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'casino-hungarian.setup.dealing',
+        'casino-hungarian.rules.objective',
+      ],
+      deal: [
+        'casino-hungarian.rules.gameplay',
+      ],
+      play_card: [
+        'casino-hungarian.rules.gameplay',
+      ],
+    },
   },
 }

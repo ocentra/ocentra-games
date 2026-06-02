@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 1000 (Tysiąc). Logic: See rules.objective and rules.gameplay.',
-    Player: "TysiÄ…c ('Thousand') is Poland's national card game. 2-4 players. 24-card deck (9-A). Auction bidding + melding + trick-taking. Melds: K+Q same suit = 'marriage' (â™¥=100, â™¦=80, â™£=60, â™ =40). Declaring a marriage makes that suit trump. Card points: A=11, 10=10, K=4, Q=3, J=2, 9=0. Total 120. First to 1000 wins. Musik (talon) taken by bid winner.",
+    LLM: "Auction: bid points you'll score (min 100). Winner takes musik, discards 2. Marriages (K+Q same suit): â™¥=100, â™¦=80, â™£=60, â™ =40. Declaring marriage = that suit becomes trump. Follow suit, must trump if void. A=11, 10=10, K=4, Q=3, J=2. 120 card points total. Bomb option to avoid setback.",
+    Player: "Auction: bid points you'll score (min 100). Winner takes musik, discards 2. Marriages (K+Q same suit): â™¥=100, â™¦=80, â™£=60, â™ =40. Declaring marriage = that suit becomes trump. Follow suit, must trump if void. A=11, 10=10, K=4, Q=3, J=2. 120 card points total. Bomb option to avoid setback.",
     objective: 'Be the first to reach 1000 points by winning the auction, taking the talon, and scoring at least your bid from card points and marriage declarations; opponents score from their own tricks.',
     gameplay: "Auction: bid points you'll score (min 100). Winner takes musik, discards 2. Marriages (K+Q same suit): â™¥=100, â™¦=80, â™£=60, â™ =40. Declaring marriage = that suit becomes trump. Follow suit, must trump if void. A=11, 10=10, K=4, Q=3, J=2. 120 card points total. Bomb option to avoid setback.",
     keyRules: [
@@ -54,10 +54,180 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_7_each_3_talon before bid.',
-      'Scoring check: Win bid: score declared points. Fail: lose declared amount. Opponents score tricks. Marriage bonuses. 120 card points + marriage values. Expected outcome: 1000.',
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Be the first to reach 1000 points by winning the auction, taking the talon, and scoring at least your bid from card points and marriage declarations; opponents score from their own tricks.',
+      "Turn-flow example: Auction: bid points you'll score (min 100). Winner takes musik, discards 2. Marriages (K+Q same suit): â™¥=100, â™¦=80, â™£=60, â™ =40. Declaring marriage = that suit becomes trump. Follow suit, must trump if void. A=11, 10=10, K=4, Q=3, J=2. 120 card points total. Bomb option to avoid setback.",
+      'Scoring example: Win bid: score declared points. Fail: lose declared amount. Opponents score tricks. Marriage bonuses. 120 card points + marriage values. First to 1000 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tysiac-1000.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to reach 1000 points by winning the auction, taking the talon, and scoring at least your bid from card points and marriage declarations; opponents score from their own tricks.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tysiac-1000.rules.gameplay',
+        title: 'Turn flow',
+        text: "Auction: bid points you'll score (min 100). Winner takes musik, discards 2. Marriages (K+Q same suit): â™¥=100, â™¦=80, â™£=60, â™ =40. Declaring marriage = that suit becomes trump. Follow suit, must trump if void. A=11, 10=10, K=4, Q=3, J=2. 120 card points total. Bomb option to avoid setback.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tysiac-1000.setup.players',
+        title: 'Players',
+        text: '3 (2-4 variants)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tysiac-1000.setup.deck',
+        title: 'Deck',
+        text: '24 cards: 9-J-Q-K-10-A (ranking). 7 each + 3-card musik.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tysiac-1000.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, scorepad',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tysiac-1000.setup.dealing',
+        title: 'Deal',
+        text: '7 each + 3-card musik (talon).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tysiac-1000.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 1000 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tysiac-1000.score.description',
+        title: 'Scoring',
+        text: 'Win bid: score declared points. Fail: lose declared amount. Opponents score tricks. Marriage bonuses. 120 card points + marriage values.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tysiac-1000.rules.key.1',
+        title: 'Key rule 1',
+        text: '24-card deck (9-A)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tysiac-1000.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Marriage melds declare trump',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tysiac-1000.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Musik (talon) for bid winner',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tysiac-1000.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Bomb: forfeit without penalty (once)',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'tysiac-1000.rules.key.5',
+        title: 'Key rule 5',
+        text: '900+ rule: must win on marriages',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tysiac-1000.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tysiac-1000.rules.objective',
+          'tysiac-1000.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tysiac-1000.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tysiac-1000.setup.players',
+          'tysiac-1000.setup.deck',
+          'tysiac-1000.setup.equipment',
+          'tysiac-1000.setup.dealing',
+        ],
+      },
+      {
+        id: 'tysiac-1000.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tysiac-1000.rules.key.1',
+          'tysiac-1000.rules.key.2',
+          'tysiac-1000.rules.key.3',
+          'tysiac-1000.rules.key.4',
+          'tysiac-1000.rules.key.5',
+        ],
+      },
+      {
+        id: 'tysiac-1000.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tysiac-1000.score.description',
+          'tysiac-1000.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tysiac-1000.setup.dealing',
+        'tysiac-1000.rules.objective',
+      ],
+      play_card: [
+        'tysiac-1000.rules.gameplay',
+      ],
+      pass: [
+        'tysiac-1000.rules.gameplay',
+      ],
+      bid: [
+        'tysiac-1000.rules.gameplay',
+      ],
+      meld: [
+        'tysiac-1000.rules.gameplay',
+      ],
+      deal_7_each_3_talon: [
+        'tysiac-1000.rules.gameplay',
+      ],
+      take_talon_discard_2: [
+        'tysiac-1000.rules.gameplay',
+      ],
+    },
   },
 }

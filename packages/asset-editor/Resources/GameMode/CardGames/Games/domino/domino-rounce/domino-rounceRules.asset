@@ -52,10 +52,177 @@
       go_out: 'Allowed only when hand-empty condition is satisfied.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before main_play.',
-      'Scoring check: Scoring uses the documented rules for Domino Rounce and determines round or match winners accordingly. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Each player starts with 15 points. Players subtract 1 point for each trick they win; if all except the dealer pass, the dealer subtracts 5 without play. A player who stays in but wins no tricks is rounced and adds 5 to their score; a player who drops out neither gains nor loses. The first to reach or pass zero points wins the game.',
+      "Turn-flow example: 1. Folding: After seeing their tiles and trumps, players can 'fold' and sit out the round to avoid penalties.\n2. The Dummy: A player can choose to play by discarding their hand and taking the 'dummy' hand.\n3. Trick Play: Lead any tile. Must follow suit. If unable to follow, you can play ANY tile (no requirement to trump unless you wish to).\n4. Winning: Highest trump wins. If no trump, highest of led suit wins.",
+      'Scoring example: Scoring uses the documented rules for Domino Rounce and determines round or match winners accordingly. Be the first to reduce your score from 15 to 0..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'domino-rounce.rules.objective',
+        title: 'Objective',
+        text: 'Each player starts with 15 points. Players subtract 1 point for each trick they win; if all except the dealer pass, the dealer subtracts 5 without play. A player who stays in but wins no tricks is rounced and adds 5 to their score; a player who drops out neither gains nor loses. The first to reach or pass zero points wins the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'domino-rounce.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Folding: After seeing their tiles and trumps, players can 'fold' and sit out the round to avoid penalties.\n2. The Dummy: A player can choose to play by discarding their hand and taking the 'dummy' hand.\n3. Trick Play: Lead any tile. Must follow suit. If unable to follow, you can play ANY tile (no requirement to trump unless you wish to).\n4. Winning: Highest trump wins. If no trump, highest of led suit wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'domino-rounce.setup.players',
+        title: 'Players',
+        text: '2, 3, or 4 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'domino-rounce.setup.deck',
+        title: 'Deck',
+        text: '28 standard double-six dominoes.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'domino-rounce.setup.equipment',
+        title: 'Equipment',
+        text: 'Dominoes, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'domino-rounce.setup.dealing',
+        title: 'Deal',
+        text: "Each player receives 5 tiles. A 'dummy' hand of extra tiles is dealt. The player to the right of the dealer turns up a tile to determine the trump suit.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'domino-rounce.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first to reduce your score from 15 to 0.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'domino-rounce.score.description',
+        title: 'Scoring',
+        text: 'Scoring uses the documented rules for Domino Rounce and determines round or match winners accordingly.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'domino-rounce.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Blank is the lowest rank (0), 6 is the highest (6).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'domino-rounce.rules.key.2',
+        title: 'Key rule 2',
+        text: "One end of the tile determines the 'suit', the other its rank.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'domino-rounce.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The winner of a trick must lead a trump next if they hold one.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'domino-rounce.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'domino-rounce.rules.objective',
+          'domino-rounce.rules.gameplay',
+        ],
+      },
+      {
+        id: 'domino-rounce.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'domino-rounce.setup.players',
+          'domino-rounce.setup.deck',
+          'domino-rounce.setup.equipment',
+          'domino-rounce.setup.dealing',
+        ],
+      },
+      {
+        id: 'domino-rounce.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'domino-rounce.rules.key.1',
+          'domino-rounce.rules.key.2',
+          'domino-rounce.rules.key.3',
+        ],
+      },
+      {
+        id: 'domino-rounce.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'domino-rounce.score.description',
+          'domino-rounce.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'domino-rounce.setup.dealing',
+        'domino-rounce.rules.objective',
+      ],
+      ante: [
+        'domino-rounce.rules.gameplay',
+      ],
+      deal: [
+        'domino-rounce.rules.gameplay',
+      ],
+      fold: [
+        'domino-rounce.rules.gameplay',
+      ],
+      check: [
+        'domino-rounce.rules.gameplay',
+      ],
+      call: [
+        'domino-rounce.rules.gameplay',
+      ],
+      bet: [
+        'domino-rounce.rules.gameplay',
+      ],
+      raise: [
+        'domino-rounce.rules.gameplay',
+      ],
+      declare: [
+        'domino-rounce.rules.gameplay',
+      ],
+      award_pot: [
+        'domino-rounce.rules.gameplay',
+      ],
+      play_card: [
+        'domino-rounce.rules.gameplay',
+      ],
+      go_out: [
+        'domino-rounce.rules.gameplay',
+      ],
+    },
   },
 }

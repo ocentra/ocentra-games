@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Valepaska. Logic: See rules.objective and rules.gameplay.',
-    Player: "Valepaska is a Finnish bluffing/shedding game variant of Paskahousu. 3-8 players. Cards played face-down with declarations — players can LIE about what they played. Other players call 'Valepaska!' to challenge. Wrong challenger picks up pile; caught liar picks up pile. Special cards: 2s (supercards), 10s clear pile, Aces clear face cards, four-of-a-kind clears.",
+    LLM: "Play equal or higher rank face-down + declare. Can BLUFF. 'Valepaska!' challenge: bluffer picks up pile if caught, challenger picks up if wrong. Draw to 5. Special: 2=supercard, 10=clears 3-9, A=clears face cards, 4-of-a-kind=clears.",
+    Player: "Play equal or higher rank face-down + declare. Can BLUFF. 'Valepaska!' challenge: bluffer picks up pile if caught, challenger picks up if wrong. Draw to 5. Special: 2=supercard, 10=clears 3-9, A=clears face cards, 4-of-a-kind=clears.",
     objective: 'Shed all cards first. Last player = loser (paskahousu).',
     gameplay: "Play equal or higher rank face-down + declare. Can BLUFF. 'Valepaska!' challenge: bluffer picks up pile if caught, challenger picks up if wrong. Draw to 5. Special: 2=supercard, 10=clears 3-9, A=clears face cards, 4-of-a-kind=clears.",
     keyRules: [
@@ -54,10 +54,180 @@
       go_out: 'Available when a player has no cards left in hand.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      "Scoring check: First out wins. Last player is 'paskahousu'. Expected outcome: 1.",
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Shed all cards first. Last player = loser (paskahousu).',
+      "Turn-flow example: Play equal or higher rank face-down + declare. Can BLUFF. 'Valepaska!' challenge: bluffer picks up pile if caught, challenger picks up if wrong. Draw to 5. Special: 2=supercard, 10=clears 3-9, A=clears face cards, 4-of-a-kind=clears.",
+      "Scoring example: First out wins. Last player is 'paskahousu'. Shed all cards first. Last player = loser (paskahousu)..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'valepaska.rules.objective',
+        title: 'Objective',
+        text: 'Shed all cards first. Last player = loser (paskahousu).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'valepaska.rules.gameplay',
+        title: 'Turn flow',
+        text: "Play equal or higher rank face-down + declare. Can BLUFF. 'Valepaska!' challenge: bluffer picks up pile if caught, challenger picks up if wrong. Draw to 5. Special: 2=supercard, 10=clears 3-9, A=clears face cards, 4-of-a-kind=clears.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'valepaska.setup.players',
+        title: 'Players',
+        text: 'Three or more players; best with four or five.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'valepaska.setup.deck',
+        title: 'Deck',
+        text: 'A standard deck of 52 cards is used. Cards rank from high to low: 2, A, K, Q, J, 10, 9, 8, 7, 6, 5, 4, 3.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'valepaska.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'valepaska.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer gives each player five cards; the remaining cards form a face-down stock pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'valepaska.score.win-condition',
+        title: 'Win condition',
+        text: 'Shed all cards first. Last player = loser (paskahousu).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'valepaska.score.description',
+        title: 'Scoring',
+        text: "First out wins. Last player is 'paskahousu'.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'valepaska.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Face-down play with declaration',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'valepaska.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Bluffing is legal',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'valepaska.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Challenge: Valepaska!',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'valepaska.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Special cards: 2, 10, A',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'valepaska.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Four-of-a-kind clears pile',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'valepaska.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'valepaska.rules.objective',
+          'valepaska.rules.gameplay',
+        ],
+      },
+      {
+        id: 'valepaska.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'valepaska.setup.players',
+          'valepaska.setup.deck',
+          'valepaska.setup.equipment',
+          'valepaska.setup.dealing',
+        ],
+      },
+      {
+        id: 'valepaska.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'valepaska.rules.key.1',
+          'valepaska.rules.key.2',
+          'valepaska.rules.key.3',
+          'valepaska.rules.key.4',
+          'valepaska.rules.key.5',
+        ],
+      },
+      {
+        id: 'valepaska.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'valepaska.score.description',
+          'valepaska.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'valepaska.setup.dealing',
+        'valepaska.rules.objective',
+      ],
+      deal: [
+        'valepaska.rules.gameplay',
+      ],
+      play_card: [
+        'valepaska.rules.gameplay',
+      ],
+      draw: [
+        'valepaska.rules.gameplay',
+      ],
+      go_out: [
+        'valepaska.rules.gameplay',
+      ],
+      declare_winner: [
+        'valepaska.rules.gameplay',
+      ],
+      challenge: [
+        'valepaska.rules.gameplay',
+      ],
+    },
   },
 }

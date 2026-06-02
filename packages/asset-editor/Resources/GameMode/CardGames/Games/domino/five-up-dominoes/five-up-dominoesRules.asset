@@ -10,7 +10,7 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Five Up Dominoes. Logic: See rules.',
+    LLM: 'Domino game in the Fives family. All doubles are spinners. Score when layout pip total is a multiple of 5. Play to 61 points.',
     Player: 'Domino game in the Fives family. All doubles are spinners. Score when layout pip total is a multiple of 5. Play to 61 points.',
     objective: 'Be the first player or partnership to reach 61 points. Score during play by making the open ends of the layout total a multiple of five; at end of each hand, subtract penalty points for pips left in hand (rounded to nearest multiple of five, divided by five).',
     gameplay: 'Domino game in the Fives family. All doubles are spinners. Score when layout pip total is a multiple of 5. Play to 61 points.',
@@ -50,10 +50,132 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card, draw before round end.',
-      "Scoring check: After each tile is set, sum the pips on all open ends of the layout; if the total is a multiple of 5 (5, 10, 15, 20...), the player scores that total divided by 5. An exposed double counts both its pips until tiles have been played on both sides of it. At end of hand, each player's remaining pips are rounded to the nearest multiple of 5, divided by 5, and subtracted from their score. First to 61 points wins. Expected outcome: 61.",
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first player or partnership to reach 61 points. Score during play by making the open ends of the layout total a multiple of five; at end of each hand, subtract penalty points for pips left in hand (rounded to nearest multiple of five, divided by five).',
+      'Turn-flow example: Domino game in the Fives family. All doubles are spinners. Score when layout pip total is a multiple of 5. Play to 61 points.',
+      "Scoring example: After each tile is set, sum the pips on all open ends of the layout; if the total is a multiple of 5 (5, 10, 15, 20...), the player scores that total divided by 5. An exposed double counts both its pips until tiles have been played on both sides of it. At end of hand, each player's remaining pips are rounded to the nearest multiple of 5, divided by 5, and subtracted from their score. First to 61 points wins. First player or partnership to reach 61 points wins. Tie: play further hands until one leads..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'five-up-dominoes.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player or partnership to reach 61 points. Score during play by making the open ends of the layout total a multiple of five; at end of each hand, subtract penalty points for pips left in hand (rounded to nearest multiple of five, divided by five).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'five-up-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Domino game in the Fives family. All doubles are spinners. Score when layout pip total is a multiple of 5. Play to 61 points.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'five-up-dominoes.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'five-up-dominoes.setup.deck',
+        title: 'Deck',
+        text: 'Double-6 domino set',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'five-up-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'Double-six domino set; cribbage board recommended for scoring.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'five-up-dominoes.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives five tiles. The remaining tiles form the boneyard (stock).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'five-up-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'First player or partnership to reach 61 points wins. Tie: play further hands until one leads.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'five-up-dominoes.score.description',
+        title: 'Scoring',
+        text: "After each tile is set, sum the pips on all open ends of the layout; if the total is a multiple of 5 (5, 10, 15, 20...), the player scores that total divided by 5. An exposed double counts both its pips until tiles have been played on both sides of it. At end of hand, each player's remaining pips are rounded to the nearest multiple of 5, divided by 5, and subtracted from their score. First to 61 points wins.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'five-up-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Five tiles each; rest is boneyard. Lead plays any tile; others match open ends. All doubles are spinners (crosswise). If you cannot play, draw from boneyard until you can play or it is empty; if you draw a playable tile, play it immediately and turn ends. Hand ends when one player dominoes or all are blocked. After each play, if open-end total is a multiple of 5, score that total divided by 5. At hand end, pips in hand rounded to nearest 5, divided by 5, subtracted from your score. First to 61 wins.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'five-up-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'five-up-dominoes.rules.objective',
+          'five-up-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: 'five-up-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'five-up-dominoes.setup.players',
+          'five-up-dominoes.setup.deck',
+          'five-up-dominoes.setup.equipment',
+          'five-up-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: 'five-up-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'five-up-dominoes.rules.key.1',
+        ],
+      },
+      {
+        id: 'five-up-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'five-up-dominoes.score.description',
+          'five-up-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'five-up-dominoes.setup.dealing',
+        'five-up-dominoes.rules.objective',
+      ],
+      play_card: [
+        'five-up-dominoes.rules.gameplay',
+      ],
+      draw: [
+        'five-up-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

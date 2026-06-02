@@ -52,10 +52,180 @@
       go_out: 'Down and Back is modeled as a Patience flow; go out is not a core player action in its documented rules.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before main_play.',
-      'Scoring check: Scoring uses the documented rules for Down and Back and determines round or match winners accordingly. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      "Rule example: Win the pot by having the highest-ranking 4ndcard 'Going Down' hand and 3ndcard 'Coming Back' hand.",
+      "Turn-flow example: 1. Turning: Players take turns (clockwise) drawing one card from either the stock or discard pile, then discarding one card.\n2. Duration: The game lasts exactly SIX rounds. After the dealer's sixth turn, the play ends.\n3. Showdown: Players divide their 7 cards into a 4ndcard hand and a 3ndcard hand. They show the 4ndcard hands first to determine the winner, then the 3ndcard hands.",
+      "Scoring example: Scoring uses the documented rules for Down and Back and determines round or match winners accordingly. Win the pot by having the highest-ranking 4ndcard 'Going Down' hand and 3ndcard 'Coming Back' hand..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'down-and-back.rules.objective',
+        title: 'Objective',
+        text: "Win the pot by having the highest-ranking 4ndcard 'Going Down' hand and 3ndcard 'Coming Back' hand.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'down-and-back.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Turning: Players take turns (clockwise) drawing one card from either the stock or discard pile, then discarding one card.\n2. Duration: The game lasts exactly SIX rounds. After the dealer's sixth turn, the play ends.\n3. Showdown: Players divide their 7 cards into a 4ndcard hand and a 3ndcard hand. They show the 4ndcard hands first to determine the winner, then the 3ndcard hands.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'down-and-back.setup.players',
+        title: 'Players',
+        text: '2 to 5 players. Best with 4.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'down-and-back.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52ndcard deck. Aces are always LOW (1).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'down-and-back.setup.equipment',
+        title: 'Equipment',
+        text: '52ndcard deck, poker chips or coins for the pot.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'down-and-back.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 7 cards face-down. One card is turned up to start the discard pile. Remaining cards form the stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'down-and-back.score.win-condition',
+        title: 'Win condition',
+        text: "Win the pot by having the highest-ranking 4ndcard 'Going Down' hand and 3ndcard 'Coming Back' hand.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'down-and-back.score.description',
+        title: 'Scoring',
+        text: 'Scoring uses the documented rules for Down and Back and determines round or match winners accordingly.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'down-and-back.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Aces are always low (A-2-3-4 is valid, J-Q-KndA is NOT).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'down-and-back.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Hand Ties: If two players tie for the best hand, they cut cards from the deck; the higher cut wins.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'down-and-back.rules.key.3',
+        title: 'Key rule 3',
+        text: "The pot is often split between the winner of the 'Going Down' hand and the 'Coming Back' hand.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'down-and-back.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'down-and-back.rules.objective',
+          'down-and-back.rules.gameplay',
+        ],
+      },
+      {
+        id: 'down-and-back.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'down-and-back.setup.players',
+          'down-and-back.setup.deck',
+          'down-and-back.setup.equipment',
+          'down-and-back.setup.dealing',
+        ],
+      },
+      {
+        id: 'down-and-back.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'down-and-back.rules.key.1',
+          'down-and-back.rules.key.2',
+          'down-and-back.rules.key.3',
+        ],
+      },
+      {
+        id: 'down-and-back.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'down-and-back.score.description',
+          'down-and-back.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'down-and-back.setup.dealing',
+        'down-and-back.rules.objective',
+      ],
+      ante: [
+        'down-and-back.rules.gameplay',
+      ],
+      deal: [
+        'down-and-back.rules.gameplay',
+      ],
+      fold: [
+        'down-and-back.rules.gameplay',
+      ],
+      check: [
+        'down-and-back.rules.gameplay',
+      ],
+      call: [
+        'down-and-back.rules.gameplay',
+      ],
+      bet: [
+        'down-and-back.rules.gameplay',
+      ],
+      raise: [
+        'down-and-back.rules.gameplay',
+      ],
+      reveal_hand: [
+        'down-and-back.rules.gameplay',
+      ],
+      award_pot: [
+        'down-and-back.rules.gameplay',
+      ],
+      play_card: [
+        'down-and-back.rules.gameplay',
+      ],
+      draw: [
+        'down-and-back.rules.gameplay',
+      ],
+      discard: [
+        'down-and-back.rules.gameplay',
+      ],
+    },
   },
 }

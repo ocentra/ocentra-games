@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Spider (Solitaire). Logic: See rules.objective and rules.gameplay.',
-    Player: 'Spider is one of the most popular two-deck solitaire games. The goal is to assemble 13 cards of a suit (K down to A) on the tableau, which then automatically removes itself from play. It is typically played with two decks (104 cards). The difficulty varies massively depending on the number of suits used (1 Suit = Easy, 2 Suits = Medium, 4 Suits = Hard).',
+    LLM: 'Build down by rank on the tableau (any suit); in-suit sequences may be moved together. A complete run of 13 cards in one suit (King down to Ace) is removed from the tableau. When no column is empty, deal 10 cards from the stock (one per column). Continue until all eight sequences are removed (win) or no legal move and no deal remains (loss).',
+    Player: 'Build down by rank on the tableau (any suit); in-suit sequences may be moved together. A complete run of 13 cards in one suit (King down to Ace) is removed from the tableau. When no column is empty, deal 10 cards from the stock (one per column). Continue until all eight sequences are removed (win) or no legal move and no deal remains (loss).',
     objective: 'assemble 8 full sequences (K-Q-J...A) of the SAME SUIT.',
     gameplay: 'Build down by rank on the tableau (any suit); in-suit sequences may be moved together. A complete run of 13 cards in one suit (King down to Ace) is removed from the tableau. When no column is empty, deal 10 cards from the stock (one per column). Continue until all eight sequences are removed (win) or no legal move and no deal remains (loss).',
     keyRules: [
@@ -53,10 +53,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card, deal before round end.',
-      'Scoring check: assemble 8 full sequences (K-Q-J...A) of the SAME SUIT. Expected outcome: assemble 8 full sequences (K-Q-J...A) of the SAME SUIT..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: assemble 8 full sequences (K-Q-J...A) of the SAME SUIT.',
+      'Turn-flow example: Build down by rank on the tableau (any suit); in-suit sequences may be moved together. A complete run of 13 cards in one suit (King down to Ace) is removed from the tableau. When no column is empty, deal 10 cards from the stock (one per column). Continue until all eight sequences are removed (win) or no legal move and no deal remains (loss).',
+      'Scoring example: assemble 8 full sequences (K-Q-J...A) of the SAME SUIT. assemble 8 full sequences (K-Q-J...A) of the SAME SUIT..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'spider.rules.objective',
+        title: 'Objective',
+        text: 'assemble 8 full sequences (K-Q-J...A) of the SAME SUIT.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'spider.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Build down by rank on the tableau (any suit); in-suit sequences may be moved together. A complete run of 13 cards in one suit (King down to Ace) is removed from the tableau. When no column is empty, deal 10 cards from the stock (one per column). Continue until all eight sequences are removed (win) or no legal move and no deal remains (loss).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'spider.setup.players',
+        title: 'Players',
+        text: 'One player only. Spider is a solitaire (patience) game played by a single player against the tableau and stock.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'spider.setup.deck',
+        title: 'Deck',
+        text: '104 cards (two standard 52-card decks).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'spider.setup.equipment',
+        title: 'Equipment',
+        text: 'Table space for 10 tableau columns and stock.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'spider.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 54 cards to the tableau in 10 columns: first 4 columns get 6 cards each, remaining 6 columns get 5 cards each; only the top card of each column is face up. The remaining 50 cards form the stock. When no column is empty, the player may deal 10 more cards from the stock (one to each column).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'spider.score.win-condition',
+        title: 'Win condition',
+        text: 'assemble 8 full sequences (K-Q-J...A) of the SAME SUIT.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'spider.score.description',
+        title: 'Scoring',
+        text: 'assemble 8 full sequences (K-Q-J...A) of the SAME SUIT.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'spider.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Tableau builds down by rank; any suit.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'spider.rules.key.2',
+        title: 'Key rule 2',
+        text: 'In-suit sequences may be moved as a unit.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'spider.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Complete K-to-A same suit is removed from play.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'spider.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Deal 10 from stock only when no column is empty.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'spider.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'spider.rules.objective',
+          'spider.rules.gameplay',
+        ],
+      },
+      {
+        id: 'spider.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'spider.setup.players',
+          'spider.setup.deck',
+          'spider.setup.equipment',
+          'spider.setup.dealing',
+        ],
+      },
+      {
+        id: 'spider.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'spider.rules.key.1',
+          'spider.rules.key.2',
+          'spider.rules.key.3',
+          'spider.rules.key.4',
+        ],
+      },
+      {
+        id: 'spider.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'spider.score.description',
+          'spider.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'spider.setup.dealing',
+        'spider.rules.objective',
+      ],
+      deal: [
+        'spider.rules.gameplay',
+      ],
+      play_card: [
+        'spider.rules.gameplay',
+      ],
+    },
   },
 }

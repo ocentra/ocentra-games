@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Bonken. Logic: Finish with the fewest penalty points after all eleven rounds.',
-    Player: 'Bonken is a Dutch four-player trick-taking compendium game with eleven rounds, each using a different penalty or objective.',
+    LLM: 'Players play a set of trick-taking deals with changing objectives. The game is easy to learn but changes scoring pressure between deals, making it a parlour-game compendium.',
+    Player: 'Players play a set of trick-taking deals with changing objectives. The game is easy to learn but changes scoring pressure between deals, making it a parlour-game compendium.',
     objective: 'Play the sequence of compendium deals and finish with the best score.',
     gameplay: 'Players play a set of trick-taking deals with changing objectives. The game is easy to learn but changes scoring pressure between deals, making it a parlour-game compendium.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Penalty points are accumulated across the eleven contracts; lowest total wins. Expected outcome: 1.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Play the sequence of compendium deals and finish with the best score.',
+      'Turn-flow example: Players play a set of trick-taking deals with changing objectives. The game is easy to learn but changes scoring pressure between deals, making it a parlour-game compendium.',
+      'Scoring example: Penalty points are accumulated across the eleven contracts; lowest total wins. Finish with the fewest penalty points after all eleven rounds..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'rosbiratschka.rules.objective',
+        title: 'Objective',
+        text: 'Play the sequence of compendium deals and finish with the best score.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'rosbiratschka.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play a set of trick-taking deals with changing objectives. The game is easy to learn but changes scoring pressure between deals, making it a parlour-game compendium.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'rosbiratschka.setup.players',
+        title: 'Players',
+        text: '3-4 players use the table arrangement described for Rosbiratschka.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'rosbiratschka.setup.deck',
+        title: 'Deck',
+        text: '32- or 24-card German-suited pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'rosbiratschka.setup.equipment',
+        title: 'Equipment',
+        text: '32- or 24-card German-suited pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'rosbiratschka.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare 32- or 24-card German-suited pack and deal or lay out cards according to the documented Rosbiratschka rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'rosbiratschka.score.win-condition',
+        title: 'Win condition',
+        text: 'Finish with the fewest penalty points after all eleven rounds.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'rosbiratschka.score.description',
+        title: 'Scoring',
+        text: 'Penalty points are accumulated across the eleven contracts; lowest total wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'rosbiratschka.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Three or four players.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'rosbiratschka.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Uses a 32- or 24-card German-suited pack.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'rosbiratschka.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Multiple deals have different trick-taking objectives.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'rosbiratschka.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'rosbiratschka.rules.objective',
+          'rosbiratschka.rules.gameplay',
+        ],
+      },
+      {
+        id: 'rosbiratschka.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'rosbiratschka.setup.players',
+          'rosbiratschka.setup.deck',
+          'rosbiratschka.setup.equipment',
+          'rosbiratschka.setup.dealing',
+        ],
+      },
+      {
+        id: 'rosbiratschka.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'rosbiratschka.rules.key.1',
+          'rosbiratschka.rules.key.2',
+          'rosbiratschka.rules.key.3',
+        ],
+      },
+      {
+        id: 'rosbiratschka.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'rosbiratschka.score.description',
+          'rosbiratschka.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'rosbiratschka.setup.dealing',
+        'rosbiratschka.rules.objective',
+      ],
+      play_card: [
+        'rosbiratschka.rules.gameplay',
+      ],
+      discard: [
+        'rosbiratschka.rules.gameplay',
+      ],
+      pass: [
+        'rosbiratschka.rules.gameplay',
+      ],
+      bid: [
+        'rosbiratschka.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Whist. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Whist is the classic English partnership trick-taking game and ancestor of Bridge. 4 players, 2 teams. 52 cards, 13 each. Last card dealt (to dealer) turned face-up = trump. Eldest hand leads. Follow suit. Each trick over 6 = 1 point. Honours (A-K-Q-J of trump): 3 held = 2pts, 4 held = 4pts. Game to 5 (British) or 7 (American). Rubber = best of 3.',
+    LLM: 'Two teams of three play a Whist-like game. Partner communication and captain-directed play are permitted by the historical convention, making it a six-player relative of Quadrette.',
+    Player: 'Two teams of three play a Whist-like game. Partner communication and captain-directed play are permitted by the historical convention, making it a six-player relative of Quadrette.',
     objective: 'As a team of three, coordinate trick play to win the required tricks.',
     gameplay: 'Two teams of three play a Whist-like game. Partner communication and captain-directed play are permitted by the historical convention, making it a six-player relative of Quadrette.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 6-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Odd tricks (over 6) = 1pt each. Honours bonus. Game: 5pts (British) or 7pts (American). Rubber: best of 3 games. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: As a team of three, coordinate trick play to win the required tricks.',
+      'Turn-flow example: Two teams of three play a Whist-like game. Partner communication and captain-directed play are permitted by the historical convention, making it a six-player relative of Quadrette.',
+      'Scoring example: Odd tricks (over 6) = 1pt each. Honours bonus. Game: 5pts (British) or 7pts (American). Rubber: best of 3 games. Win majority of tricks. First to 5/7 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'sizette.rules.objective',
+        title: 'Objective',
+        text: 'As a team of three, coordinate trick play to win the required tricks.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'sizette.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Two teams of three play a Whist-like game. Partner communication and captain-directed play are permitted by the historical convention, making it a six-player relative of Quadrette.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'sizette.setup.players',
+        title: 'Players',
+        text: '6 players use the table arrangement described for Sizette.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'sizette.setup.deck',
+        title: 'Deck',
+        text: 'Traditional French-suited pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'sizette.setup.equipment',
+        title: 'Equipment',
+        text: 'Traditional French-suited pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'sizette.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Traditional French-suited pack and deal or lay out cards according to the documented Sizette rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'sizette.score.win-condition',
+        title: 'Win condition',
+        text: 'Win majority of tricks. First to 5/7 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'sizette.score.description',
+        title: 'Scoring',
+        text: 'Odd tricks (over 6) = 1pt each. Honours bonus. Game: 5pts (British) or 7pts (American). Rubber: best of 3 games.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'sizette.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Six players form two teams of three.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'sizette.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Partner communication is allowed.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'sizette.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The game is a historical Whist-family form.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'sizette.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'sizette.rules.objective',
+          'sizette.rules.gameplay',
+        ],
+      },
+      {
+        id: 'sizette.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'sizette.setup.players',
+          'sizette.setup.deck',
+          'sizette.setup.equipment',
+          'sizette.setup.dealing',
+        ],
+      },
+      {
+        id: 'sizette.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'sizette.rules.key.1',
+          'sizette.rules.key.2',
+          'sizette.rules.key.3',
+        ],
+      },
+      {
+        id: 'sizette.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'sizette.score.description',
+          'sizette.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'sizette.setup.dealing',
+        'sizette.rules.objective',
+      ],
+      play_card: [
+        'sizette.rules.gameplay',
+      ],
+    },
   },
 }

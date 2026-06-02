@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Six-Card Golf. Cards: 52. Layout: 2x3 per player. Goal: Lowest score. Cards: K=0, A=1, 2-10=face, J/Q=10. Vertical pair in column = 0 pts. Win: Lowest sum over 9 rounds.',
-    Player: 'Welcome to Golf! You have 6 cards in a 2x3 grid. Try to flip your high cards for low ones or Kings (0 pts). Match two of the same rank in a column to make that column worth 0 points! Hand ends when someone is all face-up.',
+    LLM: '1. Players take turns clockwise.\n2. ACTION: Draw the top card from the stock OR the top card from the discard pile.\n3. REPLACEMENT: Use the drawn card to replace any one of your six cards (face-up or face-down). The replaced card is discarded face-up.\n4. DISCARDING: If drawing from the stock, you may choose to discard the card immediately instead of using it to replace, but you must then turn one of your face-down cards face-up.\n5. ENDING: When a player has all cards face-up, everyone else gets one final turn. Then scores are tallied.',
+    Player: '1. Players take turns clockwise.\n2. ACTION: Draw the top card from the stock OR the top card from the discard pile.\n3. REPLACEMENT: Use the drawn card to replace any one of your six cards (face-up or face-down). The replaced card is discarded face-up.\n4. DISCARDING: If drawing from the stock, you may choose to discard the card immediately instead of using it to replace, but you must then turn one of your face-down cards face-up.\n5. ENDING: When a player has all cards face-up, everyone else gets one final turn. Then scores are tallied.',
     objective: "Achieve the lowest total score at the end of nine 'holes' (rounds).",
     gameplay: '1. Players take turns clockwise.\n2. ACTION: Draw the top card from the stock OR the top card from the discard pile.\n3. REPLACEMENT: Use the drawn card to replace any one of your six cards (face-up or face-down). The replaced card is discarded face-up.\n4. DISCARDING: If drawing from the stock, you may choose to discard the card immediately instead of using it to replace, but you must then turn one of your face-down cards face-up.\n5. ENDING: When a player has all cards face-up, everyone else gets one final turn. Then scores are tallied.',
     keyRules: [
@@ -53,10 +53,174 @@
       go_out: 'Round ends after all other players take one final turn.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; role:dealer may use deal before initial_reveal.',
-      "Scoring check: Players tally their card values at the end of each round. Rounds continue for nine 'holes'. Expected outcome: NA.",
+      'Setup example: 6 card(s) per player.',
+      "Rule example: Achieve the lowest total score at the end of nine 'holes' (rounds).",
+      'Turn-flow example: 1. Players take turns clockwise.\n2. ACTION: Draw the top card from the stock OR the top card from the discard pile.\n3. REPLACEMENT: Use the drawn card to replace any one of your six cards (face-up or face-down). The replaced card is discarded face-up.\n4. DISCARDING: If drawing from the stock, you may choose to discard the card immediately instead of using it to replace, but you must then turn one of your face-down cards face-up.\n5. ENDING: When a player has all cards face-up, everyone else gets one final turn. Then scores are tallied.',
+      "Scoring example: Players tally their card values at the end of each round. Rounds continue for nine 'holes'. Lowest total score after 9 rounds wins..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'golf-six-card.rules.objective',
+        title: 'Objective',
+        text: "Achieve the lowest total score at the end of nine 'holes' (rounds).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'golf-six-card.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Players take turns clockwise.\n2. ACTION: Draw the top card from the stock OR the top card from the discard pile.\n3. REPLACEMENT: Use the drawn card to replace any one of your six cards (face-up or face-down). The replaced card is discarded face-up.\n4. DISCARDING: If drawing from the stock, you may choose to discard the card immediately instead of using it to replace, but you must then turn one of your face-down cards face-up.\n5. ENDING: When a player has all cards face-up, everyone else gets one final turn. Then scores are tallied.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'golf-six-card.setup.players',
+        title: 'Players',
+        text: '2-8 players. 4 is optimal.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'golf-six-card.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. For more than 4 players, two decks may be shuffled together.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'golf-six-card.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'golf-six-card.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer deals 6 cards to each player, face-down, in a 2x3 layout. Remaining cards form the stock. Top card of stock is turned face-up to start the discard pile. Players turn any two of their own cards face-up at the start.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'golf-six-card.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest total score after 9 rounds wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'golf-six-card.score.description',
+        title: 'Scoring',
+        text: "Players tally their card values at the end of each round. Rounds continue for nine 'holes'.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'golf-six-card.rules.key.1',
+        title: 'Key rule 1',
+        text: 'You cannot look at your face-down cards before choosing which one to replace.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'golf-six-card.rules.key.2',
+        title: 'Key rule 2',
+        text: 'A pair of equal rank in the same column scores 0 points for that column (e.g., two Queens in one column = 0).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'golf-six-card.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Kings are the most valuable cards to hold as they score 0 individually.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'golf-six-card.rules.key.4',
+        title: 'Key rule 4',
+        text: "The hand ends when one player's cards are all face-up; they 'knock' (figuratively) and other players play once more.",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'golf-six-card.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'golf-six-card.rules.objective',
+          'golf-six-card.rules.gameplay',
+        ],
+      },
+      {
+        id: 'golf-six-card.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'golf-six-card.setup.players',
+          'golf-six-card.setup.deck',
+          'golf-six-card.setup.equipment',
+          'golf-six-card.setup.dealing',
+        ],
+      },
+      {
+        id: 'golf-six-card.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'golf-six-card.rules.key.1',
+          'golf-six-card.rules.key.2',
+          'golf-six-card.rules.key.3',
+          'golf-six-card.rules.key.4',
+        ],
+      },
+      {
+        id: 'golf-six-card.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'golf-six-card.score.description',
+          'golf-six-card.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'golf-six-card.setup.dealing',
+        'golf-six-card.rules.objective',
+      ],
+      deal: [
+        'golf-six-card.rules.gameplay',
+      ],
+      reveal_hand: [
+        'golf-six-card.rules.gameplay',
+      ],
+      draw: [
+        'golf-six-card.rules.gameplay',
+      ],
+      discard: [
+        'golf-six-card.rules.gameplay',
+      ],
+      go_out: [
+        'golf-six-card.rules.gameplay',
+      ],
+      replace_card: [
+        'golf-six-card.rules.gameplay',
+      ],
+      tally_scores: [
+        'golf-six-card.rules.gameplay',
+      ],
+    },
   },
 }

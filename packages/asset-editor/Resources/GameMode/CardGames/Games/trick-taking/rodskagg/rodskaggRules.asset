@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kaiserspiel. Logic: Win the tricks, card points, or contract result required by the local form of the game.',
-    Player: 'Kaiserspiel is a traditional trick-taking card game using 40 or 48-card Swiss Kaiserspiel deck for 2, 4, or 6 players. It uses one chosen suit and belongs to the Karnöffel environment.',
+    LLM: "Players declare or work toward trick goals, then play tricks with a standard 52-card pack. Each trick won reduces a player's score, but failing the declared result or violating the game's required rituals adds penalty points.",
+    Player: "Players declare or work toward trick goals, then play tricks with a standard 52-card pack. Each trick won reduces a player's score, but failing the declared result or violating the game's required rituals adds penalty points.",
     objective: 'Reduce your point total from twelve to zero by winning declared tricks while avoiding penalties.',
     gameplay: "Players declare or work toward trick goals, then play tricks with a standard 52-card pack. Each trick won reduces a player's score, but failing the declared result or violating the game's required rituals adds penalty points.",
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-7 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Tricks, card points, or contract success determine scoring. Expected outcome: 1.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Reduce your point total from twelve to zero by winning declared tricks while avoiding penalties.',
+      "Turn-flow example: Players declare or work toward trick goals, then play tricks with a standard 52-card pack. Each trick won reduces a player's score, but failing the declared result or violating the game's required rituals adds penalty points.",
+      'Scoring example: Tricks, card points, or contract success determine scoring. Win the tricks, card points, or contract result required by the local form of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'rodskagg.rules.objective',
+        title: 'Objective',
+        text: 'Reduce your point total from twelve to zero by winning declared tricks while avoiding penalties.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'rodskagg.rules.gameplay',
+        title: 'Turn flow',
+        text: "Players declare or work toward trick goals, then play tricks with a standard 52-card pack. Each trick won reduces a player's score, but failing the declared result or violating the game's required rituals adds penalty points.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'rodskagg.setup.players',
+        title: 'Players',
+        text: '3-7 players use the table arrangement described for Rödskägg.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'rodskagg.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck without Jokers',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'rodskagg.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck without Jokers, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'rodskagg.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Standard 52-card deck without Jokers and deal or lay out cards according to the documented Rödskägg rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'rodskagg.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'rodskagg.score.description',
+        title: 'Scoring',
+        text: 'Tricks, card points, or contract success determine scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'rodskagg.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Players begin with twelve points and try to reach zero.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'rodskagg.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Tricks reduce points, while failed obligations add penalties.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'rodskagg.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Some sources describe Fem Opp as a variant or alternate form.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'rodskagg.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'rodskagg.rules.objective',
+          'rodskagg.rules.gameplay',
+        ],
+      },
+      {
+        id: 'rodskagg.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'rodskagg.setup.players',
+          'rodskagg.setup.deck',
+          'rodskagg.setup.equipment',
+          'rodskagg.setup.dealing',
+        ],
+      },
+      {
+        id: 'rodskagg.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'rodskagg.rules.key.1',
+          'rodskagg.rules.key.2',
+          'rodskagg.rules.key.3',
+        ],
+      },
+      {
+        id: 'rodskagg.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'rodskagg.score.description',
+          'rodskagg.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'rodskagg.setup.dealing',
+        'rodskagg.rules.objective',
+      ],
+      play_card: [
+        'rodskagg.rules.gameplay',
+      ],
+      discard: [
+        'rodskagg.rules.gameplay',
+      ],
+      pass: [
+        'rodskagg.rules.gameplay',
+      ],
+      bid: [
+        'rodskagg.rules.gameplay',
+      ],
+    },
   },
 }

@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      "Rule example: Be the first to get rid of all your cards by building on the four shared foundations (Ace up in suit), the four tableau columns (down in alternating colour or by local rule), or on other players' waste piles.",
+      'Turn-flow example: Turns clockwise. Build foundations up in suit from Aces; build tableau down (Kâ€“A). Move cards from stock to waste; build from tableau or waste to foundations or other waste. First to empty hand wins.',
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'chinese-patience.rules.objective',
+        title: 'Objective',
+        text: "Be the first to get rid of all your cards by building on the four shared foundations (Ace up in suit), the four tableau columns (down in alternating colour or by local rule), or on other players' waste piles.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'chinese-patience.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Turns clockwise. Build foundations up in suit from Aces; build tableau down (Kâ€“A). Move cards from stock to waste; build from tableau or waste to foundations or other waste. First to empty hand wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'chinese-patience.setup.players',
+        title: 'Players',
+        text: '2, 3, or 4 (best 2â€“3). Play clockwise.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'chinese-patience.setup.deck',
+        title: 'Deck',
+        text: '52 cards, no Jokers. Rank K down to A for building.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'chinese-patience.setup.equipment',
+        title: 'Equipment',
+        text: "52-card deck; space for 4 foundations, 4 tableau columns, each player's stock and waste.",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'chinese-patience.setup.dealing',
+        title: 'Deal',
+        text: 'Four cards dealt to centre as tableau (face down, turned by first player); remainder dealt equally to players as face-down stocks.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'chinese-patience.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'chinese-patience.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'chinese-patience.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Shared 4 foundations, 4 tableau columns',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'chinese-patience.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Build foundations up in suit; tableau down',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'chinese-patience.rules.key.3',
+        title: 'Key rule 3',
+        text: "Can play onto other players' waste piles; first out wins",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'chinese-patience.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'chinese-patience.rules.objective',
+          'chinese-patience.rules.gameplay',
+        ],
+      },
+      {
+        id: 'chinese-patience.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'chinese-patience.setup.players',
+          'chinese-patience.setup.deck',
+          'chinese-patience.setup.equipment',
+          'chinese-patience.setup.dealing',
+        ],
+      },
+      {
+        id: 'chinese-patience.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'chinese-patience.rules.key.1',
+          'chinese-patience.rules.key.2',
+          'chinese-patience.rules.key.3',
+        ],
+      },
+      {
+        id: 'chinese-patience.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'chinese-patience.score.description',
+          'chinese-patience.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'chinese-patience.setup.dealing',
+        'chinese-patience.rules.objective',
+      ],
+      play_card: [
+        'chinese-patience.rules.gameplay',
+      ],
+    },
   },
 }

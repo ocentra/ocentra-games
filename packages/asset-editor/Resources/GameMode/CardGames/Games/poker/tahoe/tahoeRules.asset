@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tahoe. Logic: See rules.objective and rules.gameplay.',
-    Player: "Tahoe (also known as Wichita Hold'em) is a community card poker game similar to Texas Hold'em and Pineapple. Players receive three hole cards (sometimes two, but usually three in the Tahoe variant) and share five community cards. The key restriction is that players may use zero, one, or two of their hole cards to form a handâ€”never all three. It is often played High-Low Split.",
+    LLM: '1. Deal 3 hole cards. 2. Pre-flop betting. 3. Flop (3 cards). 4. Betting. 5. Turn (1 card). 6. Betting. 7. River (1 card). 8. Betting. 9. Showdown. Restriction: Use 0, 1, or 2 hole cards. You cannot use all 3. (Unlike Omaha where you must use 2, or Pineapple where you discard one).',
+    Player: '1. Deal 3 hole cards. 2. Pre-flop betting. 3. Flop (3 cards). 4. Betting. 5. Turn (1 card). 6. Betting. 7. River (1 card). 8. Betting. 9. Showdown. Restriction: Use 0, 1, or 2 hole cards. You cannot use all 3. (Unlike Omaha where you must use 2, or Pineapple where you discard one).',
     objective: 'Win the pot with the best 5-card hand. (Often High-Low split).',
     gameplay: '1. Deal 3 hole cards. 2. Pre-flop betting. 3. Flop (3 cards). 4. Betting. 5. Turn (1 card). 6. Betting. 7. River (1 card). 8. Betting. 9. Showdown. Restriction: Use 0, 1, or 2 hole cards. You cannot use all 3. (Unlike Omaha where you must use 2, or Pineapple where you discard one).',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Standard Poker hand rankings. Often played High-Low split (8-or-better qualifier for Low). Expected outcome: Win the pot with the best 5-card hand. (Often High-Low split)..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Win the pot with the best 5-card hand. (Often High-Low split).',
+      'Turn-flow example: 1. Deal 3 hole cards. 2. Pre-flop betting. 3. Flop (3 cards). 4. Betting. 5. Turn (1 card). 6. Betting. 7. River (1 card). 8. Betting. 9. Showdown. Restriction: Use 0, 1, or 2 hole cards. You cannot use all 3. (Unlike Omaha where you must use 2, or Pineapple where you discard one).',
+      'Scoring example: Standard Poker hand rankings. Often played High-Low split (8-or-better qualifier for Low). Win the pot with the best 5-card hand. (Often High-Low split)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tahoe.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot with the best 5-card hand. (Often High-Low split).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tahoe.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Deal 3 hole cards. 2. Pre-flop betting. 3. Flop (3 cards). 4. Betting. 5. Turn (1 card). 6. Betting. 7. River (1 card). 8. Betting. 9. Showdown. Restriction: Use 0, 1, or 2 hole cards. You cannot use all 3. (Unlike Omaha where you must use 2, or Pineapple where you discard one).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tahoe.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tahoe.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tahoe.setup.equipment',
+        title: 'Equipment',
+        text: 'Chips, dealer button',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tahoe.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 3 hole cards to each player. 5 community cards dealt in Flop-Turn-River stages.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tahoe.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the pot with the best 5-card hand. (Often High-Low split).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tahoe.score.description',
+        title: 'Scoring',
+        text: 'Standard Poker hand rankings. Often played High-Low split (8-or-better qualifier for Low).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tahoe.rules.key.1',
+        title: 'Key rule 1',
+        text: '3 Hole Cards',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tahoe.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Use 0, 1, or 2 hole cards (Never 3)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tahoe.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Standard flop betting structure',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tahoe.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tahoe.rules.objective',
+          'tahoe.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tahoe.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tahoe.setup.players',
+          'tahoe.setup.deck',
+          'tahoe.setup.equipment',
+          'tahoe.setup.dealing',
+        ],
+      },
+      {
+        id: 'tahoe.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tahoe.rules.key.1',
+          'tahoe.rules.key.2',
+          'tahoe.rules.key.3',
+        ],
+      },
+      {
+        id: 'tahoe.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tahoe.score.description',
+          'tahoe.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tahoe.setup.dealing',
+        'tahoe.rules.objective',
+      ],
+      play_card: [
+        'tahoe.rules.gameplay',
+      ],
+    },
   },
 }

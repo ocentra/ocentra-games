@@ -50,10 +50,135 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in bid; each_player_clockwise may use bid, pass before play.',
-      'Scoring check: Scoring trumps: high (A) 1, low (2) 1, jack 1, game (10) 1, pedro (5) 5, sancho (9) 9; total 18 per deal. Counted in that order. If bid is made, team scores points won; if bid fails, bidder loses the amount bid. First to 100 wins. Expected outcome: 100.',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: As a team or individually, be the first to reach 100 points by winning tricks containing scoring trumps: high (trump ace), low (trump two), jack (trump jack), game (trump ten), pedro (trump five, 5 points) and sancho (trump nine, 9 points). Total 18 points per deal. If the bid is made, score the points won; if the bid fails, the bidder loses the number of points bid.',
+      'Turn-flow example: Six cards each. One round of bidding (no minimum, max 18); dealer may take the bid by equalling the highest bid. High bidder names trumps and must lead a trump to the first trick. If a trump is led, everyone must play a trump if able; if a non-trump is led, players may follow suit or trump. Trick won by highest trump, or highest card of led suit if no trumps. Winner of each trick leads to the next. Points are counted in order: high, low, jack, game, pedro, sancho.',
+      "Scoring example: Scoring trumps: high (A) 1, low (2) 1, jack 1, game (10) 1, pedro (5) 5, sancho (9) 9; total 18 per deal. Counted in that order. If bid is made, team scores points won; if bid fails, bidder loses the amount bid. First to 100 wins. First player or team to reach 100 points. If bid is made, add points won to total; if bid fails, subtract the bid from bidder's total..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pedro-sancho.rules.objective',
+        title: 'Objective',
+        text: 'As a team or individually, be the first to reach 100 points by winning tricks containing scoring trumps: high (trump ace), low (trump two), jack (trump jack), game (trump ten), pedro (trump five, 5 points) and sancho (trump nine, 9 points). Total 18 points per deal. If the bid is made, score the points won; if the bid fails, the bidder loses the number of points bid.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pedro-sancho.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Six cards each. One round of bidding (no minimum, max 18); dealer may take the bid by equalling the highest bid. High bidder names trumps and must lead a trump to the first trick. If a trump is led, everyone must play a trump if able; if a non-trump is led, players may follow suit or trump. Trick won by highest trump, or highest card of led suit if no trumps. Winner of each trick leads to the next. Points are counted in order: high, low, jack, game, pedro, sancho.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pedro-sancho.setup.players',
+        title: 'Players',
+        text: 'Four to seven; four may play as two partnerships (partners opposite).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pedro-sancho.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pedro-sancho.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pedro-sancho.setup.dealing',
+        title: 'Deal',
+        text: 'Six cards each (most sources); some deal as far as cards go evenly. One round of bidding; dealer may take the bid by equalling the highest. High bidder declares trump.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pedro-sancho.score.win-condition',
+        title: 'Win condition',
+        text: "First player or team to reach 100 points. If bid is made, add points won to total; if bid fails, subtract the bid from bidder's total.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pedro-sancho.score.description',
+        title: 'Scoring',
+        text: 'Scoring trumps: high (A) 1, low (2) 1, jack 1, game (10) 1, pedro (5) 5, sancho (9) 9; total 18 per deal. Counted in that order. If bid is made, team scores points won; if bid fails, bidder loses the amount bid. First to 100 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pedro-sancho.rules.key.1',
+        title: 'Key rule 1',
+        text: '5 and 9 trump',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pedro-sancho.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pedro-sancho.rules.objective',
+          'pedro-sancho.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pedro-sancho.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pedro-sancho.setup.players',
+          'pedro-sancho.setup.deck',
+          'pedro-sancho.setup.equipment',
+          'pedro-sancho.setup.dealing',
+        ],
+      },
+      {
+        id: 'pedro-sancho.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pedro-sancho.rules.key.1',
+        ],
+      },
+      {
+        id: 'pedro-sancho.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pedro-sancho.score.description',
+          'pedro-sancho.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pedro-sancho.setup.dealing',
+        'pedro-sancho.rules.objective',
+      ],
+      play_card: [
+        'pedro-sancho.rules.gameplay',
+      ],
+      pass: [
+        'pedro-sancho.rules.gameplay',
+      ],
+      bid: [
+        'pedro-sancho.rules.gameplay',
+      ],
+    },
   },
 }

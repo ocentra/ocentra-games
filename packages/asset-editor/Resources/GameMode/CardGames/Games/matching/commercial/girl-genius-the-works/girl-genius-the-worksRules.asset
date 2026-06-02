@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Girl Genius The Works. Logic: Use matching cards and effects to complete the product-defined scoring patterns before opponents.',
-    Player: 'Girl Genius The Works is a commercial card game based on the Girl Genius comic setting and built around matching and card-effect play.',
+    LLM: 'Players draw and play cards from the dedicated deck, combine matching symbols or effects, and score through the published pattern rules.',
+    Player: 'Players draw and play cards from the dedicated deck, combine matching symbols or effects, and score through the published pattern rules.',
     objective: 'Use matching cards and effects to complete the product-defined scoring patterns before opponents.',
     gameplay: 'Players draw and play cards from the dedicated deck, combine matching symbols or effects, and score through the published pattern rules.',
     keyRules: [
@@ -53,10 +53,177 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_cards before round end.',
-      'Scoring check: Published endgame scoring or victory conditions determine the winner. Expected outcome: Use matching cards and effects to complete the product-defined scoring patterns before opponents..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Use matching cards and effects to complete the product-defined scoring patterns before opponents.',
+      'Turn-flow example: Players draw and play cards from the dedicated deck, combine matching symbols or effects, and score through the published pattern rules.',
+      'Scoring example: Published endgame scoring or victory conditions determine the winner. Use matching cards and effects to complete the product-defined scoring patterns before opponents..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'girl-genius-the-works.rules.objective',
+        title: 'Objective',
+        text: 'Use matching cards and effects to complete the product-defined scoring patterns before opponents.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'girl-genius-the-works.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players draw and play cards from the dedicated deck, combine matching symbols or effects, and score through the published pattern rules.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'girl-genius-the-works.setup.players',
+        title: 'Players',
+        text: '2-4 players use the table arrangement described for Girl Genius The Works.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'girl-genius-the-works.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Girl Genius The Works card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'girl-genius-the-works.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Girl Genius The Works card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'girl-genius-the-works.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare the dedicated Girl Genius The Works deck and any shared scoring, resource, or tableau area described by the rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'girl-genius-the-works.score.win-condition',
+        title: 'Win condition',
+        text: 'Use matching cards and effects to complete the product-defined scoring patterns before opponents.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'girl-genius-the-works.score.description',
+        title: 'Scoring',
+        text: 'Published endgame scoring or victory conditions determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'girl-genius-the-works.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dedicated licensed card deck.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'girl-genius-the-works.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Matching and card effects drive play.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'girl-genius-the-works.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Comic setting is proprietary.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'girl-genius-the-works.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Published scoring determines the winner.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'girl-genius-the-works.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'girl-genius-the-works.rules.objective',
+          'girl-genius-the-works.rules.gameplay',
+        ],
+      },
+      {
+        id: 'girl-genius-the-works.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'girl-genius-the-works.setup.players',
+          'girl-genius-the-works.setup.deck',
+          'girl-genius-the-works.setup.equipment',
+          'girl-genius-the-works.setup.dealing',
+        ],
+      },
+      {
+        id: 'girl-genius-the-works.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'girl-genius-the-works.rules.key.1',
+          'girl-genius-the-works.rules.key.2',
+          'girl-genius-the-works.rules.key.3',
+          'girl-genius-the-works.rules.key.4',
+        ],
+      },
+      {
+        id: 'girl-genius-the-works.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'girl-genius-the-works.score.description',
+          'girl-genius-the-works.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'girl-genius-the-works.setup.dealing',
+        'girl-genius-the-works.rules.objective',
+      ],
+      deal_cards: [
+        'girl-genius-the-works.rules.gameplay',
+      ],
+      ask_for_rank: [
+        'girl-genius-the-works.rules.gameplay',
+      ],
+      draw_stock: [
+        'girl-genius-the-works.rules.gameplay',
+      ],
+      check_books: [
+        'girl-genius-the-works.rules.gameplay',
+      ],
+      give_cards: [
+        'girl-genius-the-works.rules.gameplay',
+      ],
+      say_go_fish: [
+        'girl-genius-the-works.rules.gameplay',
+      ],
+      lay_down_book: [
+        'girl-genius-the-works.rules.gameplay',
+      ],
+      check_game_end: [
+        'girl-genius-the-works.rules.gameplay',
+      ],
+    },
   },
 }

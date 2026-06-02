@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Perudo (Card Variant). Logic: See rules.objective and rules.gameplay.',
-    Player: "Perudo (also known as Liar's Dice when played with dice) is a world-famous game of bluffing, probability, and nerve. This card-based adaptation replaces the dice cups with hidden hands of cards. Players must guess how many cards of a certain rank (e.g., 'Five Kings') are held collectively by everyone at the table. It is a game of extreme deception where you can win with the worst hand if you can successfully convince others you have the best.",
+    LLM: "Each player is dealt 5 cards face-down and keeps them hidden. Play proceeds clockwise. On your turn you either make a bid or call Dudo. A bid states a quantity and a rank (e.g. Five Kings), meaning you believe that many cards of that rank (Aces often count as wild) exist across all players' hands. Each new bid must be higher: either a greater quantity or the same quantity of a higher rank. If you call Dudo you challenge the last bid; everyone reveals their hands. If the bid is correct the bidder wins the round and the challenger loses one card; if wrong the challenger wins and the bidder loses one card. The last player left with at least one card wins.",
+    Player: "Each player is dealt 5 cards face-down and keeps them hidden. Play proceeds clockwise. On your turn you either make a bid or call Dudo. A bid states a quantity and a rank (e.g. Five Kings), meaning you believe that many cards of that rank (Aces often count as wild) exist across all players' hands. Each new bid must be higher: either a greater quantity or the same quantity of a higher rank. If you call Dudo you challenge the last bid; everyone reveals their hands. If the bid is correct the bidder wins the round and the challenger loses one card; if wrong the challenger wins and the bidder loses one card. The last player left with at least one card wins.",
     objective: 'Be the last player remaining with cards in your hand.',
     gameplay: "Each player is dealt 5 cards face-down and keeps them hidden. Play proceeds clockwise. On your turn you either make a bid or call Dudo. A bid states a quantity and a rank (e.g. Five Kings), meaning you believe that many cards of that rank (Aces often count as wild) exist across all players' hands. Each new bid must be higher: either a greater quantity or the same quantity of a higher rank. If you call Dudo you challenge the last bid; everyone reveals their hands. If the bid is correct the bidder wins the round and the challenger loses one card; if wrong the challenger wins and the bidder loses one card. The last player left with at least one card wins.",
     keyRules: [
@@ -54,10 +54,168 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in bidding; each_player_clockwise may use bid, call_dudo before round end.',
-      'Scoring check: Be the last player remaining with cards in your hand. Expected outcome: Be the last player remaining with cards in your hand..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the last player remaining with cards in your hand.',
+      "Turn-flow example: Each player is dealt 5 cards face-down and keeps them hidden. Play proceeds clockwise. On your turn you either make a bid or call Dudo. A bid states a quantity and a rank (e.g. Five Kings), meaning you believe that many cards of that rank (Aces often count as wild) exist across all players' hands. Each new bid must be higher: either a greater quantity or the same quantity of a higher rank. If you call Dudo you challenge the last bid; everyone reveals their hands. If the bid is correct the bidder wins the round and the challenger loses one card; if wrong the challenger wins and the bidder loses one card. The last player left with at least one card wins.",
+      'Scoring example: Be the last player remaining with cards in your hand. Be the last player remaining with cards in your hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'perudo-bluff.rules.objective',
+        title: 'Objective',
+        text: 'Be the last player remaining with cards in your hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'perudo-bluff.rules.gameplay',
+        title: 'Turn flow',
+        text: "Each player is dealt 5 cards face-down and keeps them hidden. Play proceeds clockwise. On your turn you either make a bid or call Dudo. A bid states a quantity and a rank (e.g. Five Kings), meaning you believe that many cards of that rank (Aces often count as wild) exist across all players' hands. Each new bid must be higher: either a greater quantity or the same quantity of a higher rank. If you call Dudo you challenge the last bid; everyone reveals their hands. If the bid is correct the bidder wins the round and the challenger loses one card; if wrong the challenger wins and the bidder loses one card. The last player left with at least one card wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'perudo-bluff.setup.players',
+        title: 'Players',
+        text: '3-5 is the sweet spot.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'perudo-bluff.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. (Remove Jokers).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'perudo-bluff.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. (Remove Jokers).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'perudo-bluff.setup.dealing',
+        title: 'Deal',
+        text: 'Each player is dealt 5 cards face-down. Do NOT show them to anyone.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'perudo-bluff.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the last player remaining with cards in your hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'perudo-bluff.score.description',
+        title: 'Scoring',
+        text: 'Be the last player remaining with cards in your hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'perudo-bluff.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Deal 5 cards each, all face-down and hidden.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'perudo-bluff.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Bid a quantity and rank (e.g. Three 7s); each bid must be higher quantity or same quantity higher rank.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'perudo-bluff.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Aces are usually wild and count as the bid rank.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'perudo-bluff.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Call Dudo to challenge; all reveal; loser of the challenge discards one card.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'perudo-bluff.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Last player with cards wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'perudo-bluff.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'perudo-bluff.rules.objective',
+          'perudo-bluff.rules.gameplay',
+        ],
+      },
+      {
+        id: 'perudo-bluff.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'perudo-bluff.setup.players',
+          'perudo-bluff.setup.deck',
+          'perudo-bluff.setup.equipment',
+          'perudo-bluff.setup.dealing',
+        ],
+      },
+      {
+        id: 'perudo-bluff.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'perudo-bluff.rules.key.1',
+          'perudo-bluff.rules.key.2',
+          'perudo-bluff.rules.key.3',
+          'perudo-bluff.rules.key.4',
+          'perudo-bluff.rules.key.5',
+        ],
+      },
+      {
+        id: 'perudo-bluff.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'perudo-bluff.score.description',
+          'perudo-bluff.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'perudo-bluff.setup.dealing',
+        'perudo-bluff.rules.objective',
+      ],
+      bid: [
+        'perudo-bluff.rules.gameplay',
+      ],
+      call_dudo: [
+        'perudo-bluff.rules.gameplay',
+      ],
+    },
   },
 }

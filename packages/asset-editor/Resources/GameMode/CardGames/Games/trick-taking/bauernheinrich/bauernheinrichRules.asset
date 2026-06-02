@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Bauernheinrich. Logic: Win the tricks or card points required by the hand contract.',
-    Player: 'Bauernheinrich is a German trick-taking card game using a compact regional pack and a simple trump-driven trick structure.',
+    LLM: 'Players play one card to each trick, follow suit when able, and use trump cards to capture tricks when void in the led suit.',
+    Player: 'Players play one card to each trick, follow suit when able, and use trump cards to capture tricks when void in the led suit.',
     objective: 'Win the tricks or card points required by the hand contract.',
     gameplay: 'Players play one card to each trick, follow suit when able, and use trump cards to capture tricks when void in the led suit.',
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Score is based on the trick or point outcome of the agreed local contract. Expected outcome: Win the tricks or card points required by the hand contract..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win the tricks or card points required by the hand contract.',
+      'Turn-flow example: Players play one card to each trick, follow suit when able, and use trump cards to capture tricks when void in the led suit.',
+      'Scoring example: Score is based on the trick or point outcome of the agreed local contract. Win the tricks or card points required by the hand contract..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'bauernheinrich.rules.objective',
+        title: 'Objective',
+        text: 'Win the tricks or card points required by the hand contract.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bauernheinrich.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play one card to each trick, follow suit when able, and use trump cards to capture tricks when void in the led suit.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bauernheinrich.setup.players',
+        title: 'Players',
+        text: '2-4 players use the table arrangement described for Bauernheinrich.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bauernheinrich.setup.deck',
+        title: 'Deck',
+        text: 'Regional German or French-suited pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bauernheinrich.setup.equipment',
+        title: 'Equipment',
+        text: 'Regional German or French-suited pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bauernheinrich.setup.dealing',
+        title: 'Deal',
+        text: 'Deal the pack evenly or according to the regional player count, then determine the trump or contract for the hand.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bauernheinrich.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks or card points required by the hand contract.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bauernheinrich.score.description',
+        title: 'Scoring',
+        text: 'Score is based on the trick or point outcome of the agreed local contract.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bauernheinrich.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Regional pack game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bauernheinrich.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Tricks are won by highest card of led suit or trump.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bauernheinrich.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The hand result depends on captured tricks or points.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'bauernheinrich.rules.key.4',
+        title: 'Key rule 4',
+        text: 'The active contract can change the pressure on bidders and defenders.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bauernheinrich.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bauernheinrich.rules.objective',
+          'bauernheinrich.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bauernheinrich.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bauernheinrich.setup.players',
+          'bauernheinrich.setup.deck',
+          'bauernheinrich.setup.equipment',
+          'bauernheinrich.setup.dealing',
+        ],
+      },
+      {
+        id: 'bauernheinrich.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bauernheinrich.rules.key.1',
+          'bauernheinrich.rules.key.2',
+          'bauernheinrich.rules.key.3',
+          'bauernheinrich.rules.key.4',
+        ],
+      },
+      {
+        id: 'bauernheinrich.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bauernheinrich.score.description',
+          'bauernheinrich.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bauernheinrich.setup.dealing',
+        'bauernheinrich.rules.objective',
+      ],
+      play_card: [
+        'bauernheinrich.rules.gameplay',
+      ],
+      discard: [
+        'bauernheinrich.rules.gameplay',
+      ],
+      pass: [
+        'bauernheinrich.rules.gameplay',
+      ],
+      bid: [
+        'bauernheinrich.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 28 dominoes. Logic: See rules.objective and rules.gameplay.',
-    Player: '28 dominoes is block or draw dominoes with a double-6 set of 28 tiles. Two to five players; 7 tiles each (2-3 players) or 5 (4-5 players). Highest double leads. Match numbers on open ends; doubles placed crosswise. Block: pass if cannot play. Draw: draw from boneyard until you can play. First out wins; or lowest pips if blocked.',
+    LLM: 'Match to open ends; doubles crosswise. Block: pass if cannot play. Draw: draw until playable.',
+    Player: 'Match to open ends; doubles crosswise. Block: pass if cannot play. Draw: draw until playable.',
     objective: 'Play all tiles first, or have fewest pips if blocked.',
     gameplay: 'Match to open ends; doubles crosswise. Block: pass if cannot play. Draw: draw until playable.',
     keyRules: [
@@ -51,10 +51,138 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      "Scoring check: Winner scores opponents' pips; or blocked game lowest wins. Expected outcome: Play all tiles first, or have fewest pips if blocked..",
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Play all tiles first, or have fewest pips if blocked.',
+      'Turn-flow example: Match to open ends; doubles crosswise. Block: pass if cannot play. Draw: draw until playable.',
+      "Scoring example: Winner scores opponents' pips; or blocked game lowest wins. Play all tiles first, or have fewest pips if blocked..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '28-dominoes.rules.objective',
+        title: 'Objective',
+        text: 'Play all tiles first, or have fewest pips if blocked.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '28-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Match to open ends; doubles crosswise. Block: pass if cannot play. Draw: draw until playable.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '28-dominoes.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '28-dominoes.setup.deck',
+        title: 'Deck',
+        text: 'Double-6 domino set of 28 tiles: each tile has two ends with 0–6 pips; every combination appears once. Used for block and draw games.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '28-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'Double-6 set, table',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '28-dominoes.setup.dealing',
+        title: 'Deal',
+        text: '7 each (2-3 players) or 5 each (4-5); rest boneyard.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '28-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'Play all tiles first, or have fewest pips if blocked.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '28-dominoes.score.description',
+        title: 'Scoring',
+        text: "Winner scores opponents' pips; or blocked game lowest wins.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '28-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: '28 tiles double-6',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '28-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Block or draw variant',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '28-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '28-dominoes.rules.objective',
+          '28-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: '28-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '28-dominoes.setup.players',
+          '28-dominoes.setup.deck',
+          '28-dominoes.setup.equipment',
+          '28-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: '28-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '28-dominoes.rules.key.1',
+          '28-dominoes.rules.key.2',
+        ],
+      },
+      {
+        id: '28-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '28-dominoes.score.description',
+          '28-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '28-dominoes.setup.dealing',
+        '28-dominoes.rules.objective',
+      ],
+      play_card: [
+        '28-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

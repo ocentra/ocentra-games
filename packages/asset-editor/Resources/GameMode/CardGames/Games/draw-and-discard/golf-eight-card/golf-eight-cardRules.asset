@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Golf (Eight Card). Objective: Lowest point total in 8-card layout.',
-    Player: 'Golf (Eight Card): play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: 'As 4/6-card Golf: draw or take discard, replace one layout card. Standard Golf scoring.',
+    Player: 'As 4/6-card Golf: draw or take discard, replace one layout card. Standard Golf scoring.',
     objective: 'Lowest point total in 8-card layout. Replace cards by draw or discard; hand ends per house rules (e.g. when one player has all face up or after knock).',
     gameplay: 'As 4/6-card Golf: draw or take discard, replace one layout card. Standard Golf scoring.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Lowest point total in 8-card layout wins the hole; numeral cards face value, J/Q 10, King 0. Play 9 or 18 holes; lowest cumulative score wins. Expected outcome: 100.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Lowest point total in 8-card layout. Replace cards by draw or discard; hand ends per house rules (e.g. when one player has all face up or after knock).',
+      'Turn-flow example: As 4/6-card Golf: draw or take discard, replace one layout card. Standard Golf scoring.',
+      'Scoring example: Lowest point total in 8-card layout wins the hole; numeral cards face value, J/Q 10, King 0. Play 9 or 18 holes; lowest cumulative score wins. Lowest point total in 8-card layout wins; after 9 or 18 deals the player with the lowest cumulative score wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'golf-eight-card.rules.objective',
+        title: 'Objective',
+        text: 'Lowest point total in 8-card layout. Replace cards by draw or discard; hand ends per house rules (e.g. when one player has all face up or after knock).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'golf-eight-card.rules.gameplay',
+        title: 'Turn flow',
+        text: 'As 4/6-card Golf: draw or take discard, replace one layout card. Standard Golf scoring.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'golf-eight-card.setup.players',
+        title: 'Players',
+        text: 'Two to eight players. A standard 52-card pack is used; with more than four players, a second pack (and optionally jokers) may be used.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'golf-eight-card.setup.deck',
+        title: 'Deck',
+        text: '52 cards; 2 decks for more players.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'golf-eight-card.setup.equipment',
+        title: 'Equipment',
+        text: 'Score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'golf-eight-card.setup.dealing',
+        title: 'Deal',
+        text: '8 cards each in layout; stock and discard.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'golf-eight-card.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest point total in 8-card layout wins; after 9 or 18 deals the player with the lowest cumulative score wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'golf-eight-card.score.description',
+        title: 'Scoring',
+        text: 'Lowest point total in 8-card layout wins the hole; numeral cards face value, J/Q 10, King 0. Play 9 or 18 holes; lowest cumulative score wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'golf-eight-card.rules.key.1',
+        title: 'Key rule 1',
+        text: '8-card layout',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'golf-eight-card.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Same draw/replace as other Golf',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'golf-eight-card.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Lowest total wins hole',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'golf-eight-card.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'golf-eight-card.rules.objective',
+          'golf-eight-card.rules.gameplay',
+        ],
+      },
+      {
+        id: 'golf-eight-card.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'golf-eight-card.setup.players',
+          'golf-eight-card.setup.deck',
+          'golf-eight-card.setup.equipment',
+          'golf-eight-card.setup.dealing',
+        ],
+      },
+      {
+        id: 'golf-eight-card.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'golf-eight-card.rules.key.1',
+          'golf-eight-card.rules.key.2',
+          'golf-eight-card.rules.key.3',
+        ],
+      },
+      {
+        id: 'golf-eight-card.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'golf-eight-card.score.description',
+          'golf-eight-card.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'golf-eight-card.setup.dealing',
+        'golf-eight-card.rules.objective',
+      ],
+      play_card: [
+        'golf-eight-card.rules.gameplay',
+      ],
+    },
   },
 }

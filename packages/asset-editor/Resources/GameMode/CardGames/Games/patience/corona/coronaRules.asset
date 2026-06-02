@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Corona. Logic: Build every card onto the foundations.',
-    Player: 'Corona is a relatively long two-deck solitaire with foundations and tableau management across many exposed cards.',
+    LLM: 'Move exposed cards between tableau positions where legal, build foundations by suit, and manage the reserve or stock so buried cards become available.',
+    Player: 'Move exposed cards between tableau positions where legal, build foundations by suit, and manage the reserve or stock so buried cards become available.',
     objective: 'Build every card from the long two-deck tableau arrangement onto foundations while keeping enough access to release blocked ranks.',
     gameplay: 'Move exposed cards between tableau positions where legal, build foundations by suit, and manage the reserve or stock so buried cards become available.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: The game is won when all cards reach the foundations. Expected outcome: Build every card onto the foundations..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Build every card from the long two-deck tableau arrangement onto foundations while keeping enough access to release blocked ranks.',
+      'Turn-flow example: Move exposed cards between tableau positions where legal, build foundations by suit, and manage the reserve or stock so buried cards become available.',
+      'Scoring example: The game is won when all cards reach the foundations. Build every card onto the foundations..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'corona.rules.objective',
+        title: 'Objective',
+        text: 'Build every card from the long two-deck tableau arrangement onto foundations while keeping enough access to release blocked ranks.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'corona.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Move exposed cards between tableau positions where legal, build foundations by suit, and manage the reserve or stock so buried cards become available.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'corona.setup.players',
+        title: 'Players',
+        text: '1 players use the table arrangement described for Corona.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'corona.setup.deck',
+        title: 'Deck',
+        text: 'Two standard 52-card decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'corona.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard 52-card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'corona.setup.dealing',
+        title: 'Deal',
+        text: 'Lay out the Corona tableau and reserve from two decks, with foundations available for building.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'corona.score.win-condition',
+        title: 'Win condition',
+        text: 'Build every card onto the foundations.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'corona.score.description',
+        title: 'Scoring',
+        text: 'The game is won when all cards reach the foundations.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'corona.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two decks are used.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'corona.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Foundations build by suit.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'corona.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Long tableau play is central.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'corona.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Access management is the core puzzle.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'corona.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'corona.rules.objective',
+          'corona.rules.gameplay',
+        ],
+      },
+      {
+        id: 'corona.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'corona.setup.players',
+          'corona.setup.deck',
+          'corona.setup.equipment',
+          'corona.setup.dealing',
+        ],
+      },
+      {
+        id: 'corona.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'corona.rules.key.1',
+          'corona.rules.key.2',
+          'corona.rules.key.3',
+          'corona.rules.key.4',
+        ],
+      },
+      {
+        id: 'corona.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'corona.score.description',
+          'corona.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'corona.setup.dealing',
+        'corona.rules.objective',
+      ],
+      deal: [
+        'corona.rules.gameplay',
+      ],
+      play_card: [
+        'corona.rules.gameplay',
+      ],
+      draw: [
+        'corona.rules.gameplay',
+      ],
+    },
   },
 }

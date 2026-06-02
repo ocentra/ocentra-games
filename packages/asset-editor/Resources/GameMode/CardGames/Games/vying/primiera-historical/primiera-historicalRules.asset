@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Primiera. Logic: See rules.objective and rules.gameplay.',
-    Player: "Primiera (often confused with the related Spanish 'Primero') is a prestigious 16th-century Italian card game that is mathematically and strategically recognized as a direct ancestor of modern Poker. It is a betting and card-comparing game where players aim to form combinations from a 4-card hand. Known for its unique 'Primiera' combination (one card of each suit) and its high-stakes 'Vying' (betting) system, it was a game of status and intellect across Renaissance Europe.",
+    LLM: 'All players ante. Each receives four cards dealt two at a time from a 40-card Italian deck. Betting (vying) follows: players may match, raise, or fold; dealer bets first; play is counter-clockwise. A player may knock (Vada) for immediate showdown. Best hand wins the pot. Hand ranks: Chorus (four of a kind) highest, then Fluxus (flush), Supremus, Primiera (one of each suit), Numerus (point total in one suit). Card point values: 7=21, 6=18, Ace=16, 5=15, 4=14, 3=13, 2=12, face=10.',
+    Player: 'All players ante. Each receives four cards dealt two at a time from a 40-card Italian deck. Betting (vying) follows: players may match, raise, or fold; dealer bets first; play is counter-clockwise. A player may knock (Vada) for immediate showdown. Best hand wins the pot. Hand ranks: Chorus (four of a kind) highest, then Fluxus (flush), Supremus, Primiera (one of each suit), Numerus (point total in one suit). Card point values: 7=21, 6=18, Ace=16, 5=15, 4=14, 3=13, 2=12, face=10.',
     objective: 'Win the pot by having the highest combination or forcing others to fold.',
     gameplay: 'All players ante. Each receives four cards dealt two at a time from a 40-card Italian deck. Betting (vying) follows: players may match, raise, or fold; dealer bets first; play is counter-clockwise. A player may knock (Vada) for immediate showdown. Best hand wins the pot. Hand ranks: Chorus (four of a kind) highest, then Fluxus (flush), Supremus, Primiera (one of each suit), Numerus (point total in one suit). Card point values: 7=21, 6=18, Ace=16, 5=15, 4=14, 3=13, 2=12, face=10.',
     keyRules: [
@@ -54,10 +54,189 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-6 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; all_simultaneous may use ante before deal.',
-      'Scoring check: Win the pot by having the highest combination or forcing others to fold. Expected outcome: Win the pot by having the highest combination or forcing others to fold..',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Win the pot by having the highest combination or forcing others to fold.',
+      'Turn-flow example: All players ante. Each receives four cards dealt two at a time from a 40-card Italian deck. Betting (vying) follows: players may match, raise, or fold; dealer bets first; play is counter-clockwise. A player may knock (Vada) for immediate showdown. Best hand wins the pot. Hand ranks: Chorus (four of a kind) highest, then Fluxus (flush), Supremus, Primiera (one of each suit), Numerus (point total in one suit). Card point values: 7=21, 6=18, Ace=16, 5=15, 4=14, 3=13, 2=12, face=10.',
+      'Scoring example: Win the pot by having the highest combination or forcing others to fold. Win the pot by having the highest combination or forcing others to fold..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'primiera-historical.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the highest combination or forcing others to fold.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'primiera-historical.rules.gameplay',
+        title: 'Turn flow',
+        text: 'All players ante. Each receives four cards dealt two at a time from a 40-card Italian deck. Betting (vying) follows: players may match, raise, or fold; dealer bets first; play is counter-clockwise. A player may knock (Vada) for immediate showdown. Best hand wins the pot. Hand ranks: Chorus (four of a kind) highest, then Fluxus (flush), Supremus, Primiera (one of each suit), Numerus (point total in one suit). Card point values: 7=21, 6=18, Ace=16, 5=15, 4=14, 3=13, 2=12, face=10.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'primiera-historical.setup.players',
+        title: 'Players',
+        text: 'Four to six players. The game works best with four to six at the table; period sources describe both four-player and six-player play. Deal and vying proceed counter-clockwise from the dealer. Each player receives four cards and participates in the ante before the deal.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'primiera-historical.setup.deck',
+        title: 'Deck',
+        text: '40 cards. Remove 8s, 9s, 10s from a standard deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'primiera-historical.setup.equipment',
+        title: 'Equipment',
+        text: '40 cards. Remove 8s, 9s, 10s from a standard deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'primiera-historical.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 4 cards, usually dealt two at a time.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'primiera-historical.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the pot by having the highest combination or forcing others to fold.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'primiera-historical.score.description',
+        title: 'Scoring',
+        text: 'Win the pot by having the highest combination or forcing others to fold.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'primiera-historical.rules.key.1',
+        title: 'Key rule 1',
+        text: '40-card deck; four cards each dealt two at a time.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'primiera-historical.rules.key.2',
+        title: 'Key rule 2',
+        text: 'All ante before deal. Vying: match, raise, or fold; dealer bets first; counter-clockwise.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'primiera-historical.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Hand ranks: Chorus (four of a kind) > Fluxus (flush) > Supremus > Primiera (one per suit) > Numerus (point).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'primiera-historical.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Point values: 7=21, 6=18, A=16, 5=15, 4=14, 3=13, 2=12, face=10.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'primiera-historical.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Knock (Vada) forces immediate showdown. Best hand wins pot.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'primiera-historical.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'primiera-historical.rules.objective',
+          'primiera-historical.rules.gameplay',
+        ],
+      },
+      {
+        id: 'primiera-historical.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'primiera-historical.setup.players',
+          'primiera-historical.setup.deck',
+          'primiera-historical.setup.equipment',
+          'primiera-historical.setup.dealing',
+        ],
+      },
+      {
+        id: 'primiera-historical.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'primiera-historical.rules.key.1',
+          'primiera-historical.rules.key.2',
+          'primiera-historical.rules.key.3',
+          'primiera-historical.rules.key.4',
+          'primiera-historical.rules.key.5',
+        ],
+      },
+      {
+        id: 'primiera-historical.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'primiera-historical.score.description',
+          'primiera-historical.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'primiera-historical.setup.dealing',
+        'primiera-historical.rules.objective',
+      ],
+      ante: [
+        'primiera-historical.rules.gameplay',
+      ],
+      deal: [
+        'primiera-historical.rules.gameplay',
+      ],
+      fold: [
+        'primiera-historical.rules.gameplay',
+      ],
+      check: [
+        'primiera-historical.rules.gameplay',
+      ],
+      call: [
+        'primiera-historical.rules.gameplay',
+      ],
+      bet: [
+        'primiera-historical.rules.gameplay',
+      ],
+      raise: [
+        'primiera-historical.rules.gameplay',
+      ],
+      reveal_hand: [
+        'primiera-historical.rules.gameplay',
+      ],
+      award_pot: [
+        'primiera-historical.rules.gameplay',
+      ],
+    },
   },
 }

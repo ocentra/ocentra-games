@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Cards Against Humanity. Logic: Win the most rounds by submitting the answer card the judge chooses.',
-    Player: 'Cards Against Humanity is a commercial adult party card game where players submit answer cards to complete a prompt judged by a rotating card czar.',
+    LLM: 'A rotating judge reveals a prompt. Other players submit answer cards anonymously, the judge chooses the preferred answer, and the chosen player scores the round.',
+    Player: 'A rotating judge reveals a prompt. Other players submit answer cards anonymously, the judge chooses the preferred answer, and the chosen player scores the round.',
     objective: 'Win the most rounds by submitting the answer card the judge chooses.',
     gameplay: 'A rotating judge reveals a prompt. Other players submit answer cards anonymously, the judge chooses the preferred answer, and the chosen player scores the round.',
     keyRules: [
@@ -54,10 +54,168 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 4-20 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: Players score one point or prompt card per won round; most round wins takes the game. Expected outcome: Win the most rounds by submitting the answer card the judge chooses..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win the most rounds by submitting the answer card the judge chooses.',
+      'Turn-flow example: A rotating judge reveals a prompt. Other players submit answer cards anonymously, the judge chooses the preferred answer, and the chosen player scores the round.',
+      'Scoring example: Players score one point or prompt card per won round; most round wins takes the game. Win the most rounds by submitting the answer card the judge chooses..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'cards-against-humanity.rules.objective',
+        title: 'Objective',
+        text: 'Win the most rounds by submitting the answer card the judge chooses.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'cards-against-humanity.rules.gameplay',
+        title: 'Turn flow',
+        text: 'A rotating judge reveals a prompt. Other players submit answer cards anonymously, the judge chooses the preferred answer, and the chosen player scores the round.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'cards-against-humanity.setup.players',
+        title: 'Players',
+        text: '4 or more players use the table arrangement described for Cards Against Humanity.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'cards-against-humanity.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated prompt and answer cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'cards-against-humanity.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated prompt and answer cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'cards-against-humanity.setup.dealing',
+        title: 'Deal',
+        text: 'Deal answer cards to each player and reveal one prompt card for the round.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'cards-against-humanity.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the most rounds by submitting the answer card the judge chooses.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'cards-against-humanity.score.description',
+        title: 'Scoring',
+        text: 'Players score one point or prompt card per won round; most round wins takes the game.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'cards-against-humanity.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Prompt and answer card decks.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'cards-against-humanity.rules.key.2',
+        title: 'Key rule 2',
+        text: 'One rotating judge each round.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'cards-against-humanity.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Submissions are usually anonymous.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'cards-against-humanity.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Judge chooses the winning answer.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'cards-against-humanity.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Round wins determine the game winner.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'cards-against-humanity.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'cards-against-humanity.rules.objective',
+          'cards-against-humanity.rules.gameplay',
+        ],
+      },
+      {
+        id: 'cards-against-humanity.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'cards-against-humanity.setup.players',
+          'cards-against-humanity.setup.deck',
+          'cards-against-humanity.setup.equipment',
+          'cards-against-humanity.setup.dealing',
+        ],
+      },
+      {
+        id: 'cards-against-humanity.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'cards-against-humanity.rules.key.1',
+          'cards-against-humanity.rules.key.2',
+          'cards-against-humanity.rules.key.3',
+          'cards-against-humanity.rules.key.4',
+          'cards-against-humanity.rules.key.5',
+        ],
+      },
+      {
+        id: 'cards-against-humanity.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'cards-against-humanity.score.description',
+          'cards-against-humanity.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'cards-against-humanity.setup.dealing',
+        'cards-against-humanity.rules.objective',
+      ],
+      play_card: [
+        'cards-against-humanity.rules.gameplay',
+      ],
+      flip_top_card: [
+        'cards-against-humanity.rules.gameplay',
+      ],
+    },
   },
 }

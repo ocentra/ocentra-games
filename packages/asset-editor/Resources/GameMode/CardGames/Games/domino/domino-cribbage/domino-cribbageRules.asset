@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Domino Cribbage. Deal 6, discard 2 to crib, peg totals, then score hands with starter tile.',
-    Player: 'Manage crib discards and pegging totals to race along the scoring track.',
+    LLM: '1. Pegging Phase: Starting with the non-dealer, players play one tile at a time, keeping a running total of the pips (0-31 limit). Points scored for reaching exactly 15 or 31, and for sequences or blocks of same-value tiles.\n2. The Show: After pegging, players score their remaining 4 tiles + the starter tile for combinations.\n3. The Crib: The dealer scores the 4 discarded tiles + the starter tile.',
+    Player: '1. Pegging Phase: Starting with the non-dealer, players play one tile at a time, keeping a running total of the pips (0-31 limit). Points scored for reaching exactly 15 or 31, and for sequences or blocks of same-value tiles.\n2. The Show: After pegging, players score their remaining 4 tiles + the starter tile for combinations.\n3. The Crib: The dealer scores the 4 discarded tiles + the starter tile.',
     objective: 'Be the first to reach 61 or 121 points on the cribbage board.',
     gameplay: '1. Pegging Phase: Starting with the non-dealer, players play one tile at a time, keeping a running total of the pips (0-31 limit). Points scored for reaching exactly 15 or 31, and for sequences or blocks of same-value tiles.\n2. The Show: After pegging, players score their remaining 4 tiles + the starter tile for combinations.\n3. The Crib: The dealer scores the 4 discarded tiles + the starter tile.',
     keyRules: [
@@ -52,10 +52,159 @@
       go_out: 'Win condition is reaching target points on the track.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal, discard before pegging.',
-      'Scoring check: Players score during pegging and hand-show phases, including dealer crib scoring. Expected outcome: 121.',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Be the first to reach 61 or 121 points on the cribbage board.',
+      'Turn-flow example: 1. Pegging Phase: Starting with the non-dealer, players play one tile at a time, keeping a running total of the pips (0-31 limit). Points scored for reaching exactly 15 or 31, and for sequences or blocks of same-value tiles.\n2. The Show: After pegging, players score their remaining 4 tiles + the starter tile for combinations.\n3. The Crib: The dealer scores the 4 discarded tiles + the starter tile.',
+      'Scoring example: Players score during pegging and hand-show phases, including dealer crib scoring. First player to reach 121 points wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'domino-cribbage.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to reach 61 or 121 points on the cribbage board.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'domino-cribbage.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Pegging Phase: Starting with the non-dealer, players play one tile at a time, keeping a running total of the pips (0-31 limit). Points scored for reaching exactly 15 or 31, and for sequences or blocks of same-value tiles.\n2. The Show: After pegging, players score their remaining 4 tiles + the starter tile for combinations.\n3. The Crib: The dealer scores the 4 discarded tiles + the starter tile.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'domino-cribbage.setup.players',
+        title: 'Players',
+        text: 'Two players. One is designated the dealer, the other the non-dealer; they exchange roles after each hand. All 28 tiles are mixed, each player draws six tiles, then each discards two face down into the crib.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'domino-cribbage.setup.deck',
+        title: 'Deck',
+        text: 'A standard set of 28 double-six dominoes.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'domino-cribbage.setup.equipment',
+        title: 'Equipment',
+        text: 'Dominoes, Cribbage board (or score sheet).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'domino-cribbage.setup.dealing',
+        title: 'Deal',
+        text: "All 28 tiles are face-down and shuffled. Each player draws 6 tiles. Two from each hand are discarded into a four-tile 'Crib' belonging to the dealer. One tile is turned over from the boneyard as the 'Starter'.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'domino-cribbage.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach 121 points wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'domino-cribbage.score.description',
+        title: 'Scoring',
+        text: 'Players score during pegging and hand-show phases, including dealer crib scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'domino-cribbage.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The value of a tile is the SUM of its two ends (e.g., 5-3 = 8).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'domino-cribbage.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Blank tiles (0-0) are valid and have value 0 for sums and sequences.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'domino-cribbage.rules.key.3',
+        title: 'Key rule 3',
+        text: "Rules for 'Go' and '31' are identical to card cribbage.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'domino-cribbage.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'domino-cribbage.rules.objective',
+          'domino-cribbage.rules.gameplay',
+        ],
+      },
+      {
+        id: 'domino-cribbage.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'domino-cribbage.setup.players',
+          'domino-cribbage.setup.deck',
+          'domino-cribbage.setup.equipment',
+          'domino-cribbage.setup.dealing',
+        ],
+      },
+      {
+        id: 'domino-cribbage.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'domino-cribbage.rules.key.1',
+          'domino-cribbage.rules.key.2',
+          'domino-cribbage.rules.key.3',
+        ],
+      },
+      {
+        id: 'domino-cribbage.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'domino-cribbage.score.description',
+          'domino-cribbage.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'domino-cribbage.setup.dealing',
+        'domino-cribbage.rules.objective',
+      ],
+      deal: [
+        'domino-cribbage.rules.gameplay',
+      ],
+      reveal_hand: [
+        'domino-cribbage.rules.gameplay',
+      ],
+      award_pot: [
+        'domino-cribbage.rules.gameplay',
+      ],
+      play_card: [
+        'domino-cribbage.rules.gameplay',
+      ],
+      discard: [
+        'domino-cribbage.rules.gameplay',
+      ],
+    },
   },
 }

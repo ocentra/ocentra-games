@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Hollfahren. Logic: Avoid or manage movement toward the central hell area while winning the agreed stakes or outcome.',
-    Player: 'Hollfahren is a historical German card game using playing cards and a circular layout or special board whose centre was called hell.',
+    LLM: 'Cards determine advancement around the circular layout, with players moving toward or away from the centre and resolving payments or penalties from landing positions.',
+    Player: 'Cards determine advancement around the circular layout, with players moving toward or away from the centre and resolving payments or penalties from landing positions.',
     objective: 'Avoid or manage movement toward the central hell area while winning the agreed stakes or outcome.',
     gameplay: 'Cards determine advancement around the circular layout, with players moving toward or away from the centre and resolving payments or penalties from landing positions.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Players win or lose stakes according to card-driven layout positions. Expected outcome: Avoid or manage movement toward the central hell area while winning the agreed stakes or outcome..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Avoid or manage movement toward the central hell area while winning the agreed stakes or outcome.',
+      'Turn-flow example: Cards determine advancement around the circular layout, with players moving toward or away from the centre and resolving payments or penalties from landing positions.',
+      'Scoring example: Players win or lose stakes according to card-driven layout positions. Avoid or manage movement toward the central hell area while winning the agreed stakes or outcome..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hollfahren.rules.objective',
+        title: 'Objective',
+        text: 'Avoid or manage movement toward the central hell area while winning the agreed stakes or outcome.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hollfahren.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Cards determine advancement around the circular layout, with players moving toward or away from the centre and resolving payments or penalties from landing positions.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hollfahren.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Hollfahren.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hollfahren.setup.deck',
+        title: 'Deck',
+        text: 'Playing cards with circular layout or special board',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hollfahren.setup.equipment',
+        title: 'Equipment',
+        text: 'Playing cards with circular layout or special board, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hollfahren.setup.dealing',
+        title: 'Deal',
+        text: 'Set up the circular layout or board and use playing cards to determine movement or results around the track.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hollfahren.score.win-condition',
+        title: 'Win condition',
+        text: 'Avoid or manage movement toward the central hell area while winning the agreed stakes or outcome.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hollfahren.score.description',
+        title: 'Scoring',
+        text: 'Players win or lose stakes according to card-driven layout positions.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hollfahren.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Uses playing cards and a layout.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hollfahren.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The centre is called hell.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hollfahren.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Movement or results are card-driven.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'hollfahren.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Historical gambling structure.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'hollfahren.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Stakes or penalties resolve by position.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hollfahren.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hollfahren.rules.objective',
+          'hollfahren.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hollfahren.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hollfahren.setup.players',
+          'hollfahren.setup.deck',
+          'hollfahren.setup.equipment',
+          'hollfahren.setup.dealing',
+        ],
+      },
+      {
+        id: 'hollfahren.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hollfahren.rules.key.1',
+          'hollfahren.rules.key.2',
+          'hollfahren.rules.key.3',
+          'hollfahren.rules.key.4',
+          'hollfahren.rules.key.5',
+        ],
+      },
+      {
+        id: 'hollfahren.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hollfahren.score.description',
+          'hollfahren.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hollfahren.setup.dealing',
+        'hollfahren.rules.objective',
+      ],
+      play_card: [
+        'hollfahren.rules.gameplay',
+      ],
+    },
   },
 }

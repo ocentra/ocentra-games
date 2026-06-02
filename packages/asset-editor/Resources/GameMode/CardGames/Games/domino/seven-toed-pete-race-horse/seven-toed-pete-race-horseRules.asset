@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Seven-Toed Pete Race Horse. Enforce opening lead restrictions, matching rules, extra-turn chaining, and washed-up continuation handling.',
-    Player: 'In Seven-Toed Pete, prioritize plays that score and keep initiative, because each scoring play or double earns an extra immediate turn.',
+    LLM: 'Lead is by lot in the first hand and then rotates. Opening lead must be a double or a scoring starter tile such as 0-5, 1-4, 2-3, 4-6, or 5-5; if unavailable, lead passes onward. Players match open ends or pass if blocked. Any scoring play or any double gives an immediate extra turn. If a player uses their last tile on a scoring play or double, they are washed up and play continues among others. A hand ends when a player dominoes on a non-scoring non-double play, or when the game blocks.',
+    Player: 'Lead is by lot in the first hand and then rotates. Opening lead must be a double or a scoring starter tile such as 0-5, 1-4, 2-3, 4-6, or 5-5; if unavailable, lead passes onward. Players match open ends or pass if blocked. Any scoring play or any double gives an immediate extra turn. If a player uses their last tile on a scoring play or double, they are washed up and play continues among others. A hand ends when a player dominoes on a non-scoring non-double play, or when the game blocks.',
     objective: 'Outscore opponents by making scoring plays and winning hands through domino or lowest blocked-hand pip total.',
     gameplay: 'Lead is by lot in the first hand and then rotates. Opening lead must be a double or a scoring starter tile such as 0-5, 1-4, 2-3, 4-6, or 5-5; if unavailable, lead passes onward. Players match open ends or pass if blocked. Any scoring play or any double gives an immediate extra turn. If a player uses their last tile on a scoring play or double, they are washed up and play continues among others. A hand ends when a player dominoes on a non-scoring non-double play, or when the game blocks.',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'Hand ends when a player dominoes (plays last tile) or game is blocked.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play_tiles.',
-      "Scoring check: Score when exposed ends total a multiple of five. Hand winner (domino or blocked-hand low pip total) also scores opponents' remaining pips, commonly converted by dividing by five after rounding. Expected outcome: Reach the table-agreed target score before opponents..",
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Outscore opponents by making scoring plays and winning hands through domino or lowest blocked-hand pip total.',
+      'Turn-flow example: Lead is by lot in the first hand and then rotates. Opening lead must be a double or a scoring starter tile such as 0-5, 1-4, 2-3, 4-6, or 5-5; if unavailable, lead passes onward. Players match open ends or pass if blocked. Any scoring play or any double gives an immediate extra turn. If a player uses their last tile on a scoring play or double, they are washed up and play continues among others. A hand ends when a player dominoes on a non-scoring non-double play, or when the game blocks.',
+      "Scoring example: Score when exposed ends total a multiple of five. Hand winner (domino or blocked-hand low pip total) also scores opponents' remaining pips, commonly converted by dividing by five after rounding. Reach the table-agreed target score before opponents..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'seven-toed-pete-race-horse.rules.objective',
+        title: 'Objective',
+        text: 'Outscore opponents by making scoring plays and winning hands through domino or lowest blocked-hand pip total.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'seven-toed-pete-race-horse.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Lead is by lot in the first hand and then rotates. Opening lead must be a double or a scoring starter tile such as 0-5, 1-4, 2-3, 4-6, or 5-5; if unavailable, lead passes onward. Players match open ends or pass if blocked. Any scoring play or any double gives an immediate extra turn. If a player uses their last tile on a scoring play or double, they are washed up and play continues among others. A hand ends when a player dominoes on a non-scoring non-double play, or when the game blocks.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'seven-toed-pete-race-horse.setup.players',
+        title: 'Players',
+        text: 'Four players in the standard game; some groups also use partnership or 2-3 player variants.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'seven-toed-pete-race-horse.setup.deck',
+        title: 'Deck',
+        text: 'Standard 28-tile double-six set, from 0-0 to 6-6.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'seven-toed-pete-race-horse.setup.equipment',
+        title: 'Equipment',
+        text: 'Domino set and score tracker (chips or score sheet).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'seven-toed-pete-race-horse.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 7 tiles; all tiles are dealt, so there is no boneyard.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'seven-toed-pete-race-horse.score.win-condition',
+        title: 'Win condition',
+        text: 'Reach the table-agreed target score before opponents.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'seven-toed-pete-race-horse.score.description',
+        title: 'Scoring',
+        text: "Score when exposed ends total a multiple of five. Hand winner (domino or blocked-hand low pip total) also scores opponents' remaining pips, commonly converted by dividing by five after rounding.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'seven-toed-pete-race-horse.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Opening lead must be a double or listed scoring starter.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'seven-toed-pete-race-horse.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Any scoring play or double grants an immediate extra turn.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'seven-toed-pete-race-horse.rules.key.3',
+        title: 'Key rule 3',
+        text: 'No boneyard in the standard four-player game.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'seven-toed-pete-race-horse.rules.key.4',
+        title: 'Key rule 4',
+        text: 'A scoring/double final tile causes washed-up continuation, not immediate hand end.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'seven-toed-pete-race-horse.rules.key.5',
+        title: 'Key rule 5',
+        text: 'West Coast Race Horse style often uses all doubles as spinners.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'seven-toed-pete-race-horse.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'seven-toed-pete-race-horse.rules.objective',
+          'seven-toed-pete-race-horse.rules.gameplay',
+        ],
+      },
+      {
+        id: 'seven-toed-pete-race-horse.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'seven-toed-pete-race-horse.setup.players',
+          'seven-toed-pete-race-horse.setup.deck',
+          'seven-toed-pete-race-horse.setup.equipment',
+          'seven-toed-pete-race-horse.setup.dealing',
+        ],
+      },
+      {
+        id: 'seven-toed-pete-race-horse.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'seven-toed-pete-race-horse.rules.key.1',
+          'seven-toed-pete-race-horse.rules.key.2',
+          'seven-toed-pete-race-horse.rules.key.3',
+          'seven-toed-pete-race-horse.rules.key.4',
+          'seven-toed-pete-race-horse.rules.key.5',
+        ],
+      },
+      {
+        id: 'seven-toed-pete-race-horse.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'seven-toed-pete-race-horse.score.description',
+          'seven-toed-pete-race-horse.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'seven-toed-pete-race-horse.setup.dealing',
+        'seven-toed-pete-race-horse.rules.objective',
+      ],
+      deal: [
+        'seven-toed-pete-race-horse.rules.gameplay',
+      ],
+      award_pot: [
+        'seven-toed-pete-race-horse.rules.gameplay',
+      ],
+      play_card: [
+        'seven-toed-pete-race-horse.rules.gameplay',
+      ],
+      pass: [
+        'seven-toed-pete-race-horse.rules.gameplay',
+      ],
+    },
   },
 }

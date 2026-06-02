@@ -3628,6 +3628,12 @@ const StandaloneSelectedGameLayoutControls: React.FC<{ assetPath: string }> = ({
                     onChange={(event) => updateContentPlanTab(id, { source: event.target.value })}
                   />
                   <input
+                    type="text"
+                    value={planTab.tip}
+                    style={selectedGamePanelInputStyle}
+                    onChange={(event) => updateContentPlanTab(id, { tip: event.target.value })}
+                  />
+                  <input
                     type="number"
                     min={1}
                     max={8}

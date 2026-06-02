@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Eralash. Logic: Win the tricks or contract result required by the selected Russian Whist variant.',
-    Player: 'Eralash is a family of Russian Whist variants for four players in partnerships.',
+    LLM: 'Players follow suit, compare tricks by led suit and trump if any, and score as partnerships under the chosen variant rules.',
+    Player: 'Players follow suit, compare tricks by led suit and trump if any, and score as partnerships under the chosen variant rules.',
     objective: 'Win the tricks or contract result required by the selected Russian Whist variant.',
     gameplay: 'Players follow suit, compare tricks by led suit and trump if any, and score as partnerships under the chosen variant rules.',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Partnerships score according to the selected Eralash or Russian Whist variant. Expected outcome: Win the tricks or contract result required by the selected Russian Whist variant..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win the tricks or contract result required by the selected Russian Whist variant.',
+      'Turn-flow example: Players follow suit, compare tricks by led suit and trump if any, and score as partnerships under the chosen variant rules.',
+      'Scoring example: Partnerships score according to the selected Eralash or Russian Whist variant. Win the tricks or contract result required by the selected Russian Whist variant..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'eralash.rules.objective',
+        title: 'Objective',
+        text: 'Win the tricks or contract result required by the selected Russian Whist variant.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'eralash.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players follow suit, compare tricks by led suit and trump if any, and score as partnerships under the chosen variant rules.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'eralash.setup.players',
+        title: 'Players',
+        text: '4 in two partnerships players use the table arrangement described for Eralash.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'eralash.setup.deck',
+        title: 'Deck',
+        text: 'Standard playing-card pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'eralash.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard playing-card pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'eralash.setup.dealing',
+        title: 'Deal',
+        text: 'Deal the pack to four players seated in two partnerships, then play the agreed Eralash variant.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'eralash.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks or contract result required by the selected Russian Whist variant.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'eralash.score.description',
+        title: 'Scoring',
+        text: 'Partnerships score according to the selected Eralash or Russian Whist variant.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'eralash.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Four players in two partnerships.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'eralash.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Whist-family trick play.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'eralash.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Follow suit when possible.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'eralash.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Variant rules may alter trump and scoring.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'eralash.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Partnership result decides each deal.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'eralash.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'eralash.rules.objective',
+          'eralash.rules.gameplay',
+        ],
+      },
+      {
+        id: 'eralash.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'eralash.setup.players',
+          'eralash.setup.deck',
+          'eralash.setup.equipment',
+          'eralash.setup.dealing',
+        ],
+      },
+      {
+        id: 'eralash.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'eralash.rules.key.1',
+          'eralash.rules.key.2',
+          'eralash.rules.key.3',
+          'eralash.rules.key.4',
+          'eralash.rules.key.5',
+        ],
+      },
+      {
+        id: 'eralash.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'eralash.score.description',
+          'eralash.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'eralash.setup.dealing',
+        'eralash.rules.objective',
+      ],
+      play_card: [
+        'eralash.rules.gameplay',
+      ],
+      discard: [
+        'eralash.rules.gameplay',
+      ],
+      pass: [
+        'eralash.rules.gameplay',
+      ],
+      bid: [
+        'eralash.rules.gameplay',
+      ],
+    },
   },
 }

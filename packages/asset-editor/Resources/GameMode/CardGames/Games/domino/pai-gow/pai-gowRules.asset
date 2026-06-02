@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Pai Gow uses a complex hierarchy. Matched pairs are highest, followed by symbolic unmatched pairs (like Heaven and Earth), then Wongs, Gongs, and finally the last digit of the tile totals (mod 10). The Gee Joon tiles are the supreme pair!',
-    Player: 'How do I rank tiles in Pai Gow?',
+    LLM: '1. Woodpile: Tiles are shuffled and stacked in a woodpile. 2. Deal: Players receive four tiles based on a dice roll. 3. Partition: Divide tiles into a high hand and a low hand. 4. Ranking: High hand must rank equal to or higher than the low hand. 5. Showdown: Banker compares pairs with each player. 6. Settlement: Win both pairs to win; lose both to lose; split results in a push.',
+    Player: '1. Woodpile: Tiles are shuffled and stacked in a woodpile. 2. Deal: Players receive four tiles based on a dice roll. 3. Partition: Divide tiles into a high hand and a low hand. 4. Ranking: High hand must rank equal to or higher than the low hand. 5. Showdown: Banker compares pairs with each player. 6. Settlement: Win both pairs to win; lose both to lose; split results in a push.',
     objective: "Arrange four tiles into two pairs that both beat the banker's corresponding pairs according to traditional tile rankings.",
     gameplay: '1. Woodpile: Tiles are shuffled and stacked in a woodpile. 2. Deal: Players receive four tiles based on a dice roll. 3. Partition: Divide tiles into a high hand and a low hand. 4. Ranking: High hand must rank equal to or higher than the low hand. 5. Showdown: Banker compares pairs with each player. 6. Settlement: Win both pairs to win; lose both to lose; split results in a push.',
     keyRules: [
@@ -54,10 +54,180 @@
       go_out: 'The game deal concludes automatically once all bets are settled against the banker.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in bank_selection; dealer may use assign_bank before dealing.',
-      "Scoring check: Win both pair comparisons to win the bet; split outcomes result in a push where the bet is returned. Expected outcome: Both the player's high and low hands must outrank the banker's corresponding hands to win..",
+      'Setup example: 4 card(s) per player.',
+      "Rule example: Arrange four tiles into two pairs that both beat the banker's corresponding pairs according to traditional tile rankings.",
+      'Turn-flow example: 1. Woodpile: Tiles are shuffled and stacked in a woodpile. 2. Deal: Players receive four tiles based on a dice roll. 3. Partition: Divide tiles into a high hand and a low hand. 4. Ranking: High hand must rank equal to or higher than the low hand. 5. Showdown: Banker compares pairs with each player. 6. Settlement: Win both pairs to win; lose both to lose; split results in a push.',
+      "Scoring example: Win both pair comparisons to win the bet; split outcomes result in a push where the bet is returned. Both the player's high and low hands must outrank the banker's corresponding hands to win..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pai-gow.rules.objective',
+        title: 'Objective',
+        text: "Arrange four tiles into two pairs that both beat the banker's corresponding pairs according to traditional tile rankings.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pai-gow.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Woodpile: Tiles are shuffled and stacked in a woodpile. 2. Deal: Players receive four tiles based on a dice roll. 3. Partition: Divide tiles into a high hand and a low hand. 4. Ranking: High hand must rank equal to or higher than the low hand. 5. Showdown: Banker compares pairs with each player. 6. Settlement: Win both pairs to win; lose both to lose; split results in a push.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pai-gow.setup.players',
+        title: 'Players',
+        text: 'Up to eight players sit around a table; the role of banker rotates among players counter-clockwise.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pai-gow.setup.deck',
+        title: 'Deck',
+        text: 'A unique set of thirty-two tiles where eleven specific tiles are duplicated to form matched pairs.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pai-gow.setup.equipment',
+        title: 'Equipment',
+        text: "32 Chinese dominoes, a 'Chung' marker for the banker, and three dice to determine the deal order.",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pai-gow.setup.dealing',
+        title: 'Deal',
+        text: 'Tiles are stacked in a 4x8 woodpile; dice are rolled to select which player receives the first stack.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pai-gow.score.win-condition',
+        title: 'Win condition',
+        text: "Both the player's high and low hands must outrank the banker's corresponding hands to win.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pai-gow.score.description',
+        title: 'Scoring',
+        text: 'Win both pair comparisons to win the bet; split outcomes result in a push where the bet is returned.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pai-gow.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The high hand must always be equal to or higher in rank than the low hand partition.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pai-gow.rules.key.2',
+        title: 'Key rule 2',
+        text: "To win the wager, both player pairs must outrank the banker's pairs; one win and one loss is a push.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pai-gow.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Ties on a specific pair comparison (copy hands) are won by the banker.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pai-gow.rules.key.4',
+        title: 'Key rule 4',
+        text: 'The Luk and Saam tiles known together as Gee Joon are semi-wild and can be used as three or six to optimize hand totals.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'pai-gow.rules.key.5',
+        title: 'Key rule 5',
+        text: 'The precedence of combinations is as follows: Gee Joon followed by Traditional Bo Pairs then Wongs then Gongs and finally High Nines.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pai-gow.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pai-gow.rules.objective',
+          'pai-gow.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pai-gow.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pai-gow.setup.players',
+          'pai-gow.setup.deck',
+          'pai-gow.setup.equipment',
+          'pai-gow.setup.dealing',
+        ],
+      },
+      {
+        id: 'pai-gow.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pai-gow.rules.key.1',
+          'pai-gow.rules.key.2',
+          'pai-gow.rules.key.3',
+          'pai-gow.rules.key.4',
+          'pai-gow.rules.key.5',
+        ],
+      },
+      {
+        id: 'pai-gow.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pai-gow.score.description',
+          'pai-gow.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pai-gow.setup.dealing',
+        'pai-gow.rules.objective',
+      ],
+      bet: [
+        'pai-gow.rules.gameplay',
+      ],
+      deal_tiles: [
+        'pai-gow.rules.gameplay',
+      ],
+      assign_bank: [
+        'pai-gow.rules.gameplay',
+      ],
+      split_into_two_hands: [
+        'pai-gow.rules.gameplay',
+      ],
+      reveal_hands: [
+        'pai-gow.rules.gameplay',
+      ],
+      settle_bets: [
+        'pai-gow.rules.gameplay',
+      ],
+    },
   },
 }

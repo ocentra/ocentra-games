@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kaiserspiel. Logic: Win the tricks, card points, or contract result required by the local form of the game.',
-    Player: 'Kaiserspiel is a traditional trick-taking card game using 40 or 48-card Swiss Kaiserspiel deck for 2, 4, or 6 players. It uses one chosen suit and belongs to the Karnöffel environment.',
+    LLM: 'Players play through tricks quickly, with normal trick-play pressure inverted around the final trick. Earlier tricks matter mainly as setup for controlling the last one.',
+    Player: 'Players play through tricks quickly, with normal trick-play pressure inverted around the final trick. Earlier tricks matter mainly as setup for controlling the last one.',
     objective: 'Win the last trick of the hand rather than collecting the most tricks overall.',
     gameplay: 'Players play through tricks quickly, with normal trick-play pressure inverted around the final trick. Earlier tricks matter mainly as setup for controlling the last one.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Tricks, card points, or contract success determine scoring. Expected outcome: 1.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win the last trick of the hand rather than collecting the most tricks overall.',
+      'Turn-flow example: Players play through tricks quickly, with normal trick-play pressure inverted around the final trick. Earlier tricks matter mainly as setup for controlling the last one.',
+      'Scoring example: Tricks, card points, or contract success determine scoring. Win the tricks, card points, or contract result required by the local form of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'siebenschram.rules.objective',
+        title: 'Objective',
+        text: 'Win the last trick of the hand rather than collecting the most tricks overall.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'siebenschram.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play through tricks quickly, with normal trick-play pressure inverted around the final trick. Earlier tricks matter mainly as setup for controlling the last one.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'siebenschram.setup.players',
+        title: 'Players',
+        text: '2-8 players use the table arrangement described for Siebenschram.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'siebenschram.setup.deck',
+        title: 'Deck',
+        text: 'German or French-suited pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'siebenschram.setup.equipment',
+        title: 'Equipment',
+        text: 'German or French-suited pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'siebenschram.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare German or French-suited pack and deal or lay out cards according to the documented Siebenschram rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'siebenschram.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'siebenschram.score.description',
+        title: 'Scoring',
+        text: 'Tricks, card points, or contract success determine scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'siebenschram.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The hand winner is the player who wins the last trick.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'siebenschram.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Four players are normal, but the source supports two to eight.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'siebenschram.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The game is associated with the Eifel pub tradition.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'siebenschram.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'siebenschram.rules.objective',
+          'siebenschram.rules.gameplay',
+        ],
+      },
+      {
+        id: 'siebenschram.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'siebenschram.setup.players',
+          'siebenschram.setup.deck',
+          'siebenschram.setup.equipment',
+          'siebenschram.setup.dealing',
+        ],
+      },
+      {
+        id: 'siebenschram.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'siebenschram.rules.key.1',
+          'siebenschram.rules.key.2',
+          'siebenschram.rules.key.3',
+        ],
+      },
+      {
+        id: 'siebenschram.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'siebenschram.score.description',
+          'siebenschram.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'siebenschram.setup.dealing',
+        'siebenschram.rules.objective',
+      ],
+      play_card: [
+        'siebenschram.rules.gameplay',
+      ],
+      discard: [
+        'siebenschram.rules.gameplay',
+      ],
+      pass: [
+        'siebenschram.rules.gameplay',
+      ],
+      bid: [
+        'siebenschram.rules.gameplay',
+      ],
+    },
   },
 }

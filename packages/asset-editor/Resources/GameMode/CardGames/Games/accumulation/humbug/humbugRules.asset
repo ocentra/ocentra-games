@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Humbug (Perfect Information 2-Player Whist). Setup: 52-card deck, 26 cards each, all face-up. Trump: Final card determines trump suit. Gameplay: 52 tricks, non-dealer leads first. Follow suit if able; else any card. Highest suit card or trump wins trick. Scoring: Win >26 tricks = win deal. Revoke (fail to follow) = lose 3 tricks. Strategic depth: Perfect information requires optimal play calculation.',
-    Player: 'Welcome to Humbug, the 18th-century perfect information whist game. You and your opponent each get 26 cards, all laid out face-up before play. No hidden informationâ€”you know exactly what each player holds. The trump suit is set by the final card. Play 52 tricks, follow suit if able, and win more than 26 tricks to claim victory.',
+    LLM: '1. Non-dealer leads the first card.\n2. Standard Whist rules: Must follow suit if possible.\n3. Highest card of the suit led wins the trick, unless a trump is played.\n4. Winner of the trick leads the next.\n5. **Perfect Information**: Since all cards are dealt, players know exactly what the opponent holds at all times.',
+    Player: '1. Non-dealer leads the first card.\n2. Standard Whist rules: Must follow suit if possible.\n3. Highest card of the suit led wins the trick, unless a trump is played.\n4. Winner of the trick leads the next.\n5. **Perfect Information**: Since all cards are dealt, players know exactly what the opponent holds at all times.',
     objective: 'Win more than 26 tricks to be the winner of the deal.',
     gameplay: '1. Non-dealer leads the first card.\n2. Standard Whist rules: Must follow suit if possible.\n3. Highest card of the suit led wins the trick, unless a trump is played.\n4. Winner of the trick leads the next.\n5. **Perfect Information**: Since all cards are dealt, players know exactly what the opponent holds at all times.',
     keyRules: [
@@ -52,10 +52,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 26 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before reveal_trump.',
-      'Scoring check: Players score by winning tricks. Win >26 tricks to win the deal. Winner receives difference in tricks (e.g., win 30/22 = win 8 units). Expected outcome: NA.',
+      'Setup example: 26 card(s) per player.',
+      'Rule example: Win more than 26 tricks to be the winner of the deal.',
+      'Turn-flow example: 1. Non-dealer leads the first card.\n2. Standard Whist rules: Must follow suit if possible.\n3. Highest card of the suit led wins the trick, unless a trump is played.\n4. Winner of the trick leads the next.\n5. **Perfect Information**: Since all cards are dealt, players know exactly what the opponent holds at all times.',
+      'Scoring example: Players score by winning tricks. Win >26 tricks to win the deal. Winner receives difference in tricks (e.g., win 30/22 = win 8 units). Win more than 26 tricks (out of 52 total)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'humbug.rules.objective',
+        title: 'Objective',
+        text: 'Win more than 26 tricks to be the winner of the deal.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'humbug.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Non-dealer leads the first card.\n2. Standard Whist rules: Must follow suit if possible.\n3. Highest card of the suit led wins the trick, unless a trump is played.\n4. Winner of the trick leads the next.\n5. **Perfect Information**: Since all cards are dealt, players know exactly what the opponent holds at all times.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'humbug.setup.players',
+        title: 'Players',
+        text: 'Exactly two players. Humbug was designed as a high-stakes two-hand whist variant for two people who wanted the rigor of Whist without partners; it is documented in London publications from the 1790s (e.g. The Sporting Magazine).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'humbug.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Ranking: A (High) to 2 (Low).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'humbug.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. Ranking: A (High) to 2 (Low).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'humbug.setup.dealing',
+        title: 'Deal',
+        text: 'Deal all 52 cards, one at a time. The final card (belonging to the dealer) is turned up to determine the Trump suit. Both players then layout their hand face-up by suit to see the complete game state.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'humbug.score.win-condition',
+        title: 'Win condition',
+        text: 'Win more than 26 tricks (out of 52 total).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'humbug.score.description',
+        title: 'Scoring',
+        text: 'Players score by winning tricks. Win >26 tricks to win the deal. Winner receives difference in tricks (e.g., win 30/22 = win 8 units).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'humbug.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Humbug.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'humbug.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: The game is scored by the number of tricks won.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'humbug.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Win more than 26 tricks to be the winner of the deal.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'humbug.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'humbug.rules.objective',
+          'humbug.rules.gameplay',
+        ],
+      },
+      {
+        id: 'humbug.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'humbug.setup.players',
+          'humbug.setup.deck',
+          'humbug.setup.equipment',
+          'humbug.setup.dealing',
+        ],
+      },
+      {
+        id: 'humbug.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'humbug.rules.key.1',
+          'humbug.rules.key.2',
+          'humbug.rules.key.3',
+        ],
+      },
+      {
+        id: 'humbug.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'humbug.score.description',
+          'humbug.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'humbug.setup.dealing',
+        'humbug.rules.objective',
+      ],
+      deal: [
+        'humbug.rules.gameplay',
+      ],
+      play_card: [
+        'humbug.rules.gameplay',
+      ],
+      reveal_trump_card: [
+        'humbug.rules.gameplay',
+      ],
+      layout_hands_face_up: [
+        'humbug.rules.gameplay',
+      ],
+      resolve_deal: [
+        'humbug.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Prefa. Greek Preference. 32 cards. Russian-style.',
-    Player: 'Prefa: Greek Preference. 3p. Bid >6 tricks.',
+    LLM: 'As Russian Preference: deal, bidding (can contract >6), talon to declarer, trump or NT, play tricks. See Eric Ball rules, Prefadoros, or Thanos program for full detail.',
+    Player: 'As Russian Preference: deal, bidding (can contract >6), talon to declarer, trump or NT, play tricks. See Eric Ball rules, Prefadoros, or Thanos program for full detail.',
     objective: 'Make bid. Bid tricks; take at least that many. Talon to declarer. Standard Preference mechanics.',
     gameplay: 'As Russian Preference: deal, bidding (can contract >6), talon to declarer, trump or NT, play tricks. See Eric Ball rules, Prefadoros, or Thanos program for full detail.',
     keyRules: [
@@ -53,10 +53,168 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before bid.',
-      'Scoring check: Make bid = score. Fail = penalty. Expected outcome: First to target (variant)..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Make bid. Bid tricks; take at least that many. Talon to declarer. Standard Preference mechanics.',
+      'Turn-flow example: As Russian Preference: deal, bidding (can contract >6), talon to declarer, trump or NT, play tricks. See Eric Ball rules, Prefadoros, or Thanos program for full detail.',
+      'Scoring example: Make bid = score. Fail = penalty. First to target (variant)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'prefa.rules.objective',
+        title: 'Objective',
+        text: 'Make bid. Bid tricks; take at least that many. Talon to declarer. Standard Preference mechanics.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'prefa.rules.gameplay',
+        title: 'Turn flow',
+        text: 'As Russian Preference: deal, bidding (can contract >6), talon to declarer, trump or NT, play tricks. See Eric Ball rules, Prefadoros, or Thanos program for full detail.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'prefa.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'prefa.setup.deck',
+        title: 'Deck',
+        text: '32 cards (7-A).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'prefa.setup.equipment',
+        title: 'Equipment',
+        text: '32-card pack.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'prefa.setup.dealing',
+        title: 'Deal',
+        text: 'Standard Preference deal with talon.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'prefa.score.win-condition',
+        title: 'Win condition',
+        text: 'First to target (variant).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'prefa.score.description',
+        title: 'Scoring',
+        text: 'Make bid = score. Fail = penalty.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'prefa.rules.key.1',
+        title: 'Key rule 1',
+        text: '3 players. 32 cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'prefa.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Bidder can contract >6 tricks.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'prefa.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Talon to declarer.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'prefa.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Trump or no trump.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'prefa.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'prefa.rules.objective',
+          'prefa.rules.gameplay',
+        ],
+      },
+      {
+        id: 'prefa.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'prefa.setup.players',
+          'prefa.setup.deck',
+          'prefa.setup.equipment',
+          'prefa.setup.dealing',
+        ],
+      },
+      {
+        id: 'prefa.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'prefa.rules.key.1',
+          'prefa.rules.key.2',
+          'prefa.rules.key.3',
+          'prefa.rules.key.4',
+        ],
+      },
+      {
+        id: 'prefa.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'prefa.score.description',
+          'prefa.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'prefa.setup.dealing',
+        'prefa.rules.objective',
+      ],
+      deal: [
+        'prefa.rules.gameplay',
+      ],
+      play_card: [
+        'prefa.rules.gameplay',
+      ],
+      pass: [
+        'prefa.rules.gameplay',
+      ],
+      bid: [
+        'prefa.rules.gameplay',
+      ],
+      lead: [
+        'prefa.rules.gameplay',
+      ],
+    },
   },
 }

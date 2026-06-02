@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Nos. Type: Point-trick/Jass. 4 players, partnerships. Capture valuable cards in tricks. Last trick scores bonus. Target: 500+ points.',
-    Player: 'Play Nosâ€”a Chilean Jass game! Win tricks with valuable cards and capture the last trick for bonus points. Work with your partner to outscore the opponents.',
+    LLM: 'Standard trick-taking play with Jass-style rules. Must follow suit if possible; may trump or discard if void. Highest trump wins trick; otherwise highest of led suit wins.',
+    Player: 'Standard trick-taking play with Jass-style rules. Must follow suit if possible; may trump or discard if void. Highest trump wins trick; otherwise highest of led suit wins.',
     objective: 'Win tricks containing valuable cards and score points through specific combinations.',
     gameplay: 'Standard trick-taking play with Jass-style rules. Must follow suit if possible; may trump or discard if void. Highest trump wins trick; otherwise highest of led suit wins.',
     keyRules: [
@@ -54,10 +54,171 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 12 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: Points for capturing valuable cards in tricks, plus bonus for last trick. Partnership scores combined. Expected outcome: 500.',
+      'Setup example: 12 card(s) per player.',
+      'Rule example: Win tricks containing valuable cards and score points through specific combinations.',
+      'Turn-flow example: Standard trick-taking play with Jass-style rules. Must follow suit if possible; may trump or discard if void. Highest trump wins trick; otherwise highest of led suit wins.',
+      'Scoring example: Points for capturing valuable cards in tricks, plus bonus for last trick. Partnership scores combined. Reach target score (typically 500 or 1000 points)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'nos.rules.objective',
+        title: 'Objective',
+        text: 'Win tricks containing valuable cards and score points through specific combinations.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'nos.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Standard trick-taking play with Jass-style rules. Must follow suit if possible; may trump or discard if void. Highest trump wins trick; otherwise highest of led suit wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'nos.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships; partners sit opposite each other.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'nos.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack. Cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'nos.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, score pad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'nos.setup.dealing',
+        title: 'Deal',
+        text: 'Cards dealt to each player (typically 12-13 each depending on variant).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'nos.score.win-condition',
+        title: 'Win condition',
+        text: 'Reach target score (typically 500 or 1000 points).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'nos.score.description',
+        title: 'Scoring',
+        text: 'Points for capturing valuable cards in tricks, plus bonus for last trick. Partnership scores combined.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'nos.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow suit if possible',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'nos.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Trump can be played if void',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'nos.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Points for specific cards in tricks',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'nos.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Bonus for winning last trick',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'nos.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Partnership scoring',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'nos.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'nos.rules.objective',
+          'nos.rules.gameplay',
+        ],
+      },
+      {
+        id: 'nos.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'nos.setup.players',
+          'nos.setup.deck',
+          'nos.setup.equipment',
+          'nos.setup.dealing',
+        ],
+      },
+      {
+        id: 'nos.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'nos.rules.key.1',
+          'nos.rules.key.2',
+          'nos.rules.key.3',
+          'nos.rules.key.4',
+          'nos.rules.key.5',
+        ],
+      },
+      {
+        id: 'nos.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'nos.score.description',
+          'nos.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'nos.setup.dealing',
+        'nos.rules.objective',
+      ],
+      deal: [
+        'nos.rules.gameplay',
+      ],
+      play_card: [
+        'nos.rules.gameplay',
+      ],
+      count_points: [
+        'nos.rules.gameplay',
+      ],
+    },
   },
 }

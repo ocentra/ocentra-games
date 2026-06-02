@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Jamaican Partner Dominoes. 4p partnership, 7 each. Base = Partnership Dominoes.',
-    Player: 'Jamaican Partner Dominoes: 4 players, partners opposite. 7 tiles each. Same as Latin Partnership; see Caribbean rules for Jamaican specifics.',
+    LLM: 'Same as Latin Partnership Dominoes: the double-six tile leads the first hand; play to the line; must play if possible else pass; block equals four passes; lower pips wins blocked hand. In Jamaican play the winning team typically starts the next hand and may choose which partner leads; the starter may lead any tile. If the previous hand was tied, the holder of double-six leads. A blocked hand is won by the team of the player with the fewest pips on their remaining tiles; if two opponents tie for fewest pips, the hand is a tie.',
+    Player: 'Same as Latin Partnership Dominoes: the double-six tile leads the first hand; play to the line; must play if possible else pass; block equals four passes; lower pips wins blocked hand. In Jamaican play the winning team typically starts the next hand and may choose which partner leads; the starter may lead any tile. If the previous hand was tied, the holder of double-six leads. A blocked hand is won by the team of the player with the fewest pips on their remaining tiles; if two opponents tie for fewest pips, the hand is a tie.',
     objective: 'Be first team to reach target (typically 100). Score by going out or winning blocked hand (fewer pips).',
     gameplay: 'Same as Latin Partnership Dominoes: the double-six tile leads the first hand; play to the line; must play if possible else pass; block equals four passes; lower pips wins blocked hand. In Jamaican play the winning team typically starts the next hand and may choose which partner leads; the starter may lead any tile. If the previous hand was tied, the holder of double-six leads. A blocked hand is won by the team of the player with the fewest pips on their remaining tiles; if two opponents tie for fewest pips, the hand is a tie.',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      "Scoring check: Winners score losers' unplayed pips. Blocked: lower pip total wins. Expected outcome: 100.",
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Be first team to reach target (typically 100). Score by going out or winning blocked hand (fewer pips).',
+      'Turn-flow example: Same as Latin Partnership Dominoes: the double-six tile leads the first hand; play to the line; must play if possible else pass; block equals four passes; lower pips wins blocked hand. In Jamaican play the winning team typically starts the next hand and may choose which partner leads; the starter may lead any tile. If the previous hand was tied, the holder of double-six leads. A blocked hand is won by the team of the player with the fewest pips on their remaining tiles; if two opponents tie for fewest pips, the hand is a tie.',
+      "Scoring example: Winners score losers' unplayed pips. Blocked: lower pip total wins. First team to target (usually 100)..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'partner-dominoes-jamaican.rules.objective',
+        title: 'Objective',
+        text: 'Be first team to reach target (typically 100). Score by going out or winning blocked hand (fewer pips).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'partner-dominoes-jamaican.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Same as Latin Partnership Dominoes: the double-six tile leads the first hand; play to the line; must play if possible else pass; block equals four passes; lower pips wins blocked hand. In Jamaican play the winning team typically starts the next hand and may choose which partner leads; the starter may lead any tile. If the previous hand was tied, the holder of double-six leads. A blocked hand is won by the team of the player with the fewest pips on their remaining tiles; if two opponents tie for fewest pips, the hand is a tie.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'partner-dominoes-jamaican.setup.players',
+        title: 'Players',
+        text: '4 in fixed partnerships. Partners sit opposite.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'partner-dominoes-jamaican.setup.deck',
+        title: 'Deck',
+        text: 'Double-six set, 28 tiles.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'partner-dominoes-jamaican.setup.equipment',
+        title: 'Equipment',
+        text: '28 double-six tiles.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'partner-dominoes-jamaican.setup.dealing',
+        title: 'Deal',
+        text: 'All tiles dealt; 7 each.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'partner-dominoes-jamaican.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to target (usually 100).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'partner-dominoes-jamaican.score.description',
+        title: 'Scoring',
+        text: "Winners score losers' unplayed pips. Blocked: lower pip total wins.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'partner-dominoes-jamaican.rules.key.1',
+        title: 'Key rule 1',
+        text: '4 players, 7 tiles each.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'partner-dominoes-jamaican.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Partnership; partners opposite.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'partner-dominoes-jamaican.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The double-six tile leads the first hand.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'partner-dominoes-jamaican.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Block = lower pip total wins.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'partner-dominoes-jamaican.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Target typically 100.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'partner-dominoes-jamaican.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'partner-dominoes-jamaican.rules.objective',
+          'partner-dominoes-jamaican.rules.gameplay',
+        ],
+      },
+      {
+        id: 'partner-dominoes-jamaican.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'partner-dominoes-jamaican.setup.players',
+          'partner-dominoes-jamaican.setup.deck',
+          'partner-dominoes-jamaican.setup.equipment',
+          'partner-dominoes-jamaican.setup.dealing',
+        ],
+      },
+      {
+        id: 'partner-dominoes-jamaican.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'partner-dominoes-jamaican.rules.key.1',
+          'partner-dominoes-jamaican.rules.key.2',
+          'partner-dominoes-jamaican.rules.key.3',
+          'partner-dominoes-jamaican.rules.key.4',
+          'partner-dominoes-jamaican.rules.key.5',
+        ],
+      },
+      {
+        id: 'partner-dominoes-jamaican.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'partner-dominoes-jamaican.score.description',
+          'partner-dominoes-jamaican.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'partner-dominoes-jamaican.setup.dealing',
+        'partner-dominoes-jamaican.rules.objective',
+      ],
+      deal: [
+        'partner-dominoes-jamaican.rules.gameplay',
+      ],
+      play_card: [
+        'partner-dominoes-jamaican.rules.gameplay',
+      ],
+      pass: [
+        'partner-dominoes-jamaican.rules.gameplay',
+      ],
+      play_tile: [
+        'partner-dominoes-jamaican.rules.gameplay',
+      ],
+    },
   },
 }

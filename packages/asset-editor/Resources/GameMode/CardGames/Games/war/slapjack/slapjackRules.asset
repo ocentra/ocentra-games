@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Slapjack. Logic: See rules.objective and rules.gameplay.',
-    Player: "Slapjack (or 'Slaps') is a children's card game that tests speed and reflexes. Players take turns flipping cards onto a central pile. When a Jack appears, the first player to slap the pile wins all the cards in the center. The goal is to collect the entire deck.",
+    LLM: 'The pack is divided roughly equally between players; each holds cards as a face-down pile. Going clockwise, each player places the top card of their pile face up in the centre. When a Jack is played, the first player to slap the pile wins the centre pile and adds it face down to the bottom of their pile; play continues from the left of the winner. Do not peek at your card before turning it; everyone must see it at once. False slap: if you slap when the top card is not a Jack, you give your top card to the player who played that card. If you run out of cards, you may still slap the next Jack to re-enter; if you fail or false-slap, you are out. The player who has all the cards wins.',
+    Player: 'The pack is divided roughly equally between players; each holds cards as a face-down pile. Going clockwise, each player places the top card of their pile face up in the centre. When a Jack is played, the first player to slap the pile wins the centre pile and adds it face down to the bottom of their pile; play continues from the left of the winner. Do not peek at your card before turning it; everyone must see it at once. False slap: if you slap when the top card is not a Jack, you give your top card to the player who played that card. If you run out of cards, you may still slap the next Jack to re-enter; if you fail or false-slap, you are out. The player who has all the cards wins.',
     objective: 'Collect the entire deck by winning the center pile when a Jack is played. The first player to slap the center pile when a Jack appears wins the pile and adds it to the bottom of their face-down stack.',
     gameplay: 'The pack is divided roughly equally between players; each holds cards as a face-down pile. Going clockwise, each player places the top card of their pile face up in the centre. When a Jack is played, the first player to slap the pile wins the centre pile and adds it face down to the bottom of their pile; play continues from the left of the winner. Do not peek at your card before turning it; everyone must see it at once. False slap: if you slap when the top card is not a Jack, you give your top card to the player who played that card. If you run out of cards, you may still slap the next Jack to re-enter; if you fail or false-slap, you are out. The player who has all the cards wins.',
     keyRules: [
@@ -53,10 +53,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 26 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card, slap before round end.',
-      'Scoring check: Win all the cards. Expected outcome: Win all the cards..',
+      'Setup example: 26 card(s) per player.',
+      'Rule example: Collect the entire deck by winning the center pile when a Jack is played. The first player to slap the center pile when a Jack appears wins the pile and adds it to the bottom of their face-down stack.',
+      'Turn-flow example: The pack is divided roughly equally between players; each holds cards as a face-down pile. Going clockwise, each player places the top card of their pile face up in the centre. When a Jack is played, the first player to slap the pile wins the centre pile and adds it face down to the bottom of their pile; play continues from the left of the winner. Do not peek at your card before turning it; everyone must see it at once. False slap: if you slap when the top card is not a Jack, you give your top card to the player who played that card. If you run out of cards, you may still slap the next Jack to re-enter; if you fail or false-slap, you are out. The player who has all the cards wins.',
+      'Scoring example: Win all the cards. Win all the cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'slapjack.rules.objective',
+        title: 'Objective',
+        text: 'Collect the entire deck by winning the center pile when a Jack is played. The first player to slap the center pile when a Jack appears wins the pile and adds it to the bottom of their face-down stack.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'slapjack.rules.gameplay',
+        title: 'Turn flow',
+        text: 'The pack is divided roughly equally between players; each holds cards as a face-down pile. Going clockwise, each player places the top card of their pile face up in the centre. When a Jack is played, the first player to slap the pile wins the centre pile and adds it face down to the bottom of their pile; play continues from the left of the winner. Do not peek at your card before turning it; everyone must see it at once. False slap: if you slap when the top card is not a Jack, you give your top card to the player who played that card. If you run out of cards, you may still slap the next Jack to re-enter; if you fail or false-slap, you are out. The player who has all the cards wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'slapjack.setup.players',
+        title: 'Players',
+        text: 'Two to eight players; sources recommend about 4–10 for best play. Each player holds their cards as a face-down pile and takes turns flipping to a center pile. Play proceeds clockwise.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'slapjack.setup.deck',
+        title: 'Deck',
+        text: 'One standard 52-card French deck. The pack is divided roughly equally between all players; everyone holds their cards as a face-down pile. No jokers or extra cards are used.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'slapjack.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard playing cards, table.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'slapjack.setup.dealing',
+        title: 'Deal',
+        text: 'Deal entirely to players face-down into personal piles.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'slapjack.score.win-condition',
+        title: 'Win condition',
+        text: 'Win all the cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'slapjack.score.description',
+        title: 'Scoring',
+        text: 'Win all the cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'slapjack.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Turn your card so all players see it at once; do not peek in advance.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'slapjack.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Only Jacks are slapped; first to slap the pile wins it.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'slapjack.rules.key.3',
+        title: 'Key rule 3',
+        text: 'False slap: give your top card to the player who played the wrongly-slapped card.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'slapjack.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Run out of cards: one more chance to slap a Jack to re-enter; otherwise you are out.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'slapjack.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'slapjack.rules.objective',
+          'slapjack.rules.gameplay',
+        ],
+      },
+      {
+        id: 'slapjack.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'slapjack.setup.players',
+          'slapjack.setup.deck',
+          'slapjack.setup.equipment',
+          'slapjack.setup.dealing',
+        ],
+      },
+      {
+        id: 'slapjack.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'slapjack.rules.key.1',
+          'slapjack.rules.key.2',
+          'slapjack.rules.key.3',
+          'slapjack.rules.key.4',
+        ],
+      },
+      {
+        id: 'slapjack.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'slapjack.score.description',
+          'slapjack.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'slapjack.setup.dealing',
+        'slapjack.rules.objective',
+      ],
+      play_card: [
+        'slapjack.rules.gameplay',
+      ],
+      slap: [
+        'slapjack.rules.gameplay',
+      ],
+    },
   },
 }

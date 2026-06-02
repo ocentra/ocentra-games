@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 500 Rummy. Logic: See rules.objective and rules.gameplay.',
-    Player: '500 Rummy: first to 500 points wins. Melds (sets and runs) score positive; unmelded cards in hand count negative. Key twist: you may draw any card from the discard pile but must take all cards above it and meld the drawn card immediately. 2-8 players; 52 cards plus 2 jokers.',
+    LLM: 'After bidding and dealing, players draw from the deck or discard area, make or hold melds, and discard. Melds can be captured or stolen under Rooky rules, blending Rummy flow with Rook-deck conventions.',
+    Player: 'After bidding and dealing, players draw from the deck or discard area, make or hold melds, and discard. Melds can be captured or stolen under Rooky rules, blending Rummy flow with Rook-deck conventions.',
     objective: 'Score the most points by creating and protecting valuable melds.',
     gameplay: 'After bidding and dealing, players draw from the deck or discard area, make or hold melds, and discard. Melds can be captured or stolen under Rooky rules, blending Rummy flow with Rook-deck conventions.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Melds score positive (face value; jokers 0 or as specified); unmelded in hand negative. First to 500 wins. Expected outcome: 500.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score the most points by creating and protecting valuable melds.',
+      'Turn-flow example: After bidding and dealing, players draw from the deck or discard area, make or hold melds, and discard. Melds can be captured or stolen under Rooky rules, blending Rummy flow with Rook-deck conventions.',
+      'Scoring example: Melds score positive (face value; jokers 0 or as specified); unmelded in hand negative. First to 500 wins. First to 500 points wins. Melds (sets and runs) score positive; unmelded cards in hand count negative. You may take any card from the discard pile but must take all cards above it and meld the drawn card immediately..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'rooky.rules.objective',
+        title: 'Objective',
+        text: 'Score the most points by creating and protecting valuable melds.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'rooky.rules.gameplay',
+        title: 'Turn flow',
+        text: 'After bidding and dealing, players draw from the deck or discard area, make or hold melds, and discard. Melds can be captured or stolen under Rooky rules, blending Rummy flow with Rook-deck conventions.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'rooky.setup.players',
+        title: 'Players',
+        text: '2-5 players use the table arrangement described for Rooky.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'rooky.setup.deck',
+        title: 'Deck',
+        text: 'A proprietary Rook deck with numbered color cards and the Rook bird card, used for Rooky meld and discard play.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'rooky.setup.equipment',
+        title: 'Equipment',
+        text: 'Rook deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'rooky.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Rook deck and deal or lay out cards according to the documented Rooky rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'rooky.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 500 points wins. Melds (sets and runs) score positive; unmelded cards in hand count negative. You may take any card from the discard pile but must take all cards above it and meld the drawn card immediately.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'rooky.score.description',
+        title: 'Scoring',
+        text: 'Melds score positive (face value; jokers 0 or as specified); unmelded in hand negative. First to 500 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'rooky.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Uses a Rook deck rather than a standard 52-card pack.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'rooky.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players draw, meld, and discard as in Rummy-like games.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'rooky.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Team and capture elements come from the Rook family.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'rooky.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'rooky.rules.objective',
+          'rooky.rules.gameplay',
+        ],
+      },
+      {
+        id: 'rooky.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'rooky.setup.players',
+          'rooky.setup.deck',
+          'rooky.setup.equipment',
+          'rooky.setup.dealing',
+        ],
+      },
+      {
+        id: 'rooky.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'rooky.rules.key.1',
+          'rooky.rules.key.2',
+          'rooky.rules.key.3',
+        ],
+      },
+      {
+        id: 'rooky.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'rooky.score.description',
+          'rooky.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'rooky.setup.dealing',
+        'rooky.rules.objective',
+      ],
+      play_card: [
+        'rooky.rules.gameplay',
+      ],
+    },
   },
 }

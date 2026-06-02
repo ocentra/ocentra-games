@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Trains. Logic: See rules.objective and rules.gameplay.',
-    Player: "Trains is a simultaneous-play card game where players race to form a 'Train' â€” a complete ascending sequence using all cards in their hand, starting from a 2. The game is played over 4 rounds with decreasing draw piles.",
+    LLM: 'Simultaneous play. Central area for played cards. Pile Play for building Train. Sandwiches (matching cards with filler) and Doubles are special plays.',
+    Player: 'Simultaneous play. Central area for played cards. Pile Play for building Train. Sandwiches (matching cards with filler) and Doubles are special plays.',
     objective: 'Be first to complete a Train (ascending sequence from 2 using all cards).',
     gameplay: 'Simultaneous play. Central area for played cards. Pile Play for building Train. Sandwiches (matching cards with filler) and Doubles are special plays.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: 1 point per round won. 4 rounds total. Expected outcome: 2.',
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Be first to complete a Train (ascending sequence from 2 using all cards).',
+      'Turn-flow example: Simultaneous play. Central area for played cards. Pile Play for building Train. Sandwiches (matching cards with filler) and Doubles are special plays.',
+      'Scoring example: 1 point per round won. 4 rounds total. Be first to complete a Train (ascending sequence from 2 using all cards)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'trains.rules.objective',
+        title: 'Objective',
+        text: 'Be first to complete a Train (ascending sequence from 2 using all cards).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'trains.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Simultaneous play. Central area for played cards. Pile Play for building Train. Sandwiches (matching cards with filler) and Doubles are special plays.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'trains.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'trains.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'trains.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'trains.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 7 cards. Remaining split into piles (4 in round 1, 3 in round 2, etc.).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'trains.score.win-condition',
+        title: 'Win condition',
+        text: 'Be first to complete a Train (ascending sequence from 2 using all cards).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'trains.score.description',
+        title: 'Scoring',
+        text: '1 point per round won. 4 rounds total.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'trains.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Train must start with 2',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'trains.rules.key.2',
+        title: 'Key rule 2',
+        text: 'All cards in hand must be used',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'trains.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Simultaneous play',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'trains.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Sandwiches and Doubles',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'trains.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'trains.rules.objective',
+          'trains.rules.gameplay',
+        ],
+      },
+      {
+        id: 'trains.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'trains.setup.players',
+          'trains.setup.deck',
+          'trains.setup.equipment',
+          'trains.setup.dealing',
+        ],
+      },
+      {
+        id: 'trains.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'trains.rules.key.1',
+          'trains.rules.key.2',
+          'trains.rules.key.3',
+          'trains.rules.key.4',
+        ],
+      },
+      {
+        id: 'trains.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'trains.score.description',
+          'trains.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'trains.setup.dealing',
+        'trains.rules.objective',
+      ],
+      play_card: [
+        'trains.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Whist Israeli. Exact-bid trick-taking; contract then trick bids; follow suit; highest trump or led-suit wins trick.',
-    Player: 'Four-player exact-bid trick-taking; two-phase bidding, then play 13 tricks; score by exact bid.',
+    LLM: "Two-phase bidding: first phase (dealer starts, clockwise) bids 5-13 tricks plus suit or no trumps (Bridge order: no trumps highest, then spades, hearts, diamonds, clubs). After four consecutive passes, last bidder is declarer and trump is set. Second phase: other three players (declarer's left clockwise) each bid number of tricks (0+); fourth player cannot bid so total equals 13. Game is over if total>13, under if <13. Declarer leads; must follow suit; highest trump wins trick else highest of led suit. Winner of trick leads next. After 13 tricks, score each player.",
+    Player: "Two-phase bidding: first phase (dealer starts, clockwise) bids 5-13 tricks plus suit or no trumps (Bridge order: no trumps highest, then spades, hearts, diamonds, clubs). After four consecutive passes, last bidder is declarer and trump is set. Second phase: other three players (declarer's left clockwise) each bid number of tricks (0+); fourth player cannot bid so total equals 13. Game is over if total>13, under if <13. Declarer leads; must follow suit; highest trump wins trick else highest of led suit. Winner of trick leads next. After 13 tricks, score each player.",
     objective: 'Each player aims to take exactly the number of tricks they bid in the second phase. Score 10 plus the square of tricks for exact bid; lose 10 per trick over or under. Zero bid has special scoring. First to reach agreed target score wins.',
     gameplay: "Two-phase bidding: first phase (dealer starts, clockwise) bids 5-13 tricks plus suit or no trumps (Bridge order: no trumps highest, then spades, hearts, diamonds, clubs). After four consecutive passes, last bidder is declarer and trump is set. Second phase: other three players (declarer's left clockwise) each bid number of tricks (0+); fourth player cannot bid so total equals 13. Game is over if total>13, under if <13. Declarer leads; must follow suit; highest trump wins trick else highest of led suit. Winner of trick leads next. After 13 tricks, score each player.",
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in contract_bid; each_player_clockwise may use bid, pass before trick_bid.',
-      'Scoring check: Exact bid: 10 plus square of tricks; off by N tricks: minus 10N. Zero bid: fail -50 for first trick then +10 each; zero made under 50, over 30. Cumulative total; game ends when one reaches agreed target; highest wins; tie broken by further hands. Expected outcome: First player to reach or exceed the agreed target score wins. Tie: play further hands until one player has highest total..',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Each player aims to take exactly the number of tricks they bid in the second phase. Score 10 plus the square of tricks for exact bid; lose 10 per trick over or under. Zero bid has special scoring. First to reach agreed target score wins.',
+      "Turn-flow example: Two-phase bidding: first phase (dealer starts, clockwise) bids 5-13 tricks plus suit or no trumps (Bridge order: no trumps highest, then spades, hearts, diamonds, clubs). After four consecutive passes, last bidder is declarer and trump is set. Second phase: other three players (declarer's left clockwise) each bid number of tricks (0+); fourth player cannot bid so total equals 13. Game is over if total>13, under if <13. Declarer leads; must follow suit; highest trump wins trick else highest of led suit. Winner of trick leads next. After 13 tricks, score each player.",
+      'Scoring example: Exact bid: 10 plus square of tricks; off by N tricks: minus 10N. Zero bid: fail -50 for first trick then +10 each; zero made under 50, over 30. Cumulative total; game ends when one reaches agreed target; highest wins; tie broken by further hands. First player to reach or exceed the agreed target score wins. Tie: play further hands until one player has highest total..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'whist-israeli.rules.objective',
+        title: 'Objective',
+        text: 'Each player aims to take exactly the number of tricks they bid in the second phase. Score 10 plus the square of tricks for exact bid; lose 10 per trick over or under. Zero bid has special scoring. First to reach agreed target score wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'whist-israeli.rules.gameplay',
+        title: 'Turn flow',
+        text: "Two-phase bidding: first phase (dealer starts, clockwise) bids 5-13 tricks plus suit or no trumps (Bridge order: no trumps highest, then spades, hearts, diamonds, clubs). After four consecutive passes, last bidder is declarer and trump is set. Second phase: other three players (declarer's left clockwise) each bid number of tricks (0+); fourth player cannot bid so total equals 13. Game is over if total>13, under if <13. Declarer leads; must follow suit; highest trump wins trick else highest of led suit. Winner of trick leads next. After 13 tricks, score each player.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'whist-israeli.setup.players',
+        title: 'Players',
+        text: 'Four players, no partnerships; play is clockwise. A standard 52-card pack is used; each player receives 13 cards. First dealer is chosen at random; the turn to deal passes to the left after each hand.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'whist-israeli.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'whist-israeli.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'whist-israeli.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer shuffles and cuts; all 52 cards dealt one at a time so each player has 13. First dealer chosen at random; turn to deal passes left after each hand.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'whist-israeli.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach or exceed the agreed target score wins. Tie: play further hands until one player has highest total.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'whist-israeli.score.description',
+        title: 'Scoring',
+        text: 'Exact bid: 10 plus square of tricks; off by N tricks: minus 10N. Zero bid: fail -50 for first trick then +10 each; zero made under 50, over 30. Cumulative total; game ends when one reaches agreed target; highest wins; tie broken by further hands.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'whist-israeli.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Exact-bid scoring',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'whist-israeli.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Two-phase bidding',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'whist-israeli.rules.key.3',
+        title: 'Key rule 3',
+        text: 'No partnerships',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'whist-israeli.rules.key.4',
+        title: 'Key rule 4',
+        text: '13 cards each',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'whist-israeli.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'whist-israeli.rules.objective',
+          'whist-israeli.rules.gameplay',
+        ],
+      },
+      {
+        id: 'whist-israeli.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'whist-israeli.setup.players',
+          'whist-israeli.setup.deck',
+          'whist-israeli.setup.equipment',
+          'whist-israeli.setup.dealing',
+        ],
+      },
+      {
+        id: 'whist-israeli.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'whist-israeli.rules.key.1',
+          'whist-israeli.rules.key.2',
+          'whist-israeli.rules.key.3',
+          'whist-israeli.rules.key.4',
+        ],
+      },
+      {
+        id: 'whist-israeli.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'whist-israeli.score.description',
+          'whist-israeli.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'whist-israeli.setup.dealing',
+        'whist-israeli.rules.objective',
+      ],
+      play_card: [
+        'whist-israeli.rules.gameplay',
+      ],
+      pass: [
+        'whist-israeli.rules.gameplay',
+      ],
+      bid: [
+        'whist-israeli.rules.gameplay',
+      ],
+    },
   },
 }

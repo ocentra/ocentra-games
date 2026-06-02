@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Teka. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Teka is a four-player partnership trick-taking game from Afghanistan. 52 cards, 13 each. First to 104 points wins. Ace high to 2 low. Bidding: pass, ter, behi ter, or 8â€“13 tricks (or Double 13â€”win all tricks solo). Highest bidder is declarer, chooses trump, leads first trick with a trump. Follow suit; else any card. Declarer scores tricks won; Double 13 scores 26 or 52 to opponents if lost. New deal if a hand has no card above 10.',
+    LLM: "1. Deal: 13 cards each, counterclockwise; dealer may cut but not shuffle after first deal. 2. Bidding: From dealer's right, each player speaks once (pass/ter/behi ter or bid 8-13 tricks or double 13). Highest bidder is declarer, chooses trump, leads first trick with a trump. 3. Play: Follow suit; winner of trick leads next. Play ends when declarer's side makes or loses the bid. 4. Scoring: Won bid scores tricks bid; lost bid scores twice that many to opponents. Double 13 scores 26 or 52. First to 104 wins.",
+    Player: "1. Deal: 13 cards each, counterclockwise; dealer may cut but not shuffle after first deal. 2. Bidding: From dealer's right, each player speaks once (pass/ter/behi ter or bid 8-13 tricks or double 13). Highest bidder is declarer, chooses trump, leads first trick with a trump. 3. Play: Follow suit; winner of trick leads next. Play ends when declarer's side makes or loses the bid. 4. Scoring: Won bid scores tricks bid; lost bid scores twice that many to opponents. Double 13 scores 26 or 52. First to 104 wins.",
     objective: 'Be the first partnership to reach 104 or more cumulative points. Points are scored by bidding and making tricks; failed bids score for the opponents.',
     gameplay: "1. Deal: 13 cards each, counterclockwise; dealer may cut but not shuffle after first deal. 2. Bidding: From dealer's right, each player speaks once (pass/ter/behi ter or bid 8-13 tricks or double 13). Highest bidder is declarer, chooses trump, leads first trick with a trump. 3. Play: Follow suit; winner of trick leads next. Play ends when declarer's side makes or loses the bid. 4. Scoring: Won bid scores tricks bid; lost bid scores twice that many to opponents. Double 13 scores 26 or 52. First to 104 wins.",
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Won bid scores as many points as tricks bid; lost bid scores twice that many to the opponents. Double 13 scores 26 if won, 52 to opponents if lost. Failed bid of 8 by fourth player after three passes scores only 8 to opponents. Expected outcome: First partnership to reach 104 or more cumulative points wins the game..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first partnership to reach 104 or more cumulative points. Points are scored by bidding and making tricks; failed bids score for the opponents.',
+      "Turn-flow example: 1. Deal: 13 cards each, counterclockwise; dealer may cut but not shuffle after first deal. 2. Bidding: From dealer's right, each player speaks once (pass/ter/behi ter or bid 8-13 tricks or double 13). Highest bidder is declarer, chooses trump, leads first trick with a trump. 3. Play: Follow suit; winner of trick leads next. Play ends when declarer's side makes or loses the bid. 4. Scoring: Won bid scores tricks bid; lost bid scores twice that many to opponents. Double 13 scores 26 or 52. First to 104 wins.",
+      'Scoring example: Won bid scores as many points as tricks bid; lost bid scores twice that many to the opponents. Double 13 scores 26 if won, 52 to opponents if lost. Failed bid of 8 by fourth player after three passes scores only 8 to opponents. First partnership to reach 104 or more cumulative points wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'teka.rules.objective',
+        title: 'Objective',
+        text: 'Be the first partnership to reach 104 or more cumulative points. Points are scored by bidding and making tricks; failed bids score for the opponents.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'teka.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Deal: 13 cards each, counterclockwise; dealer may cut but not shuffle after first deal. 2. Bidding: From dealer's right, each player speaks once (pass/ter/behi ter or bid 8-13 tricks or double 13). Highest bidder is declarer, chooses trump, leads first trick with a trump. 3. Play: Follow suit; winner of trick leads next. Play ends when declarer's side makes or loses the bid. 4. Scoring: Won bid scores tricks bid; lost bid scores twice that many to opponents. Double 13 scores 26 or 52. First to 104 wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'teka.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'teka.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'teka.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'teka.setup.dealing',
+        title: 'Deal',
+        text: "Cards per Player: 13 each (all at once)\nDealing Pattern: Counterclockwise\nPlayer to dealer's left cuts before the deal. Cards shuffled only before first deal; later dealers may cut but not shuffle.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'teka.score.win-condition',
+        title: 'Win condition',
+        text: 'First partnership to reach 104 or more cumulative points wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'teka.score.description',
+        title: 'Scoring',
+        text: 'Won bid scores as many points as tricks bid; lost bid scores twice that many to the opponents. Double 13 scores 26 if won, 52 to opponents if lost. Failed bid of 8 by fourth player after three passes scores only 8 to opponents.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'teka.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Declarer must lead trump to first trick',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'teka.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Follow suit if possible; no requirement to win the trick after the first',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'teka.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Game is 104 points; won bid = tricks bid, lost bid = twice that to opponents',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'teka.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'teka.rules.objective',
+          'teka.rules.gameplay',
+        ],
+      },
+      {
+        id: 'teka.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'teka.setup.players',
+          'teka.setup.deck',
+          'teka.setup.equipment',
+          'teka.setup.dealing',
+        ],
+      },
+      {
+        id: 'teka.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'teka.rules.key.1',
+          'teka.rules.key.2',
+          'teka.rules.key.3',
+        ],
+      },
+      {
+        id: 'teka.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'teka.score.description',
+          'teka.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'teka.setup.dealing',
+        'teka.rules.objective',
+      ],
+      play_card: [
+        'teka.rules.gameplay',
+      ],
+    },
   },
 }

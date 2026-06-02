@@ -52,10 +52,156 @@
       go_out: 'Double Klondike is modeled as a Patience flow; go out is not a core player action in its documented rules.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before main_play.',
-      'Scoring check: Scoring uses the documented rules for Double Klondike and determines round or match winners accordingly. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Move all 104 cards to the 8 foundation piles (2 for each suit), building each suit from Ace to King.',
+      'Turn-flow example: 1. Building the Tableau: You can move cards within the tableau to build sequences in alternating colors (e.g., a Black 7 on a Red 8).\n2. Foundations: Move Aces to the foundations as soon as they become available. Build foundations UP by suit (A-2-3...K).\n3. The Stock: Flip cards from the stock (usually 3 at a time) to find moves. In some variations, you can only go through the stock once.',
+      'Scoring example: Scoring uses the documented rules for Double Klondike and determines round or match winners accordingly. Move all 104 cards to the 8 foundation piles (2 for each suit), building each suit from Ace to King..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'double-klondike.rules.objective',
+        title: 'Objective',
+        text: 'Move all 104 cards to the 8 foundation piles (2 for each suit), building each suit from Ace to King.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'double-klondike.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Building the Tableau: You can move cards within the tableau to build sequences in alternating colors (e.g., a Black 7 on a Red 8).\n2. Foundations: Move Aces to the foundations as soon as they become available. Build foundations UP by suit (A-2-3...K).\n3. The Stock: Flip cards from the stock (usually 3 at a time) to find moves. In some variations, you can only go through the stock once.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'double-klondike.setup.players',
+        title: 'Players',
+        text: 'One player (solitaire). The player works alone with two combined 52-card decks, building the tableau of nine columns and eight foundation piles until all 104 cards are moved to the foundations.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'double-klondike.setup.deck',
+        title: 'Deck',
+        text: '104 cards (Two identical 52-card decks).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'double-klondike.setup.equipment',
+        title: 'Equipment',
+        text: 'Two card decks, large playing surface.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'double-klondike.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 9 tableau columns: Column 1 has 1 card, Column 2 has 2, ..., Column 9 has 9 cards. Only the top card of each column is face-up. Remaining cards form the Stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'double-klondike.score.win-condition',
+        title: 'Win condition',
+        text: 'Move all 104 cards to the 8 foundation piles (2 for each suit), building each suit from Ace to King.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'double-klondike.score.description',
+        title: 'Scoring',
+        text: 'Scoring uses the documented rules for Double Klondike and determines round or match winners accordingly.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'double-klondike.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Only a King (or a sequence starting with a King) can be moved into an empty tableau space.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'double-klondike.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Whole sequences can be moved as long as the bottom card follows the alternating-color rule for the target column.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'double-klondike.rules.key.3',
+        title: 'Key rule 3',
+        text: 'There are 8 foundation slots; each suit must be completed twice.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'double-klondike.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'double-klondike.rules.objective',
+          'double-klondike.rules.gameplay',
+        ],
+      },
+      {
+        id: 'double-klondike.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'double-klondike.setup.players',
+          'double-klondike.setup.deck',
+          'double-klondike.setup.equipment',
+          'double-klondike.setup.dealing',
+        ],
+      },
+      {
+        id: 'double-klondike.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'double-klondike.rules.key.1',
+          'double-klondike.rules.key.2',
+          'double-klondike.rules.key.3',
+        ],
+      },
+      {
+        id: 'double-klondike.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'double-klondike.score.description',
+          'double-klondike.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'double-klondike.setup.dealing',
+        'double-klondike.rules.objective',
+      ],
+      deal: [
+        'double-klondike.rules.gameplay',
+      ],
+      play_card: [
+        'double-klondike.rules.gameplay',
+      ],
+      draw: [
+        'double-klondike.rules.gameplay',
+      ],
+      discard: [
+        'double-klondike.rules.gameplay',
+      ],
+    },
   },
 }

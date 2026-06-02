@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Rainbow. Logic: See rules.objective and rules.gameplay.',
-    Player: "Rainbow is a vibrant, strategic card game that focuses on completing a spectrum of colors while avoiding 'Clouds'. Players place cards into a shared central line to build a six-color rainbow. It is a game of careful hand management and risk assessment: if you add a duplicate color or a cloud card to the line, you are forced to collect all the cards currently on the table (which is bad for scoring). The winner is the player who collects the most 'Natural' rainbows or the fewest penalty cards, depending on the variant.",
+    LLM: 'On your turn you play one card from your hand to the central Rainbow Line. The line builds toward a set of six different colors. If you play a card whose color is already in the line, or play a Cloud card, you must collect all cards currently in the line into your penalty pile. Wild cards can represent any color. The goal is to complete full rainbows to collect cards for points while minimizing penalty collections.',
+    Player: 'On your turn you play one card from your hand to the central Rainbow Line. The line builds toward a set of six different colors. If you play a card whose color is already in the line, or play a Cloud card, you must collect all cards currently in the line into your penalty pile. Wild cards can represent any color. The goal is to complete full rainbows to collect cards for points while minimizing penalty collections.',
     objective: 'Complete 6-color rainbows to collect cards, or have the most cards at the end.',
     gameplay: 'On your turn you play one card from your hand to the central Rainbow Line. The line builds toward a set of six different colors. If you play a card whose color is already in the line, or play a Cloud card, you must collect all cards currently in the line into your penalty pile. Wild cards can represent any color. The goal is to complete full rainbows to collect cards for points while minimizing penalty collections.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Complete 6-color rainbows to collect cards, or have the most cards at the end. Expected outcome: 3.',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Complete 6-color rainbows to collect cards, or have the most cards at the end.',
+      'Turn-flow example: On your turn you play one card from your hand to the central Rainbow Line. The line builds toward a set of six different colors. If you play a card whose color is already in the line, or play a Cloud card, you must collect all cards currently in the line into your penalty pile. Wild cards can represent any color. The goal is to complete full rainbows to collect cards for points while minimizing penalty collections.',
+      'Scoring example: Complete 6-color rainbows to collect cards, or have the most cards at the end. Complete 6-color rainbows to collect cards, or have the most cards at the end..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'rainbow-shedding-collect.rules.objective',
+        title: 'Objective',
+        text: 'Complete 6-color rainbows to collect cards, or have the most cards at the end.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'rainbow-shedding-collect.rules.gameplay',
+        title: 'Turn flow',
+        text: 'On your turn you play one card from your hand to the central Rainbow Line. The line builds toward a set of six different colors. If you play a card whose color is already in the line, or play a Cloud card, you must collect all cards currently in the line into your penalty pile. Wild cards can represent any color. The goal is to complete full rainbows to collect cards for points while minimizing penalty collections.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'rainbow-shedding-collect.setup.players',
+        title: 'Players',
+        text: 'Optimal at 2 or 3.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'rainbow-shedding-collect.setup.deck',
+        title: 'Deck',
+        text: '60-72 card specialized deck (6 colors x 10 cards + 6 Wilds + 6 Clouds).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'rainbow-shedding-collect.setup.equipment',
+        title: 'Equipment',
+        text: '60-72 card specialized deck (6 colors x 10 cards + 6 Wilds + 6 Clouds).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'rainbow-shedding-collect.setup.dealing',
+        title: 'Deal',
+        text: "Each player starts with 6 cards. A central 'Rainbow Line' starts empty.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'rainbow-shedding-collect.score.win-condition',
+        title: 'Win condition',
+        text: 'Complete 6-color rainbows to collect cards, or have the most cards at the end.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'rainbow-shedding-collect.score.description',
+        title: 'Scoring',
+        text: 'Complete 6-color rainbows to collect cards, or have the most cards at the end.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'rainbow-shedding-collect.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Play one card per turn to the central Rainbow Line.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'rainbow-shedding-collect.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Duplicate color or a Cloud in the line forces you to collect all cards from the line as a penalty.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'rainbow-shedding-collect.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Complete six different colors in the line to form a Natural rainbow and collect those cards.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'rainbow-shedding-collect.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Wild cards count as any color; hold Wilds for the 5th or 6th slot when possible.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'rainbow-shedding-collect.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Winner has the most Natural rainbows or fewest penalty cards depending on variant.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'rainbow-shedding-collect.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'rainbow-shedding-collect.rules.objective',
+          'rainbow-shedding-collect.rules.gameplay',
+        ],
+      },
+      {
+        id: 'rainbow-shedding-collect.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'rainbow-shedding-collect.setup.players',
+          'rainbow-shedding-collect.setup.deck',
+          'rainbow-shedding-collect.setup.equipment',
+          'rainbow-shedding-collect.setup.dealing',
+        ],
+      },
+      {
+        id: 'rainbow-shedding-collect.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'rainbow-shedding-collect.rules.key.1',
+          'rainbow-shedding-collect.rules.key.2',
+          'rainbow-shedding-collect.rules.key.3',
+          'rainbow-shedding-collect.rules.key.4',
+          'rainbow-shedding-collect.rules.key.5',
+        ],
+      },
+      {
+        id: 'rainbow-shedding-collect.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'rainbow-shedding-collect.score.description',
+          'rainbow-shedding-collect.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'rainbow-shedding-collect.setup.dealing',
+        'rainbow-shedding-collect.rules.objective',
+      ],
+      play_card: [
+        'rainbow-shedding-collect.rules.gameplay',
+      ],
+    },
   },
 }

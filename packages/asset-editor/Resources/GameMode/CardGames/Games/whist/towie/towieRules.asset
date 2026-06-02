@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Whist. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Whist is the classic English partnership trick-taking game and ancestor of Bridge. 4 players, 2 teams. 52 cards, 13 each. Last card dealt (to dealer) turned face-up = trump. Eldest hand leads. Follow suit. Each trick over 6 = 1 point. Honours (A-K-Q-J of trump): 3 held = 2pts, 4 held = 4pts. Game to 5 (British) or 7 (American). Rubber = best of 3.',
+    LLM: 'Three players are active in each hand, while larger tables rotate participation. Bidding and trick play adapt bridge ideas to the three-hand structure.',
+    Player: 'Three players are active in each hand, while larger tables rotate participation. Bidding and trick play adapt bridge ideas to the three-hand structure.',
     objective: 'Play a bridge-derived trick-taking hand adapted for three active players.',
     gameplay: 'Three players are active in each hand, while larger tables rotate participation. Bidding and trick play adapt bridge ideas to the three-hand structure.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Odd tricks (over 6) = 1pt each. Honours bonus. Game: 5pts (British) or 7pts (American). Rubber: best of 3 games. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Play a bridge-derived trick-taking hand adapted for three active players.',
+      'Turn-flow example: Three players are active in each hand, while larger tables rotate participation. Bidding and trick play adapt bridge ideas to the three-hand structure.',
+      'Scoring example: Odd tricks (over 6) = 1pt each. Honours bonus. Game: 5pts (British) or 7pts (American). Rubber: best of 3 games. Win majority of tricks. First to 5/7 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'towie.rules.objective',
+        title: 'Objective',
+        text: 'Play a bridge-derived trick-taking hand adapted for three active players.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'towie.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Three players are active in each hand, while larger tables rotate participation. Bidding and trick play adapt bridge ideas to the three-hand structure.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'towie.setup.players',
+        title: 'Players',
+        text: '3 or more players use the table arrangement described for Towie.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'towie.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'towie.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'towie.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Standard 52-card pack and deal or lay out cards according to the documented Towie rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'towie.score.win-condition',
+        title: 'Win condition',
+        text: 'Win majority of tricks. First to 5/7 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'towie.score.description',
+        title: 'Scoring',
+        text: 'Odd tricks (over 6) = 1pt each. Honours bonus. Game: 5pts (British) or 7pts (American). Rubber: best of 3 games.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'towie.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Invented as a bridge adaptation for three-hand card play.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'towie.rules.key.2',
+        title: 'Key rule 2',
+        text: 'May be played by more than three players with only three active at one time.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'towie.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Uses bridge-family trick-taking principles.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'towie.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'towie.rules.objective',
+          'towie.rules.gameplay',
+        ],
+      },
+      {
+        id: 'towie.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'towie.setup.players',
+          'towie.setup.deck',
+          'towie.setup.equipment',
+          'towie.setup.dealing',
+        ],
+      },
+      {
+        id: 'towie.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'towie.rules.key.1',
+          'towie.rules.key.2',
+          'towie.rules.key.3',
+        ],
+      },
+      {
+        id: 'towie.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'towie.score.description',
+          'towie.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'towie.setup.dealing',
+        'towie.rules.objective',
+      ],
+      play_card: [
+        'towie.rules.gameplay',
+      ],
+    },
   },
 }

@@ -53,10 +53,156 @@
       go_out: 'Hand-end detection is round logic, not a discrete player action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be first to empty your hand, or minimize remaining pips in a blocked finish.',
+      'Turn-flow example: Players place legal matching tiles to open ends of the layout. If blocked, the active table profile determines draw or pass handling. The hand ends when a player goes out or all players are blocked.',
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'domizerka.rules.objective',
+        title: 'Objective',
+        text: 'Be first to empty your hand, or minimize remaining pips in a blocked finish.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'domizerka.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players place legal matching tiles to open ends of the layout. If blocked, the active table profile determines draw or pass handling. The hand ends when a player goes out or all players are blocked.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'domizerka.setup.players',
+        title: 'Players',
+        text: '2 to 6 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'domizerka.setup.deck',
+        title: 'Deck',
+        text: 'One double-6 domino set.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'domizerka.setup.equipment',
+        title: 'Equipment',
+        text: 'Dominoes and table space; optional score tracking.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'domizerka.setup.dealing',
+        title: 'Deal',
+        text: 'Deal tiles by player count; remaining tiles may form a boneyard depending on table profile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'domizerka.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'domizerka.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'domizerka.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Tiles must match open ends.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'domizerka.rules.key.2',
+        title: 'Key rule 2',
+        text: 'One tile is normally played per turn.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'domizerka.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Blocked turns resolve via draw-or-pass profile.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'domizerka.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Hand ends on first-out or full block resolution.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'domizerka.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'domizerka.rules.objective',
+          'domizerka.rules.gameplay',
+        ],
+      },
+      {
+        id: 'domizerka.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'domizerka.setup.players',
+          'domizerka.setup.deck',
+          'domizerka.setup.equipment',
+          'domizerka.setup.dealing',
+        ],
+      },
+      {
+        id: 'domizerka.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'domizerka.rules.key.1',
+          'domizerka.rules.key.2',
+          'domizerka.rules.key.3',
+          'domizerka.rules.key.4',
+        ],
+      },
+      {
+        id: 'domizerka.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'domizerka.score.description',
+          'domizerka.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'domizerka.setup.dealing',
+        'domizerka.rules.objective',
+      ],
+      play_card: [
+        'domizerka.rules.gameplay',
+      ],
+    },
   },
 }

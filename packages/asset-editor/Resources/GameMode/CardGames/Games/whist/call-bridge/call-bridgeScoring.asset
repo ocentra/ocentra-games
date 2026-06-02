@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Decimal scoring: met bid = bid value + 0.1 per over-trick; failed = -bid.',
+      winCondition: 'Highest score after agreed number of rounds (typically 5).',
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: 'No fixed target; game ends after agreed number of deals (e.g. 5 or 10); highest cumulative score wins.',
+        cardValues: 'Scoring uses bid and trick count only; no per-card point values.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

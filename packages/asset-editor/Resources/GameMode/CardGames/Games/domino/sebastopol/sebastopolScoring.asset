@@ -10,7 +10,26 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: "When a player dominoes, they score the total pips in the other players' hands. If the game blocks, the player with the lowest pip total wins and scores (sum of others' pips minus own). Tie for lowest in blocked game: no one scores. Game is played to 60 points.",
+      winCondition: 'First player to reach 60 points wins the game.',
+      targetScore: 60,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        cardValues: "Scoring is by total pips in opponents' hands when a player dominoes; no per-tile value table.",
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

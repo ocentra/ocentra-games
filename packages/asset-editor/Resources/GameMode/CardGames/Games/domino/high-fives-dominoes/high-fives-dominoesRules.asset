@@ -52,10 +52,147 @@
       go_out: 'Hand-end detection is round logic, not a discrete player action.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Play legal matching tiles and end hands with the best score under the match profile.',
+      'Turn-flow example: Players place a legal tile to a matching open end of the shared layout. When blocked, the match profile determines whether to draw from a boneyard or pass. Hands end when a player empties their hand or play is blocked, and scoring follows the profile in use.',
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'high-fives-dominoes.rules.objective',
+        title: 'Objective',
+        text: 'Play legal matching tiles and end hands with the best score under the match profile.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'high-fives-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players place a legal tile to a matching open end of the shared layout. When blocked, the match profile determines whether to draw from a boneyard or pass. Hands end when a player empties their hand or play is blocked, and scoring follows the profile in use.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'high-fives-dominoes.setup.players',
+        title: 'Players',
+        text: '2 to 10 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'high-fives-dominoes.setup.deck',
+        title: 'Deck',
+        text: 'One double-15 western domino set.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'high-fives-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'Domino set and optional score tracking by match profile.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'high-fives-dominoes.setup.dealing',
+        title: 'Deal',
+        text: 'Deal tiles by player count; remaining tiles form a boneyard if the profile uses draws.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'high-fives-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'high-fives-dominoes.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'high-fives-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'A played tile must match the value of an exposed open end.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'high-fives-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Blocked turns are resolved by draw-or-pass profile rules.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'high-fives-dominoes.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Hand-end and scoring depend on the match profile.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'high-fives-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'high-fives-dominoes.rules.objective',
+          'high-fives-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: 'high-fives-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'high-fives-dominoes.setup.players',
+          'high-fives-dominoes.setup.deck',
+          'high-fives-dominoes.setup.equipment',
+          'high-fives-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: 'high-fives-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'high-fives-dominoes.rules.key.1',
+          'high-fives-dominoes.rules.key.2',
+          'high-fives-dominoes.rules.key.3',
+        ],
+      },
+      {
+        id: 'high-fives-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'high-fives-dominoes.score.description',
+          'high-fives-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'high-fives-dominoes.setup.dealing',
+        'high-fives-dominoes.rules.objective',
+      ],
+      play_card: [
+        'high-fives-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

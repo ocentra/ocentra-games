@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Spades (Standard). Logic: See rules.objective and rules.gameplay.',
-    Player: "Spades is a trick-taking card game devised in the United States in the 1930s. It is played by four players in partnerships, using a standard 52-card deck. Spades are always the trump suit. The object is to score points by winning at least the number of tricks bid in each hand. Bids are made before play begins. 'Bags' (overtricks) and 'Nil' bids add strategic depth.",
+    LLM: "Deal 13 cards each. Each player bids 0–13 tricks (Nil = 0). Player to dealer's left leads first; may not lead a spade until spades are broken or holder has only spades. Must follow suit if able; otherwise may play any card. Trick won by highest spade if any, else highest of led suit. Winner leads next. Thirteen tricks per hand. Score 10 per bid trick if made; 1 per overtrick (bag); 10 bags = -100. Nil: +100 or -100; blind nil: ±200. First to 500 wins.",
+    Player: "Deal 13 cards each. Each player bids 0–13 tricks (Nil = 0). Player to dealer's left leads first; may not lead a spade until spades are broken or holder has only spades. Must follow suit if able; otherwise may play any card. Trick won by highest spade if any, else highest of led suit. Winner leads next. Thirteen tricks per hand. Score 10 per bid trick if made; 1 per overtrick (bag); 10 bags = -100. Nil: +100 or -100; blind nil: ±200. First to 500 wins.",
     objective: 'To score points, generally 500. Points are accrued by winning at least the number of tricks bid in each hand; they are lost by failing to take at least that many, or in some cases by taking too many (bags).',
     gameplay: "Deal 13 cards each. Each player bids 0–13 tricks (Nil = 0). Player to dealer's left leads first; may not lead a spade until spades are broken or holder has only spades. Must follow suit if able; otherwise may play any card. Trick won by highest spade if any, else highest of led suit. Winner leads next. Thirteen tricks per hand. Score 10 per bid trick if made; 1 per overtrick (bag); 10 bags = -100. Nil: +100 or -100; blind nil: ±200. First to 500 wins.",
     keyRules: [
@@ -50,10 +50,135 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_cards before bid.',
-      'Scoring check: 10 points per bid trick. 1 point for each overtrick (Bag). 10 Bags = -100 penalty. Nil: ±100; blind nil: ±200. First to 500 wins. Expected outcome: 500.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: To score points, generally 500. Points are accrued by winning at least the number of tricks bid in each hand; they are lost by failing to take at least that many, or in some cases by taking too many (bags).',
+      "Turn-flow example: Deal 13 cards each. Each player bids 0–13 tricks (Nil = 0). Player to dealer's left leads first; may not lead a spade until spades are broken or holder has only spades. Must follow suit if able; otherwise may play any card. Trick won by highest spade if any, else highest of led suit. Winner leads next. Thirteen tricks per hand. Score 10 per bid trick if made; 1 per overtrick (bag); 10 bags = -100. Nil: +100 or -100; blind nil: ±200. First to 500 wins.",
+      'Scoring example: 10 points per bid trick. 1 point for each overtrick (Bag). 10 Bags = -100 penalty. Nil: ±100; blind nil: ±200. First to 500 wins. Meet your bid. Avoid bags if possible. First team to 500 points wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'spades.rules.objective',
+        title: 'Objective',
+        text: 'To score points, generally 500. Points are accrued by winning at least the number of tricks bid in each hand; they are lost by failing to take at least that many, or in some cases by taking too many (bags).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'spades.rules.gameplay',
+        title: 'Turn flow',
+        text: "Deal 13 cards each. Each player bids 0–13 tricks (Nil = 0). Player to dealer's left leads first; may not lead a spade until spades are broken or holder has only spades. Must follow suit if able; otherwise may play any card. Trick won by highest spade if any, else highest of led suit. Winner leads next. Thirteen tricks per hand. Score 10 per bid trick if made; 1 per overtrick (bag); 10 bags = -100. Nil: +100 or -100; blind nil: ±200. First to 500 wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'spades.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'spades.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card French deck. Spades may also be played with one or two Jokers or with predetermined cards removed; with six or more players a second deck is often used.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'spades.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card French deck. Spades may also be played with one or two Jokers or with predetermined cards removed; with six or more players a second deck is often used.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'spades.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 13 cards each.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'spades.score.win-condition',
+        title: 'Win condition',
+        text: 'Meet your bid. Avoid bags if possible. First team to 500 points wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'spades.score.description',
+        title: 'Scoring',
+        text: '10 points per bid trick. 1 point for each overtrick (Bag). 10 Bags = -100 penalty. Nil: ±100; blind nil: ±200. First to 500 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'spades.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Spades are always trump. Must follow suit if able. Spades may not be led until broken or only spades in hand. Partnership bids are summed; team must make combined bid. Overtricks (bags) score 1 each; 10 bags cost 100 points.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'spades.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'spades.rules.objective',
+          'spades.rules.gameplay',
+        ],
+      },
+      {
+        id: 'spades.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'spades.setup.players',
+          'spades.setup.deck',
+          'spades.setup.equipment',
+          'spades.setup.dealing',
+        ],
+      },
+      {
+        id: 'spades.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'spades.rules.key.1',
+        ],
+      },
+      {
+        id: 'spades.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'spades.score.description',
+          'spades.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'spades.setup.dealing',
+        'spades.rules.objective',
+      ],
+      play_card: [
+        'spades.rules.gameplay',
+      ],
+      bid: [
+        'spades.rules.gameplay',
+      ],
+      deal_cards: [
+        'spades.rules.gameplay',
+      ],
+    },
   },
 }

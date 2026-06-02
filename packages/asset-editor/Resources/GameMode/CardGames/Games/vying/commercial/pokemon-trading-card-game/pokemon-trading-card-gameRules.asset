@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players bench Pokemon, attach Energy, use Trainer cards, evolve Pokemon, and attack the opposing Active Pokemon. Damage, special conditions, and prize-card timing are governed by proprietary card text and tournament rules.',
+    Player: 'Players bench Pokemon, attach Energy, use Trainer cards, evolve Pokemon, and attack the opposing Active Pokemon. Damage, special conditions, and prize-card timing are governed by proprietary card text and tournament rules.',
     objective: 'Win by taking Prize cards, knocking out opposing Pokemon, or exhausting the opponent deck under the official rules.',
     gameplay: 'Players bench Pokemon, attach Energy, use Trainer cards, evolve Pokemon, and attack the opposing Active Pokemon. Damage, special conditions, and prize-card timing are governed by proprietary card text and tournament rules.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Win by taking Prize cards, knocking out opposing Pokemon, or exhausting the opponent deck under the official rules.',
+      'Turn-flow example: Players bench Pokemon, attach Energy, use Trainer cards, evolve Pokemon, and attack the opposing Active Pokemon. Damage, special conditions, and prize-card timing are governed by proprietary card text and tournament rules.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pokemon-trading-card-game.rules.objective',
+        title: 'Objective',
+        text: 'Win by taking Prize cards, knocking out opposing Pokemon, or exhausting the opponent deck under the official rules.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pokemon-trading-card-game.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players bench Pokemon, attach Energy, use Trainer cards, evolve Pokemon, and attack the opposing Active Pokemon. Damage, special conditions, and prize-card timing are governed by proprietary card text and tournament rules.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pokemon-trading-card-game.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Pokemon Trading Card Game.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pokemon-trading-card-game.setup.deck',
+        title: 'Deck',
+        text: 'Constructed 60-card Pokemon TCG decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pokemon-trading-card-game.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed 60-card Pokemon TCG decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pokemon-trading-card-game.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Constructed 60-card Pokemon TCG decks and deal or lay out cards according to the documented Pokemon Trading Card Game rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pokemon-trading-card-game.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pokemon-trading-card-game.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pokemon-trading-card-game.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Each player uses a constructed 60-card deck.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pokemon-trading-card-game.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Pokemon attacks usually require attached Energy cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pokemon-trading-card-game.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Knocked-out Pokemon award Prize cards; official card text controls exceptions and special effects.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pokemon-trading-card-game.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pokemon-trading-card-game.rules.objective',
+          'pokemon-trading-card-game.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pokemon-trading-card-game.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pokemon-trading-card-game.setup.players',
+          'pokemon-trading-card-game.setup.deck',
+          'pokemon-trading-card-game.setup.equipment',
+          'pokemon-trading-card-game.setup.dealing',
+        ],
+      },
+      {
+        id: 'pokemon-trading-card-game.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pokemon-trading-card-game.rules.key.1',
+          'pokemon-trading-card-game.rules.key.2',
+          'pokemon-trading-card-game.rules.key.3',
+        ],
+      },
+      {
+        id: 'pokemon-trading-card-game.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pokemon-trading-card-game.score.description',
+          'pokemon-trading-card-game.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pokemon-trading-card-game.setup.dealing',
+        'pokemon-trading-card-game.rules.objective',
+      ],
+      play_card: [
+        'pokemon-trading-card-game.rules.gameplay',
+      ],
+    },
   },
 }

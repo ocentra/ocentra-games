@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Score the highest cumulative points over 18 rounds. Each player must play each contract once.',
+      'Turn-flow example: Must follow suit. No obligation to trump. Highest trump or card of led suit wins the trick.',
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'mizerka-polish.rules.objective',
+        title: 'Objective',
+        text: 'Score the highest cumulative points over 18 rounds. Each player must play each contract once.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mizerka-polish.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Must follow suit. No obligation to trump. Highest trump or card of led suit wins the trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mizerka-polish.setup.players',
+        title: 'Players',
+        text: "Three players. Play is clockwise. Any player may deal first; the turn to deal passes clockwise. In each deal the three roles are: dealer (deals and has a quota of 1 trick in trump contracts, 7 in mizerka), forehand or left of dealer (chooses the contract after seeing six cards and has quota 7 in trump contracts, 1 in mizerka), and middlehand or right of dealer (quota 5 in both). The player to dealer's left leads to the first trick.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mizerka-polish.setup.deck',
+        title: 'Deck',
+        text: '52 cards. Rank: Ace (High) to 2 (Low).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mizerka-polish.setup.equipment',
+        title: 'Equipment',
+        text: '52 cards. Rank: Ace (High) to 2 (Low).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mizerka-polish.setup.dealing',
+        title: 'Deal',
+        text: 'Each player gets 6 cards. 6 for the talon. Then the rest (13 total each + 13 for talon).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mizerka-polish.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mizerka-polish.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mizerka-polish.rules.key.1',
+        title: 'Key rule 1',
+        text: "Player to dealer's left chooses one of six contracts (clubs, hearts, spades, diamonds, no trumps, mizerka) after seeing six cards.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'mizerka-polish.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must follow suit if possible; if void may play any card. No obligation to trump or overtake.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'mizerka-polish.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trick won by highest trump if any, else highest card of suit led. Winner leads next trick.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'mizerka-polish.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Talon exchange: left of dealer then right of dealer then dealer may discard and replace from talon; no obligation to discard.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'mizerka-polish.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Quotas and scoring: left 7/1, right 5/5, dealer 1/7 tricks (trump/NT vs mizerka). Above quota +1 per trick (trump/NT) or -1 (mizerka); below quota -1 or +1. Game ends after 18 deals when each player has chosen each contract once.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mizerka-polish.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mizerka-polish.rules.objective',
+          'mizerka-polish.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mizerka-polish.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mizerka-polish.setup.players',
+          'mizerka-polish.setup.deck',
+          'mizerka-polish.setup.equipment',
+          'mizerka-polish.setup.dealing',
+        ],
+      },
+      {
+        id: 'mizerka-polish.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mizerka-polish.rules.key.1',
+          'mizerka-polish.rules.key.2',
+          'mizerka-polish.rules.key.3',
+          'mizerka-polish.rules.key.4',
+          'mizerka-polish.rules.key.5',
+        ],
+      },
+      {
+        id: 'mizerka-polish.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mizerka-polish.score.description',
+          'mizerka-polish.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mizerka-polish.setup.dealing',
+        'mizerka-polish.rules.objective',
+      ],
+      play_card: [
+        'mizerka-polish.rules.gameplay',
+      ],
+    },
   },
 }

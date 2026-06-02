@@ -56,10 +56,204 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before determine_lead.',
-      "Scoring check: Points based on opponent's remaining pips when a player dominoes or game blocks. Expected outcome: 100.",
+      'Setup example: 6 card(s) per player.',
+      "Rule example: Be the first player to reach 100 points. Points are scored based on the total pips remaining in your opponent's hand when a round ends (or when you domino).",
+      'Turn-flow example: 1. : The player with the lowest double (excluding ) leads that double to start the first round. After the first round, the loser of the previous round leads and must lead a double other than . 2. : The first double played is the spinner for the round. The first four plays must be on the four sides of the spinner, starting all four arms of the cross before any arm can be extended further. 3. : To place a regular tile, the end of the arm where it is played and the adjacent end of the played tile must total exactly 7. Valid pairs are: 1-6, 2-5, and 3-4. 4. : The four special tiles , , , and  can be played on any end without regard to the Rule of Seven. 5. : A player can choose to draw as many tiles as desired on their turn, but must leave at least 2 tiles in the boneyard. A player with no play must continue drawing until they find a playable tile or the boneyard is reduced to 2 tiles.',
+      "Scoring example: Points based on opponent's remaining pips when a player dominoes or game blocks. First player to reach 100 points loses (standard) or wins (variant). If both reach 100 in same round, lowest score wins..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'leyden.rules.objective',
+        title: 'Objective',
+        text: "Be the first player to reach 100 points. Points are scored based on the total pips remaining in your opponent's hand when a round ends (or when you domino).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'leyden.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. : The player with the lowest double (excluding ) leads that double to start the first round. After the first round, the loser of the previous round leads and must lead a double other than . 2. : The first double played is the spinner for the round. The first four plays must be on the four sides of the spinner, starting all four arms of the cross before any arm can be extended further. 3. : To place a regular tile, the end of the arm where it is played and the adjacent end of the played tile must total exactly 7. Valid pairs are: 1-6, 2-5, and 3-4. 4. : The four special tiles , , , and  can be played on any end without regard to the Rule of Seven. 5. : A player can choose to draw as many tiles as desired on their turn, but must leave at least 2 tiles in the boneyard. A player with no play must continue drawing until they find a playable tile or the boneyard is reduced to 2 tiles.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'leyden.setup.players',
+        title: 'Players',
+        text: '2 players only.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'leyden.setup.deck',
+        title: 'Deck',
+        text: 'Standard double-six domino set (28 tiles:  through ).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'leyden.setup.equipment',
+        title: 'Equipment',
+        text: 'Domino tiles and flat surface.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'leyden.setup.dealing',
+        title: 'Deal',
+        text: 'Each player draws 6 tiles. The remaining 16 tiles form the boneyard (stock), placed face-down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'leyden.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach 100 points loses (standard) or wins (variant). If both reach 100 in same round, lowest score wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'leyden.score.description',
+        title: 'Scoring',
+        text: "Points based on opponent's remaining pips when a player dominoes or game blocks.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'leyden.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Lowest double (not ) leads the first round.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'leyden.rules.key.2',
+        title: 'Key rule 2',
+        text: 'First double is the spinner; four arms must be started before extending.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'leyden.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Rule of Seven: adjacent ends must total exactly 7 (1-6, 2-5, 3-4).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'leyden.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Matadors , , ,  can play on any end.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'leyden.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Arm ending in 0 can only be extended by a Matador.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'leyden.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Must leave at least 2 tiles in boneyard when drawing.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'leyden.rules.key.7',
+        title: 'Key rule 7',
+        text: 'First to 100 points loses (standard) or wins (variant).',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'leyden.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'leyden.rules.objective',
+          'leyden.rules.gameplay',
+        ],
+      },
+      {
+        id: 'leyden.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'leyden.setup.players',
+          'leyden.setup.deck',
+          'leyden.setup.equipment',
+          'leyden.setup.dealing',
+        ],
+      },
+      {
+        id: 'leyden.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'leyden.rules.key.1',
+          'leyden.rules.key.2',
+          'leyden.rules.key.3',
+          'leyden.rules.key.4',
+          'leyden.rules.key.5',
+          'leyden.rules.key.6',
+          'leyden.rules.key.7',
+        ],
+      },
+      {
+        id: 'leyden.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'leyden.score.description',
+          'leyden.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'leyden.setup.dealing',
+        'leyden.rules.objective',
+      ],
+      deal: [
+        'leyden.rules.gameplay',
+      ],
+      identify_lowest_double: [
+        'leyden.rules.gameplay',
+      ],
+      play_tile: [
+        'leyden.rules.gameplay',
+      ],
+      draw_tile: [
+        'leyden.rules.gameplay',
+      ],
+      domino: [
+        'leyden.rules.gameplay',
+      ],
+      blocked: [
+        'leyden.rules.gameplay',
+      ],
+      continue: [
+        'leyden.rules.gameplay',
+      ],
+      calculate: [
+        'leyden.rules.gameplay',
+      ],
+    },
   },
 }

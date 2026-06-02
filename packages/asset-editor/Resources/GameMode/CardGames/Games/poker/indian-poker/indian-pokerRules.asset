@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Indian Poker (Forehead Poker). Setup: 2-8 players, 52-card deck. Deal: one card per player, face-down. Players hold cards to forehead without looking. Gameplay: Standard poker betting. Players see all cards except their own. Highest single card wins pot. If player folds or only one remains, winner takes pot. In showdown, simple card ranking: A high down to 2 low.',
-    Player: "Indian Poker: Each player gets one card held to their forehead. You see everyone else's cards but not yours. Bet based on what you see others holding. Highest card wins the pot. If you see many high cards, fold. If mostly low cards, call or raise.",
+    LLM: "1. Each player is dealt one card face down\n2. Without looking at their card, players hold it to their forehead so all other players can see it\n3. Players look around at all other players' cards\n4. A round of betting occurs (similar to poker)\n5. Players can fold, call, or raise based on what they see\n6. After betting, remaining players showdown\n7. The player with the highest card wins the pot\n8. If multiple players tie for highest, they split the pot",
+    Player: "1. Each player is dealt one card face down\n2. Without looking at their card, players hold it to their forehead so all other players can see it\n3. Players look around at all other players' cards\n4. A round of betting occurs (similar to poker)\n5. Players can fold, call, or raise based on what they see\n6. After betting, remaining players showdown\n7. The player with the highest card wins the pot\n8. If multiple players tie for highest, they split the pot",
     objective: 'Win the pot by having the highest card (or convincing others you do) when players showdown, or by being the only player not to fold.',
     gameplay: "1. Each player is dealt one card face down\n2. Without looking at their card, players hold it to their forehead so all other players can see it\n3. Players look around at all other players' cards\n4. A round of betting occurs (similar to poker)\n5. Players can fold, call, or raise based on what they see\n6. After betting, remaining players showdown\n7. The player with the highest card wins the pot\n8. If multiple players tie for highest, they split the pot",
     keyRules: [
@@ -55,10 +55,198 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 1 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal_cards before round end.',
-      'Scoring check: Single card hand wins pot. In multi-card, poker hand rankings apply. Expected outcome: NA.',
+      'Setup example: 1 card(s) per player.',
+      'Rule example: Win the pot by having the highest card (or convincing others you do) when players showdown, or by being the only player not to fold.',
+      "Turn-flow example: 1. Each player is dealt one card face down\n2. Without looking at their card, players hold it to their forehead so all other players can see it\n3. Players look around at all other players' cards\n4. A round of betting occurs (similar to poker)\n5. Players can fold, call, or raise based on what they see\n6. After betting, remaining players showdown\n7. The player with the highest card wins the pot\n8. If multiple players tie for highest, they split the pot",
+      'Scoring example: Single card hand wins pot. In multi-card, poker hand rankings apply. first card that they were dealt and puts it to their forehead without looking at it..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'indian-poker.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having the highest card (or convincing others you do) when players showdown, or by being the only player not to fold.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'indian-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Each player is dealt one card face down\n2. Without looking at their card, players hold it to their forehead so all other players can see it\n3. Players look around at all other players' cards\n4. A round of betting occurs (similar to poker)\n5. Players can fold, call, or raise based on what they see\n6. After betting, remaining players showdown\n7. The player with the highest card wins the pot\n8. If multiple players tie for highest, they split the pot",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'indian-poker.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 8\nOptimal Players: 4-6\nPartnerships: No',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'indian-poker.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: No',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'indian-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nPoker chips for betting',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'indian-poker.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: 1 (or more in variants)\nDealing Pattern: Each player receives one card face down\nCard placement: Players hold cards to their foreheads without looking',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'indian-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'first card that they were dealt and puts it to their forehead without looking at it.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'indian-poker.score.description',
+        title: 'Scoring',
+        text: 'Single card hand wins pot. In multi-card, poker hand rankings apply.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'indian-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Players must NOT look at their own card(s)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'indian-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'All players can see all cards except their own',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'indian-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Standard poker betting rules apply',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'indian-poker.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Highest card wins in single-card version',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'indian-poker.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Players may fold if they believe their card is low',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'indian-poker.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Bluffing is based on betting patterns, not card hiding',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'indian-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'indian-poker.rules.objective',
+          'indian-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'indian-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'indian-poker.setup.players',
+          'indian-poker.setup.deck',
+          'indian-poker.setup.equipment',
+          'indian-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'indian-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'indian-poker.rules.key.1',
+          'indian-poker.rules.key.2',
+          'indian-poker.rules.key.3',
+          'indian-poker.rules.key.4',
+          'indian-poker.rules.key.5',
+          'indian-poker.rules.key.6',
+        ],
+      },
+      {
+        id: 'indian-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'indian-poker.score.description',
+          'indian-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'indian-poker.setup.dealing',
+        'indian-poker.rules.objective',
+      ],
+      deal: [
+        'indian-poker.rules.gameplay',
+      ],
+      fold: [
+        'indian-poker.rules.gameplay',
+      ],
+      check: [
+        'indian-poker.rules.gameplay',
+      ],
+      call: [
+        'indian-poker.rules.gameplay',
+      ],
+      bet: [
+        'indian-poker.rules.gameplay',
+      ],
+      raise: [
+        'indian-poker.rules.gameplay',
+      ],
+      deal_cards: [
+        'indian-poker.rules.gameplay',
+      ],
+      place_on_forehead: [
+        'indian-poker.rules.gameplay',
+      ],
+      reveal_showdown: [
+        'indian-poker.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Twenty-Six. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Twenty-Six is a trick-taking round game in the Cucumber/Twenty-Two family. Suits irrelevant; rank A-K-Q-J-10-9-8-7-6-5-4-3-2. Players lead single cards or sets of equal rank; others must equal or beat the highest played, or play lowest. Winner of the last trick is penalised (e.g. keeps losing card or gets penalty points). For 2-6 players, 52 cards.',
+    LLM: 'Play clockwise. Lead single cards or sets of equal rank. Others must play cards equal or higher to the highest played if possible; else play lowest. Highest play wins the trick. Last trick is penalised.',
+    Player: 'Play clockwise. Lead single cards or sets of equal rank. Others must play cards equal or higher to the highest played if possible; else play lowest. Highest play wins the trick. Last trick is penalised.',
     objective: 'Avoid winning the last trick (or avoid collecting penalty cards).',
     gameplay: 'Play clockwise. Lead single cards or sets of equal rank. Others must play cards equal or higher to the highest played if possible; else play lowest. Highest play wins the trick. Last trick is penalised.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Penalty for last trick (e.g. keep losing card; or points on paper). Expected outcome: Avoid winning the last trick (or avoid collecting penalty cards)..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Avoid winning the last trick (or avoid collecting penalty cards).',
+      'Turn-flow example: Play clockwise. Lead single cards or sets of equal rank. Others must play cards equal or higher to the highest played if possible; else play lowest. Highest play wins the trick. Last trick is penalised.',
+      'Scoring example: Penalty for last trick (e.g. keep losing card; or points on paper). Avoid winning the last trick (or avoid collecting penalty cards)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'twenty-six.rules.objective',
+        title: 'Objective',
+        text: 'Avoid winning the last trick (or avoid collecting penalty cards).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'twenty-six.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Play clockwise. Lead single cards or sets of equal rank. Others must play cards equal or higher to the highest played if possible; else play lowest. Highest play wins the trick. Last trick is penalised.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'twenty-six.setup.players',
+        title: 'Players',
+        text: '2-6 (or more with extra packs)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'twenty-six.setup.deck',
+        title: 'Deck',
+        text: '52 cards; for 6+ use multiple packs (one per ~4 players)',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'twenty-six.setup.equipment',
+        title: 'Equipment',
+        text: '52-card deck',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'twenty-six.setup.dealing',
+        title: 'Deal',
+        text: 'Seven cards each (or varies by variant).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'twenty-six.score.win-condition',
+        title: 'Win condition',
+        text: 'Avoid winning the last trick (or avoid collecting penalty cards).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'twenty-six.score.description',
+        title: 'Scoring',
+        text: 'Penalty for last trick (e.g. keep losing card; or points on paper).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'twenty-six.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Suits irrelevant; A high to 2 low',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'twenty-six.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Equal or beat lead if possible',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'twenty-six.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Last trick penalised',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'twenty-six.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'twenty-six.rules.objective',
+          'twenty-six.rules.gameplay',
+        ],
+      },
+      {
+        id: 'twenty-six.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'twenty-six.setup.players',
+          'twenty-six.setup.deck',
+          'twenty-six.setup.equipment',
+          'twenty-six.setup.dealing',
+        ],
+      },
+      {
+        id: 'twenty-six.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'twenty-six.rules.key.1',
+          'twenty-six.rules.key.2',
+          'twenty-six.rules.key.3',
+        ],
+      },
+      {
+        id: 'twenty-six.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'twenty-six.score.description',
+          'twenty-six.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'twenty-six.setup.dealing',
+        'twenty-six.rules.objective',
+      ],
+      play_card: [
+        'twenty-six.rules.gameplay',
+      ],
+    },
   },
 }

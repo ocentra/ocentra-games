@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Hungarian DominÃ³ (Draw). 2-4 players, 28-tile Double-Six. Deal: 2p=7 tiles, 3-4p=5 tiles each. Boneyard: remaining tiles. Play: Match pips at chain ends. No play = draw tiles until playable or boneyard empty. Scoring: Winner takes opponent pip totals. Avoidance: Highest score = loser.',
-    Player: "Welcome to Hungarian DominÃ³ (Draw). Match pips at the chain ends like in Block, but here you have a boneyard. Can't play Draw tiles one by one until you find a match or the boneyard runs dry. Larger hands mean higher risk if someone else goes out. Watch your pip totalsâ€”traditional play makes the highest score the loser.",
+    LLM: '1. Players must match the pips of an open end of the linear layout.\n2. **Drawing**: If you cannot play, you MUST draw tiles from the boneyard one by one until you get a playable tile or the boneyard is empty.\n3. **Stock Limit**: In some traditional Hungarian rules, you cannot draw the very last tile of the boneyard.\n4. **End Game**: Once the boneyard is empty and a player cannot move, they must pass.',
+    Player: '1. Players must match the pips of an open end of the linear layout.\n2. **Drawing**: If you cannot play, you MUST draw tiles from the boneyard one by one until you get a playable tile or the boneyard is empty.\n3. **Stock Limit**: In some traditional Hungarian rules, you cannot draw the very last tile of the boneyard.\n4. **End Game**: Once the boneyard is empty and a player cannot move, they must pass.',
     objective: 'Empty your hand of tiles or score lowest if the boneyard is empty and the game is blocked.',
     gameplay: '1. Players must match the pips of an open end of the linear layout.\n2. **Drawing**: If you cannot play, you MUST draw tiles from the boneyard one by one until you get a playable tile or the boneyard is empty.\n3. **Stock Limit**: In some traditional Hungarian rules, you cannot draw the very last tile of the boneyard.\n4. **End Game**: Once the boneyard is empty and a player cannot move, they must pass.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before first_play.',
-      'Scoring check: Winner scores total pips from all opponent hands. Avoidance variant: highest score is loser. Expected outcome: NA.',
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Empty your hand of tiles or score lowest if the boneyard is empty and the game is blocked.',
+      'Turn-flow example: 1. Players must match the pips of an open end of the linear layout.\n2. **Drawing**: If you cannot play, you MUST draw tiles from the boneyard one by one until you get a playable tile or the boneyard is empty.\n3. **Stock Limit**: In some traditional Hungarian rules, you cannot draw the very last tile of the boneyard.\n4. **End Game**: Once the boneyard is empty and a player cannot move, they must pass.',
+      'Scoring example: Winner scores total pips from all opponent hands. Avoidance variant: highest score is loser. Empty hand first, or lowest pip total when boneyard empty and board blocked..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hungarian-domin-draw-game.rules.objective',
+        title: 'Objective',
+        text: 'Empty your hand of tiles or score lowest if the boneyard is empty and the game is blocked.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hungarian-domin-draw-game.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Players must match the pips of an open end of the linear layout.\n2. **Drawing**: If you cannot play, you MUST draw tiles from the boneyard one by one until you get a playable tile or the boneyard is empty.\n3. **Stock Limit**: In some traditional Hungarian rules, you cannot draw the very last tile of the boneyard.\n4. **End Game**: Once the boneyard is empty and a player cannot move, they must pass.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hungarian-domin-draw-game.setup.players',
+        title: 'Players',
+        text: '2 to 4 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hungarian-domin-draw-game.setup.deck',
+        title: 'Deck',
+        text: 'Standard Double-Six (28 tiles).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hungarian-domin-draw-game.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard Double-Six (28 tiles).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hungarian-domin-draw-game.setup.dealing',
+        title: 'Deal',
+        text: '- 2 players: 7 tiles each.\n- 3-4 players: 5 tiles each.\nThe remaining tiles form the face-down Boneyard.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hungarian-domin-draw-game.score.win-condition',
+        title: 'Win condition',
+        text: 'Empty hand first, or lowest pip total when boneyard empty and board blocked.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hungarian-domin-draw-game.score.description',
+        title: 'Scoring',
+        text: 'Winner scores total pips from all opponent hands. Avoidance variant: highest score is loser.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hungarian-domin-draw-game.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Hungarian DominÃ³ (Draw).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hungarian-domin-draw-game.rules.key.2',
+        title: 'Key rule 2',
+        text: "Round outcome is resolved by the scoring method: The winner of the round scores the total pips from all opponents' hands.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hungarian-domin-draw-game.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Empty your hand of tiles or score lowest if the boneyard is empty and the game is blocked.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hungarian-domin-draw-game.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hungarian-domin-draw-game.rules.objective',
+          'hungarian-domin-draw-game.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hungarian-domin-draw-game.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hungarian-domin-draw-game.setup.players',
+          'hungarian-domin-draw-game.setup.deck',
+          'hungarian-domin-draw-game.setup.equipment',
+          'hungarian-domin-draw-game.setup.dealing',
+        ],
+      },
+      {
+        id: 'hungarian-domin-draw-game.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hungarian-domin-draw-game.rules.key.1',
+          'hungarian-domin-draw-game.rules.key.2',
+          'hungarian-domin-draw-game.rules.key.3',
+        ],
+      },
+      {
+        id: 'hungarian-domin-draw-game.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hungarian-domin-draw-game.score.description',
+          'hungarian-domin-draw-game.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hungarian-domin-draw-game.setup.dealing',
+        'hungarian-domin-draw-game.rules.objective',
+      ],
+      deal: [
+        'hungarian-domin-draw-game.rules.gameplay',
+      ],
+      play_tile: [
+        'hungarian-domin-draw-game.rules.gameplay',
+      ],
+      draw_tile: [
+        'hungarian-domin-draw-game.rules.gameplay',
+      ],
+      resolve_round: [
+        'hungarian-domin-draw-game.rules.gameplay',
+      ],
+    },
   },
 }

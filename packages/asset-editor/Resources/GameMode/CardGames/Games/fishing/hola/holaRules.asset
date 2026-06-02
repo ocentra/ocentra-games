@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Hola (Ukrainian/Slavic partnership trick-taking). 4 players, 2 partnerships. Setup: 52-card deck, 4 cards per player, stockpile refills. Gameplay: Lead plays card. Others play any card. Win by matching lead rank OR playing 7/2 (wild). Countering allowed. Scoring: Aces (10) + Tens (10) + last trick (10) = 90 total. Hola (all 90) = 170 bonus. First partnership to target wins.',
-    Player: "Welcome to Hola, the Ukrainian-Canadian classic. Play as partnerships in a unique trick-taking game. The lead plays a card. To win, play a card of the SAME RANK or use a wild (7 or 2). Your partner can counter an opponent's play to win the trick back. Capture Aces and Tens for points. Score all 90 points in a hand = Hola = bonus!",
+    LLM: "1. The lead player plays a card.\n2. In turn, others play ANY card. You do not have to follow suit.\n3. **Winning the Trick**: To beat the lead, you must play a card of the SAME RANK as the lead, or a WILD card (7 or 2).\n4. **Countering**: The lead player can respond by playing another card of the same rank or another wild card to 'take back' the trick. This continues until everyone has passed or played on the lead.\n5. The last player to match the lead rank (or play a wild) wins all cards in the trick.",
+    Player: "1. The lead player plays a card.\n2. In turn, others play ANY card. You do not have to follow suit.\n3. **Winning the Trick**: To beat the lead, you must play a card of the SAME RANK as the lead, or a WILD card (7 or 2).\n4. **Countering**: The lead player can respond by playing another card of the same rank or another wild card to 'take back' the trick. This continues until everyone has passed or played on the lead.\n5. The last player to match the lead rank (or play a wild) wins all cards in the trick.",
     objective: "Score points by capturing Aces and Tens (the 'counting cards'). There are 90 total points available (8 counting cards + 10 for the last trick).",
     gameplay: "1. The lead player plays a card.\n2. In turn, others play ANY card. You do not have to follow suit.\n3. **Winning the Trick**: To beat the lead, you must play a card of the SAME RANK as the lead, or a WILD card (7 or 2).\n4. **Countering**: The lead player can respond by playing another card of the same rank or another wild card to 'take back' the trick. This continues until everyone has passed or played on the lead.\n5. The last player to match the lead rank (or play a wild) wins all cards in the trick.",
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before trick_play.',
-      'Scoring check: Partnerships score points for taking Aces and Tens (10 points each). Last trick = 10 points. Total 90 points available. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      "Rule example: Score points by capturing Aces and Tens (the 'counting cards'). There are 90 total points available (8 counting cards + 10 for the last trick).",
+      "Turn-flow example: 1. The lead player plays a card.\n2. In turn, others play ANY card. You do not have to follow suit.\n3. **Winning the Trick**: To beat the lead, you must play a card of the SAME RANK as the lead, or a WILD card (7 or 2).\n4. **Countering**: The lead player can respond by playing another card of the same rank or another wild card to 'take back' the trick. This continues until everyone has passed or played on the lead.\n5. The last player to match the lead rank (or play a wild) wins all cards in the trick.",
+      'Scoring example: Partnerships score points for taking Aces and Tens (10 points each). Last trick = 10 points. Total 90 points available. First partnership to agreed target (typically 200+ points) wins. Hola (sweep all 90 pts) = 170 bonus or opponent reset..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hola.rules.objective',
+        title: 'Objective',
+        text: "Score points by capturing Aces and Tens (the 'counting cards'). There are 90 total points available (8 counting cards + 10 for the last trick).",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hola.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. The lead player plays a card.\n2. In turn, others play ANY card. You do not have to follow suit.\n3. **Winning the Trick**: To beat the lead, you must play a card of the SAME RANK as the lead, or a WILD card (7 or 2).\n4. **Countering**: The lead player can respond by playing another card of the same rank or another wild card to 'take back' the trick. This continues until everyone has passed or played on the lead.\n5. The last player to match the lead rank (or play a wild) wins all cards in the trick.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hola.setup.players',
+        title: 'Players',
+        text: '4 players in two fixed partnerships (opponents sit opposite).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hola.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Ranking: 7s and 2s are WILD.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hola.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. Ranking: 7s and 2s are WILD.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hola.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 4 cards to each player. The remaining cards form a stockpile (Draw Pile). Each player refills their hand to 4 cards after every trick until the deck is gone.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hola.score.win-condition',
+        title: 'Win condition',
+        text: 'First partnership to agreed target (typically 200+ points) wins. Hola (sweep all 90 pts) = 170 bonus or opponent reset.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hola.score.description',
+        title: 'Scoring',
+        text: 'Partnerships score points for taking Aces and Tens (10 points each). Last trick = 10 points. Total 90 points available.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hola.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Hola.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hola.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: - Aces: 10 points each.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hola.rules.key.3',
+        title: 'Key rule 3',
+        text: "Winning condition: Score points by capturing Aces and Tens (the 'counting cards').",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hola.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hola.rules.objective',
+          'hola.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hola.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hola.setup.players',
+          'hola.setup.deck',
+          'hola.setup.equipment',
+          'hola.setup.dealing',
+        ],
+      },
+      {
+        id: 'hola.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hola.rules.key.1',
+          'hola.rules.key.2',
+          'hola.rules.key.3',
+        ],
+      },
+      {
+        id: 'hola.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hola.score.description',
+          'hola.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hola.setup.dealing',
+        'hola.rules.objective',
+      ],
+      deal: [
+        'hola.rules.gameplay',
+      ],
+      play_card: [
+        'hola.rules.gameplay',
+      ],
+      score_round: [
+        'hola.rules.gameplay',
+      ],
+    },
   },
 }

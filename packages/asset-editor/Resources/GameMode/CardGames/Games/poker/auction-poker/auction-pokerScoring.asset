@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Standard Poker Hand Rankings (High or High-Low).',
+      winCondition: 'Capturing the pot at showdown or by forcing all others to fold.',
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: 'Pot is won at showdown or when all others fold; no fixed target score.',
+        cardValues: 'Poker uses overall hand rankings rather than per-rank point values, so individual cardValues are not needed.',
+      },
+      splitRules: 'High-Low split is the most common variation for Auction Poker.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'poker_ranking',
     patternMultipliers: null,
     priorityOrder: [],

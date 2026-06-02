@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 51. Logic: See rules.objective and rules.gameplay.',
-    Player: '51 is a point-collection card game played in China and Japan. Players collect cards of the same suit; A-K-Q-J-10 of one suit scores 51 points. Chinese version: draw, discard, exchange; first to 500+ wins. Japanese version: pick board cards, discard; call "Stop!" with best hand; highest single-suit total wins.',
+    LLM: 'Chinese: draw and discard, exchange cards; make hands of five in one suit (51 max). Japanese: pick from board, discard; call Stop when satisfied; best single-suit total wins (other suits subtract).',
+    Player: 'Chinese: draw and discard, exchange cards; make hands of five in one suit (51 max). Japanese: pick from board, discard; call Stop when satisfied; best single-suit total wins (other suits subtract).',
     objective: 'Chinese 51: Be first to 500+ points by making hands of five cards in one suit (A=11, K/Q/J=10, numeric=face). Japanese 51: Have the highest-scoring hand; sum best suit then subtract other suits; call "Stop!" when satisfied.',
     gameplay: 'Chinese: draw and discard, exchange cards; make hands of five in one suit (51 max). Japanese: pick from board, discard; call Stop when satisfied; best single-suit total wins (other suits subtract).',
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use draw, discard, play_card before round end.',
-      'Scoring check: In Chinese 51, only hands of five cards in one suit score, using A=11, K/Q/J=10 and numeral cards 2-10 at face value; declaring a perfect 51-point hand scores double and play continues until a player reaches or exceeds the agreed target (often 500 points). In Japanese 51, a five-card hand is valued by adding the points in the strongest suit and subtracting the points in the other suits, so totals can be positive or negative, and the highest final total after a Stop call wins the deal. Expected outcome: Chinese 51: Be first to 500+ points by making hands of five cards in one suit (A=11, K/Q/J=10, numeric=face). Japanese 51: Have the highest-scoring hand; sum best suit then subtract other suits; call "Stop!" when satisfied..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Chinese 51: Be first to 500+ points by making hands of five cards in one suit (A=11, K/Q/J=10, numeric=face). Japanese 51: Have the highest-scoring hand; sum best suit then subtract other suits; call "Stop!" when satisfied.',
+      'Turn-flow example: Chinese: draw and discard, exchange cards; make hands of five in one suit (51 max). Japanese: pick from board, discard; call Stop when satisfied; best single-suit total wins (other suits subtract).',
+      'Scoring example: In Chinese 51, only hands of five cards in one suit score, using A=11, K/Q/J=10 and numeral cards 2-10 at face value; declaring a perfect 51-point hand scores double and play continues until a player reaches or exceeds the agreed target (often 500 points). In Japanese 51, a five-card hand is valued by adding the points in the strongest suit and subtracting the points in the other suits, so totals can be positive or negative, and the highest final total after a Stop call wins the deal. Chinese 51: Be first to 500+ points by making hands of five cards in one suit (A=11, K/Q/J=10, numeric=face). Japanese 51: Have the highest-scoring hand; sum best suit then subtract other suits; call "Stop!" when satisfied..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '51.rules.objective',
+        title: 'Objective',
+        text: 'Chinese 51: Be first to 500+ points by making hands of five cards in one suit (A=11, K/Q/J=10, numeric=face). Japanese 51: Have the highest-scoring hand; sum best suit then subtract other suits; call "Stop!" when satisfied.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '51.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Chinese: draw and discard, exchange cards; make hands of five in one suit (51 max). Japanese: pick from board, discard; call Stop when satisfied; best single-suit total wins (other suits subtract).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '51.setup.players',
+        title: 'Players',
+        text: '3-4 (standard). Optimal: 3-4. Chinese: 4 usual, 3 sometimes; Japanese: best 4.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '51.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack. Numeral cards 2-10 face value; Jack, Queen, King 10 each; Ace 11.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '51.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card pack. Numeral cards 2-10 face value; Jack, Queen, King 10 each; Ace 11.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '51.setup.dealing',
+        title: 'Deal',
+        text: 'Chinese: cards dealt one at a time anticlockwise; starter gets 6 cards, others 5. Japanese: dealer gives each player 5 cards, then 5 cards face up on table; rest form stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '51.score.win-condition',
+        title: 'Win condition',
+        text: 'Chinese 51: Be first to 500+ points by making hands of five cards in one suit (A=11, K/Q/J=10, numeric=face). Japanese 51: Have the highest-scoring hand; sum best suit then subtract other suits; call "Stop!" when satisfied.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '51.score.description',
+        title: 'Scoring',
+        text: 'In Chinese 51, only hands of five cards in one suit score, using A=11, K/Q/J=10 and numeral cards 2-10 at face value; declaring a perfect 51-point hand scores double and play continues until a player reaches or exceeds the agreed target (often 500 points). In Japanese 51, a five-card hand is valued by adding the points in the strongest suit and subtracting the points in the other suits, so totals can be positive or negative, and the highest final total after a Stop call wins the deal.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '51.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Same suit scores: A=11, K/Q/J=10, numeric=face value',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '51.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Chinese: draw, discard, exchange; first to 500+',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '51.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Japanese: pick board cards, call Stop; highest single-suit total wins',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '51.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '51.rules.objective',
+          '51.rules.gameplay',
+        ],
+      },
+      {
+        id: '51.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '51.setup.players',
+          '51.setup.deck',
+          '51.setup.equipment',
+          '51.setup.dealing',
+        ],
+      },
+      {
+        id: '51.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '51.rules.key.1',
+          '51.rules.key.2',
+          '51.rules.key.3',
+        ],
+      },
+      {
+        id: '51.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '51.score.description',
+          '51.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '51.setup.dealing',
+        '51.rules.objective',
+      ],
+      play_card: [
+        '51.rules.gameplay',
+      ],
+      draw: [
+        '51.rules.gameplay',
+      ],
+      discard: [
+        '51.rules.gameplay',
+      ],
+    },
   },
 }

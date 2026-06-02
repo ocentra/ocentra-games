@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Blattla. Logic: Win enough card points with your partner for the deal.',
-    Player: 'Blattla is a simplified Bavarian point-trick game for four players, usually played in temporary partnerships.',
+    LLM: 'Players follow suit when able, trump when void or tactically required, and collect card points in tricks. Partnerships may be fixed or determined by the deal.',
+    Player: 'Players follow suit when able, trump when void or tactically required, and collect card points in tricks. Partnerships may be fixed or determined by the deal.',
     objective: 'Win enough card points with your partner for the deal.',
     gameplay: 'Players follow suit when able, trump when void or tactically required, and collect card points in tricks. Partnerships may be fixed or determined by the deal.',
     keyRules: [
@@ -54,10 +54,174 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Partnerships score by card points captured in tricks. Expected outcome: Win enough card points with your partner for the deal..',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win enough card points with your partner for the deal.',
+      'Turn-flow example: Players follow suit when able, trump when void or tactically required, and collect card points in tricks. Partnerships may be fixed or determined by the deal.',
+      'Scoring example: Partnerships score by card points captured in tricks. Win enough card points with your partner for the deal..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'blattla.rules.objective',
+        title: 'Objective',
+        text: 'Win enough card points with your partner for the deal.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'blattla.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players follow suit when able, trump when void or tactically required, and collect card points in tricks. Partnerships may be fixed or determined by the deal.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'blattla.setup.players',
+        title: 'Players',
+        text: '4 players use the table arrangement described for Blattla.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'blattla.setup.deck',
+        title: 'Deck',
+        text: '32-card German-suited pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'blattla.setup.equipment',
+        title: 'Equipment',
+        text: '32-card German-suited pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'blattla.setup.dealing',
+        title: 'Deal',
+        text: 'Deal the 32-card German pack to four players and set the trump suit for the hand.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'blattla.score.win-condition',
+        title: 'Win condition',
+        text: 'Win enough card points with your partner for the deal.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'blattla.score.description',
+        title: 'Scoring',
+        text: 'Partnerships score by card points captured in tricks.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'blattla.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Four-player Bavarian game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'blattla.rules.key.2',
+        title: 'Key rule 2',
+        text: '32-card German pack.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'blattla.rules.key.3',
+        title: 'Key rule 3',
+        text: 'A trump suit is used.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'blattla.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Aces and tens carry high card-point value.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'blattla.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Team card points decide the hand.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'blattla.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'blattla.rules.objective',
+          'blattla.rules.gameplay',
+        ],
+      },
+      {
+        id: 'blattla.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'blattla.setup.players',
+          'blattla.setup.deck',
+          'blattla.setup.equipment',
+          'blattla.setup.dealing',
+        ],
+      },
+      {
+        id: 'blattla.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'blattla.rules.key.1',
+          'blattla.rules.key.2',
+          'blattla.rules.key.3',
+          'blattla.rules.key.4',
+          'blattla.rules.key.5',
+        ],
+      },
+      {
+        id: 'blattla.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'blattla.score.description',
+          'blattla.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'blattla.setup.dealing',
+        'blattla.rules.objective',
+      ],
+      play_card: [
+        'blattla.rules.gameplay',
+      ],
+      discard: [
+        'blattla.rules.gameplay',
+      ],
+      pass: [
+        'blattla.rules.gameplay',
+      ],
+      bid: [
+        'blattla.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Matador (Card Game Condition). Logic: See rules.objective and rules.gameplay.',
-    Player: "In the context of European card games, 'Matador' is not always a standalone game, but a term used to describe the most powerful cards in a game (typically trumps). Most famously used in the **Ombre** family (Ombre, Quadrille) and the **Skat** family, Matadors are cards that belong together as a sequence of high-power tokens. They often trigger specific scoring bonuses or 'payment' rules where the loser must pay the winner for every Matador held.",
+    LLM: "Matadors are usually the cards that can lead a trick and force opponents to play their own trumps, effectively 'clearing' the table.",
+    Player: "Matadors are usually the cards that can lead a trick and force opponents to play their own trumps, effectively 'clearing' the table.",
     objective: 'Collect and hold an uninterrupted sequence of the highest trump cards.',
     gameplay: "Matadors are usually the cards that can lead a trick and force opponents to play their own trumps, effectively 'clearing' the table.",
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Collect and hold an uninterrupted sequence of the highest trump cards. Expected outcome: Collect and hold an uninterrupted sequence of the highest trump cards..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Collect and hold an uninterrupted sequence of the highest trump cards.',
+      "Turn-flow example: Matadors are usually the cards that can lead a trick and force opponents to play their own trumps, effectively 'clearing' the table.",
+      'Scoring example: Collect and hold an uninterrupted sequence of the highest trump cards. Collect and hold an uninterrupted sequence of the highest trump cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'matador-condition.rules.objective',
+        title: 'Objective',
+        text: 'Collect and hold an uninterrupted sequence of the highest trump cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'matador-condition.rules.gameplay',
+        title: 'Turn flow',
+        text: "Matadors are usually the cards that can lead a trick and force opponents to play their own trumps, effectively 'clearing' the table.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'matador-condition.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'matador-condition.setup.deck',
+        title: 'Deck',
+        text: 'Spanish 40-card or German 32-card pack as per variant.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'matador-condition.setup.equipment',
+        title: 'Equipment',
+        text: 'Spanish 40-card or German 32-card pack as per variant.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'matador-condition.setup.dealing',
+        title: 'Deal',
+        text: 'Deal according to the specific game variant (Ombre, Skat, etc.).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'matador-condition.score.win-condition',
+        title: 'Win condition',
+        text: 'Collect and hold an uninterrupted sequence of the highest trump cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'matador-condition.score.description',
+        title: 'Scoring',
+        text: 'Collect and hold an uninterrupted sequence of the highest trump cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'matador-condition.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Matadors are the highest trumps in an uninterrupted sequence (e.g. consecutive Jacks in Skat).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'matador-condition.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Matadors can lead a trick and force opponents to play trumps, clearing the table.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'matador-condition.rules.key.3',
+        title: 'Key rule 3',
+        text: 'In Skat, matadors are Jacks only; in Ombre they include Spadille, Manille, and Basto.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'matador-condition.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Payment or scoring bonuses apply for matadors held or lost; the multiplier affects game value.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'matador-condition.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'matador-condition.rules.objective',
+          'matador-condition.rules.gameplay',
+        ],
+      },
+      {
+        id: 'matador-condition.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'matador-condition.setup.players',
+          'matador-condition.setup.deck',
+          'matador-condition.setup.equipment',
+          'matador-condition.setup.dealing',
+        ],
+      },
+      {
+        id: 'matador-condition.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'matador-condition.rules.key.1',
+          'matador-condition.rules.key.2',
+          'matador-condition.rules.key.3',
+          'matador-condition.rules.key.4',
+        ],
+      },
+      {
+        id: 'matador-condition.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'matador-condition.score.description',
+          'matador-condition.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'matador-condition.setup.dealing',
+        'matador-condition.rules.objective',
+      ],
+      play_card: [
+        'matador-condition.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Horse Race. Betting + card sequencing. Score race combinations.',
-    Player: 'Bet on horse races formed by card sequences. High cards win.',
+    LLM: "1. Lay 7 cards face up as course (redeal if 5+ same suit). 2. Dealer turns cards one by one; each card advances that suit's Ace. 3. First Ace to reach 8 of its suit wins. 4. Calcutta: auction horses before race; 2/3 to first, 1/3 to second.",
+    Player: "1. Lay 7 cards face up as course (redeal if 5+ same suit). 2. Dealer turns cards one by one; each card advances that suit's Ace. 3. First Ace to reach 8 of its suit wins. 4. Calcutta: auction horses before race; 2/3 to first, 1/3 to second.",
     objective: 'Bet on which Ace (suit) wins. Calcutta: auction horses; first gets 2/3 of pool, second 1/3.',
     gameplay: "1. Lay 7 cards face up as course (redeal if 5+ same suit). 2. Dealer turns cards one by one; each card advances that suit's Ace. 3. First Ace to reach 8 of its suit wins. 4. Calcutta: auction horses before race; 2/3 to first, 1/3 to second.",
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'Race betting game; no go-out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in setup; dealer may use lay_course before bet.',
-      'Scoring check: Betting on card sequences + races. Expected outcome: Best race combination wins..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Bet on which Ace (suit) wins. Calcutta: auction horses; first gets 2/3 of pool, second 1/3.',
+      "Turn-flow example: 1. Lay 7 cards face up as course (redeal if 5+ same suit). 2. Dealer turns cards one by one; each card advances that suit's Ace. 3. First Ace to reach 8 of its suit wins. 4. Calcutta: auction horses before race; 2/3 to first, 1/3 to second.",
+      'Scoring example: Betting on card sequences + races. Best race combination wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'horse-race.rules.objective',
+        title: 'Objective',
+        text: 'Bet on which Ace (suit) wins. Calcutta: auction horses; first gets 2/3 of pool, second 1/3.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'horse-race.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Lay 7 cards face up as course (redeal if 5+ same suit). 2. Dealer turns cards one by one; each card advances that suit's Ace. 3. First Ace to reach 8 of its suit wins. 4. Calcutta: auction horses before race; 2/3 to first, 1/3 to second.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'horse-race.setup.players',
+        title: 'Players',
+        text: '3 or more; chips.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'horse-race.setup.deck',
+        title: 'Deck',
+        text: '52 cards; four Aces as horses; 7 cards form course.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'horse-race.setup.equipment',
+        title: 'Equipment',
+        text: 'Chips; layout.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'horse-race.setup.dealing',
+        title: 'Deal',
+        text: '7 cards face up as course; redeal if 5+ same suit.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'horse-race.score.win-condition',
+        title: 'Win condition',
+        text: 'Best race combination wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'horse-race.score.description',
+        title: 'Scoring',
+        text: 'Betting on card sequences + races.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'horse-race.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Four Aces = four horses',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'horse-race.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Course = 7 cards; 8 of suit wins',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'horse-race.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Calcutta: auction then race',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'horse-race.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'horse-race.rules.objective',
+          'horse-race.rules.gameplay',
+        ],
+      },
+      {
+        id: 'horse-race.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'horse-race.setup.players',
+          'horse-race.setup.deck',
+          'horse-race.setup.equipment',
+          'horse-race.setup.dealing',
+        ],
+      },
+      {
+        id: 'horse-race.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'horse-race.rules.key.1',
+          'horse-race.rules.key.2',
+          'horse-race.rules.key.3',
+        ],
+      },
+      {
+        id: 'horse-race.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'horse-race.score.description',
+          'horse-race.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'horse-race.setup.dealing',
+        'horse-race.rules.objective',
+      ],
+      bet: [
+        'horse-race.rules.gameplay',
+      ],
+      lay_course: [
+        'horse-race.rules.gameplay',
+      ],
+      turn_card: [
+        'horse-race.rules.gameplay',
+      ],
+    },
   },
 }

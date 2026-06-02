@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Streets and Alleys. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Streets and Alleys (also known as Gaps or Lane) is a solitaire game played with a single 52-card deck. It is similar to Beleaguered Castle but with a different layout. The entire deck is dealt into 8 tableau piles (wings). The goal is to build up the four foundations from Ace to King by suit.',
+    LLM: 'Top cards of tableau piles are available. Build tableaus down in sequence regardless of suit or color. Build foundations up in suit from Ace to King. An empty tableau pile may be filled with any single available card. Move cards between tableaus and from tableaus to foundations until all 52 cards are on the foundations.',
+    Player: 'Top cards of tableau piles are available. Build tableaus down in sequence regardless of suit or color. Build foundations up in suit from Ace to King. An empty tableau pile may be filled with any single available card. Move cards between tableaus and from tableaus to foundations until all 52 cards are on the foundations.',
     objective: 'Move all 52 cards onto the four foundations. Build each foundation up in suit from Ace to King; the game is won when every card has been moved to the foundations.',
     gameplay: 'Top cards of tableau piles are available. Build tableaus down in sequence regardless of suit or color. Build foundations up in suit from Ace to King. An empty tableau pile may be filled with any single available card. Move cards between tableaus and from tableaus to foundations until all 52 cards are on the foundations.',
     keyRules: [
@@ -53,10 +53,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: Build all foundations A to K by suit. Expected outcome: Build all foundations A to K by suit..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Move all 52 cards onto the four foundations. Build each foundation up in suit from Ace to King; the game is won when every card has been moved to the foundations.',
+      'Turn-flow example: Top cards of tableau piles are available. Build tableaus down in sequence regardless of suit or color. Build foundations up in suit from Ace to King. An empty tableau pile may be filled with any single available card. Move cards between tableaus and from tableaus to foundations until all 52 cards are on the foundations.',
+      'Scoring example: Build all foundations A to K by suit. Build all foundations A to K by suit..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'streets-and-alleys.rules.objective',
+        title: 'Objective',
+        text: 'Move all 52 cards onto the four foundations. Build each foundation up in suit from Ace to King; the game is won when every card has been moved to the foundations.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'streets-and-alleys.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Top cards of tableau piles are available. Build tableaus down in sequence regardless of suit or color. Build foundations up in suit from Ace to King. An empty tableau pile may be filled with any single available card. Move cards between tableaus and from tableaus to foundations until all 52 cards are on the foundations.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'streets-and-alleys.setup.players',
+        title: 'Players',
+        text: 'Single player. A patience or solitaire game for one; all cards are laid out at the start with no hidden information.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'streets-and-alleys.setup.deck',
+        title: 'Deck',
+        text: 'One standard 52-card deck. The entire deck is dealt at the start into eight tableau piles; no draw pile remains.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'streets-and-alleys.setup.equipment',
+        title: 'Equipment',
+        text: 'One standard deck and table space for eight tableau piles and four foundations.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'streets-and-alleys.setup.dealing',
+        title: 'Deal',
+        text: 'Shuffle and deal the entire deck into 8 tableau piles in two wings of four each, with four foundation spaces in between. The top four piles receive 7 cards each, the remaining four receive 6 each. All cards are dealt face up.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'streets-and-alleys.score.win-condition',
+        title: 'Win condition',
+        text: 'Build all foundations A to K by suit.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'streets-and-alleys.score.description',
+        title: 'Scoring',
+        text: 'Build all foundations A to K by suit.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'streets-and-alleys.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Tableau builds down regardless of suit.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'streets-and-alleys.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Foundations build up in suit from Ace.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'streets-and-alleys.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Empty tableau may hold any one card.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'streets-and-alleys.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Only the top card of each tableau is available.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'streets-and-alleys.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'streets-and-alleys.rules.objective',
+          'streets-and-alleys.rules.gameplay',
+        ],
+      },
+      {
+        id: 'streets-and-alleys.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'streets-and-alleys.setup.players',
+          'streets-and-alleys.setup.deck',
+          'streets-and-alleys.setup.equipment',
+          'streets-and-alleys.setup.dealing',
+        ],
+      },
+      {
+        id: 'streets-and-alleys.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'streets-and-alleys.rules.key.1',
+          'streets-and-alleys.rules.key.2',
+          'streets-and-alleys.rules.key.3',
+          'streets-and-alleys.rules.key.4',
+        ],
+      },
+      {
+        id: 'streets-and-alleys.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'streets-and-alleys.score.description',
+          'streets-and-alleys.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'streets-and-alleys.setup.dealing',
+        'streets-and-alleys.rules.objective',
+      ],
+      deal: [
+        'streets-and-alleys.rules.gameplay',
+      ],
+      play_card: [
+        'streets-and-alleys.rules.gameplay',
+      ],
+    },
   },
 }

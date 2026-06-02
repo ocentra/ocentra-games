@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Texas Hold'em. Logic: See rules.objective and rules.gameplay.",
-    Player: "Texas Hold'em is the world's most popular poker variant. Each player receives two private hole cards, and five community cards are dealt face-up on the table. Players make the best five-card poker hand using any combination of their hole cards and the community cards. The game features four rounds of betting and combines skill, strategy, and psychology.",
+    LLM: 'Blinds. Deal 2 hole cards each. Pre-flop betting. Flop (3 community cards), turn (1), river (1). Betting after each. Showdown: best 5-card hand from 7. Win by best hand or all fold.',
+    Player: 'Blinds. Deal 2 hole cards each. Pre-flop betting. Flop (3 community cards), turn (1), river (1). Betting after each. Showdown: best 5-card hand from 7. Win by best hand or all fold.',
     objective: 'Make the best five-card poker hand using any combination of your two hole cards and the five community cards. Win chips by having the best hand at showdown or by making all other players fold.',
     gameplay: 'Blinds. Deal 2 hole cards each. Pre-flop betting. Flop (3 community cards), turn (1), river (1). Betting after each. Showdown: best 5-card hand from 7. Win by best hand or all fold.',
     keyRules: [
@@ -55,10 +55,204 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 2 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal_hole; dealer may use deal_hole_cards before preflop_bet.',
-      'Scoring check: Make the best five-card poker hand using any combination of your two hole cards and the five community cards. Win chips by having the best hand at showdown or by making all other players fold. Expected outcome: Make the best five-card poker hand using any combination of your two hole cards and the five community cards. Win chips by having the best hand at showdown or by making all other players fold..',
+      'Setup example: 2 card(s) per player.',
+      'Rule example: Make the best five-card poker hand using any combination of your two hole cards and the five community cards. Win chips by having the best hand at showdown or by making all other players fold.',
+      'Turn-flow example: Blinds. Deal 2 hole cards each. Pre-flop betting. Flop (3 community cards), turn (1), river (1). Betting after each. Showdown: best 5-card hand from 7. Win by best hand or all fold.',
+      'Scoring example: Make the best five-card poker hand using any combination of your two hole cards and the five community cards. Win chips by having the best hand at showdown or by making all other players fold. Make the best five-card poker hand using any combination of your two hole cards and the five community cards. Win chips by having the best hand at showdown or by making all other players fold..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'texas-hold-em.rules.objective',
+        title: 'Objective',
+        text: 'Make the best five-card poker hand using any combination of your two hole cards and the five community cards. Win chips by having the best hand at showdown or by making all other players fold.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'texas-hold-em.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Blinds. Deal 2 hole cards each. Pre-flop betting. Flop (3 community cards), turn (1), river (1). Betting after each. Showdown: best 5-card hand from 7. Win by best hand or all fold.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'texas-hold-em.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2 (heads-up)\nMaximum Players: 10 (full ring)\nOptimal Players: 6-9\nPartnerships: No (individual play)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'texas-hold-em.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'texas-hold-em.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nPoker chips for betting\nDealer button\nSmall blind and big blind markers\nTable (preferably oval for 6-10 players)',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'texas-hold-em.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: 2 (hole cards, face down)\nCommunity Cards: 5 (dealt face up in stages)\nDealing Pattern: Clockwise, starting with small blind\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'texas-hold-em.score.win-condition',
+        title: 'Win condition',
+        text: 'Make the best five-card poker hand using any combination of your two hole cards and the five community cards. Win chips by having the best hand at showdown or by making all other players fold.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'texas-hold-em.score.description',
+        title: 'Scoring',
+        text: 'Make the best five-card poker hand using any combination of your two hole cards and the five community cards. Win chips by having the best hand at showdown or by making all other players fold.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'texas-hold-em.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Blinds: small blind and big blind (or dealer/non-dealer in heads-up). Big blind equals minimum bet.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'texas-hold-em.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Each player receives two hole cards face down. No player may show hole cards before showdown.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'texas-hold-em.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Four betting rounds: pre-flop (after hole cards), after flop (3 community cards), after turn (1 card), after river (1 card).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'texas-hold-em.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Dealer burns one card before dealing each community round (flop, turn, river).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'texas-hold-em.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Best five-card poker hand from the seven available (two hole plus five board) wins. Player may use 0, 1, or 2 hole cards.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'texas-hold-em.rules.key.6',
+        title: 'Key rule 6',
+        text: 'At showdown all active players must show both hole cards. Last bettor/raiser shows first; ties split the pot.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'texas-hold-em.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'texas-hold-em.rules.objective',
+          'texas-hold-em.rules.gameplay',
+        ],
+      },
+      {
+        id: 'texas-hold-em.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'texas-hold-em.setup.players',
+          'texas-hold-em.setup.deck',
+          'texas-hold-em.setup.equipment',
+          'texas-hold-em.setup.dealing',
+        ],
+      },
+      {
+        id: 'texas-hold-em.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'texas-hold-em.rules.key.1',
+          'texas-hold-em.rules.key.2',
+          'texas-hold-em.rules.key.3',
+          'texas-hold-em.rules.key.4',
+          'texas-hold-em.rules.key.5',
+          'texas-hold-em.rules.key.6',
+        ],
+      },
+      {
+        id: 'texas-hold-em.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'texas-hold-em.score.description',
+          'texas-hold-em.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'texas-hold-em.setup.dealing',
+        'texas-hold-em.rules.objective',
+      ],
+      fold: [
+        'texas-hold-em.rules.gameplay',
+      ],
+      check: [
+        'texas-hold-em.rules.gameplay',
+      ],
+      call: [
+        'texas-hold-em.rules.gameplay',
+      ],
+      bet: [
+        'texas-hold-em.rules.gameplay',
+      ],
+      raise: [
+        'texas-hold-em.rules.gameplay',
+      ],
+      reveal_hand: [
+        'texas-hold-em.rules.gameplay',
+      ],
+      award_pot: [
+        'texas-hold-em.rules.gameplay',
+      ],
+      deal_hole_cards: [
+        'texas-hold-em.rules.gameplay',
+      ],
+      deal_flop: [
+        'texas-hold-em.rules.gameplay',
+      ],
+      deal_turn: [
+        'texas-hold-em.rules.gameplay',
+      ],
+      deal_river: [
+        'texas-hold-em.rules.gameplay',
+      ],
+    },
   },
 }

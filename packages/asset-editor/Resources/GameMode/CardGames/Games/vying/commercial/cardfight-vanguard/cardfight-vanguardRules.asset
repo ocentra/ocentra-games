@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Cardfight Vanguard. Logic: Deal enough damage to the opposing vanguard to win the fight.',
-    Player: 'Cardfight Vanguard is a Japanese commercial trading card battle game where players ride units and attack the opponent vanguard.',
+    LLM: 'Players ride stronger vanguards, call rear-guards, attack, guard, and reveal trigger cards that change power and damage outcomes.',
+    Player: 'Players ride stronger vanguards, call rear-guards, attack, guard, and reveal trigger cards that change power and damage outcomes.',
     objective: 'Deal enough damage to the opposing vanguard to win the fight.',
     gameplay: 'Players ride stronger vanguards, call rear-guards, attack, guard, and reveal trigger cards that change power and damage outcomes.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The fight is won by giving the opponent the published damage threshold. Expected outcome: 6.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Deal enough damage to the opposing vanguard to win the fight.',
+      'Turn-flow example: Players ride stronger vanguards, call rear-guards, attack, guard, and reveal trigger cards that change power and damage outcomes.',
+      'Scoring example: The fight is won by giving the opponent the published damage threshold. Deal enough damage to the opposing vanguard to win the fight..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'cardfight-vanguard.rules.objective',
+        title: 'Objective',
+        text: 'Deal enough damage to the opposing vanguard to win the fight.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'cardfight-vanguard.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players ride stronger vanguards, call rear-guards, attack, guard, and reveal trigger cards that change power and damage outcomes.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'cardfight-vanguard.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Cardfight Vanguard.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'cardfight-vanguard.setup.deck',
+        title: 'Deck',
+        text: 'Constructed Cardfight Vanguard deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'cardfight-vanguard.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed Cardfight Vanguard deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'cardfight-vanguard.setup.dealing',
+        title: 'Deal',
+        text: 'Each player starts with a vanguard card, deck, damage area, and opening hand.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'cardfight-vanguard.score.win-condition',
+        title: 'Win condition',
+        text: 'Deal enough damage to the opposing vanguard to win the fight.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'cardfight-vanguard.score.description',
+        title: 'Scoring',
+        text: 'The fight is won by giving the opponent the published damage threshold.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'cardfight-vanguard.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two-player constructed-deck fight.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'cardfight-vanguard.rules.key.2',
+        title: 'Key rule 2',
+        text: 'A vanguard unit represents each player.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'cardfight-vanguard.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Units attack and guard.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'cardfight-vanguard.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Trigger checks add uncertainty.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'cardfight-vanguard.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Opponent damage reaching the loss threshold ends the game.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'cardfight-vanguard.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'cardfight-vanguard.rules.objective',
+          'cardfight-vanguard.rules.gameplay',
+        ],
+      },
+      {
+        id: 'cardfight-vanguard.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'cardfight-vanguard.setup.players',
+          'cardfight-vanguard.setup.deck',
+          'cardfight-vanguard.setup.equipment',
+          'cardfight-vanguard.setup.dealing',
+        ],
+      },
+      {
+        id: 'cardfight-vanguard.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'cardfight-vanguard.rules.key.1',
+          'cardfight-vanguard.rules.key.2',
+          'cardfight-vanguard.rules.key.3',
+          'cardfight-vanguard.rules.key.4',
+          'cardfight-vanguard.rules.key.5',
+        ],
+      },
+      {
+        id: 'cardfight-vanguard.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'cardfight-vanguard.score.description',
+          'cardfight-vanguard.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'cardfight-vanguard.setup.dealing',
+        'cardfight-vanguard.rules.objective',
+      ],
+      play_card: [
+        'cardfight-vanguard.rules.gameplay',
+      ],
+    },
   },
 }

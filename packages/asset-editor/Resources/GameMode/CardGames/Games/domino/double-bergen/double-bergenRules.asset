@@ -54,10 +54,177 @@
       go_out: 'Allowed only when hand-empty condition is satisfied.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal before main_play.',
-      'Scoring check: After each play, score for matching ends on the layout: pair 2, triplet 3, quadruplet 4, quintuplet 5. At round end deduct 1 per tile left in hand; dominoer deducts nothing. Game is 100 points. Expected outcome: 100.',
+      'Setup example: 6 card(s) per player.',
+      'Rule example: Score points by making the ends of the cross-shaped layout match; first player to reach 100 points wins the game.',
+      'Turn-flow example: One player leads a double as the spinner. Players must complete all four arms of the spinner before adding tiles to them. On your turn you may play a matching tile or draw from the boneyard until you can play or it is empty; if you can neither play nor draw, pass. Play until someone empties their hand (dominoes) or the game blocks.',
+      'Scoring example: After each play, score for matching ends on the layout: pair 2, triplet 3, quadruplet 4, quintuplet 5. At round end deduct 1 per tile left in hand; dominoer deducts nothing. Game is 100 points. First to reach 100 points wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'double-bergen.rules.objective',
+        title: 'Objective',
+        text: 'Score points by making the ends of the cross-shaped layout match; first player to reach 100 points wins the game.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'double-bergen.rules.gameplay',
+        title: 'Turn flow',
+        text: 'One player leads a double as the spinner. Players must complete all four arms of the spinner before adding tiles to them. On your turn you may play a matching tile or draw from the boneyard until you can play or it is empty; if you can neither play nor draw, pass. Play until someone empties their hand (dominoes) or the game blocks.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'double-bergen.setup.players',
+        title: 'Players',
+        text: 'Two to four players. Two players receive six tiles each; three players six each; four players five each. Remaining tiles form the boneyard.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'double-bergen.setup.deck',
+        title: 'Deck',
+        text: 'Double-six domino set (or larger set for variants).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'double-bergen.setup.equipment',
+        title: 'Equipment',
+        text: 'Domino set',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'double-bergen.setup.dealing',
+        title: 'Deal',
+        text: '2 players: 6 tiles each. 3 players: 6 each. 4 players: 5 each. Remaining tiles form the boneyard.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'double-bergen.score.win-condition',
+        title: 'Win condition',
+        text: 'First to reach 100 points wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'double-bergen.score.description',
+        title: 'Scoring',
+        text: 'After each play, score for matching ends on the layout: pair 2, triplet 3, quadruplet 4, quintuplet 5. At round end deduct 1 per tile left in hand; dominoer deducts nothing. Game is 100 points.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'double-bergen.rules.key.1',
+        title: 'Key rule 1',
+        text: 'First double led is the spinner; all arms must be started before adding to any arm.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'double-bergen.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Draw from boneyard when unable to play; pass when unable to play and unable to draw.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'double-bergen.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Score after each play: pair of ends 2, triplet 3, quadruplet 4, quintuplet 5.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'double-bergen.rules.key.4',
+        title: 'Key rule 4',
+        text: 'At round end deduct 1 point per tile left in hand; player who dominoes deducts nothing.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'double-bergen.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Game is 100 points.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'double-bergen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'double-bergen.rules.objective',
+          'double-bergen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'double-bergen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'double-bergen.setup.players',
+          'double-bergen.setup.deck',
+          'double-bergen.setup.equipment',
+          'double-bergen.setup.dealing',
+        ],
+      },
+      {
+        id: 'double-bergen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'double-bergen.rules.key.1',
+          'double-bergen.rules.key.2',
+          'double-bergen.rules.key.3',
+          'double-bergen.rules.key.4',
+          'double-bergen.rules.key.5',
+        ],
+      },
+      {
+        id: 'double-bergen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'double-bergen.score.description',
+          'double-bergen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'double-bergen.setup.dealing',
+        'double-bergen.rules.objective',
+      ],
+      deal: [
+        'double-bergen.rules.gameplay',
+      ],
+      play_card: [
+        'double-bergen.rules.gameplay',
+      ],
+      draw: [
+        'double-bergen.rules.gameplay',
+      ],
+      pass: [
+        'double-bergen.rules.gameplay',
+      ],
+      go_out: [
+        'double-bergen.rules.gameplay',
+      ],
+    },
   },
 }

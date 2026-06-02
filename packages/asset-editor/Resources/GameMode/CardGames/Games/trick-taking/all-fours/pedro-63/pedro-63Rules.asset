@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 63 Pedro. Objective: Score 63 points in a round and be the first team to reach a target (e.g., 500 points).',
-    Player: '63 Pedro: play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: 'Standard trick-taking. You must follow suit if possible, but you can ALWAYS play a trump even if you have the suit led.',
+    Player: 'Standard trick-taking. You must follow suit if possible, but you can ALWAYS play a trump even if you have the suit led.',
     objective: 'Score 63 points in a round and be the first team to reach a target (e.g., 500 points).',
     gameplay: 'Standard trick-taking. You must follow suit if possible, but you can ALWAYS play a trump even if you have the suit led.',
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 9 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in bid; each_player_clockwise may use bid, pass before play.',
-      'Scoring check: Each team keeps a cumulative score. Points are won by capturing scoring trumps in tricks (ace 1, king 25, jack 1, ten 1, nine 9, right pedro 5, left pedro 5, three 15, two 1). The two (low) is scored by the team that was dealt it. First team to 152 wins. Expected outcome: 152.',
+      'Setup example: 9 card(s) per player.',
+      'Rule example: Score 63 points in a round and be the first team to reach a target (e.g., 500 points).',
+      'Turn-flow example: Standard trick-taking. You must follow suit if possible, but you can ALWAYS play a trump even if you have the suit led.',
+      "Scoring example: Each team keeps a cumulative score. Points are won by capturing scoring trumps in tricks (ace 1, king 25, jack 1, ten 1, nine 9, right pedro 5, left pedro 5, three 15, two 1). The two (low) is scored by the team that was dealt it. First team to 152 wins. First team to reach 152 or more points wins. If bidder's team makes their bid they add points taken; if not they subtract the bid. Opponents always add points they take..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pedro-63.rules.objective',
+        title: 'Objective',
+        text: 'Score 63 points in a round and be the first team to reach a target (e.g., 500 points).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pedro-63.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Standard trick-taking. You must follow suit if possible, but you can ALWAYS play a trump even if you have the suit led.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pedro-63.setup.players',
+        title: 'Players',
+        text: '4 in partnerships.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pedro-63.setup.deck',
+        title: 'Deck',
+        text: "52 cards. Trumps include the 'Left Pedro' (same color 5).",
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pedro-63.setup.equipment',
+        title: 'Equipment',
+        text: "52 cards. Trumps include the 'Left Pedro' (same color 5).",
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pedro-63.setup.dealing',
+        title: 'Deal',
+        text: "Deal 9 cards to each player. After bidding, the deck is 'filled' and players discard down to 6 cards.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pedro-63.score.win-condition',
+        title: 'Win condition',
+        text: "First team to reach 152 or more points wins. If bidder's team makes their bid they add points taken; if not they subtract the bid. Opponents always add points they take.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pedro-63.score.description',
+        title: 'Scoring',
+        text: 'Each team keeps a cumulative score. Points are won by capturing scoring trumps in tricks (ace 1, king 25, jack 1, ten 1, nine 9, right pedro 5, left pedro 5, three 15, two 1). The two (low) is scored by the team that was dealt it. First team to 152 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pedro-63.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for 63 Pedro.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pedro-63.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: Scoring summary: Scoring follows the game-specific point or pot rules.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pedro-63.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Score 63 points in a round and be the first team to reach a target (e.g., 500 points).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pedro-63.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pedro-63.rules.objective',
+          'pedro-63.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pedro-63.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pedro-63.setup.players',
+          'pedro-63.setup.deck',
+          'pedro-63.setup.equipment',
+          'pedro-63.setup.dealing',
+        ],
+      },
+      {
+        id: 'pedro-63.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pedro-63.rules.key.1',
+          'pedro-63.rules.key.2',
+          'pedro-63.rules.key.3',
+        ],
+      },
+      {
+        id: 'pedro-63.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pedro-63.score.description',
+          'pedro-63.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pedro-63.setup.dealing',
+        'pedro-63.rules.objective',
+      ],
+      play_card: [
+        'pedro-63.rules.gameplay',
+      ],
+      pass: [
+        'pedro-63.rules.gameplay',
+      ],
+      bid: [
+        'pedro-63.rules.gameplay',
+      ],
+    },
   },
 }

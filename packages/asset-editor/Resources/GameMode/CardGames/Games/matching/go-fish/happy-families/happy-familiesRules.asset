@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Happy Families. 44 cards, 11 families of 4. Players ask specific opponents for specific family members they lack but share a family with. Completion: Set of 4 (meld). Win: Most families.',
-    Player: "Welcome! Choose an opponent and ask for a specific family member (e.g., 'Master Bun the Baker'). Remember, you must already have at least one card from that family in your hand. If they have it, you get another turn!",
+    LLM: "1. Player to the dealer's left starts.\n2. ASKING: On your turn, ask a specific opponent for a specific card of a family you already hold at least one card of (e.g., 'Do you have Master Bun the Baker's Son?').\n3. RESULT: If they have it, they give it to you and you continue asking anyone for another card. If they don't have it, they say 'Not at home!' and your turn ends. The player who was asked now begins their turn.\n4. COMPLETION: When you collect all four members of a family, you must immediately lay them face-up on the table.",
+    Player: "1. Player to the dealer's left starts.\n2. ASKING: On your turn, ask a specific opponent for a specific card of a family you already hold at least one card of (e.g., 'Do you have Master Bun the Baker's Son?').\n3. RESULT: If they have it, they give it to you and you continue asking anyone for another card. If they don't have it, they say 'Not at home!' and your turn ends. The player who was asked now begins their turn.\n4. COMPLETION: When you collect all four members of a family, you must immediately lay them face-up on the table.",
     objective: 'Collect and declare the highest number of complete families (sets of four).',
     gameplay: "1. Player to the dealer's left starts.\n2. ASKING: On your turn, ask a specific opponent for a specific card of a family you already hold at least one card of (e.g., 'Do you have Master Bun the Baker's Son?').\n3. RESULT: If they have it, they give it to you and you continue asking anyone for another card. If they don't have it, they say 'Not at home!' and your turn ends. The player who was asked now begins their turn.\n4. COMPLETION: When you collect all four members of a family, you must immediately lay them face-up on the table.",
     keyRules: [
@@ -53,10 +53,168 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; role:dealer may use deal before play.',
-      'Scoring check: Each completed family counts as one point. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Collect and declare the highest number of complete families (sets of four).',
+      "Turn-flow example: 1. Player to the dealer's left starts.\n2. ASKING: On your turn, ask a specific opponent for a specific card of a family you already hold at least one card of (e.g., 'Do you have Master Bun the Baker's Son?').\n3. RESULT: If they have it, they give it to you and you continue asking anyone for another card. If they don't have it, they say 'Not at home!' and your turn ends. The player who was asked now begins their turn.\n4. COMPLETION: When you collect all four members of a family, you must immediately lay them face-up on the table.",
+      'Scoring example: Each completed family counts as one point. Player with the most points (families) wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'happy-families.rules.objective',
+        title: 'Objective',
+        text: 'Collect and declare the highest number of complete families (sets of four).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'happy-families.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Player to the dealer's left starts.\n2. ASKING: On your turn, ask a specific opponent for a specific card of a family you already hold at least one card of (e.g., 'Do you have Master Bun the Baker's Son?').\n3. RESULT: If they have it, they give it to you and you continue asking anyone for another card. If they don't have it, they say 'Not at home!' and your turn ends. The player who was asked now begins their turn.\n4. COMPLETION: When you collect all four members of a family, you must immediately lay them face-up on the table.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'happy-families.setup.players',
+        title: 'Players',
+        text: '3 to 6 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'happy-families.setup.deck',
+        title: 'Deck',
+        text: '44 characters divided into 11 families of 4 (Father, Mother, Son, Daughter).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'happy-families.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard Happy Families deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'happy-families.setup.dealing',
+        title: 'Deal',
+        text: 'Deal all cards face-down to all players. Some players may have one more card than others; this is acceptable.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'happy-families.score.win-condition',
+        title: 'Win condition',
+        text: 'Player with the most points (families) wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'happy-families.score.description',
+        title: 'Scoring',
+        text: 'Each completed family counts as one point.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'happy-families.rules.key.1',
+        title: 'Key rule 1',
+        text: 'You MUST hold at least one card of the family you are asking for.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'happy-families.rules.key.2',
+        title: 'Key rule 2',
+        text: "You must ask for a SPECIFIC card (e.g., 'Master Bun the Baker's Daughter'), not just a general family.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'happy-families.rules.key.3',
+        title: 'Key rule 3',
+        text: 'A turn continues as long as you successfully receive requested cards.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'happy-families.rules.key.4',
+        title: 'Key rule 4',
+        text: 'The game ends when all families are completed.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'happy-families.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'happy-families.rules.objective',
+          'happy-families.rules.gameplay',
+        ],
+      },
+      {
+        id: 'happy-families.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'happy-families.setup.players',
+          'happy-families.setup.deck',
+          'happy-families.setup.equipment',
+          'happy-families.setup.dealing',
+        ],
+      },
+      {
+        id: 'happy-families.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'happy-families.rules.key.1',
+          'happy-families.rules.key.2',
+          'happy-families.rules.key.3',
+          'happy-families.rules.key.4',
+        ],
+      },
+      {
+        id: 'happy-families.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'happy-families.score.description',
+          'happy-families.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'happy-families.setup.dealing',
+        'happy-families.rules.objective',
+      ],
+      deal: [
+        'happy-families.rules.gameplay',
+      ],
+      declare: [
+        'happy-families.rules.gameplay',
+      ],
+      meld: [
+        'happy-families.rules.gameplay',
+      ],
+      tally_families: [
+        'happy-families.rules.gameplay',
+      ],
+      ask: [
+        'happy-families.rules.gameplay',
+      ],
+    },
   },
 }

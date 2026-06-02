@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players use constructed decks from the trading card game product line, deploy characters and tactical cards, and resolve conflicts through the official timing and zone rules.',
+    Player: 'Players use constructed decks from the trading card game product line, deploy characters and tactical cards, and resolve conflicts through the official timing and zone rules.',
     objective: 'Use a constructed deck to meet the published Luck & Logic win condition against an opposing deck.',
     gameplay: 'Players use constructed decks from the trading card game product line, deploy characters and tactical cards, and resolve conflicts through the official timing and zone rules.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Use a constructed deck to meet the published Luck & Logic win condition against an opposing deck.',
+      'Turn-flow example: Players use constructed decks from the trading card game product line, deploy characters and tactical cards, and resolve conflicts through the official timing and zone rules.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'luck-and-logic.rules.objective',
+        title: 'Objective',
+        text: 'Use a constructed deck to meet the published Luck & Logic win condition against an opposing deck.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'luck-and-logic.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players use constructed decks from the trading card game product line, deploy characters and tactical cards, and resolve conflicts through the official timing and zone rules.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'luck-and-logic.setup.players',
+        title: 'Players',
+        text: '2 players use the table arrangement described for Luck & Logic.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'luck-and-logic.setup.deck',
+        title: 'Deck',
+        text: 'Commercial Luck & Logic trading card game decks and boosters',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'luck-and-logic.setup.equipment',
+        title: 'Equipment',
+        text: 'Commercial Luck & Logic trading card game decks and boosters, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'luck-and-logic.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Commercial Luck & Logic trading card game decks and boosters and deal or lay out cards according to the documented Luck & Logic rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'luck-and-logic.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'luck-and-logic.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'luck-and-logic.rules.key.1',
+        title: 'Key rule 1',
+        text: 'This is a trading card game tied to a media franchise.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'luck-and-logic.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Implementation must avoid unlicensed card text, names beyond metadata, and artwork.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'luck-and-logic.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Generic CCG infrastructure should be reused for deck, hand, field, discard, and timing zones.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'luck-and-logic.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'luck-and-logic.rules.objective',
+          'luck-and-logic.rules.gameplay',
+        ],
+      },
+      {
+        id: 'luck-and-logic.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'luck-and-logic.setup.players',
+          'luck-and-logic.setup.deck',
+          'luck-and-logic.setup.equipment',
+          'luck-and-logic.setup.dealing',
+        ],
+      },
+      {
+        id: 'luck-and-logic.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'luck-and-logic.rules.key.1',
+          'luck-and-logic.rules.key.2',
+          'luck-and-logic.rules.key.3',
+        ],
+      },
+      {
+        id: 'luck-and-logic.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'luck-and-logic.score.description',
+          'luck-and-logic.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'luck-and-logic.setup.dealing',
+        'luck-and-logic.rules.objective',
+      ],
+      play_card: [
+        'luck-and-logic.rules.gameplay',
+      ],
+    },
   },
 }

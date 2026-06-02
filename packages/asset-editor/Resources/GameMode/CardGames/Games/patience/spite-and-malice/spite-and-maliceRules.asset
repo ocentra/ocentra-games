@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Spite and Malice. Logic: See rules.objective and rules.gameplay.',
-    Player: "Spite and Malice (also known as Cat and Mouse) is a competitive patience game for two or more players, traditionally played with two or more standard decks of cards. It is the direct ancestor of the commercial game Skip-Bo. The objective is to be the first to move all cards from your personal 'pay-off pile' onto center 'build piles'. Kings are wild (or Jokers), and Aces start the piles.",
+    LLM: 'Shuffle both packs together. Each player has a face-down pay-off pile (20 cards) and a five-card hand; remainder is the stock. Turn order: player with higher pay-off top card plays first. On your turn, if you have fewer than five cards in hand, draw from stock to refill to five. You may then play cards to center stacks (ace to empty stack or next higher on existing, from hand, top of pay-off, or top of a side stack) or play one card from hand to one of your four side stacks, which ends your turn. Kings are wild. Max three center stacks; a completed stack (queen or king as queen) is shuffled into the stock by your opponent. You cannot play a pay-off card to a side stack or move cards between side stacks. If you play all five hand cards to the center without discarding, draw five more and continue.',
+    Player: 'Shuffle both packs together. Each player has a face-down pay-off pile (20 cards) and a five-card hand; remainder is the stock. Turn order: player with higher pay-off top card plays first. On your turn, if you have fewer than five cards in hand, draw from stock to refill to five. You may then play cards to center stacks (ace to empty stack or next higher on existing, from hand, top of pay-off, or top of a side stack) or play one card from hand to one of your four side stacks, which ends your turn. Kings are wild. Max three center stacks; a completed stack (queen or king as queen) is shuffled into the stock by your opponent. You cannot play a pay-off card to a side stack or move cards between side stacks. If you play all five hand cards to the center without discarding, draw five more and continue.',
     objective: 'Be the first to play all cards from your pay-off pile onto the center build stacks (ace through queen in sequence). Only the top card of your pay-off pile is playable at any time.',
     gameplay: 'Shuffle both packs together. Each player has a face-down pay-off pile (20 cards) and a five-card hand; remainder is the stock. Turn order: player with higher pay-off top card plays first. On your turn, if you have fewer than five cards in hand, draw from stock to refill to five. You may then play cards to center stacks (ace to empty stack or next higher on existing, from hand, top of pay-off, or top of a side stack) or play one card from hand to one of your four side stacks, which ends your turn. Kings are wild. Max three center stacks; a completed stack (queen or king as queen) is shuffled into the stock by your opponent. You cannot play a pay-off card to a side stack or move cards between side stacks. If you play all five hand cards to the center without discarding, draw five more and continue.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 5 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use draw, play_card, discard before round end.',
-      'Scoring check: Empty your Pay-off Pile. Expected outcome: Empty your Pay-off Pile..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first to play all cards from your pay-off pile onto the center build stacks (ace through queen in sequence). Only the top card of your pay-off pile is playable at any time.',
+      'Turn-flow example: Shuffle both packs together. Each player has a face-down pay-off pile (20 cards) and a five-card hand; remainder is the stock. Turn order: player with higher pay-off top card plays first. On your turn, if you have fewer than five cards in hand, draw from stock to refill to five. You may then play cards to center stacks (ace to empty stack or next higher on existing, from hand, top of pay-off, or top of a side stack) or play one card from hand to one of your four side stacks, which ends your turn. Kings are wild. Max three center stacks; a completed stack (queen or king as queen) is shuffled into the stock by your opponent. You cannot play a pay-off card to a side stack or move cards between side stacks. If you play all five hand cards to the center without discarding, draw five more and continue.',
+      'Scoring example: Empty your Pay-off Pile. Empty your Pay-off Pile..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'spite-and-malice.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to play all cards from your pay-off pile onto the center build stacks (ace through queen in sequence). Only the top card of your pay-off pile is playable at any time.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'spite-and-malice.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Shuffle both packs together. Each player has a face-down pay-off pile (20 cards) and a five-card hand; remainder is the stock. Turn order: player with higher pay-off top card plays first. On your turn, if you have fewer than five cards in hand, draw from stock to refill to five. You may then play cards to center stacks (ace to empty stack or next higher on existing, from hand, top of pay-off, or top of a side stack) or play one card from hand to one of your four side stacks, which ends your turn. Kings are wild. Max three center stacks; a completed stack (queen or king as queen) is shuffled into the stock by your opponent. You cannot play a pay-off card to a side stack or move cards between side stacks. If you play all five hand cards to the center without discarding, draw five more and continue.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'spite-and-malice.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'spite-and-malice.setup.deck',
+        title: 'Deck',
+        text: '104 cards (2 decks).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'spite-and-malice.setup.equipment',
+        title: 'Equipment',
+        text: '104 cards (2 decks).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'spite-and-malice.setup.dealing',
+        title: 'Deal',
+        text: "Shuffle both packs together. Deal 20 cards face down to each player's pay-off pile and 5 cards to each player's hand. Place the remainder face down as the stock. Turn the top card of each pay-off pile face up. The player with the higher pay-off card plays first (if equal, shuffle pay-off and turn a new top card).",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'spite-and-malice.score.win-condition',
+        title: 'Win condition',
+        text: 'Empty your Pay-off Pile.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'spite-and-malice.score.description',
+        title: 'Scoring',
+        text: 'Empty your Pay-off Pile.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'spite-and-malice.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Center stacks: ace then 2 through queen; max three at a time.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'spite-and-malice.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Each player has up to four side stacks; playing to a side stack ends your turn.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'spite-and-malice.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Kings are wild (any rank).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'spite-and-malice.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Only the top card of pay-off and of each side stack is playable.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'spite-and-malice.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'spite-and-malice.rules.objective',
+          'spite-and-malice.rules.gameplay',
+        ],
+      },
+      {
+        id: 'spite-and-malice.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'spite-and-malice.setup.players',
+          'spite-and-malice.setup.deck',
+          'spite-and-malice.setup.equipment',
+          'spite-and-malice.setup.dealing',
+        ],
+      },
+      {
+        id: 'spite-and-malice.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'spite-and-malice.rules.key.1',
+          'spite-and-malice.rules.key.2',
+          'spite-and-malice.rules.key.3',
+          'spite-and-malice.rules.key.4',
+        ],
+      },
+      {
+        id: 'spite-and-malice.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'spite-and-malice.score.description',
+          'spite-and-malice.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'spite-and-malice.setup.dealing',
+        'spite-and-malice.rules.objective',
+      ],
+      play_card: [
+        'spite-and-malice.rules.gameplay',
+      ],
+      draw: [
+        'spite-and-malice.rules.gameplay',
+      ],
+      discard: [
+        'spite-and-malice.rules.gameplay',
+      ],
+    },
   },
 }

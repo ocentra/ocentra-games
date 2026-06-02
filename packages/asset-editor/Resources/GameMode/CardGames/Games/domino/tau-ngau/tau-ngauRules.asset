@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tau Ngau. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Tau Ngau (Bull Fighting) has two main forms. Domino version: 3â€“6 players, banker deals five tiles each; discard three that total a multiple of ten (tiles 4-2 and 2-1 are wild); remaining two tiles give score (mod 10); beat the banker. Card version (Ngau/Gnau): 52-card deck, 2+ players; five cards each; choose three that sum to a multiple of 10 or are three-of-a-kind to be scoring-eligible; two remaining cards give Ox power (face=10, 3s and 6s can be 3 or 6). Hand ranks: Five Dukes, All-Small, Double-Ox, etc. Played in Southeast Asia as casual or gambling game.',
+    LLM: '1. Banker: One player is chosen by dice as banker; sets betting limits and deals.\n2. Deal: Banker deals five tiles to each player; players place bets.\n3. Discard: Each player chooses three tiles that total a multiple of 10 and discards them; the 4-2 and 2-1 tiles are wild (count as 3 or 6). If a player cannot form a multiple-of-10 discard, they lose their bet; if the banker cannot, the banker pays all who did and others get bets back.\n4. Score: Sum the pips on the two remaining tiles and take the last digit (mod 10). Higher than banker wins; lower loses; tie pushes.\n5. Bank: If the banker made a discard, the bank passes right; otherwise the banker keeps the bank.',
+    Player: '1. Banker: One player is chosen by dice as banker; sets betting limits and deals.\n2. Deal: Banker deals five tiles to each player; players place bets.\n3. Discard: Each player chooses three tiles that total a multiple of 10 and discards them; the 4-2 and 2-1 tiles are wild (count as 3 or 6). If a player cannot form a multiple-of-10 discard, they lose their bet; if the banker cannot, the banker pays all who did and others get bets back.\n4. Score: Sum the pips on the two remaining tiles and take the last digit (mod 10). Higher than banker wins; lower loses; tie pushes.\n5. Bank: If the banker made a discard, the bank passes right; otherwise the banker keeps the bank.',
     objective: "Have a higher hand than the banker: after discarding three tiles that total a multiple of 10, the sum of the two remaining tiles (modulo 10) must beat the banker's total.",
     gameplay: '1. Banker: One player is chosen by dice as banker; sets betting limits and deals.\n2. Deal: Banker deals five tiles to each player; players place bets.\n3. Discard: Each player chooses three tiles that total a multiple of 10 and discards them; the 4-2 and 2-1 tiles are wild (count as 3 or 6). If a player cannot form a multiple-of-10 discard, they lose their bet; if the banker cannot, the banker pays all who did and others get bets back.\n4. Score: Sum the pips on the two remaining tiles and take the last digit (mod 10). Higher than banker wins; lower loses; tie pushes.\n5. Bank: If the banker made a discard, the bank passes right; otherwise the banker keeps the bank.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Points based on cards captured or objectives completed\nGame ends when target reached\n-- Expected outcome: Be the first player to achieve the winning condition through strategic play of cards..',
+      'Setup example: 5 card(s) per player.',
+      "Rule example: Have a higher hand than the banker: after discarding three tiles that total a multiple of 10, the sum of the two remaining tiles (modulo 10) must beat the banker's total.",
+      'Turn-flow example: 1. Banker: One player is chosen by dice as banker; sets betting limits and deals.\n2. Deal: Banker deals five tiles to each player; players place bets.\n3. Discard: Each player chooses three tiles that total a multiple of 10 and discards them; the 4-2 and 2-1 tiles are wild (count as 3 or 6). If a player cannot form a multiple-of-10 discard, they lose their bet; if the banker cannot, the banker pays all who did and others get bets back.\n4. Score: Sum the pips on the two remaining tiles and take the last digit (mod 10). Higher than banker wins; lower loses; tie pushes.\n5. Bank: If the banker made a discard, the bank passes right; otherwise the banker keeps the bank.',
+      'Scoring example: Points based on cards captured or objectives completed\nGame ends when target reached\n-- Be the first player to achieve the winning condition through strategic play of cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tau-ngau.rules.objective',
+        title: 'Objective',
+        text: "Have a higher hand than the banker: after discarding three tiles that total a multiple of 10, the sum of the two remaining tiles (modulo 10) must beat the banker's total.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tau-ngau.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Banker: One player is chosen by dice as banker; sets betting limits and deals.\n2. Deal: Banker deals five tiles to each player; players place bets.\n3. Discard: Each player chooses three tiles that total a multiple of 10 and discards them; the 4-2 and 2-1 tiles are wild (count as 3 or 6). If a player cannot form a multiple-of-10 discard, they lose their bet; if the banker cannot, the banker pays all who did and others get bets back.\n4. Score: Sum the pips on the two remaining tiles and take the last digit (mod 10). Higher than banker wins; lower loses; tie pushes.\n5. Bank: If the banker made a discard, the bank passes right; otherwise the banker keeps the bank.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tau-ngau.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 3\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: None; onlookers may place side bets.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tau-ngau.setup.deck',
+        title: 'Deck',
+        text: 'Type: Double-six domino set (28 tiles)\nNumber of Decks: 1\nWild tiles: 4-2 and 2-1 count as 3 or 6 for discard totals only.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tau-ngau.setup.equipment',
+        title: 'Equipment',
+        text: 'Double-six domino set\nTable space\nOptional: dice to choose banker',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tau-ngau.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: 5 tiles each\nDealing Pattern: Banker deals to each player\nDealer: Banker (chosen by dice for the hand)',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tau-ngau.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to achieve the winning condition through strategic play of cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tau-ngau.score.description',
+        title: 'Scoring',
+        text: 'Points based on cards captured or objectives completed\nGame ends when target reached\n--',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tau-ngau.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Discard exactly three tiles whose pips sum to a multiple of 10; wilds 4-2 and 2-1 may stand for 3 or 6.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tau-ngau.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Hand score is the sum of the two remaining tiles modulo 10.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tau-ngau.rules.key.3',
+        title: 'Key rule 3',
+        text: "Beat the banker's score to win; tie is push.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tau-ngau.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Banker who cannot discard pays all players who could; players who could not discard get their bets back.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tau-ngau.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tau-ngau.rules.objective',
+          'tau-ngau.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tau-ngau.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tau-ngau.setup.players',
+          'tau-ngau.setup.deck',
+          'tau-ngau.setup.equipment',
+          'tau-ngau.setup.dealing',
+        ],
+      },
+      {
+        id: 'tau-ngau.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tau-ngau.rules.key.1',
+          'tau-ngau.rules.key.2',
+          'tau-ngau.rules.key.3',
+          'tau-ngau.rules.key.4',
+        ],
+      },
+      {
+        id: 'tau-ngau.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tau-ngau.score.description',
+          'tau-ngau.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tau-ngau.setup.dealing',
+        'tau-ngau.rules.objective',
+      ],
+      play_card: [
+        'tau-ngau.rules.gameplay',
+      ],
+    },
   },
 }

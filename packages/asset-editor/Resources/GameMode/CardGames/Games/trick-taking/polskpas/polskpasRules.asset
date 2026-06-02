@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kaiserspiel. Logic: Win the tricks, card points, or contract result required by the local form of the game.',
-    Player: 'Kaiserspiel is a traditional trick-taking card game using 40 or 48-card Swiss Kaiserspiel deck for 2, 4, or 6 players. It uses one chosen suit and belongs to the Karnöffel environment.',
+    LLM: 'Players receive five cards. Eldest hand may accept the turned suit or pass according to local rules; play proceeds as a plain-trick game with the Jacks acting as permanent highest trumps.',
+    Player: 'Players receive five cards. Eldest hand may accept the turned suit or pass according to local rules; play proceeds as a plain-trick game with the Jacks acting as permanent highest trumps.',
     objective: 'Win tricks under the accepted or chosen trump conditions while managing the special permanent Jacks.',
     gameplay: 'Players receive five cards. Eldest hand may accept the turned suit or pass according to local rules; play proceeds as a plain-trick game with the Jacks acting as permanent highest trumps.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Tricks, card points, or contract success determine scoring. Expected outcome: 1.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Win tricks under the accepted or chosen trump conditions while managing the special permanent Jacks.',
+      'Turn-flow example: Players receive five cards. Eldest hand may accept the turned suit or pass according to local rules; play proceeds as a plain-trick game with the Jacks acting as permanent highest trumps.',
+      'Scoring example: Tricks, card points, or contract success determine scoring. Win the tricks, card points, or contract result required by the local form of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'polskpas.rules.objective',
+        title: 'Objective',
+        text: 'Win tricks under the accepted or chosen trump conditions while managing the special permanent Jacks.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'polskpas.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players receive five cards. Eldest hand may accept the turned suit or pass according to local rules; play proceeds as a plain-trick game with the Jacks acting as permanent highest trumps.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'polskpas.setup.players',
+        title: 'Players',
+        text: '4 players use the table arrangement described for Polskpas.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'polskpas.setup.deck',
+        title: 'Deck',
+        text: '24-card pack with four Jacks as permanent Wenzels',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'polskpas.setup.equipment',
+        title: 'Equipment',
+        text: '24-card pack with four Jacks as permanent Wenzels, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'polskpas.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare 24-card pack with four Jacks as permanent Wenzels and deal or lay out cards according to the documented Polskpas rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'polskpas.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'polskpas.score.description',
+        title: 'Scoring',
+        text: 'Tricks, card points, or contract success determine scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'polskpas.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Four individual players play with a 24-card pack.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'polskpas.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The four Jacks are permanent highest trumps known as Wenzels.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'polskpas.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Eldest hand has the first right to accept or make trumps.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'polskpas.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'polskpas.rules.objective',
+          'polskpas.rules.gameplay',
+        ],
+      },
+      {
+        id: 'polskpas.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'polskpas.setup.players',
+          'polskpas.setup.deck',
+          'polskpas.setup.equipment',
+          'polskpas.setup.dealing',
+        ],
+      },
+      {
+        id: 'polskpas.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'polskpas.rules.key.1',
+          'polskpas.rules.key.2',
+          'polskpas.rules.key.3',
+        ],
+      },
+      {
+        id: 'polskpas.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'polskpas.score.description',
+          'polskpas.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'polskpas.setup.dealing',
+        'polskpas.rules.objective',
+      ],
+      play_card: [
+        'polskpas.rules.gameplay',
+      ],
+      discard: [
+        'polskpas.rules.gameplay',
+      ],
+      pass: [
+        'polskpas.rules.gameplay',
+      ],
+      bid: [
+        'polskpas.rules.gameplay',
+      ],
+    },
   },
 }

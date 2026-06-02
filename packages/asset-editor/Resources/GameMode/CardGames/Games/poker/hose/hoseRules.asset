@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: HOSE. Objective: Be the first player to achieve the winning condition through strategic play of cards.',
-    Player: 'HOSE: play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: "Fixed sequence of four poker variants. Hold'em and Omaha use blinds; Seven-Card Stud and Eight or Better use antes and a compulsory bring-in. All played as limit. A complete round of each game is played before rotating to the next. Best hand at showdown wins the pot.",
+    Player: "Fixed sequence of four poker variants. Hold'em and Omaha use blinds; Seven-Card Stud and Eight or Better use antes and a compulsory bring-in. All played as limit. A complete round of each game is played before rotating to the next. Best hand at showdown wins the pot.",
     objective: "Win pots in each of the four games in rotation; each complete round (every player deals once) switches to the next game: Hold'em, Omaha, Seven-Card Stud, Eight or Better.",
     gameplay: "Fixed sequence of four poker variants. Hold'em and Omaha use blinds; Seven-Card Stud and Eight or Better use antes and a compulsory bring-in. All played as limit. A complete round of each game is played before rotating to the next. Best hand at showdown wins the pot.",
     keyRules: [
@@ -53,10 +53,177 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use fold, check, call, bet, raise, reveal_hand, play_card before round end.',
-      'Scoring check: Pot awarded to the best hand at showdown; in Eight or Better the pot may be split between best high and best qualifying low hand. Expected outcome: NA.',
+      'Setup example: 5 card(s) per player.',
+      "Rule example: Win pots in each of the four games in rotation; each complete round (every player deals once) switches to the next game: Hold'em, Omaha, Seven-Card Stud, Eight or Better.",
+      "Turn-flow example: Fixed sequence of four poker variants. Hold'em and Omaha use blinds; Seven-Card Stud and Eight or Better use antes and a compulsory bring-in. All played as limit. A complete round of each game is played before rotating to the next. Best hand at showdown wins the pot.",
+      'Scoring example: Pot awarded to the best hand at showdown; in Eight or Better the pot may be split between best high and best qualifying low hand. Win the pot in the current hand; best hand at showdown wins (or split in Eight or Better between high and low)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hose.rules.objective',
+        title: 'Objective',
+        text: "Win pots in each of the four games in rotation; each complete round (every player deals once) switches to the next game: Hold'em, Omaha, Seven-Card Stud, Eight or Better.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hose.rules.gameplay',
+        title: 'Turn flow',
+        text: "Fixed sequence of four poker variants. Hold'em and Omaha use blinds; Seven-Card Stud and Eight or Better use antes and a compulsory bring-in. All played as limit. A complete round of each game is played before rotating to the next. Best hand at showdown wins the pot.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hose.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hose.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hose.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hose.setup.dealing',
+        title: 'Deal',
+        text: "Cards per player vary by variant: Hold'em 2 hole, Omaha 4 hole, Stud 2 down and 1 up initially then upcards. Dealing clockwise. One complete round of each game (every player deals once) before rotating.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hose.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the pot in the current hand; best hand at showdown wins (or split in Eight or Better between high and low).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hose.score.description',
+        title: 'Scoring',
+        text: 'Pot awarded to the best hand at showdown; in Eight or Better the pot may be split between best high and best qualifying low hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hose.rules.key.1',
+        title: 'Key rule 1',
+        text: "Four games in fixed rotation: Hold'em, Omaha, Seven-Card Stud, Eight or Better.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'hose.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Complete round of each game (every player deals once) before switching.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'hose.rules.key.3',
+        title: 'Key rule 3',
+        text: "Limit betting; blinds for Hold'em and Omaha, antes and bring-in for stud games.",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'hose.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Best hand at showdown wins the pot.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hose.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hose.rules.objective',
+          'hose.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hose.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hose.setup.players',
+          'hose.setup.deck',
+          'hose.setup.equipment',
+          'hose.setup.dealing',
+        ],
+      },
+      {
+        id: 'hose.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hose.rules.key.1',
+          'hose.rules.key.2',
+          'hose.rules.key.3',
+          'hose.rules.key.4',
+        ],
+      },
+      {
+        id: 'hose.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hose.score.description',
+          'hose.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hose.setup.dealing',
+        'hose.rules.objective',
+      ],
+      ante: [
+        'hose.rules.gameplay',
+      ],
+      fold: [
+        'hose.rules.gameplay',
+      ],
+      check: [
+        'hose.rules.gameplay',
+      ],
+      call: [
+        'hose.rules.gameplay',
+      ],
+      bet: [
+        'hose.rules.gameplay',
+      ],
+      raise: [
+        'hose.rules.gameplay',
+      ],
+      reveal_hand: [
+        'hose.rules.gameplay',
+      ],
+      play_card: [
+        'hose.rules.gameplay',
+      ],
+    },
   },
 }

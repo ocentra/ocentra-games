@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Koi-Koi. Logic: See rules.objective and rules.gameplay.',
-    Player: "Koi-Koi is the most popular card game played with traditional Japanese 'Hanafuda' (Flower Cards). Played between two people, it is a fishing (capture) game where players aim to form specific combinations of cards called 'Yaku'. The name 'Koi-Koi' refers to the strategic choice a player makes after forming a Yaku: either to end the round and take their points, or to call 'Koi-Koi' (Come On!) to continue play in hopes of a higher score at the risk of losing it all.",
+    LLM: "1. **Match**: Play a card from hand to match a card of the same suit in the field. If matched, take both. If no match, discard to the field.\n2. **Draw**: Draw the top card of the deck and match it with the field. Take any matches.\n3. **Forming Yaku**: If your captured cards form a combination (e.g., 3 Ribbons, or 'Ino-Shika-Cho'), you must decide: **Stop** (Score points) or **Koi-Koi** (Continue).",
+    Player: "1. **Match**: Play a card from hand to match a card of the same suit in the field. If matched, take both. If no match, discard to the field.\n2. **Draw**: Draw the top card of the deck and match it with the field. Take any matches.\n3. **Forming Yaku**: If your captured cards form a combination (e.g., 3 Ribbons, or 'Ino-Shika-Cho'), you must decide: **Stop** (Score points) or **Koi-Koi** (Continue).",
     objective: "Form 'Yaku' (point combinations) and outscore your opponent over 6 or 12 rounds.",
     gameplay: "1. **Match**: Play a card from hand to match a card of the same suit in the field. If matched, take both. If no match, discard to the field.\n2. **Draw**: Draw the top card of the deck and match it with the field. Take any matches.\n3. **Forming Yaku**: If your captured cards form a combination (e.g., 3 Ribbons, or 'Ino-Shika-Cho'), you must decide: **Stop** (Score points) or **Koi-Koi** (Continue).",
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 8 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_oya_8_8_8 before play.',
-      "Scoring check: Form 'Yaku' (point combinations) and outscore your opponent over 6 or 12 rounds. Expected outcome: Form 'Yaku' (point combinations) and outscore your opponent over 6 or 12 rounds..",
+      'Setup example: 8 card(s) per player.',
+      "Rule example: Form 'Yaku' (point combinations) and outscore your opponent over 6 or 12 rounds.",
+      "Turn-flow example: 1. **Match**: Play a card from hand to match a card of the same suit in the field. If matched, take both. If no match, discard to the field.\n2. **Draw**: Draw the top card of the deck and match it with the field. Take any matches.\n3. **Forming Yaku**: If your captured cards form a combination (e.g., 3 Ribbons, or 'Ino-Shika-Cho'), you must decide: **Stop** (Score points) or **Koi-Koi** (Continue).",
+      "Scoring example: Form 'Yaku' (point combinations) and outscore your opponent over 6 or 12 rounds. Form 'Yaku' (point combinations) and outscore your opponent over 6 or 12 rounds..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'bai-choi.rules.objective',
+        title: 'Objective',
+        text: "Form 'Yaku' (point combinations) and outscore your opponent over 6 or 12 rounds.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'bai-choi.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Match**: Play a card from hand to match a card of the same suit in the field. If matched, take both. If no match, discard to the field.\n2. **Draw**: Draw the top card of the deck and match it with the field. Take any matches.\n3. **Forming Yaku**: If your captured cards form a combination (e.g., 3 Ribbons, or 'Ino-Shika-Cho'), you must decide: **Stop** (Score points) or **Koi-Koi** (Continue).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'bai-choi.setup.players',
+        title: 'Players',
+        text: 'Multiple players; exact table format varies by local Bai Choi performance style.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'bai-choi.setup.deck',
+        title: 'Deck',
+        text: '48 cards. Suits by month: January (Pine), February (Plum), March (Cherry)... to December (Paulownia). Each suit has 4 cards of varying value (Bright, Animal, Ribbon, Chaff).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'bai-choi.setup.equipment',
+        title: 'Equipment',
+        text: '48 cards. Suits by month: January (Pine), February (Plum), March (Cherry)... to December (Paulownia). Each suit has 4 cards of varying value (Bright, Animal, Ribbon, Chaff).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'bai-choi.setup.dealing',
+        title: 'Deal',
+        text: "Each player is dealt 8 cards face-down; 8 cards are placed face-up in the 'field' (ba). The rest form the draw pile.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'bai-choi.score.win-condition',
+        title: 'Win condition',
+        text: "Form 'Yaku' (point combinations) and outscore your opponent over 6 or 12 rounds.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'bai-choi.score.description',
+        title: 'Scoring',
+        text: "Form 'Yaku' (point combinations) and outscore your opponent over 6 or 12 rounds.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'bai-choi.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Match by month (suit): play a card from hand to capture a same-month card from the table, or discard to table if no match.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'bai-choi.rules.key.2',
+        title: 'Key rule 2',
+        text: 'After play, draw one from stock; if it matches a table card capture both, else add to table.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'bai-choi.rules.key.3',
+        title: 'Key rule 3',
+        text: 'On forming a yaku, choose to stop and score or call Koi-Koi to continue; opponent forming yaku first doubles their score and zeros the caller.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'bai-choi.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'bai-choi.rules.objective',
+          'bai-choi.rules.gameplay',
+        ],
+      },
+      {
+        id: 'bai-choi.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'bai-choi.setup.players',
+          'bai-choi.setup.deck',
+          'bai-choi.setup.equipment',
+          'bai-choi.setup.dealing',
+        ],
+      },
+      {
+        id: 'bai-choi.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'bai-choi.rules.key.1',
+          'bai-choi.rules.key.2',
+          'bai-choi.rules.key.3',
+        ],
+      },
+      {
+        id: 'bai-choi.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'bai-choi.score.description',
+          'bai-choi.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'bai-choi.setup.dealing',
+        'bai-choi.rules.objective',
+      ],
+      play_card: [
+        'bai-choi.rules.gameplay',
+      ],
+      draw: [
+        'bai-choi.rules.gameplay',
+      ],
+      deal_oya_8_8_8: [
+        'bai-choi.rules.gameplay',
+      ],
+    },
   },
 }

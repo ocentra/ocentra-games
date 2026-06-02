@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Michigan Rummy (Newmarket, Boodle). Logic: See rules.objective and rules.gameplay.',
-    Player: "Michigan Rummy (also known as Newmarket, Boodle, or Stops) is a classic American family game that combines elements of sequence-based shedding with a wagering layout. Players compete to be the first to play all their cards (Shedding) while simultaneously trying to play specific 'Money Cards' (Ace of Hearts, King of Clubs, etc.) that correspond to pots on the game board. It is one of the most famous 'three-games-in-one' style tabletop classics.",
+    LLM: 'Before play, the dealer places two chips on each boodle card (Ace of Hearts, King of Clubs, Queen of Diamonds, Jack of Spades) and each other player places one chip on each. All cards are dealt clockwise one at a time to each player and one spare hand (dummy), which stays face down. The player to the left of the dealer begins by playing any suit but must play the lowest card they hold in that suit. Whoever holds the next higher card in the same suit must play it; play continues in suit sequence until the ace is reached or no one can follow (a stop card). The last player to play starts the next sequence with their lowest card in any suit. Playing a boodle card collects all chips on that card. When a player runs out of cards, play ends; each other player pays one chip per card left in hand to the player who went out. Chips left on unclaimed boodle cards stay for the next hand.',
+    Player: 'Before play, the dealer places two chips on each boodle card (Ace of Hearts, King of Clubs, Queen of Diamonds, Jack of Spades) and each other player places one chip on each. All cards are dealt clockwise one at a time to each player and one spare hand (dummy), which stays face down. The player to the left of the dealer begins by playing any suit but must play the lowest card they hold in that suit. Whoever holds the next higher card in the same suit must play it; play continues in suit sequence until the ace is reached or no one can follow (a stop card). The last player to play starts the next sequence with their lowest card in any suit. Playing a boodle card collects all chips on that card. When a player runs out of cards, play ends; each other player pays one chip per card left in hand to the player who went out. Chips left on unclaimed boodle cards stay for the next hand.',
     objective: "Win the most chips by playing 'Money Cards' and being the first to empty your hand.",
     gameplay: 'Before play, the dealer places two chips on each boodle card (Ace of Hearts, King of Clubs, Queen of Diamonds, Jack of Spades) and each other player places one chip on each. All cards are dealt clockwise one at a time to each player and one spare hand (dummy), which stays face down. The player to the left of the dealer begins by playing any suit but must play the lowest card they hold in that suit. Whoever holds the next higher card in the same suit must play it; play continues in suit sequence until the ace is reached or no one can follow (a stop card). The last player to play starts the next sequence with their lowest card in any suit. Playing a boodle card collects all chips on that card. When a player runs out of cards, play ends; each other player pays one chip per card left in hand to the player who went out. Chips left on unclaimed boodle cards stay for the next hand.',
     keyRules: [
@@ -50,10 +50,129 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 6 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      "Scoring check: Win the most chips by playing 'Money Cards' and being the first to empty your hand. Expected outcome: 100.",
+      'Setup example: 6 card(s) per player.',
+      "Rule example: Win the most chips by playing 'Money Cards' and being the first to empty your hand.",
+      'Turn-flow example: Before play, the dealer places two chips on each boodle card (Ace of Hearts, King of Clubs, Queen of Diamonds, Jack of Spades) and each other player places one chip on each. All cards are dealt clockwise one at a time to each player and one spare hand (dummy), which stays face down. The player to the left of the dealer begins by playing any suit but must play the lowest card they hold in that suit. Whoever holds the next higher card in the same suit must play it; play continues in suit sequence until the ace is reached or no one can follow (a stop card). The last player to play starts the next sequence with their lowest card in any suit. Playing a boodle card collects all chips on that card. When a player runs out of cards, play ends; each other player pays one chip per card left in hand to the player who went out. Chips left on unclaimed boodle cards stay for the next hand.',
+      "Scoring example: Win the most chips by playing 'Money Cards' and being the first to empty your hand. Win the most chips by playing 'Money Cards' and being the first to empty your hand..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'michigan-rummy.rules.objective',
+        title: 'Objective',
+        text: "Win the most chips by playing 'Money Cards' and being the first to empty your hand.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'michigan-rummy.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Before play, the dealer places two chips on each boodle card (Ace of Hearts, King of Clubs, Queen of Diamonds, Jack of Spades) and each other player places one chip on each. All cards are dealt clockwise one at a time to each player and one spare hand (dummy), which stays face down. The player to the left of the dealer begins by playing any suit but must play the lowest card they hold in that suit. Whoever holds the next higher card in the same suit must play it; play continues in suit sequence until the ace is reached or no one can follow (a stop card). The last player to play starts the next sequence with their lowest card in any suit. Playing a boodle card collects all chips on that card. When a player runs out of cards, play ends; each other player pays one chip per card left in hand to the player who went out. Chips left on unclaimed boodle cards stay for the next hand.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'michigan-rummy.setup.players',
+        title: 'Players',
+        text: 'Three to eight players. The game is suitable for about 3 to 8 players; all cards are dealt out one at a time so hand sizes vary slightly (some players may have one card more than others). One spare hand (dummy or window) is dealt and left face down; it is not used during play but creates stop cards when the next higher card in sequence lies in that hand.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'michigan-rummy.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52 cards.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'michigan-rummy.setup.equipment',
+        title: 'Equipment',
+        text: 'Staking board or cloth with four layout positions; chips or counters. Alternatively, four cards from a second deck placed on the table for stakes.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'michigan-rummy.setup.dealing',
+        title: 'Deal',
+        text: "Each player receives a hand. An EXTRA 'Dummy' hand is dealt (the Window or Widow).",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'michigan-rummy.score.win-condition',
+        title: 'Win condition',
+        text: "Win the most chips by playing 'Money Cards' and being the first to empty your hand.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'michigan-rummy.score.description',
+        title: 'Scoring',
+        text: "Win the most chips by playing 'Money Cards' and being the first to empty your hand.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'michigan-rummy.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dealer puts two chips on each boodle card; others put one each. All cards dealt, one spare hand (dummy) face down. Left of dealer starts; must play lowest in chosen suit. Next higher in same suit must play until ace or stop. Last to play starts next sequence. Playing a boodle card wins chips on it. First out wins; others pay one chip per card left.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'michigan-rummy.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'michigan-rummy.rules.objective',
+          'michigan-rummy.rules.gameplay',
+        ],
+      },
+      {
+        id: 'michigan-rummy.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'michigan-rummy.setup.players',
+          'michigan-rummy.setup.deck',
+          'michigan-rummy.setup.equipment',
+          'michigan-rummy.setup.dealing',
+        ],
+      },
+      {
+        id: 'michigan-rummy.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'michigan-rummy.rules.key.1',
+        ],
+      },
+      {
+        id: 'michigan-rummy.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'michigan-rummy.score.description',
+          'michigan-rummy.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'michigan-rummy.setup.dealing',
+        'michigan-rummy.rules.objective',
+      ],
+      play_card: [
+        'michigan-rummy.rules.gameplay',
+      ],
+    },
   },
 }

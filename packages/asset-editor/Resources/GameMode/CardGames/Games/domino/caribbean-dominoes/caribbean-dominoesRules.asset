@@ -51,10 +51,138 @@
       go_out: 'This action does not apply to this game.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Partnerships score for rounds won; first to empty hand wins the round. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win each round by being the first team to play all tiles (empty hand), or when the game is blocked, have the lowest total spots on unplayed tiles. Win a set number of rounds in a row (e.g. 4 or 6) to win the match.',
+      "Turn-flow example: 7 tiles each (4p). Highest double leads. Match ends; if can't play draw from boneyard. Pass when blocked. First team empty or lowest at block wins.",
+      'Scoring example: Partnerships score for rounds won; first to empty hand wins the round. Win rounds by being first team to play all tiles; reach agreed target to win game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'caribbean-dominoes.rules.objective',
+        title: 'Objective',
+        text: 'Win each round by being the first team to play all tiles (empty hand), or when the game is blocked, have the lowest total spots on unplayed tiles. Win a set number of rounds in a row (e.g. 4 or 6) to win the match.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'caribbean-dominoes.rules.gameplay',
+        title: 'Turn flow',
+        text: "7 tiles each (4p). Highest double leads. Match ends; if can't play draw from boneyard. Pass when blocked. First team empty or lowest at block wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'caribbean-dominoes.setup.players',
+        title: 'Players',
+        text: '4 in partnerships',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'caribbean-dominoes.setup.deck',
+        title: 'Deck',
+        text: '28 tiles double-six',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'caribbean-dominoes.setup.equipment',
+        title: 'Equipment',
+        text: 'Tiles',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'caribbean-dominoes.setup.dealing',
+        title: 'Deal',
+        text: 'Draw for hand; boneyard',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'caribbean-dominoes.score.win-condition',
+        title: 'Win condition',
+        text: 'Win rounds by being first team to play all tiles; reach agreed target to win game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'caribbean-dominoes.score.description',
+        title: 'Scoring',
+        text: 'Partnerships score for rounds won; first to empty hand wins the round.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'caribbean-dominoes.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Partnership',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'caribbean-dominoes.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Draw/block',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'caribbean-dominoes.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'caribbean-dominoes.rules.objective',
+          'caribbean-dominoes.rules.gameplay',
+        ],
+      },
+      {
+        id: 'caribbean-dominoes.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'caribbean-dominoes.setup.players',
+          'caribbean-dominoes.setup.deck',
+          'caribbean-dominoes.setup.equipment',
+          'caribbean-dominoes.setup.dealing',
+        ],
+      },
+      {
+        id: 'caribbean-dominoes.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'caribbean-dominoes.rules.key.1',
+          'caribbean-dominoes.rules.key.2',
+        ],
+      },
+      {
+        id: 'caribbean-dominoes.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'caribbean-dominoes.score.description',
+          'caribbean-dominoes.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'caribbean-dominoes.setup.dealing',
+        'caribbean-dominoes.rules.objective',
+      ],
+      play_card: [
+        'caribbean-dominoes.rules.gameplay',
+      ],
+    },
   },
 }

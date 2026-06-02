@@ -53,10 +53,159 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 8 card(s) per player, 32 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card, discard before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 8 card(s) per player.',
+      'Rule example: On your turn, play a tile that matches the single open end of the layout and call the new open end, or if unable, discard one tile face down and say drink. The player with fewest pips on discarded and unplayed tiles wins the deal and leads the next. Pairs settle by pip difference.',
+      'Turn-flow example: First player leads any tile and declares which end is open. Play is clockwise or counter-clockwise (alternates by deal). Each turn: play a matching tile and call the new open end, or discard one tile face down and call drink. If three players drink in succession, the last player who played plays again. If no one can match, the game is blocked and ends; count unplayed tiles as well.',
+      'Scoring example: Points or match rules. The player with fewest pips on discarded and unplayed tiles wins the deal and leads the next; pairs settle by pip difference..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'ce-deng.rules.objective',
+        title: 'Objective',
+        text: 'On your turn, play a tile that matches the single open end of the layout and call the new open end, or if unable, discard one tile face down and say drink. The player with fewest pips on discarded and unplayed tiles wins the deal and leads the next. Pairs settle by pip difference.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'ce-deng.rules.gameplay',
+        title: 'Turn flow',
+        text: 'First player leads any tile and declares which end is open. Play is clockwise or counter-clockwise (alternates by deal). Each turn: play a matching tile and call the new open end, or discard one tile face down and call drink. If three players drink in succession, the last player who played plays again. If no one can match, the game is blocked and ends; count unplayed tiles as well.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'ce-deng.setup.players',
+        title: 'Players',
+        text: '2â€“6. best for four.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'ce-deng.setup.deck',
+        title: 'Deck',
+        text: '32 Chinese domino tiles (21 unique, 11 duplicates).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'ce-deng.setup.equipment',
+        title: 'Equipment',
+        text: 'Chinese domino set or domino cards.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'ce-deng.setup.dealing',
+        title: 'Deal',
+        text: 'Four players receive eight tiles each. With fewer players, eight tiles each are often used; remainder unused. First player in the first deal is random; thereafter the winner of each deal leads the next.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'ce-deng.score.win-condition',
+        title: 'Win condition',
+        text: 'The player with fewest pips on discarded and unplayed tiles wins the deal and leads the next; pairs settle by pip difference.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'ce-deng.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'ce-deng.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Chinese domino set (32 tiles)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'ce-deng.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Single open end; match or discard',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'ce-deng.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Fewest pips wins',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'ce-deng.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Pass, head seven, tail eight double payments',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'ce-deng.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'ce-deng.rules.objective',
+          'ce-deng.rules.gameplay',
+        ],
+      },
+      {
+        id: 'ce-deng.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'ce-deng.setup.players',
+          'ce-deng.setup.deck',
+          'ce-deng.setup.equipment',
+          'ce-deng.setup.dealing',
+        ],
+      },
+      {
+        id: 'ce-deng.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'ce-deng.rules.key.1',
+          'ce-deng.rules.key.2',
+          'ce-deng.rules.key.3',
+          'ce-deng.rules.key.4',
+        ],
+      },
+      {
+        id: 'ce-deng.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'ce-deng.score.description',
+          'ce-deng.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'ce-deng.setup.dealing',
+        'ce-deng.rules.objective',
+      ],
+      play_card: [
+        'ce-deng.rules.gameplay',
+      ],
+      discard: [
+        'ce-deng.rules.gameplay',
+      ],
+    },
   },
 }

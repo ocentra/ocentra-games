@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Three Nought Four. Logic: See rules.objective and rules.gameplay.',
-    Player: '304 is a trick-taking partnership game for four. 32-card deck. Card values: J=30, 9=20, A=11, 10=10, K=3, Q=2, 8=7=0. Total 304 points. Bid from 160 in tens; highest bidder sets trump face-down then remaining cards dealt. Follow suit; bidding team must make bid in points. Popular in Sri Lanka and India.',
+    LLM: 'Bid from 160. Trump maker places trump face-down. Follow suit. J=30, 9=20, A=11, 10=10, K=3, Q=2, 8=7=0.',
+    Player: 'Bid from 160. Trump maker places trump face-down. Follow suit. J=30, 9=20, A=11, 10=10, K=3, Q=2, 8=7=0.',
     objective: 'Each team aims to bid a number (in multiples of 10, from 160 upward) and then win at least that many card points in tricks. The bidding team wins the hand if they make their bid; otherwise the opponents win.',
     gameplay: 'Bid from 160. Trump maker places trump face-down. Follow suit. J=30, 9=20, A=11, 10=10, K=3, Q=2, 8=7=0.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Bidding team wins if trick points meet or exceed bid. Expected outcome: Bid and make at least the bid in points..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Each team aims to bid a number (in multiples of 10, from 160 upward) and then win at least that many card points in tricks. The bidding team wins the hand if they make their bid; otherwise the opponents win.',
+      'Turn-flow example: Bid from 160. Trump maker places trump face-down. Follow suit. J=30, 9=20, A=11, 10=10, K=3, Q=2, 8=7=0.',
+      'Scoring example: Bidding team wins if trick points meet or exceed bid. Bid and make at least the bid in points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'three-nought-four.rules.objective',
+        title: 'Objective',
+        text: 'Each team aims to bid a number (in multiples of 10, from 160 upward) and then win at least that many card points in tricks. The bidding team wins the hand if they make their bid; otherwise the opponents win.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'three-nought-four.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Bid from 160. Trump maker places trump face-down. Follow suit. J=30, 9=20, A=11, 10=10, K=3, Q=2, 8=7=0.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'three-nought-four.setup.players',
+        title: 'Players',
+        text: 'Four players in two fixed partnerships; partners sit opposite (e.g. North-South vs East-West). Deal and play are counter-clockwise.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'three-nought-four.setup.deck',
+        title: 'Deck',
+        text: 'A standard 32-card pack: 7, 8, 9, 10, J, Q, K, A in all four suits (spades, clubs, diamonds, hearts). Total point value in the pack is 304.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'three-nought-four.setup.equipment',
+        title: 'Equipment',
+        text: '32-card deck, score sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'three-nought-four.setup.dealing',
+        title: 'Deal',
+        text: 'Four cards at a time counter-clockwise; after bid, rest dealt; trump face-down.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'three-nought-four.score.win-condition',
+        title: 'Win condition',
+        text: 'Bid and make at least the bid in points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'three-nought-four.score.description',
+        title: 'Scoring',
+        text: 'Bidding team wins if trick points meet or exceed bid.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'three-nought-four.rules.key.1',
+        title: 'Key rule 1',
+        text: '32 cards; point values as above',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'three-nought-four.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Bid from 160',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'three-nought-four.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Trump face-down',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'three-nought-four.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'three-nought-four.rules.objective',
+          'three-nought-four.rules.gameplay',
+        ],
+      },
+      {
+        id: 'three-nought-four.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'three-nought-four.setup.players',
+          'three-nought-four.setup.deck',
+          'three-nought-four.setup.equipment',
+          'three-nought-four.setup.dealing',
+        ],
+      },
+      {
+        id: 'three-nought-four.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'three-nought-four.rules.key.1',
+          'three-nought-four.rules.key.2',
+          'three-nought-four.rules.key.3',
+        ],
+      },
+      {
+        id: 'three-nought-four.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'three-nought-four.score.description',
+          'three-nought-four.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'three-nought-four.setup.dealing',
+        'three-nought-four.rules.objective',
+      ],
+      play_card: [
+        'three-nought-four.rules.gameplay',
+      ],
+    },
   },
 }

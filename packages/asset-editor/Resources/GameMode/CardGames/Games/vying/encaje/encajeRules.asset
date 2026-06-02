@@ -55,10 +55,186 @@
       go_out: 'Game ends per rules.',
     },
     exampleHands: [
-      'Opening deal: 3-5 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in grande_betting; current_player may use pass, bet, raise, fold before chica_betting.',
-      'Scoring check: Players start with 15-21 stones each and try to eliminate them through betting phases. Stones are removed from play based on showdown results and betting outcomes. Expected outcome: The game ends when all players except one have eliminated all their stones and all temporary pots are settled. The last player remaining with stones is the loser of the game..',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Be the first player to get rid of all your stones. The last player with stones remaining is the loser.',
+      "Turn-flow example: Four betting phases per hand: Grande (high cards), Chica (low cards), Pares (pairs), and Juego/Punto (card combinations).\n\n1. Grande: Bet on having the highest cards\n2. Chica: Bet on having the lowest cards\n3. Pares: Bet on having pairs (only players with pairs participate)\n4. Juego/Punto: Bet on card point totals (31 is best juego, punto is fallback)\n\nBetting proceeds anticlockwise from the mano (player to dealer's right). Players can pass, bet (minimum 2), see, or raise (minimum increase of 2).",
+      'Scoring example: Players start with 15-21 stones each and try to eliminate them through betting phases. Stones are removed from play based on showdown results and betting outcomes. The game ends when all players except one have eliminated all their stones and all temporary pots are settled. The last player remaining with stones is the loser of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'encaje.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to get rid of all your stones. The last player with stones remaining is the loser.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'encaje.rules.gameplay',
+        title: 'Turn flow',
+        text: "Four betting phases per hand: Grande (high cards), Chica (low cards), Pares (pairs), and Juego/Punto (card combinations).\n\n1. Grande: Bet on having the highest cards\n2. Chica: Bet on having the lowest cards\n3. Pares: Bet on having pairs (only players with pairs participate)\n4. Juego/Punto: Bet on card point totals (31 is best juego, punto is fallback)\n\nBetting proceeds anticlockwise from the mano (player to dealer's right). Players can pass, bet (minimum 2), see, or raise (minimum increase of 2).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'encaje.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 3\nMaximum Players: 5\nOptimal Players: 5\nPartnerships: None (individual play)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'encaje.setup.deck',
+        title: 'Deck',
+        text: 'Type: Spanish 40-card deck (without 8s, 9s, 10s)\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'encaje.setup.equipment',
+        title: 'Equipment',
+        text: 'Spanish 40-card deck\nStones or tokens (15-21 per player)\nScore tracking system',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'encaje.setup.dealing',
+        title: 'Deal',
+        text: "Two methods available:\n1. Standard deal: 4 cards to each player, with 'mus' round for exchanging cards\n2. Alternative deal: 5 cards to each player, each discards 1 face down before betting\nDeal rotates anticlockwise",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'encaje.score.win-condition',
+        title: 'Win condition',
+        text: 'The game ends when all players except one have eliminated all their stones and all temporary pots are settled. The last player remaining with stones is the loser of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'encaje.score.description',
+        title: 'Scoring',
+        text: 'Players start with 15-21 stones each and try to eliminate them through betting phases. Stones are removed from play based on showdown results and betting outcomes.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'encaje.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No partnerships—each player competes individually',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'encaje.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Cannot bet more stones than you currently possess',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'encaje.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Players with no stones cannot participate in betting',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'encaje.rules.key.4',
+        title: 'Key rule 4',
+        text: 'The loser is the last player with stones remaining',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'encaje.rules.key.5',
+        title: 'Key rule 5',
+        text: 'No ordago (all-in) in Encaje',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'encaje.rules.key.6',
+        title: 'Key rule 6',
+        text: 'If only one player has pares or juego, they score without betting',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'encaje.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'encaje.rules.objective',
+          'encaje.rules.gameplay',
+        ],
+      },
+      {
+        id: 'encaje.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'encaje.setup.players',
+          'encaje.setup.deck',
+          'encaje.setup.equipment',
+          'encaje.setup.dealing',
+        ],
+      },
+      {
+        id: 'encaje.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'encaje.rules.key.1',
+          'encaje.rules.key.2',
+          'encaje.rules.key.3',
+          'encaje.rules.key.4',
+          'encaje.rules.key.5',
+          'encaje.rules.key.6',
+        ],
+      },
+      {
+        id: 'encaje.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'encaje.score.description',
+          'encaje.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'encaje.setup.dealing',
+        'encaje.rules.objective',
+      ],
+      fold: [
+        'encaje.rules.gameplay',
+      ],
+      bet: [
+        'encaje.rules.gameplay',
+      ],
+      raise: [
+        'encaje.rules.gameplay',
+      ],
+      declare: [
+        'encaje.rules.gameplay',
+      ],
+      pass: [
+        'encaje.rules.gameplay',
+      ],
+    },
   },
 }

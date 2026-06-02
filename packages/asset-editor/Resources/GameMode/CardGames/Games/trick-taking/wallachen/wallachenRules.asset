@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kaiserspiel. Logic: Win the tricks, card points, or contract result required by the local form of the game.',
-    Player: 'Kaiserspiel is a traditional trick-taking card game using 40 or 48-card Swiss Kaiserspiel deck for 2, 4, or 6 players. It uses one chosen suit and belongs to the Karnöffel environment.',
+    LLM: 'Three players take part in a relatively simple trick-taking game with Preference-family bidding and relaxed pub-game character. It was historically popular in eastern Bavaria.',
+    Player: 'Three players take part in a relatively simple trick-taking game with Preference-family bidding and relaxed pub-game character. It was historically popular in eastern Bavaria.',
     objective: 'Bid or choose the contract and win the required tricks in the three-player Preference-like structure.',
     gameplay: 'Three players take part in a relatively simple trick-taking game with Preference-family bidding and relaxed pub-game character. It was historically popular in eastern Bavaria.',
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Tricks, card points, or contract success determine scoring. Expected outcome: 1.',
+      'Setup example: 10 card(s) per player.',
+      'Rule example: Bid or choose the contract and win the required tricks in the three-player Preference-like structure.',
+      'Turn-flow example: Three players take part in a relatively simple trick-taking game with Preference-family bidding and relaxed pub-game character. It was historically popular in eastern Bavaria.',
+      'Scoring example: Tricks, card points, or contract success determine scoring. Win the tricks, card points, or contract result required by the local form of the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'wallachen.rules.objective',
+        title: 'Objective',
+        text: 'Bid or choose the contract and win the required tricks in the three-player Preference-like structure.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'wallachen.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Three players take part in a relatively simple trick-taking game with Preference-family bidding and relaxed pub-game character. It was historically popular in eastern Bavaria.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'wallachen.setup.players',
+        title: 'Players',
+        text: '3 players use the table arrangement described for Wallachen.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'wallachen.setup.deck',
+        title: 'Deck',
+        text: 'Traditional Bavarian playing cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'wallachen.setup.equipment',
+        title: 'Equipment',
+        text: 'Traditional Bavarian playing cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'wallachen.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Traditional Bavarian playing cards and deal or lay out cards according to the documented Wallachen rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'wallachen.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the tricks, card points, or contract result required by the local form of the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'wallachen.score.description',
+        title: 'Scoring',
+        text: 'Tricks, card points, or contract success determine scoring.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'wallachen.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Three-player Bavarian card game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'wallachen.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Member of the Preference family.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'wallachen.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Historically banned or regulated as a gambling game in some areas.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'wallachen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'wallachen.rules.objective',
+          'wallachen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'wallachen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'wallachen.setup.players',
+          'wallachen.setup.deck',
+          'wallachen.setup.equipment',
+          'wallachen.setup.dealing',
+        ],
+      },
+      {
+        id: 'wallachen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'wallachen.rules.key.1',
+          'wallachen.rules.key.2',
+          'wallachen.rules.key.3',
+        ],
+      },
+      {
+        id: 'wallachen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'wallachen.score.description',
+          'wallachen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'wallachen.setup.dealing',
+        'wallachen.rules.objective',
+      ],
+      play_card: [
+        'wallachen.rules.gameplay',
+      ],
+      discard: [
+        'wallachen.rules.gameplay',
+      ],
+      pass: [
+        'wallachen.rules.gameplay',
+      ],
+      bid: [
+        'wallachen.rules.gameplay',
+      ],
+    },
   },
 }

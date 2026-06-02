@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Naval War. Logic: Sink opposing ships or survive with the strongest fleet according to the published rules.',
-    Player: 'Naval War is a commercial card-based naval combat game where players operate ships and attack opposing fleets.',
+    LLM: 'Players play ship, salvo, and event cards, attack enemy vessels, and resolve combat through card effects.',
+    Player: 'Players play ship, salvo, and event cards, attack enemy vessels, and resolve combat through card effects.',
     objective: 'Sink opposing ships or survive with the strongest fleet according to the published rules.',
     gameplay: 'Players play ship, salvo, and event cards, attack enemy vessels, and resolve combat through card effects.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Published scoring or victory conditions determine the winner. Expected outcome: Sink opposing ships or survive with the strongest fleet according to the published rules..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Sink opposing ships or survive with the strongest fleet according to the published rules.',
+      'Turn-flow example: Players play ship, salvo, and event cards, attack enemy vessels, and resolve combat through card effects.',
+      'Scoring example: Published scoring or victory conditions determine the winner. Sink opposing ships or survive with the strongest fleet according to the published rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'naval-war.rules.objective',
+        title: 'Objective',
+        text: 'Sink opposing ships or survive with the strongest fleet according to the published rules.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'naval-war.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play ship, salvo, and event cards, attack enemy vessels, and resolve combat through card effects.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'naval-war.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Naval War.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'naval-war.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Naval War ship and combat cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'naval-war.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Naval War ship and combat cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'naval-war.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare the dedicated Naval War cards and any shared table, score, or resource areas from the published rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'naval-war.score.win-condition',
+        title: 'Win condition',
+        text: 'Sink opposing ships or survive with the strongest fleet according to the published rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'naval-war.score.description',
+        title: 'Scoring',
+        text: 'Published scoring or victory conditions determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'naval-war.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Card-based naval combat.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'naval-war.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Ships are represented by cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'naval-war.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Attack cards damage fleets.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'naval-war.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Multiple players can operate opposing ships side by side.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'naval-war.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Survival or fleet result wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'naval-war.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'naval-war.rules.objective',
+          'naval-war.rules.gameplay',
+        ],
+      },
+      {
+        id: 'naval-war.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'naval-war.setup.players',
+          'naval-war.setup.deck',
+          'naval-war.setup.equipment',
+          'naval-war.setup.dealing',
+        ],
+      },
+      {
+        id: 'naval-war.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'naval-war.rules.key.1',
+          'naval-war.rules.key.2',
+          'naval-war.rules.key.3',
+          'naval-war.rules.key.4',
+          'naval-war.rules.key.5',
+        ],
+      },
+      {
+        id: 'naval-war.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'naval-war.score.description',
+          'naval-war.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'naval-war.setup.dealing',
+        'naval-war.rules.objective',
+      ],
+      play_card: [
+        'naval-war.rules.gameplay',
+      ],
+    },
   },
 }

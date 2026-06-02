@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Basset. Logic: Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
-    Player: 'Basset is a historical Italian gambling card game in which players bet against a banker on ranks that may appear from the pack.',
+    LLM: 'Two matching packs are used for a tombola-like card lottery. Players participate in a simple chance structure where matching or drawn cards determine payments.',
+    Player: 'Two matching packs are used for a tombola-like card lottery. Players participate in a simple chance structure where matching or drawn cards determine payments.',
     objective: 'Win the lottery-style card stakes according to the drawn-card procedure.',
     gameplay: 'Two matching packs are used for a tombola-like card lottery. Players participate in a simple chance structure where matching or drawn cards determine payments.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Bets are paid or lost against the bank according to the exposed-card result. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the lottery-style card stakes according to the drawn-card procedure.',
+      'Turn-flow example: Two matching packs are used for a tombola-like card lottery. Players participate in a simple chance structure where matching or drawn cards determine payments.',
+      'Scoring example: Bets are paid or lost against the bank according to the exposed-card result. Win stakes by backing ranks that appear in the favourable positions of the banked deal..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'silesian-lottery.rules.objective',
+        title: 'Objective',
+        text: 'Win the lottery-style card stakes according to the drawn-card procedure.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'silesian-lottery.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Two matching packs are used for a tombola-like card lottery. Players participate in a simple chance structure where matching or drawn cards determine payments.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'silesian-lottery.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Silesian Lottery.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'silesian-lottery.setup.deck',
+        title: 'Deck',
+        text: 'Two 32-card Bavarian or French-suited packs',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'silesian-lottery.setup.equipment',
+        title: 'Equipment',
+        text: 'Two 32-card Bavarian or French-suited packs, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'silesian-lottery.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Two 32-card Bavarian or French-suited packs and deal or lay out cards according to the documented Silesian Lottery rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'silesian-lottery.score.win-condition',
+        title: 'Win condition',
+        text: 'Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'silesian-lottery.score.description',
+        title: 'Scoring',
+        text: 'Bets are paid or lost against the bank according to the exposed-card result.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'silesian-lottery.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Uses two packs of 32 cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'silesian-lottery.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Also known as card lottery or card tombola.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'silesian-lottery.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Primarily a chance-based gambling game.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'silesian-lottery.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'silesian-lottery.rules.objective',
+          'silesian-lottery.rules.gameplay',
+        ],
+      },
+      {
+        id: 'silesian-lottery.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'silesian-lottery.setup.players',
+          'silesian-lottery.setup.deck',
+          'silesian-lottery.setup.equipment',
+          'silesian-lottery.setup.dealing',
+        ],
+      },
+      {
+        id: 'silesian-lottery.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'silesian-lottery.rules.key.1',
+          'silesian-lottery.rules.key.2',
+          'silesian-lottery.rules.key.3',
+        ],
+      },
+      {
+        id: 'silesian-lottery.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'silesian-lottery.score.description',
+          'silesian-lottery.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'silesian-lottery.setup.dealing',
+        'silesian-lottery.rules.objective',
+      ],
+      play_card: [
+        'silesian-lottery.rules.gameplay',
+      ],
+    },
   },
 }

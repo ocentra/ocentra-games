@@ -54,10 +54,174 @@
       go_out: 'Must have three pure sets already shown to use tiplu; then all cards in valid sets and one card discarded, or eight dublees laid.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 21 card(s) per player, 3 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use draw, discard before round end.',
-      'Scoring check: Points from maal (tiplu, poplu, jhiplu in hand) and tunnelas exposed at start. Winner receives 3 points from each opponent who saw the tiplu, 10 from each who did not; plus 5 each if winner went out with eight dublees. Players settle card-point differences; net payments are often consolidated to or from the winner. Expected outcome: NA.',
+      'Setup example: 21 card(s) per player.',
+      'Rule example: Be the first to complete three pure sets (tunnelas or pure sequences) to choose or see the tiplu, then arrange all cards into valid three-card sets (and optionally seven or eight dublees) and discard the last card to end the hand. Score the most points from maal and tunnelas.',
+      'Turn-flow example: Each turn: take one card (top of stock or the face-up discard) then discard one card. Only the latest discard may be taken. The first player to lay down three tunnelas or pure sequences chooses a card from the stock as the tiplu (face down under the stock); that rank and the cards immediately above and below it in the same suit become wild (poplu, tiplu, jhiplu). After that, use wild cards to form dirty sets. End by laying all cards in valid sets and discarding one, or by laying eight dublees.',
+      'Scoring example: Points from maal (tiplu, poplu, jhiplu in hand) and tunnelas exposed at start. Winner receives 3 points from each opponent who saw the tiplu, 10 from each who did not; plus 5 each if winner went out with eight dublees. Players settle card-point differences; net payments are often consolidated to or from the winner. Win the hand by going out first; win the match by scoring the most points over multiple hands..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'marriage-nepali.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to complete three pure sets (tunnelas or pure sequences) to choose or see the tiplu, then arrange all cards into valid three-card sets (and optionally seven or eight dublees) and discard the last card to end the hand. Score the most points from maal and tunnelas.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'marriage-nepali.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Each turn: take one card (top of stock or the face-up discard) then discard one card. Only the latest discard may be taken. The first player to lay down three tunnelas or pure sequences chooses a card from the stock as the tiplu (face down under the stock); that rank and the cards immediately above and below it in the same suit become wild (poplu, tiplu, jhiplu). After that, use wild cards to form dirty sets. End by laying all cards in valid sets and discarding one, or by laying eight dublees.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'marriage-nepali.setup.players',
+        title: 'Players',
+        text: '2 to 5 players. Each plays individually.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'marriage-nepali.setup.deck',
+        title: 'Deck',
+        text: 'Three standard 52-card packs shuffled together: 156 cards in all. No printed jokers; wild cards are created each deal (tiplu, poplu, jhiplu).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'marriage-nepali.setup.equipment',
+        title: 'Equipment',
+        text: 'Three standard 52-card packs shuffled together: 156 cards in all. No printed jokers; wild cards are created each deal (tiplu, poplu, jhiplu).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'marriage-nepali.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer gives 21 cards to each player. The next card is turned face up to start the discard pile; the rest form the face-down stock. Deal and play are clockwise in the most common rules; some regional rules use anticlockwise.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'marriage-nepali.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the hand by going out first; win the match by scoring the most points over multiple hands.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'marriage-nepali.score.description',
+        title: 'Scoring',
+        text: 'Points from maal (tiplu, poplu, jhiplu in hand) and tunnelas exposed at start. Winner receives 3 points from each opponent who saw the tiplu, 10 from each who did not; plus 5 each if winner went out with eight dublees. Players settle card-point differences; net payments are often consolidated to or from the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'marriage-nepali.rules.key.1',
+        title: 'Key rule 1',
+        text: '21 cards each; draw one, discard one each turn',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'marriage-nepali.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Only the top card of the discard pile may be taken',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'marriage-nepali.rules.key.3',
+        title: 'Key rule 3',
+        text: 'First to lay three pure sets chooses the tiplu',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'marriage-nepali.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Valid sets: tunnela (3 identical), pure sequence (3 consecutive same suit), trial (3 same rank different suits), dirty versions with wilds',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'marriage-nepali.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Eight dublees (pairs of identical cards) can also win; jokers cannot form dublees',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'marriage-nepali.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'marriage-nepali.rules.objective',
+          'marriage-nepali.rules.gameplay',
+        ],
+      },
+      {
+        id: 'marriage-nepali.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'marriage-nepali.setup.players',
+          'marriage-nepali.setup.deck',
+          'marriage-nepali.setup.equipment',
+          'marriage-nepali.setup.dealing',
+        ],
+      },
+      {
+        id: 'marriage-nepali.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'marriage-nepali.rules.key.1',
+          'marriage-nepali.rules.key.2',
+          'marriage-nepali.rules.key.3',
+          'marriage-nepali.rules.key.4',
+          'marriage-nepali.rules.key.5',
+        ],
+      },
+      {
+        id: 'marriage-nepali.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'marriage-nepali.score.description',
+          'marriage-nepali.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'marriage-nepali.setup.dealing',
+        'marriage-nepali.rules.objective',
+      ],
+      draw: [
+        'marriage-nepali.rules.gameplay',
+      ],
+      discard: [
+        'marriage-nepali.rules.gameplay',
+      ],
+      meld: [
+        'marriage-nepali.rules.gameplay',
+      ],
+      go_out: [
+        'marriage-nepali.rules.gameplay',
+      ],
+    },
   },
 }

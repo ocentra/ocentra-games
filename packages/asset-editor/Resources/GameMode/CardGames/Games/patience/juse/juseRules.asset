@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Juse. Objective: Be the first to empty both your draw pile and your discard pile.',
-    Player: 'Juse: play by the rules, manage scoring opportunities, and pursue the win condition.',
+    LLM: "1. Each player has a face-down draw pile and a face-up discard pile.\n2. In the center, four foundation piles (one for each suit) are built UPWARDS in suit.\n3. **Turn Action**: You must play cards from your draw/discard pile to the center OR onto an opponent's discard pile (if one rank higher, regardless of suit).\n4. **Forced Play**: If a card CAN be played to a center foundation, it MUST be played before any other move.\n5. **Juse!**: If a player misses a forced play, any other player can shout 'JUSE!'. The offender must take cards from the bottom of every other player's pile.",
+    Player: "1. Each player has a face-down draw pile and a face-up discard pile.\n2. In the center, four foundation piles (one for each suit) are built UPWARDS in suit.\n3. **Turn Action**: You must play cards from your draw/discard pile to the center OR onto an opponent's discard pile (if one rank higher, regardless of suit).\n4. **Forced Play**: If a card CAN be played to a center foundation, it MUST be played before any other move.\n5. **Juse!**: If a player misses a forced play, any other player can shout 'JUSE!'. The offender must take cards from the bottom of every other player's pile.",
     objective: 'Be the first to empty both your draw pile and your discard pile.',
     gameplay: "1. Each player has a face-down draw pile and a face-up discard pile.\n2. In the center, four foundation piles (one for each suit) are built UPWARDS in suit.\n3. **Turn Action**: You must play cards from your draw/discard pile to the center OR onto an opponent's discard pile (if one rank higher, regardless of suit).\n4. **Forced Play**: If a card CAN be played to a center foundation, it MUST be played before any other move.\n5. **Juse!**: If a player misses a forced play, any other player can shout 'JUSE!'. The offender must take cards from the bottom of every other player's pile.",
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 9 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: No points; the first player to empty both their draw pile and discard pile wins the game. Expected outcome: NA.',
+      'Setup example: 9 card(s) per player.',
+      'Rule example: Be the first to empty both your draw pile and your discard pile.',
+      "Turn-flow example: 1. Each player has a face-down draw pile and a face-up discard pile.\n2. In the center, four foundation piles (one for each suit) are built UPWARDS in suit.\n3. **Turn Action**: You must play cards from your draw/discard pile to the center OR onto an opponent's discard pile (if one rank higher, regardless of suit).\n4. **Forced Play**: If a card CAN be played to a center foundation, it MUST be played before any other move.\n5. **Juse!**: If a player misses a forced play, any other player can shout 'JUSE!'. The offender must take cards from the bottom of every other player's pile.",
+      'Scoring example: No points; the first player to empty both their draw pile and discard pile wins the game. Be the first to get rid of your last card so that both your draw pile and your discard pile are empty..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'juse.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to empty both your draw pile and your discard pile.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'juse.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Each player has a face-down draw pile and a face-up discard pile.\n2. In the center, four foundation piles (one for each suit) are built UPWARDS in suit.\n3. **Turn Action**: You must play cards from your draw/discard pile to the center OR onto an opponent's discard pile (if one rank higher, regardless of suit).\n4. **Forced Play**: If a card CAN be played to a center foundation, it MUST be played before any other move.\n5. **Juse!**: If a player misses a forced play, any other player can shout 'JUSE!'. The offender must take cards from the bottom of every other player's pile.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'juse.setup.players',
+        title: 'Players',
+        text: 'Any number, but odd numbers (3, 5, 7) are traditional.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'juse.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Ranked cyclically: ...-A-2-3...-K-A-...',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'juse.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. Ranked cyclically: ...-A-2-3...-K-A-...',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'juse.setup.dealing',
+        title: 'Deal',
+        text: 'Deal cards face-down equally until 1 card remains. That last card is placed in the center to start the first foundation pile.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'juse.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first to get rid of your last card so that both your draw pile and your discard pile are empty.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'juse.score.description',
+        title: 'Scoring',
+        text: 'No points; the first player to empty both their draw pile and discard pile wins the game.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'juse.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for Juse.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'juse.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: Scoring summary: Scoring follows the game-specific point or pot rules.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'juse.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Be the first to empty both your draw pile and your discard pile.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'juse.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'juse.rules.objective',
+          'juse.rules.gameplay',
+        ],
+      },
+      {
+        id: 'juse.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'juse.setup.players',
+          'juse.setup.deck',
+          'juse.setup.equipment',
+          'juse.setup.dealing',
+        ],
+      },
+      {
+        id: 'juse.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'juse.rules.key.1',
+          'juse.rules.key.2',
+          'juse.rules.key.3',
+        ],
+      },
+      {
+        id: 'juse.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'juse.score.description',
+          'juse.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'juse.setup.dealing',
+        'juse.rules.objective',
+      ],
+      deal: [
+        'juse.rules.gameplay',
+      ],
+      play_card: [
+        'juse.rules.gameplay',
+      ],
+      pass: [
+        'juse.rules.gameplay',
+      ],
+      bid: [
+        'juse.rules.gameplay',
+      ],
+    },
   },
 }

@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 8 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 8 card(s) per player.',
+      'Rule example: Win more than half of the total points (usually 81+ out of 162 total card points) plus roem.',
+      'Turn-flow example: Must follow suit. If unable, you MUST trump. If a trump is led, you must overtrump (Amsterdamse rules).',
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'kraken.rules.objective',
+        title: 'Objective',
+        text: 'Win more than half of the total points (usually 81+ out of 162 total card points) plus roem.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kraken.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Must follow suit. If unable, you MUST trump. If a trump is led, you must overtrump (Amsterdamse rules).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kraken.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships (2 vs 2).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kraken.setup.deck',
+        title: 'Deck',
+        text: '32 cards (7 through Ace). The Jack of Trumps (20 pts) and Nine of Trumps (14 pts) are the highest.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kraken.setup.equipment',
+        title: 'Equipment',
+        text: '32 cards (7 through Ace). The Jack of Trumps (20 pts) and Nine of Trumps (14 pts) are the highest.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kraken.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 8 cards (dealt 3-2-3 or 4-4).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kraken.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kraken.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kraken.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit; if unable, must trump. If trump is led, must overtrump (Amsterdamse rules).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kraken.rules.key.2',
+        title: 'Key rule 2',
+        text: 'After trump is chosen, opponents may say Kraak (contra) to double; makers may herkraken to quadruple; opponents may superkraken to octuple.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kraken.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Roem in hand is claimed before the first trick; the team with the highest single combination scores all its roem; the other team scores none.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kraken.rules.key.4',
+        title: 'Key rule 4',
+        text: 'The side that announced the last kraak must take more than half the points to win; the winning side takes all points (multiplied by kraaks).',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kraken.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kraken.rules.objective',
+          'kraken.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kraken.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kraken.setup.players',
+          'kraken.setup.deck',
+          'kraken.setup.equipment',
+          'kraken.setup.dealing',
+        ],
+      },
+      {
+        id: 'kraken.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kraken.rules.key.1',
+          'kraken.rules.key.2',
+          'kraken.rules.key.3',
+          'kraken.rules.key.4',
+        ],
+      },
+      {
+        id: 'kraken.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kraken.score.description',
+          'kraken.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kraken.setup.dealing',
+        'kraken.rules.objective',
+      ],
+      play_card: [
+        'kraken.rules.gameplay',
+      ],
+    },
   },
 }

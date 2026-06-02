@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Zwanzig ab. Logic: See rules.objective and rules.gameplay.',
-    Player: "Zwanzig ab ('Twenty Off') is a German trick game. 2-4 players. 32-card Skat deck. 5 each (2+3). Start at 20pts, subtract 1 per trick won. First to 0 wins. Forehand chooses trumps. Can exchange up to 3 cards. May drop out (except trump chooser). Hearts trumps = double scoring.",
+    LLM: 'Forehand chooses trump (from first 2 cards). Exchange up to 3. May drop out (not trump chooser). Follow suit, must trump if void. 1 trick = -1pt. All 5 = -5pts. 0 tricks while in = +5pts. Hearts = double. Diamonds = must stay.',
+    Player: 'Forehand chooses trump (from first 2 cards). Exchange up to 3. May drop out (not trump chooser). Follow suit, must trump if void. 1 trick = -1pt. All 5 = -5pts. 0 tricks while in = +5pts. Hearts = double. Diamonds = must stay.',
     objective: 'Each player starts with a score of 20; the object is to be the first to reach zero.',
     gameplay: 'Forehand chooses trump (from first 2 cards). Exchange up to 3. May drop out (not trump chooser). Follow suit, must trump if void. 1 trick = -1pt. All 5 = -5pts. 0 tricks while in = +5pts. Hearts = double. Diamonds = must stay.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Trick = -1pt. All 5 = -5pts. 0 tricks = +5pts. Hearts = double. Expected outcome: First to reduce score from 20 to 0..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Each player starts with a score of 20; the object is to be the first to reach zero.',
+      'Turn-flow example: Forehand chooses trump (from first 2 cards). Exchange up to 3. May drop out (not trump chooser). Follow suit, must trump if void. 1 trick = -1pt. All 5 = -5pts. 0 tricks while in = +5pts. Hearts = double. Diamonds = must stay.',
+      'Scoring example: Trick = -1pt. All 5 = -5pts. 0 tricks = +5pts. Hearts = double. First to reduce score from 20 to 0..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'zwanzig-ab.rules.objective',
+        title: 'Objective',
+        text: 'Each player starts with a score of 20; the object is to be the first to reach zero.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'zwanzig-ab.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Forehand chooses trump (from first 2 cards). Exchange up to 3. May drop out (not trump chooser). Follow suit, must trump if void. 1 trick = -1pt. All 5 = -5pts. 0 tricks while in = +5pts. Hearts = double. Diamonds = must stay.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'zwanzig-ab.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'zwanzig-ab.setup.deck',
+        title: 'Deck',
+        text: '32 Skat cards. A-10-K-Q-J-9-8-7.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'zwanzig-ab.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'zwanzig-ab.setup.dealing',
+        title: 'Deal',
+        text: '5 each (2 then 3). Forehand picks trump from first 2.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'zwanzig-ab.score.win-condition',
+        title: 'Win condition',
+        text: 'First to reduce score from 20 to 0.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'zwanzig-ab.score.description',
+        title: 'Scoring',
+        text: 'Trick = -1pt. All 5 = -5pts. 0 tricks = +5pts. Hearts = double.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'zwanzig-ab.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Start at 20, subtract to 0',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'zwanzig-ab.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Forehand picks trump',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'zwanzig-ab.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Card exchange (up to 3)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'zwanzig-ab.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Drop out option',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'zwanzig-ab.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Hearts double, Diamonds mandatory',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'zwanzig-ab.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'zwanzig-ab.rules.objective',
+          'zwanzig-ab.rules.gameplay',
+        ],
+      },
+      {
+        id: 'zwanzig-ab.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'zwanzig-ab.setup.players',
+          'zwanzig-ab.setup.deck',
+          'zwanzig-ab.setup.equipment',
+          'zwanzig-ab.setup.dealing',
+        ],
+      },
+      {
+        id: 'zwanzig-ab.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'zwanzig-ab.rules.key.1',
+          'zwanzig-ab.rules.key.2',
+          'zwanzig-ab.rules.key.3',
+          'zwanzig-ab.rules.key.4',
+          'zwanzig-ab.rules.key.5',
+        ],
+      },
+      {
+        id: 'zwanzig-ab.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'zwanzig-ab.score.description',
+          'zwanzig-ab.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'zwanzig-ab.setup.dealing',
+        'zwanzig-ab.rules.objective',
+      ],
+      play_card: [
+        'zwanzig-ab.rules.gameplay',
+      ],
+    },
   },
 }

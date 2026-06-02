@@ -53,10 +53,186 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in initial_deal; dealer may use deal_initial before preflop_bet.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Make the best five-card poker hand from your two remaining hole cards and the five community cards to win the pot.',
+      'Turn-flow example: Each player receives three hole cards face down. Preflop betting. Dealer deals three community cards (flop); betting. Each active player must discard one hole card. Dealer deals one card (turn); betting. Dealer deals one card (river); final betting. Showdown: best five-card hand using any two hole cards and five board cards wins.',
+      'Scoring example: Points or match rules. Highest-ranked five-card poker hand using any combination of two hole cards and five community cards wins the pot..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'crazy-pineapple.rules.objective',
+        title: 'Objective',
+        text: 'Make the best five-card poker hand from your two remaining hole cards and the five community cards to win the pot.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'crazy-pineapple.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Each player receives three hole cards face down. Preflop betting. Dealer deals three community cards (flop); betting. Each active player must discard one hole card. Dealer deals one card (turn); betting. Dealer deals one card (river); final betting. Showdown: best five-card hand using any two hole cards and five board cards wins.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'crazy-pineapple.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'crazy-pineapple.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'crazy-pineapple.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck, chips for betting.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'crazy-pineapple.setup.dealing',
+        title: 'Deal',
+        text: 'Three hole cards each, one at a time face down. Then flop (3), turn (1), river (1) to the board.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'crazy-pineapple.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest-ranked five-card poker hand using any combination of two hole cards and five community cards wins the pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'crazy-pineapple.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'crazy-pineapple.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Three hole cards; discard one before the turn.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'crazy-pineapple.rules.key.2',
+        title: 'Key rule 2',
+        text: "Five community cards (flop, turn, river) as in Texas Hold'em.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'crazy-pineapple.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Standard poker hand ranking; best five-card hand wins the pot.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'crazy-pineapple.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Blinds and betting rounds: preflop, after flop, after turn, after river.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'crazy-pineapple.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'crazy-pineapple.rules.objective',
+          'crazy-pineapple.rules.gameplay',
+        ],
+      },
+      {
+        id: 'crazy-pineapple.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'crazy-pineapple.setup.players',
+          'crazy-pineapple.setup.deck',
+          'crazy-pineapple.setup.equipment',
+          'crazy-pineapple.setup.dealing',
+        ],
+      },
+      {
+        id: 'crazy-pineapple.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'crazy-pineapple.rules.key.1',
+          'crazy-pineapple.rules.key.2',
+          'crazy-pineapple.rules.key.3',
+          'crazy-pineapple.rules.key.4',
+        ],
+      },
+      {
+        id: 'crazy-pineapple.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'crazy-pineapple.score.description',
+          'crazy-pineapple.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'crazy-pineapple.setup.dealing',
+        'crazy-pineapple.rules.objective',
+      ],
+      fold: [
+        'crazy-pineapple.rules.gameplay',
+      ],
+      check: [
+        'crazy-pineapple.rules.gameplay',
+      ],
+      call: [
+        'crazy-pineapple.rules.gameplay',
+      ],
+      bet: [
+        'crazy-pineapple.rules.gameplay',
+      ],
+      raise: [
+        'crazy-pineapple.rules.gameplay',
+      ],
+      reveal_hand: [
+        'crazy-pineapple.rules.gameplay',
+      ],
+      discard: [
+        'crazy-pineapple.rules.gameplay',
+      ],
+      deal_initial: [
+        'crazy-pineapple.rules.gameplay',
+      ],
+      deal_flop: [
+        'crazy-pineapple.rules.gameplay',
+      ],
+      deal_turn: [
+        'crazy-pineapple.rules.gameplay',
+      ],
+      deal_river: [
+        'crazy-pineapple.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Toepen. Loop: deal 4 each -> 4 tricks no-trump follow-suit -> optional knock/fold windows -> score by last-trick result and knock level. Rank: 10,9,8,7,A,K,Q,J. Objective: minimize penalties; game ends when threshold reached.',
-    Player: 'Toepen is about surviving the fourth trick. You can knock to raise the stake, but everyone still in pays more if they lose. Fold too early and you leak points; stay too long and you can get crushed.',
+    LLM: '1. **Deal**: Four cards each. 2. **Tricks**: Play four tricks; players must follow suit if possible, otherwise may play any card. Highest card of led suit wins and leads next trick. 3. **Knocking**: After players have viewed cards, and at any time during the hand, a player may knock to raise stake by one. 4. **Responses**: Other players choose to stay in or fold; folded players lose current stake and stop participating in the hand. 5. **Result**: Winner of trick four avoids hand loss; other staying players lose according to total stake.',
+    Player: '1. **Deal**: Four cards each. 2. **Tricks**: Play four tricks; players must follow suit if possible, otherwise may play any card. Highest card of led suit wins and leads next trick. 3. **Knocking**: After players have viewed cards, and at any time during the hand, a player may knock to raise stake by one. 4. **Responses**: Other players choose to stay in or fold; folded players lose current stake and stop participating in the hand. 5. **Result**: Winner of trick four avoids hand loss; other staying players lose according to total stake.',
     objective: 'Avoid hand penalties by winning the fourth (last) trick, or by folding at favorable moments when stakes rise.',
     gameplay: '1. **Deal**: Four cards each. 2. **Tricks**: Play four tricks; players must follow suit if possible, otherwise may play any card. Highest card of led suit wins and leads next trick. 3. **Knocking**: After players have viewed cards, and at any time during the hand, a player may knock to raise stake by one. 4. **Responses**: Other players choose to stay in or fold; folded players lose current stake and stop participating in the hand. 5. **Result**: Winner of trick four avoids hand loss; other staying players lose according to total stake.',
     keyRules: [
@@ -54,10 +54,177 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before trick_play.',
-      'Scoring check: Penalty-life system where baseline loss is 1 life and each knock increases effective stake by 1. Expected outcome: 10.',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Avoid hand penalties by winning the fourth (last) trick, or by folding at favorable moments when stakes rise.',
+      'Turn-flow example: 1. **Deal**: Four cards each. 2. **Tricks**: Play four tricks; players must follow suit if possible, otherwise may play any card. Highest card of led suit wins and leads next trick. 3. **Knocking**: After players have viewed cards, and at any time during the hand, a player may knock to raise stake by one. 4. **Responses**: Other players choose to stay in or fold; folded players lose current stake and stop participating in the hand. 5. **Result**: Winner of trick four avoids hand loss; other staying players lose according to total stake.',
+      'Scoring example: Penalty-life system where baseline loss is 1 life and each knock increases effective stake by 1. In standard round play, game ends when a player reaches 10 lives and loses the rubber; elimination variants continue until one player remains..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'toepen.rules.objective',
+        title: 'Objective',
+        text: 'Avoid hand penalties by winning the fourth (last) trick, or by folding at favorable moments when stakes rise.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'toepen.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Deal**: Four cards each. 2. **Tricks**: Play four tricks; players must follow suit if possible, otherwise may play any card. Highest card of led suit wins and leads next trick. 3. **Knocking**: After players have viewed cards, and at any time during the hand, a player may knock to raise stake by one. 4. **Responses**: Other players choose to stay in or fold; folded players lose current stake and stop participating in the hand. 5. **Result**: Winner of trick four avoids hand loss; other staying players lose according to total stake.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'toepen.setup.players',
+        title: 'Players',
+        text: '3-8 players in clockwise order; dealer rotates.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'toepen.setup.deck',
+        title: 'Deck',
+        text: '32-card deck with rank 10 (high), 9, 8, 7, A, K, Q, J (low). No trumps.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'toepen.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards and a life/penalty score tracker.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'toepen.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer gives 4 cards to each player. Player left of dealer leads first trick.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'toepen.score.win-condition',
+        title: 'Win condition',
+        text: 'In standard round play, game ends when a player reaches 10 lives and loses the rubber; elimination variants continue until one player remains.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'toepen.score.description',
+        title: 'Scoring',
+        text: 'Penalty-life system where baseline loss is 1 life and each knock increases effective stake by 1.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'toepen.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No trumps.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'toepen.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Only the fourth trick decides the hand winner.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'toepen.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Knocking raises stake for everyone still active.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'toepen.rules.key.4',
+        title: 'Key rule 4',
+        text: 'The last player to knock cannot knock again until someone else has knocked.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'toepen.rules.key.5',
+        title: 'Key rule 5',
+        text: 'A player cannot knock and fold to that same knock.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'toepen.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'toepen.rules.objective',
+          'toepen.rules.gameplay',
+        ],
+      },
+      {
+        id: 'toepen.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'toepen.setup.players',
+          'toepen.setup.deck',
+          'toepen.setup.equipment',
+          'toepen.setup.dealing',
+        ],
+      },
+      {
+        id: 'toepen.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'toepen.rules.key.1',
+          'toepen.rules.key.2',
+          'toepen.rules.key.3',
+          'toepen.rules.key.4',
+          'toepen.rules.key.5',
+        ],
+      },
+      {
+        id: 'toepen.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'toepen.score.description',
+          'toepen.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'toepen.setup.dealing',
+        'toepen.rules.objective',
+      ],
+      deal: [
+        'toepen.rules.gameplay',
+      ],
+      fold: [
+        'toepen.rules.gameplay',
+      ],
+      play_card: [
+        'toepen.rules.gameplay',
+      ],
+      knock: [
+        'toepen.rules.gameplay',
+      ],
+      apply_penalties: [
+        'toepen.rules.gameplay',
+      ],
+    },
   },
 }

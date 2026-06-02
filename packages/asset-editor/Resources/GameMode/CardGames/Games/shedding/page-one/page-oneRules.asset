@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Page One is a Japanese shedding game. Follow the led suit if you can; if not, draw until you get a playable card. Don't forget to say 'Page One!' when you're down to your last card, or you'll have to draw five penalty cards.",
-    Player: 'How do I play Page One?',
+    LLM: "1. Lead: Dealer's left leads any card to start the trick. 2. Follow: Players must follow suit if they hold a card of that suit. 3. Draw: If unable to follow suit, draw one-by-one until a playable card is found. 4. Joker: Can be played anytime to win the trick; if led, the next player sets the suit. 5. Next: Winner of the trick leads the next one. 6. Page One!: Call 'Page One!' when down to one card.",
+    Player: "1. Lead: Dealer's left leads any card to start the trick. 2. Follow: Players must follow suit if they hold a card of that suit. 3. Draw: If unable to follow suit, draw one-by-one until a playable card is found. 4. Joker: Can be played anytime to win the trick; if led, the next player sets the suit. 5. Next: Winner of the trick leads the next one. 6. Page One!: Call 'Page One!' when down to one card.",
     objective: 'Be the first player to successfully shed all cards from your hand by playing them to the central pile.',
     gameplay: "1. Lead: Dealer's left leads any card to start the trick. 2. Follow: Players must follow suit if they hold a card of that suit. 3. Draw: If unable to follow suit, draw one-by-one until a playable card is found. 4. Joker: Can be played anytime to win the trick; if led, the next player sets the suit. 5. Next: Winner of the trick leads the next one. 6. Page One!: Call 'Page One!' when down to one card.",
     keyRules: [
@@ -54,10 +54,177 @@
       go_out: 'Must have only one card remaining and have correctly declared Page One to the other players.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: None; the first player to shed all cards wins the round immediately. Expected outcome: 1.',
+      'Setup example: 4 card(s) per player.',
+      'Rule example: Be the first player to successfully shed all cards from your hand by playing them to the central pile.',
+      "Turn-flow example: 1. Lead: Dealer's left leads any card to start the trick. 2. Follow: Players must follow suit if they hold a card of that suit. 3. Draw: If unable to follow suit, draw one-by-one until a playable card is found. 4. Joker: Can be played anytime to win the trick; if led, the next player sets the suit. 5. Next: Winner of the trick leads the next one. 6. Page One!: Call 'Page One!' when down to one card.",
+      'Scoring example: None; the first player to shed all cards wins the round immediately. Shed all cards from your hand before any other player in the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'page-one.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to successfully shed all cards from your hand by playing them to the central pile.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'page-one.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Lead: Dealer's left leads any card to start the trick. 2. Follow: Players must follow suit if they hold a card of that suit. 3. Draw: If unable to follow suit, draw one-by-one until a playable card is found. 4. Joker: Can be played anytime to win the trick; if led, the next player sets the suit. 5. Next: Winner of the trick leads the next one. 6. Page One!: Call 'Page One!' when down to one card.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'page-one.setup.players',
+        title: 'Players',
+        text: 'Typically four players sit in a circle; play and dealing proceed in a clockwise direction.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'page-one.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack with one added Joker. Rank: Joker > Ace > King > Queen > Jack > 10 > 9 > 8 > 7 > 6 > 5 > 4 > 3 > 2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'page-one.setup.equipment',
+        title: 'Equipment',
+        text: 'One standard pack of cards, one Joker, and a playing surface for the central trick pile.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'page-one.setup.dealing',
+        title: 'Deal',
+        text: 'The dealer distributes four cards to each player one at a time. The remaining cards form the face-down stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'page-one.score.win-condition',
+        title: 'Win condition',
+        text: 'Shed all cards from your hand before any other player in the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'page-one.score.description',
+        title: 'Scoring',
+        text: 'None; the first player to shed all cards wins the round immediately.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'page-one.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow the led suit if a playable card is held in the hand.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'page-one.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If unable to follow suit, players must draw from the stock until a card of the led suit or Joker is obtained.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'page-one.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The Joker always wins the trick; if led, the next card determines the suit for all following players.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'page-one.rules.key.4',
+        title: 'Key rule 4',
+        text: "Players must declare 'Page One!' when playing their second-to-last card to avoid a five-card draw penalty.",
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'page-one.rules.key.5',
+        title: 'Key rule 5',
+        text: 'The first player to empty their hand of all cards wins the round immediately.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'page-one.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'page-one.rules.objective',
+          'page-one.rules.gameplay',
+        ],
+      },
+      {
+        id: 'page-one.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'page-one.setup.players',
+          'page-one.setup.deck',
+          'page-one.setup.equipment',
+          'page-one.setup.dealing',
+        ],
+      },
+      {
+        id: 'page-one.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'page-one.rules.key.1',
+          'page-one.rules.key.2',
+          'page-one.rules.key.3',
+          'page-one.rules.key.4',
+          'page-one.rules.key.5',
+        ],
+      },
+      {
+        id: 'page-one.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'page-one.score.description',
+          'page-one.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'page-one.setup.dealing',
+        'page-one.rules.objective',
+      ],
+      deal: [
+        'page-one.rules.gameplay',
+      ],
+      play_card: [
+        'page-one.rules.gameplay',
+      ],
+      go_out: [
+        'page-one.rules.gameplay',
+      ],
+      draw_until_playable: [
+        'page-one.rules.gameplay',
+      ],
+      declare_page_one: [
+        'page-one.rules.gameplay',
+      ],
+    },
   },
 }

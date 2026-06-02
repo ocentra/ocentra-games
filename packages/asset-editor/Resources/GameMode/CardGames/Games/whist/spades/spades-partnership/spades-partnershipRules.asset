@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Spades Partnership. Logic: See rules.objective and rules.gameplay.',
-    Player: "Spades Partnership (often just 'Partnership Spades' or 'Cutthroat Spades' depending on context) refers to specific variations of Spades that emphasize the partnership aspect or introduce specific bidding constraints like 'Suicide' (one partner must bid Nil), 'Mirrors' (bid exactly your Spades), or 'Whiz' (Nil or Spades). It is played with the standard 4-player setup but with modified bidding rules.",
+    LLM: 'Four players in fixed partnerships. Deal 13 cards each, one at a time, clockwise from left of dealer. Each player bids 0 to 13 tricks (Nil = 0); partnership bids are summed. Play 13 tricks: left of dealer leads; must follow suit if able; spades are always trump. Trick won by highest trump if any, else highest card of led suit. Winner of trick leads next. Spades may not be led until broken (a spade has been played on another suit) or leader has only spades. Score 10 per trick bid if made; overtricks (bags) score 1 each; 10 bags deduct 100. Nil: +100 if no tricks taken, -100 if any trick taken. First side to 500 wins. Variants (e.g. Suicide, Mirrors, Whiz) change bidding constraints only.',
+    Player: 'Four players in fixed partnerships. Deal 13 cards each, one at a time, clockwise from left of dealer. Each player bids 0 to 13 tricks (Nil = 0); partnership bids are summed. Play 13 tricks: left of dealer leads; must follow suit if able; spades are always trump. Trick won by highest trump if any, else highest card of led suit. Winner of trick leads next. Spades may not be led until broken (a spade has been played on another suit) or leader has only spades. Score 10 per trick bid if made; overtricks (bags) score 1 each; 10 bags deduct 100. Nil: +100 if no tricks taken, -100 if any trick taken. First side to 500 wins. Variants (e.g. Suicide, Mirrors, Whiz) change bidding constraints only.',
     objective: 'Each partnership aims to reach 500 points first by making at least the number of tricks it bid each hand. Teams score 10 points per trick bid when made; overtricks (bags) score 1 each with a 100-point penalty per 10 bags. Nil bids earn a bonus or penalty. Variants (Suicide, Mirrors, Whiz) impose stricter bidding rules but the same scoring goal.',
     gameplay: 'Four players in fixed partnerships. Deal 13 cards each, one at a time, clockwise from left of dealer. Each player bids 0 to 13 tricks (Nil = 0); partnership bids are summed. Play 13 tricks: left of dealer leads; must follow suit if able; spades are always trump. Trick won by highest trump if any, else highest card of led suit. Winner of trick leads next. Spades may not be led until broken (a spade has been played on another suit) or leader has only spades. Score 10 per trick bid if made; overtricks (bags) score 1 each; 10 bags deduct 100. Nil: +100 if no tricks taken, -100 if any trick taken. First side to 500 wins. Variants (e.g. Suicide, Mirrors, Whiz) change bidding constraints only.',
     keyRules: [
@@ -50,10 +50,132 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Standard scoring unless specified (e.g., Suicide has higher penalties for failed Nil). Expected outcome: Score points under stricter constraints..',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Each partnership aims to reach 500 points first by making at least the number of tricks it bid each hand. Teams score 10 points per trick bid when made; overtricks (bags) score 1 each with a 100-point penalty per 10 bags. Nil bids earn a bonus or penalty. Variants (Suicide, Mirrors, Whiz) impose stricter bidding rules but the same scoring goal.',
+      'Turn-flow example: Four players in fixed partnerships. Deal 13 cards each, one at a time, clockwise from left of dealer. Each player bids 0 to 13 tricks (Nil = 0); partnership bids are summed. Play 13 tricks: left of dealer leads; must follow suit if able; spades are always trump. Trick won by highest trump if any, else highest card of led suit. Winner of trick leads next. Spades may not be led until broken (a spade has been played on another suit) or leader has only spades. Score 10 per trick bid if made; overtricks (bags) score 1 each; 10 bags deduct 100. Nil: +100 if no tricks taken, -100 if any trick taken. First side to 500 wins. Variants (e.g. Suicide, Mirrors, Whiz) change bidding constraints only.',
+      'Scoring example: Standard scoring unless specified (e.g., Suicide has higher penalties for failed Nil). Score points under stricter constraints..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'spades-partnership.rules.objective',
+        title: 'Objective',
+        text: 'Each partnership aims to reach 500 points first by making at least the number of tricks it bid each hand. Teams score 10 points per trick bid when made; overtricks (bags) score 1 each with a 100-point penalty per 10 bags. Nil bids earn a bonus or penalty. Variants (Suicide, Mirrors, Whiz) impose stricter bidding rules but the same scoring goal.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'spades-partnership.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Four players in fixed partnerships. Deal 13 cards each, one at a time, clockwise from left of dealer. Each player bids 0 to 13 tricks (Nil = 0); partnership bids are summed. Play 13 tricks: left of dealer leads; must follow suit if able; spades are always trump. Trick won by highest trump if any, else highest card of led suit. Winner of trick leads next. Spades may not be led until broken (a spade has been played on another suit) or leader has only spades. Score 10 per trick bid if made; overtricks (bags) score 1 each; 10 bags deduct 100. Nil: +100 if no tricks taken, -100 if any trick taken. First side to 500 wins. Variants (e.g. Suicide, Mirrors, Whiz) change bidding constraints only.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'spades-partnership.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'spades-partnership.setup.deck',
+        title: 'Deck',
+        text: 'A standard pack of 52 cards is used. The cards in each suit rank from highest to lowest: A, K, Q, J, 10, 9, 8, 7, 6, 5, 4, 3, 2. Spades Partnership uses the same deck as basic Spades.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'spades-partnership.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'spades-partnership.setup.dealing',
+        title: 'Deal',
+        text: "The first dealer is chosen at random; the turn to deal rotates clockwise. The cards are shuffled and dealt singly, clockwise, beginning with the player on the dealer's left, until all 52 cards have been dealt and each player has 13 cards.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'spades-partnership.score.win-condition',
+        title: 'Win condition',
+        text: 'Score points under stricter constraints.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'spades-partnership.score.description',
+        title: 'Scoring',
+        text: 'Standard scoring unless specified (e.g., Suicide has higher penalties for failed Nil).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'spades-partnership.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Spades are always trump. Follow suit if able. Partnership bids are added; team must make combined bid to score. Nil bid: take zero tricks for bonus, or lose 100. No leading spades until spades are broken or hand is all spades. Winner of trick leads next. First to 500 points wins.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'spades-partnership.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'spades-partnership.rules.objective',
+          'spades-partnership.rules.gameplay',
+        ],
+      },
+      {
+        id: 'spades-partnership.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'spades-partnership.setup.players',
+          'spades-partnership.setup.deck',
+          'spades-partnership.setup.equipment',
+          'spades-partnership.setup.dealing',
+        ],
+      },
+      {
+        id: 'spades-partnership.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'spades-partnership.rules.key.1',
+        ],
+      },
+      {
+        id: 'spades-partnership.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'spades-partnership.score.description',
+          'spades-partnership.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'spades-partnership.setup.dealing',
+        'spades-partnership.rules.objective',
+      ],
+      play_card: [
+        'spades-partnership.rules.gameplay',
+      ],
+      bid: [
+        'spades-partnership.rules.gameplay',
+      ],
+    },
   },
 }

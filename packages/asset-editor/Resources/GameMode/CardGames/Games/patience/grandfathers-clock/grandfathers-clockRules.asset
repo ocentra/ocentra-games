@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Grandfathers Clock. Logic: Build the clock-face foundations to their required terminal ranks while clearing the tableau.',
-    Player: 'Grandfathers Clock is an easy one-deck patience whose foundation layout resembles a clock face.',
+    LLM: 'Move exposed cards through the tableau, reserve, stock, waste, or foundations according to the layout rules until all cards are cleared or the position blocks.',
+    Player: 'Move exposed cards through the tableau, reserve, stock, waste, or foundations according to the layout rules until all cards are cleared or the position blocks.',
     objective: 'Build the clock-face foundations to their required terminal ranks while clearing the tableau.',
     gameplay: 'Move exposed cards through the tableau, reserve, stock, waste, or foundations according to the layout rules until all cards are cleared or the position blocks.',
     keyRules: [
@@ -53,10 +53,162 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: The game is won when the patience objective is completed. Expected outcome: Build the clock-face foundations to their required terminal ranks while clearing the tableau..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Build the clock-face foundations to their required terminal ranks while clearing the tableau.',
+      'Turn-flow example: Move exposed cards through the tableau, reserve, stock, waste, or foundations according to the layout rules until all cards are cleared or the position blocks.',
+      'Scoring example: The game is won when the patience objective is completed. Build the clock-face foundations to their required terminal ranks while clearing the tableau..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'grandfathers-clock.rules.objective',
+        title: 'Objective',
+        text: 'Build the clock-face foundations to their required terminal ranks while clearing the tableau.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'grandfathers-clock.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Move exposed cards through the tableau, reserve, stock, waste, or foundations according to the layout rules until all cards are cleared or the position blocks.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'grandfathers-clock.setup.players',
+        title: 'Players',
+        text: '1 players use the table arrangement described for Grandfathers Clock.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'grandfathers-clock.setup.deck',
+        title: 'Deck',
+        text: '52-card standard pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'grandfathers-clock.setup.equipment',
+        title: 'Equipment',
+        text: '52-card standard pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'grandfathers-clock.setup.dealing',
+        title: 'Deal',
+        text: 'Lay out Grandfathers Clock according to its patience tableau, reserve, stock, or foundation structure before beginning play.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'grandfathers-clock.score.win-condition',
+        title: 'Win condition',
+        text: 'Build the clock-face foundations to their required terminal ranks while clearing the tableau.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'grandfathers-clock.score.description',
+        title: 'Scoring',
+        text: 'The game is won when the patience objective is completed.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'grandfathers-clock.rules.key.1',
+        title: 'Key rule 1',
+        text: 'One-player patience game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'grandfathers-clock.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Uses a fixed tableau or layout.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'grandfathers-clock.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Foundations or discard goals define progress.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'grandfathers-clock.rules.key.4',
+        title: 'Key rule 4',
+        text: 'The main puzzle is preserving access to blocked cards.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'grandfathers-clock.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'grandfathers-clock.rules.objective',
+          'grandfathers-clock.rules.gameplay',
+        ],
+      },
+      {
+        id: 'grandfathers-clock.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'grandfathers-clock.setup.players',
+          'grandfathers-clock.setup.deck',
+          'grandfathers-clock.setup.equipment',
+          'grandfathers-clock.setup.dealing',
+        ],
+      },
+      {
+        id: 'grandfathers-clock.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'grandfathers-clock.rules.key.1',
+          'grandfathers-clock.rules.key.2',
+          'grandfathers-clock.rules.key.3',
+          'grandfathers-clock.rules.key.4',
+        ],
+      },
+      {
+        id: 'grandfathers-clock.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'grandfathers-clock.score.description',
+          'grandfathers-clock.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'grandfathers-clock.setup.dealing',
+        'grandfathers-clock.rules.objective',
+      ],
+      deal: [
+        'grandfathers-clock.rules.gameplay',
+      ],
+      play_card: [
+        'grandfathers-clock.rules.gameplay',
+      ],
+      draw: [
+        'grandfathers-clock.rules.gameplay',
+      ],
+    },
   },
 }

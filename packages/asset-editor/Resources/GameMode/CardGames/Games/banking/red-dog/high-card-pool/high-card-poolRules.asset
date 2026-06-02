@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: High Card Pool (Red Dog/Slippery Sam). Banking game. Setup: 3-8 players, 52-card deck, 5 cards dealt per player. Ante to pot. Turn sequence: Player bets (ante to full pot). Dealer burns, draws next card. Win: Have card of same suit and higher rank. Win = take bet + equal from pot. Lose = bet â†’ pot. Card ranks: A(14) K(13) Q(12) J(11) 10-2. Dealer rotates.',
-    Player: "Welcome to High Card Pool, the game of probability and nerve. You're dealt 5 cards. You bet against the potâ€”from the ante up to the full amount. Then the dealer draws a card. If you hold a card of the same suit that's higher in rank, you win your bet plus the same amount from the pot. If not, your bet goes in the pot and you lose. Play the odds, manage your bankroll, and watch the pot grow.",
+    LLM: "1. Starting to the left of the dealer, each player makes a bet against the current pot.\n2. **Betting**: You must bet at least the ante and may bet up to the total amount in the pot.\n3. **The Reveal**: Once the bet is placed, the dealer 'burns' one card and then reveals the next card from the deck.\n4. **Outcome**: - If you have a card of the SAME suit and HIGHER rank than the revealed card, you WIN and take your stake + an equal amount from the pot. - If you do NOT have a card of that suit or your cards of that suit are LOWER, you LOSE and your stake is added to the pot.",
+    Player: "1. Starting to the left of the dealer, each player makes a bet against the current pot.\n2. **Betting**: You must bet at least the ante and may bet up to the total amount in the pot.\n3. **The Reveal**: Once the bet is placed, the dealer 'burns' one card and then reveals the next card from the deck.\n4. **Outcome**: - If you have a card of the SAME suit and HIGHER rank than the revealed card, you WIN and take your stake + an equal amount from the pot. - If you do NOT have a card of that suit or your cards of that suit are LOWER, you LOSE and your stake is added to the pot.",
     objective: 'Win the pot by having a card in your hand that is the same suit as and higher in rank than a card dealt from the remaining deck.',
     gameplay: "1. Starting to the left of the dealer, each player makes a bet against the current pot.\n2. **Betting**: You must bet at least the ante and may bet up to the total amount in the pot.\n3. **The Reveal**: Once the bet is placed, the dealer 'burns' one card and then reveals the next card from the deck.\n4. **Outcome**: - If you have a card of the SAME suit and HIGHER rank than the revealed card, you WIN and take your stake + an equal amount from the pot. - If you do NOT have a card of that suit or your cards of that suit are LOWER, you LOSE and your stake is added to the pot.",
     keyRules: [
@@ -52,10 +52,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; all_simultaneous may use contribute_ante before deal.',
-      'Scoring check: Players bet against the central pot. Winning hand wins the bet amount plus an equal amount from the pot. Expected outcome: NA.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the pot by having a card in your hand that is the same suit as and higher in rank than a card dealt from the remaining deck.',
+      "Turn-flow example: 1. Starting to the left of the dealer, each player makes a bet against the current pot.\n2. **Betting**: You must bet at least the ante and may bet up to the total amount in the pot.\n3. **The Reveal**: Once the bet is placed, the dealer 'burns' one card and then reveals the next card from the deck.\n4. **Outcome**: - If you have a card of the SAME suit and HIGHER rank than the revealed card, you WIN and take your stake + an equal amount from the pot. - If you do NOT have a card of that suit or your cards of that suit are LOWER, you LOSE and your stake is added to the pot.",
+      'Scoring example: Players bet against the central pot. Winning hand wins the bet amount plus an equal amount from the pot. Have a card of the same suit and higher rank than the drawn card..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'high-card-pool.rules.objective',
+        title: 'Objective',
+        text: 'Win the pot by having a card in your hand that is the same suit as and higher in rank than a card dealt from the remaining deck.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'high-card-pool.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Starting to the left of the dealer, each player makes a bet against the current pot.\n2. **Betting**: You must bet at least the ante and may bet up to the total amount in the pot.\n3. **The Reveal**: Once the bet is placed, the dealer 'burns' one card and then reveals the next card from the deck.\n4. **Outcome**: - If you have a card of the SAME suit and HIGHER rank than the revealed card, you WIN and take your stake + an equal amount from the pot. - If you do NOT have a card of that suit or your cards of that suit are LOWER, you LOSE and your stake is added to the pot.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'high-card-pool.setup.players',
+        title: 'Players',
+        text: '3 to 8 players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'high-card-pool.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. A (high) to 2 (low).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'high-card-pool.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. A (high) to 2 (low).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'high-card-pool.setup.dealing',
+        title: 'Deal',
+        text: 'The dealer deals 5 cards face down to each player (4 or 3 cards in some variants to accommodate more players).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'high-card-pool.score.win-condition',
+        title: 'Win condition',
+        text: 'Have a card of the same suit and higher rank than the drawn card.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'high-card-pool.score.description',
+        title: 'Scoring',
+        text: 'Players bet against the central pot. Winning hand wins the bet amount plus an equal amount from the pot.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'high-card-pool.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Follow the legal action constraints defined for High Card Pool.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'high-card-pool.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Round outcome is resolved by the scoring method: Scoring summary: Players bet against the central pot.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'high-card-pool.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Win the pot by having a card in your hand that is the same suit as and higher in rank than a card dealt from the remaining deck.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'high-card-pool.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'high-card-pool.rules.objective',
+          'high-card-pool.rules.gameplay',
+        ],
+      },
+      {
+        id: 'high-card-pool.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'high-card-pool.setup.players',
+          'high-card-pool.setup.deck',
+          'high-card-pool.setup.equipment',
+          'high-card-pool.setup.dealing',
+        ],
+      },
+      {
+        id: 'high-card-pool.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'high-card-pool.rules.key.1',
+          'high-card-pool.rules.key.2',
+          'high-card-pool.rules.key.3',
+        ],
+      },
+      {
+        id: 'high-card-pool.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'high-card-pool.score.description',
+          'high-card-pool.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'high-card-pool.setup.dealing',
+        'high-card-pool.rules.objective',
+      ],
+      deal: [
+        'high-card-pool.rules.gameplay',
+      ],
+      contribute_ante: [
+        'high-card-pool.rules.gameplay',
+      ],
+      place_bet: [
+        'high-card-pool.rules.gameplay',
+      ],
+      resolve_round: [
+        'high-card-pool.rules.gameplay',
+      ],
+    },
   },
 }

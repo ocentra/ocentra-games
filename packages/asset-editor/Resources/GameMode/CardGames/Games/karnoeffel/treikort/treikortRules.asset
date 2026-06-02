@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Treikort. Logic: See rules.objective and rules.gameplay.',
-    Player: "Treikort is a unique Icelandic trick-taking game for exactly three players using a specially selected 27-card deck. The game features 'BÃ­sefarnir' (Sevens) that are unbeatable when led but worthless when following. A 'Pope' title is earned by winning 13 tricks across 3 consecutive games, granting card-swapping privileges.",
+    LLM: "Lead a card. Must follow suit if possible. Highest card wins (no trumps). Sevens: Unbeatable when LED, cannot win if played to follow. Cannot lead a 7 until you've won a trick. Ties: First played wins.",
+    Player: "Lead a card. Must follow suit if possible. Highest card wins (no trumps). Sevens: Unbeatable when LED, cannot win if played to follow. Cannot lead a 7 until you've won a trick. Ties: First played wins.",
     objective: 'The object of the game is to take as many tricks as possible (nine tricks per deal).',
     gameplay: "Lead a card. Must follow suit if possible. Highest card wins (no trumps). Sevens: Unbeatable when LED, cannot win if played to follow. Cannot lead a 7 until you've won a trick. Ties: First played wins.",
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-3 player(s), 9 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Count tricks. Pope: 13 tricks across 3 consecutive games = Pope title (card swap privilege). Expected outcome: Win the most tricks (out of 9)..',
+      'Setup example: 9 card(s) per player.',
+      'Rule example: The object of the game is to take as many tricks as possible (nine tricks per deal).',
+      "Turn-flow example: Lead a card. Must follow suit if possible. Highest card wins (no trumps). Sevens: Unbeatable when LED, cannot win if played to follow. Cannot lead a 7 until you've won a trick. Ties: First played wins.",
+      'Scoring example: Count tricks. Pope: 13 tricks across 3 consecutive games = Pope title (card swap privilege). Win the most tricks (out of 9)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'treikort.rules.objective',
+        title: 'Objective',
+        text: 'The object of the game is to take as many tricks as possible (nine tricks per deal).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'treikort.rules.gameplay',
+        title: 'Turn flow',
+        text: "Lead a card. Must follow suit if possible. Highest card wins (no trumps). Sevens: Unbeatable when LED, cannot win if played to follow. Cannot lead a 7 until you've won a trick. Ties: First played wins.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'treikort.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'treikort.setup.deck',
+        title: 'Deck',
+        text: '27 cards: Qâ™£ (highest non-7), 2â™ , Kâ™¦, 2â™¥, 4â™£, 8â™ , 9â™¥, 9â™¦, all A, J, 6, 8 (excl 8â™ ) + 4 Sevens (BÃ­sefarnir).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'treikort.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'treikort.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 9 cards each (3 at a time).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'treikort.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the most tricks (out of 9).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'treikort.score.description',
+        title: 'Scoring',
+        text: 'Count tricks. Pope: 13 tricks across 3 consecutive games = Pope title (card swap privilege).',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'treikort.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Sevens unbeatable when led',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'treikort.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Sevens worthless when following',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'treikort.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Cannot lead 7 until winning a trick',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'treikort.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Pope title for 13 tricks in 3 games',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'treikort.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'treikort.rules.objective',
+          'treikort.rules.gameplay',
+        ],
+      },
+      {
+        id: 'treikort.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'treikort.setup.players',
+          'treikort.setup.deck',
+          'treikort.setup.equipment',
+          'treikort.setup.dealing',
+        ],
+      },
+      {
+        id: 'treikort.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'treikort.rules.key.1',
+          'treikort.rules.key.2',
+          'treikort.rules.key.3',
+          'treikort.rules.key.4',
+        ],
+      },
+      {
+        id: 'treikort.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'treikort.score.description',
+          'treikort.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'treikort.setup.dealing',
+        'treikort.rules.objective',
+      ],
+      play_card: [
+        'treikort.rules.gameplay',
+      ],
+    },
   },
 }

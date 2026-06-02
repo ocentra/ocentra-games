@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Three Card Poker. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Three Card Poker is a popular casino table game based on poker. Players compete against the dealer. It features two modes of play: Ante/Play (playing against the dealer) and Pair Plus (betting on the hand value alone). It is known for its speed and simplicity.',
+    LLM: '1. Ante bet (and optional Pair Plus). 2. Deal 3 cards. 3. Player decides to Play (match Ante) or Fold (lose Ante). 4. Dealer reveals hand. Dealer must qualify with Queen High or better. 5. Compare hands. Scoring: Straight Flush > Three of a Kind > Straight > Flush > Pair > High Card. (Note: Straight beats Flush in 3-card poker, usually).',
+    Player: '1. Ante bet (and optional Pair Plus). 2. Deal 3 cards. 3. Player decides to Play (match Ante) or Fold (lose Ante). 4. Dealer reveals hand. Dealer must qualify with Queen High or better. 5. Compare hands. Scoring: Straight Flush > Three of a Kind > Straight > Flush > Pair > High Card. (Note: Straight beats Flush in 3-card poker, usually).',
     objective: "Beat the dealer's hand with a higher 3-card poker hand.",
     gameplay: '1. Ante bet (and optional Pair Plus). 2. Deal 3 cards. 3. Player decides to Play (match Ante) or Fold (lose Ante). 4. Dealer reveals hand. Dealer must qualify with Queen High or better. 5. Compare hands. Scoring: Straight Flush > Three of a Kind > Straight > Flush > Pair > High Card. (Note: Straight beats Flush in 3-card poker, usually).',
     keyRules: [
@@ -53,10 +53,171 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; each_player_clockwise may use ante before deal.',
-      "Scoring check: Pay tables vary for Pair Plus (e.g., Pair 1:1, Flush 3:1, Straight 6:1, 3-Kind 30:1, SF 40:1). Ante Bonus for top hands. Expected outcome: Beat the dealer's hand with a higher 3-card poker hand..",
+      'Setup example: 3 card(s) per player.',
+      "Rule example: Beat the dealer's hand with a higher 3-card poker hand.",
+      'Turn-flow example: 1. Ante bet (and optional Pair Plus). 2. Deal 3 cards. 3. Player decides to Play (match Ante) or Fold (lose Ante). 4. Dealer reveals hand. Dealer must qualify with Queen High or better. 5. Compare hands. Scoring: Straight Flush > Three of a Kind > Straight > Flush > Pair > High Card. (Note: Straight beats Flush in 3-card poker, usually).',
+      "Scoring example: Pay tables vary for Pair Plus (e.g., Pair 1:1, Flush 3:1, Straight 6:1, 3-Kind 30:1, SF 40:1). Ante Bonus for top hands. Beat the dealer's hand with a higher 3-card poker hand..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'three-card-poker.rules.objective',
+        title: 'Objective',
+        text: "Beat the dealer's hand with a higher 3-card poker hand.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'three-card-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Ante bet (and optional Pair Plus). 2. Deal 3 cards. 3. Player decides to Play (match Ante) or Fold (lose Ante). 4. Dealer reveals hand. Dealer must qualify with Queen High or better. 5. Compare hands. Scoring: Straight Flush > Three of a Kind > Straight > Flush > Pair > High Card. (Note: Straight beats Flush in 3-card poker, usually).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'three-card-poker.setup.players',
+        title: 'Players',
+        text: 'Dealer + 1-6 Players',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'three-card-poker.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'three-card-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'Casino table, chips',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'three-card-poker.setup.dealing',
+        title: 'Deal',
+        text: '3 cards to each player and dealer.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'three-card-poker.score.win-condition',
+        title: 'Win condition',
+        text: "Beat the dealer's hand with a higher 3-card poker hand.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'three-card-poker.score.description',
+        title: 'Scoring',
+        text: 'Pay tables vary for Pair Plus (e.g., Pair 1:1, Flush 3:1, Straight 6:1, 3-Kind 30:1, SF 40:1). Ante Bonus for top hands.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'three-card-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dealer qualifies with Queen High',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'three-card-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Straight beats Flush (usually)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'three-card-poker.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Three of a Kind beats Straight',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'three-card-poker.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Play bet must equal Ante',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'three-card-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'three-card-poker.rules.objective',
+          'three-card-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'three-card-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'three-card-poker.setup.players',
+          'three-card-poker.setup.deck',
+          'three-card-poker.setup.equipment',
+          'three-card-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'three-card-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'three-card-poker.rules.key.1',
+          'three-card-poker.rules.key.2',
+          'three-card-poker.rules.key.3',
+          'three-card-poker.rules.key.4',
+        ],
+      },
+      {
+        id: 'three-card-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'three-card-poker.score.description',
+          'three-card-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'three-card-poker.setup.dealing',
+        'three-card-poker.rules.objective',
+      ],
+      ante: [
+        'three-card-poker.rules.gameplay',
+      ],
+      fold: [
+        'three-card-poker.rules.gameplay',
+      ],
+      bet: [
+        'three-card-poker.rules.gameplay',
+      ],
+      play_card: [
+        'three-card-poker.rules.gameplay',
+      ],
+      deal_cards: [
+        'three-card-poker.rules.gameplay',
+      ],
+      resolve_showdown: [
+        'three-card-poker.rules.gameplay',
+      ],
+    },
   },
 }

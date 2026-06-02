@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Scopa Bazzica. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Scopa variant with Bazzica scoring and rules.',
+    LLM: 'Two players. Deal three cards each and four face up on the table. Non-dealer plays first. Each turn play one card: capture a single table card of equal value, or a set of table cards whose values sum to the played card, or leave the card on the table. Capture is compulsory when possible; if both a single card and a set match, take the single card. Clearing the table is a scopa (1 point). After each three-card deal segment, before playing, players may declare Bazzica (three cards summing to 9 or less) or Bazzicotto (three of a kind); only the better declaration scores. After all three cards are played, dealer deals three more to each player; repeat until deck empty. Last captor takes remaining table cards. Score the hand; deal passes; play until one player reaches 21 or 31.',
+    Player: 'Two players. Deal three cards each and four face up on the table. Non-dealer plays first. Each turn play one card: capture a single table card of equal value, or a set of table cards whose values sum to the played card, or leave the card on the table. Capture is compulsory when possible; if both a single card and a set match, take the single card. Clearing the table is a scopa (1 point). After each three-card deal segment, before playing, players may declare Bazzica (three cards summing to 9 or less) or Bazzicotto (three of a kind); only the better declaration scores. After all three cards are played, dealer deals three more to each player; repeat until deck empty. Last captor takes remaining table cards. Score the hand; deal passes; play until one player reaches 21 or 31.',
     objective: 'Capture cards from the table by matching value or sum; score for scope, most cards, most coins, settebello, primiera, and for declared Bazzica (3 pts) or Bazzicotto (10 pts). First to 21 or 31 points wins.',
     gameplay: 'Two players. Deal three cards each and four face up on the table. Non-dealer plays first. Each turn play one card: capture a single table card of equal value, or a set of table cards whose values sum to the played card, or leave the card on the table. Capture is compulsory when possible; if both a single card and a set match, take the single card. Clearing the table is a scopa (1 point). After each three-card deal segment, before playing, players may declare Bazzica (three cards summing to 9 or less) or Bazzicotto (three of a kind); only the better declaration scores. After all three cards are played, dealer deals three more to each player; repeat until deck empty. Last captor takes remaining table cards. Score the hand; deal passes; play until one player reaches 21 or 31.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Points for each scopa (1), most cards (1), most coins/diamonds (1), settebello (1), best primiera (1), plus Bazzica (3) or Bazzicotto (10) when declared. First to 21 or 31 wins. Expected outcome: 21.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Capture cards from the table by matching value or sum; score for scope, most cards, most coins, settebello, primiera, and for declared Bazzica (3 pts) or Bazzicotto (10 pts). First to 21 or 31 points wins.',
+      'Turn-flow example: Two players. Deal three cards each and four face up on the table. Non-dealer plays first. Each turn play one card: capture a single table card of equal value, or a set of table cards whose values sum to the played card, or leave the card on the table. Capture is compulsory when possible; if both a single card and a set match, take the single card. Clearing the table is a scopa (1 point). After each three-card deal segment, before playing, players may declare Bazzica (three cards summing to 9 or less) or Bazzicotto (three of a kind); only the better declaration scores. After all three cards are played, dealer deals three more to each player; repeat until deck empty. Last captor takes remaining table cards. Score the hand; deal passes; play until one player reaches 21 or 31.',
+      'Scoring example: Points for each scopa (1), most cards (1), most coins/diamonds (1), settebello (1), best primiera (1), plus Bazzica (3) or Bazzicotto (10) when declared. First to 21 or 31 wins. First player to reach agreed target (21 or 31 points) wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'scopa-bazzica.rules.objective',
+        title: 'Objective',
+        text: 'Capture cards from the table by matching value or sum; score for scope, most cards, most coins, settebello, primiera, and for declared Bazzica (3 pts) or Bazzicotto (10 pts). First to 21 or 31 points wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'scopa-bazzica.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Two players. Deal three cards each and four face up on the table. Non-dealer plays first. Each turn play one card: capture a single table card of equal value, or a set of table cards whose values sum to the played card, or leave the card on the table. Capture is compulsory when possible; if both a single card and a set match, take the single card. Clearing the table is a scopa (1 point). After each three-card deal segment, before playing, players may declare Bazzica (three cards summing to 9 or less) or Bazzicotto (three of a kind); only the better declaration scores. After all three cards are played, dealer deals three more to each player; repeat until deck empty. Last captor takes remaining table cards. Score the hand; deal passes; play until one player reaches 21 or 31.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'scopa-bazzica.setup.players',
+        title: 'Players',
+        text: 'Two players only. Scopa Bazzica is designed for head-to-head play with no partnership or team option.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'scopa-bazzica.setup.deck',
+        title: 'Deck',
+        text: 'Standard 40-card Italian deck (coins, cups, swords, batons; King 10, Horse/Queen 9, Jack 8, 7-2 face value, Ace 1).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'scopa-bazzica.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 40-card Italian deck (coins, cups, swords, batons; King 10, Horse/Queen 9, Jack 8, 7-2 face value, Ace 1).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'scopa-bazzica.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer shuffles; opponent cuts. Deal one card at a time until each player has three cards; place the next four cards face up on the table. If three or four Kings appear in the table layout, redeal. After each round of three cards played, deal three more to each player (no new table cards). Repeat until deck is empty.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'scopa-bazzica.score.win-condition',
+        title: 'Win condition',
+        text: 'First player to reach agreed target (21 or 31 points) wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'scopa-bazzica.score.description',
+        title: 'Scoring',
+        text: 'Points for each scopa (1), most cards (1), most coins/diamonds (1), settebello (1), best primiera (1), plus Bazzica (3) or Bazzicotto (10) when declared. First to 21 or 31 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'scopa-bazzica.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Bazzica',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'scopa-bazzica.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Bazzicotto',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'scopa-bazzica.rules.key.3',
+        title: 'Key rule 3',
+        text: 'scopa',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'scopa-bazzica.rules.key.4',
+        title: 'Key rule 4',
+        text: 'primiera',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'scopa-bazzica.rules.key.5',
+        title: 'Key rule 5',
+        text: 'settebello',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'scopa-bazzica.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'scopa-bazzica.rules.objective',
+          'scopa-bazzica.rules.gameplay',
+        ],
+      },
+      {
+        id: 'scopa-bazzica.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'scopa-bazzica.setup.players',
+          'scopa-bazzica.setup.deck',
+          'scopa-bazzica.setup.equipment',
+          'scopa-bazzica.setup.dealing',
+        ],
+      },
+      {
+        id: 'scopa-bazzica.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'scopa-bazzica.rules.key.1',
+          'scopa-bazzica.rules.key.2',
+          'scopa-bazzica.rules.key.3',
+          'scopa-bazzica.rules.key.4',
+          'scopa-bazzica.rules.key.5',
+        ],
+      },
+      {
+        id: 'scopa-bazzica.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'scopa-bazzica.score.description',
+          'scopa-bazzica.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'scopa-bazzica.setup.dealing',
+        'scopa-bazzica.rules.objective',
+      ],
+      play_card: [
+        'scopa-bazzica.rules.gameplay',
+      ],
+    },
   },
 }

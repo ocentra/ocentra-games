@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 55 dominoes (double-9). Logic: See rules.objective and rules.gameplay.',
-    Player: '55 dominoes (double-9) is a domino card game that involves tiles, matching, scoring. The game originated in China and has become popular worldwide.',
+    LLM: "Highest double leads. Match to open ends; doubles crosswise. Block: pass if cannot play. Draw: draw from boneyard until playable. Winner scores opponents' pips or lowest if blocked.",
+    Player: "Highest double leads. Match to open ends; doubles crosswise. Block: pass if cannot play. Draw: draw from boneyard until playable. Winner scores opponents' pips or lowest if blocked.",
     objective: 'Play all tiles first, or have fewest pips if blocked.',
     gameplay: "Highest double leads. Match to open ends; doubles crosswise. Block: pass if cannot play. Draw: draw from boneyard until playable. Winner scores opponents' pips or lowest if blocked.",
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      "Scoring check: Winner scores opponents' pips; or blocked game lowest wins. Expected outcome: Play all tiles first, or have fewest pips if blocked..",
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Play all tiles first, or have fewest pips if blocked.',
+      "Turn-flow example: Highest double leads. Match to open ends; doubles crosswise. Block: pass if cannot play. Draw: draw from boneyard until playable. Winner scores opponents' pips or lowest if blocked.",
+      "Scoring example: Winner scores opponents' pips; or blocked game lowest wins. Play all tiles first, or have fewest pips if blocked..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '55-dominoes-double-9.rules.objective',
+        title: 'Objective',
+        text: 'Play all tiles first, or have fewest pips if blocked.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '55-dominoes-double-9.rules.gameplay',
+        title: 'Turn flow',
+        text: "Highest double leads. Match to open ends; doubles crosswise. Block: pass if cannot play. Draw: draw from boneyard until playable. Winner scores opponents' pips or lowest if blocked.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '55-dominoes-double-9.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '55-dominoes-double-9.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '55-dominoes-double-9.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '55-dominoes-double-9.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '55-dominoes-double-9.score.win-condition',
+        title: 'Win condition',
+        text: 'Play all tiles first, or have fewest pips if blocked.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '55-dominoes-double-9.score.description',
+        title: 'Scoring',
+        text: "Winner scores opponents' pips; or blocked game lowest wins.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '55-dominoes-double-9.rules.key.1',
+        title: 'Key rule 1',
+        text: '55 tiles (double-9: 0-0 to 9-9)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '55-dominoes-double-9.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Match to open ends; doubles crosswise',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '55-dominoes-double-9.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Block or draw variant',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '55-dominoes-double-9.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '55-dominoes-double-9.rules.objective',
+          '55-dominoes-double-9.rules.gameplay',
+        ],
+      },
+      {
+        id: '55-dominoes-double-9.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '55-dominoes-double-9.setup.players',
+          '55-dominoes-double-9.setup.deck',
+          '55-dominoes-double-9.setup.equipment',
+          '55-dominoes-double-9.setup.dealing',
+        ],
+      },
+      {
+        id: '55-dominoes-double-9.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '55-dominoes-double-9.rules.key.1',
+          '55-dominoes-double-9.rules.key.2',
+          '55-dominoes-double-9.rules.key.3',
+        ],
+      },
+      {
+        id: '55-dominoes-double-9.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '55-dominoes-double-9.score.description',
+          '55-dominoes-double-9.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '55-dominoes-double-9.setup.dealing',
+        '55-dominoes-double-9.rules.objective',
+      ],
+      play_card: [
+        '55-dominoes-double-9.rules.gameplay',
+      ],
+    },
   },
 }

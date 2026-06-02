@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Escoba. Spanish 40-card fishing game. Card values: A=1,2-7=face,J=8,Q=9,K=10. Capture table cards summing to exactly 15. Escoba = clear entire table. Score: sweeps, most cards, most Coins, Siete Bello (7 of Coins).',
-    Player: "Table has: K(10), 5, J(8). Your hand has: 5, 7, Q(9). Q(9) + 6 = 15... but there's no 6 on table. K(10) + 5 = 15 âœ“. Play your 5 to capture the K? Or waitâ€”J(8) + 7 = 15 âœ“. You have both 5 and 7 in hand. Check for Escoba: K(10)+5(5)+J(8)+? = 23... no full-table Escoba. Pick the best partial: K + 5 = 15 (big point capture).",
+    LLM: 'Players take turns playing one card to capture table cards that sum to exactly 15 with the played card. Captured cards and the playing card are taken and stored face-down. If no capture is possible, the card remains face-up on the table. Players cycle through their dealt cards, and new cards are dealt after all players have played their three cards. Play continues until the deck is exhausted.',
+    Player: 'Players take turns playing one card to capture table cards that sum to exactly 15 with the played card. Captured cards and the playing card are taken and stored face-down. If no capture is possible, the card remains face-up on the table. Players cycle through their dealt cards, and new cards are dealt after all players have played their three cards. Play continues until the deck is exhausted.',
     objective: 'Be the first player or team to score 21 or more points by capturing cards that sum to exactly 15, collecting majority points in multiple categories, and earning bonus points for sweeps.',
     gameplay: 'Players take turns playing one card to capture table cards that sum to exactly 15 with the played card. Captured cards and the playing card are taken and stored face-down. If no capture is possible, the card remains face-up on the table. Players cycle through their dealt cards, and new cards are dealt after all players have played their three cards. Play continues until the deck is exhausted.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'Game ends per rules.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play_round; current_player may use play_card before round end.',
-      'Scoring check: Points from sweeps, most cards, most Coins, and Siete Bello. Expected outcome: 21.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Be the first player or team to score 21 or more points by capturing cards that sum to exactly 15, collecting majority points in multiple categories, and earning bonus points for sweeps.',
+      'Turn-flow example: Players take turns playing one card to capture table cards that sum to exactly 15 with the played card. Captured cards and the playing card are taken and stored face-down. If no capture is possible, the card remains face-up on the table. Players cycle through their dealt cards, and new cards are dealt after all players have played their three cards. Play continues until the deck is exhausted.',
+      'Scoring example: Points from sweeps, most cards, most Coins, and Siete Bello. First player or team to reach 21 or more points wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'escoba-de-15.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player or team to score 21 or more points by capturing cards that sum to exactly 15, collecting majority points in multiple categories, and earning bonus points for sweeps.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'escoba-de-15.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players take turns playing one card to capture table cards that sum to exactly 15 with the played card. Captured cards and the playing card are taken and stored face-down. If no capture is possible, the card remains face-up on the table. Players cycle through their dealt cards, and new cards are dealt after all players have played their three cards. Play continues until the deck is exhausted.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'escoba-de-15.setup.players',
+        title: 'Players',
+        text: '2 or 4 (teams of 2).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'escoba-de-15.setup.deck',
+        title: 'Deck',
+        text: '40-card Spanish baraja (A, 2, 3, 4, 5, 6, 7, J, Q, K in 4 suits: Coins, Cups, Swords, Clubs). Values: A=1, 2-7=face, J=8, Q=9, K=10.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'escoba-de-15.setup.equipment',
+        title: 'Equipment',
+        text: '40-card Spanish deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'escoba-de-15.setup.dealing',
+        title: 'Deal',
+        text: '3 cards each; 4 cards face-up on table. Redeal 3 when hands empty until deck done.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'escoba-de-15.score.win-condition',
+        title: 'Win condition',
+        text: 'First player or team to reach 21 or more points wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'escoba-de-15.score.description',
+        title: 'Scoring',
+        text: 'Points from sweeps, most cards, most Coins, and Siete Bello.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'escoba-de-15.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Capture must sum to EXACTLY 15.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'escoba-de-15.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Only after a complete table clear is an Escoba scored.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'escoba-de-15.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Setenta (optional): Each player/team selects the highest card per suit summing to a maximum = best Setenta wins 1pt.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'escoba-de-15.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'escoba-de-15.rules.objective',
+          'escoba-de-15.rules.gameplay',
+        ],
+      },
+      {
+        id: 'escoba-de-15.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'escoba-de-15.setup.players',
+          'escoba-de-15.setup.deck',
+          'escoba-de-15.setup.equipment',
+          'escoba-de-15.setup.dealing',
+        ],
+      },
+      {
+        id: 'escoba-de-15.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'escoba-de-15.rules.key.1',
+          'escoba-de-15.rules.key.2',
+          'escoba-de-15.rules.key.3',
+        ],
+      },
+      {
+        id: 'escoba-de-15.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'escoba-de-15.score.description',
+          'escoba-de-15.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'escoba-de-15.setup.dealing',
+        'escoba-de-15.rules.objective',
+      ],
+      play_card: [
+        'escoba-de-15.rules.gameplay',
+      ],
+    },
   },
 }

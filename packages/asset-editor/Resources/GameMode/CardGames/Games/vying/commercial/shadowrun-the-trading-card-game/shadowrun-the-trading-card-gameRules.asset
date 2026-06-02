@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
-    Player: 'Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.',
+    LLM: 'Players assemble proprietary decks based on the Shadowrun setting. Missions, combat, and card effects depend on the printed card text and rulebook.',
+    Player: 'Players assemble proprietary decks based on the Shadowrun setting. Missions, combat, and card effects depend on the printed card text and rulebook.',
     objective: 'Use a constructed deck of runners, challenges, and resources to defeat opponents under the official rules.',
     gameplay: 'Players assemble proprietary decks based on the Shadowrun setting. Missions, combat, and card effects depend on the printed card text and rulebook.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The published duel or scenario condition determines the winner. Expected outcome: 1.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Use a constructed deck of runners, challenges, and resources to defeat opponents under the official rules.',
+      'Turn-flow example: Players assemble proprietary decks based on the Shadowrun setting. Missions, combat, and card effects depend on the printed card text and rulebook.',
+      'Scoring example: The published duel or scenario condition determines the winner. Defeat the opposing player or satisfy the published victory condition through card play and resource timing..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'shadowrun-the-trading-card-game.rules.objective',
+        title: 'Objective',
+        text: 'Use a constructed deck of runners, challenges, and resources to defeat opponents under the official rules.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'shadowrun-the-trading-card-game.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players assemble proprietary decks based on the Shadowrun setting. Missions, combat, and card effects depend on the printed card text and rulebook.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'shadowrun-the-trading-card-game.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Shadowrun The Trading Card Game.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'shadowrun-the-trading-card-game.setup.deck',
+        title: 'Deck',
+        text: 'Constructed Shadowrun TCG decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'shadowrun-the-trading-card-game.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed Shadowrun TCG decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'shadowrun-the-trading-card-game.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Constructed Shadowrun TCG decks and deal or lay out cards according to the documented Shadowrun The Trading Card Game rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'shadowrun-the-trading-card-game.score.win-condition',
+        title: 'Win condition',
+        text: 'Defeat the opposing player or satisfy the published victory condition through card play and resource timing.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'shadowrun-the-trading-card-game.score.description',
+        title: 'Scoring',
+        text: 'The published duel or scenario condition determines the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'shadowrun-the-trading-card-game.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Out-of-print trading card game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'shadowrun-the-trading-card-game.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Uses constructed decks and setting-specific card types.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'shadowrun-the-trading-card-game.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Do not reproduce protected card text or art without rights.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'shadowrun-the-trading-card-game.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'shadowrun-the-trading-card-game.rules.objective',
+          'shadowrun-the-trading-card-game.rules.gameplay',
+        ],
+      },
+      {
+        id: 'shadowrun-the-trading-card-game.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'shadowrun-the-trading-card-game.setup.players',
+          'shadowrun-the-trading-card-game.setup.deck',
+          'shadowrun-the-trading-card-game.setup.equipment',
+          'shadowrun-the-trading-card-game.setup.dealing',
+        ],
+      },
+      {
+        id: 'shadowrun-the-trading-card-game.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'shadowrun-the-trading-card-game.rules.key.1',
+          'shadowrun-the-trading-card-game.rules.key.2',
+          'shadowrun-the-trading-card-game.rules.key.3',
+        ],
+      },
+      {
+        id: 'shadowrun-the-trading-card-game.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'shadowrun-the-trading-card-game.score.description',
+          'shadowrun-the-trading-card-game.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'shadowrun-the-trading-card-game.setup.dealing',
+        'shadowrun-the-trading-card-game.rules.objective',
+      ],
+      play_card: [
+        'shadowrun-the-trading-card-game.rules.gameplay',
+      ],
+    },
   },
 }

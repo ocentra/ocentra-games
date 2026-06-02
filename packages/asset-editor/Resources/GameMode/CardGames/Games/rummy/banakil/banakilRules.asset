@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Banakil. Type: Rummy (Levant). Rules: 106 cards. Hand: 18. Wilds: 2s and Jokers. Direction: Counter-clockwise. Draw/Discard cycle. Meld Sequences/Sets. Wild card swapping allowed.',
-    Player: "Welcome to the coffee house. You have 18 cards and it's your turn to draw from the ground or the stock. Remember, those four 2s are wildâ€”will you use them to complete your sequence now, or wait to swap them for a King later?",
+    LLM: '1. **Direction**: Play proceeds counter-clockwise. 2. **Turn**: Each turn consists of drawing one card (from Stock or Ground) and discarding one card. 3. **Melding**: A player may place valid melds face up on the table once they meet the minimum requirements (often a single 50-point meld or a specific sequence length).',
+    Player: '1. **Direction**: Play proceeds counter-clockwise. 2. **Turn**: Each turn consists of drawing one card (from Stock or Ground) and discarding one card. 3. **Melding**: A player may place valid melds face up on the table once they meet the minimum requirements (often a single 50-point meld or a specific sequence length).',
     objective: "Be the first to 'Go Out' by melding all cards in your hand except for one final discard, while maximizing your score through high-value melds.",
     gameplay: '1. **Direction**: Play proceeds counter-clockwise. 2. **Turn**: Each turn consists of drawing one card (from Stock or Ground) and discarding one card. 3. **Melding**: A player may place valid melds face up on the table once they meet the minimum requirements (often a single 50-point meld or a specific sequence length).',
     keyRules: [
@@ -52,10 +52,177 @@
       go_out: 'All cards in melds; one card discarded to finish.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 18 card(s) per player, 2 deck(s), initial visibility face_up.',
-      'Opening flow: start in dealing; dealer may use deal_counter_clockwise before play_loop.',
-      'Scoring check: Scoring happens the moment a player goes out. Expected outcome: 500.',
+      'Setup example: 18 card(s) per player.',
+      "Rule example: Be the first to 'Go Out' by melding all cards in your hand except for one final discard, while maximizing your score through high-value melds.",
+      'Turn-flow example: 1. **Direction**: Play proceeds counter-clockwise. 2. **Turn**: Each turn consists of drawing one card (from Stock or Ground) and discarding one card. 3. **Melding**: A player may place valid melds face up on the table once they meet the minimum requirements (often a single 50-point meld or a specific sequence length).',
+      'Scoring example: Scoring happens the moment a player goes out. Lowest total score over several rounds (or first to reach a target point cap)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'banakil.rules.objective',
+        title: 'Objective',
+        text: "Be the first to 'Go Out' by melding all cards in your hand except for one final discard, while maximizing your score through high-value melds.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'banakil.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Direction**: Play proceeds counter-clockwise. 2. **Turn**: Each turn consists of drawing one card (from Stock or Ground) and discarding one card. 3. **Melding**: A player may place valid melds face up on the table once they meet the minimum requirements (often a single 50-point meld or a specific sequence length).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'banakil.setup.players',
+        title: 'Players',
+        text: '2-4 players. (4 players usually play in partners; 2-3 play individually).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'banakil.setup.deck',
+        title: 'Deck',
+        text: '106 cards. Two 52-card decks + 2 Jokers.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'banakil.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack, score sheet, non-transparent discard tray.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'banakil.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer (rotating counter-clockwise) deals 18 cards to each player. The next card is placed face up on the table (The Ground) to start the discard pile. The rest is the Stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'banakil.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest total score over several rounds (or first to reach a target point cap).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'banakil.score.description',
+        title: 'Scoring',
+        text: 'Scoring happens the moment a player goes out.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'banakil.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Wild cards can be reused: If a player holds the natural card that a wild card represents on the table, they can swap it and take the wild card into their hand.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'banakil.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Aces can be High (Q-K-A) or Low (A-2-3) but not both (K-A-2 is illegal).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'banakil.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The discard pile (Ground) can only be picked up if the top card is immediately used in a meld.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'banakil.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'banakil.rules.objective',
+          'banakil.rules.gameplay',
+        ],
+      },
+      {
+        id: 'banakil.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'banakil.setup.players',
+          'banakil.setup.deck',
+          'banakil.setup.equipment',
+          'banakil.setup.dealing',
+        ],
+      },
+      {
+        id: 'banakil.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'banakil.rules.key.1',
+          'banakil.rules.key.2',
+          'banakil.rules.key.3',
+        ],
+      },
+      {
+        id: 'banakil.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'banakil.score.description',
+          'banakil.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'banakil.setup.dealing',
+        'banakil.rules.objective',
+      ],
+      draw: [
+        'banakil.rules.gameplay',
+      ],
+      discard: [
+        'banakil.rules.gameplay',
+      ],
+      meld: [
+        'banakil.rules.gameplay',
+      ],
+      go_out: [
+        'banakil.rules.gameplay',
+      ],
+      deal_counter_clockwise: [
+        'banakil.rules.gameplay',
+      ],
+      draw_from_stock: [
+        'banakil.rules.gameplay',
+      ],
+      draw_from_ground: [
+        'banakil.rules.gameplay',
+      ],
+      place_meld: [
+        'banakil.rules.gameplay',
+      ],
+      swap_wild: [
+        'banakil.rules.gameplay',
+      ],
+      calculate_melds: [
+        'banakil.rules.gameplay',
+      ],
+      subtract_deadwood: [
+        'banakil.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tute arrastrado. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Tute arrastrado: Tute variant. 40-card Spanish.',
+    LLM: "Player to dealer's right leads. Follow suit and overtake or trump as in partnership Tute. After winning a trick, a player may sing one 20 or 40 (king-horse of same suit); 40 in trumps before any 20. Trump 7 or 2 may be exchanged for the turned card before first trick. Winner is the player with most points; chip payments: 100 from each opponent if winner has 100 or fewer, 200 if 101 or more; 40 or 20 chips per declaration.",
+    Player: "Player to dealer's right leads. Follow suit and overtake or trump as in partnership Tute. After winning a trick, a player may sing one 20 or 40 (king-horse of same suit); 40 in trumps before any 20. Trump 7 or 2 may be exchanged for the turned card before first trick. Winner is the player with most points; chip payments: 100 from each opponent if winner has 100 or fewer, 200 if 101 or more; 40 or 20 chips per declaration.",
     objective: 'Score the most points from card values in tricks, singing (king-horse 20/40), and last trick (10). Declaring tute (four kings or four horses) after winning a trick wins the hand outright.',
     gameplay: "Player to dealer's right leads. Follow suit and overtake or trump as in partnership Tute. After winning a trick, a player may sing one 20 or 40 (king-horse of same suit); 40 in trumps before any 20. Trump 7 or 2 may be exchanged for the turned card before first trick. Winner is the player with most points; chip payments: 100 from each opponent if winner has 100 or fewer, 200 if 101 or more; 40 or 20 chips per declaration.",
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Variant Expected outcome: 101+ or Tute..',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Score the most points from card values in tricks, singing (king-horse 20/40), and last trick (10). Declaring tute (four kings or four horses) after winning a trick wins the hand outright.',
+      "Turn-flow example: Player to dealer's right leads. Follow suit and overtake or trump as in partnership Tute. After winning a trick, a player may sing one 20 or 40 (king-horse of same suit); 40 in trumps before any 20. Trump 7 or 2 may be exchanged for the turned card before first trick. Winner is the player with most points; chip payments: 100 from each opponent if winner has 100 or fewer, 200 if 101 or more; 40 or 20 chips per declaration.",
+      'Scoring example: Variant 101+ or Tute..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tute-arrastrado.rules.objective',
+        title: 'Objective',
+        text: 'Score the most points from card values in tricks, singing (king-horse 20/40), and last trick (10). Declaring tute (four kings or four horses) after winning a trick wins the hand outright.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tute-arrastrado.rules.gameplay',
+        title: 'Turn flow',
+        text: "Player to dealer's right leads. Follow suit and overtake or trump as in partnership Tute. After winning a trick, a player may sing one 20 or 40 (king-horse of same suit); 40 in trumps before any 20. Trump 7 or 2 may be exchanged for the turned card before first trick. Winner is the player with most points; chip payments: 100 from each opponent if winner has 100 or fewer, 200 if 101 or more; 40 or 20 chips per declaration.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tute-arrastrado.setup.players',
+        title: 'Players',
+        text: 'Three players, or four with dealer sitting out each hand.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tute-arrastrado.setup.deck',
+        title: 'Deck',
+        text: '40-card Spanish pack.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tute-arrastrado.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tute-arrastrado.setup.dealing',
+        title: 'Deal',
+        text: 'Thirteen cards each, one at a time; last card turned for trump.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tute-arrastrado.score.win-condition',
+        title: 'Win condition',
+        text: '101+ or Tute.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tute-arrastrado.score.description',
+        title: 'Scoring',
+        text: 'Variant',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tute-arrastrado.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Arrastrado',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tute-arrastrado.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Follow suit and overtake',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tute-arrastrado.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Singing (20/40) after winning a trick',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'tute-arrastrado.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Tute (4 kings or 4 horses) wins hand',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tute-arrastrado.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tute-arrastrado.rules.objective',
+          'tute-arrastrado.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tute-arrastrado.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tute-arrastrado.setup.players',
+          'tute-arrastrado.setup.deck',
+          'tute-arrastrado.setup.equipment',
+          'tute-arrastrado.setup.dealing',
+        ],
+      },
+      {
+        id: 'tute-arrastrado.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tute-arrastrado.rules.key.1',
+          'tute-arrastrado.rules.key.2',
+          'tute-arrastrado.rules.key.3',
+          'tute-arrastrado.rules.key.4',
+        ],
+      },
+      {
+        id: 'tute-arrastrado.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tute-arrastrado.score.description',
+          'tute-arrastrado.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tute-arrastrado.setup.dealing',
+        'tute-arrastrado.rules.objective',
+      ],
+      play_card: [
+        'tute-arrastrado.rules.gameplay',
+      ],
+    },
   },
 }

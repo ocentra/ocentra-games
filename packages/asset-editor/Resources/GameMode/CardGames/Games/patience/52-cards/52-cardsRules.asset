@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 52 cards. Logic: See rules.objective and rules.gameplay.',
-    Player: '52 Cards is a solitaire (patience) game related to Golf and TriPeaks: clear the layout by removing cards one higher or one lower than the waste. Full 52-card deck; single player.',
+    LLM: 'Deal layout; turn waste card; play from layout cards ±1 rank; clear all cards to win.',
+    Player: 'Deal layout; turn waste card; play from layout cards ±1 rank; clear all cards to win.',
     objective: 'Clear the tableau by playing cards from the layout that are one rank higher or lower than the current waste pile card.',
     gameplay: 'Deal layout; turn waste card; play from layout cards ±1 rank; clear all cards to win.',
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: N/A; win by clearing the layout. Expected outcome: Clear the tableau by playing cards from the layout that are one rank higher or lower than the current waste pile card..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Clear the tableau by playing cards from the layout that are one rank higher or lower than the current waste pile card.',
+      'Turn-flow example: Deal layout; turn waste card; play from layout cards ±1 rank; clear all cards to win.',
+      'Scoring example: N/A; win by clearing the layout. Clear the tableau by playing cards from the layout that are one rank higher or lower than the current waste pile card..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '52-cards.rules.objective',
+        title: 'Objective',
+        text: 'Clear the tableau by playing cards from the layout that are one rank higher or lower than the current waste pile card.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '52-cards.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Deal layout; turn waste card; play from layout cards ±1 rank; clear all cards to win.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '52-cards.setup.players',
+        title: 'Players',
+        text: 'Standard: TriPeaks\nOptimal: TriPeaks players',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '52-cards.setup.deck',
+        title: 'Deck',
+        text: 'Deck type: \nCard rankings: Standard (Ace high or low depending on variant)',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '52-cards.setup.equipment',
+        title: 'Equipment',
+        text: 'Deck type: \nCard rankings: Standard (Ace high or low depending on variant)',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '52-cards.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 52 cards in tableau formation per variant.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '52-cards.score.win-condition',
+        title: 'Win condition',
+        text: 'Clear the tableau by playing cards from the layout that are one rank higher or lower than the current waste pile card.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '52-cards.score.description',
+        title: 'Scoring',
+        text: 'N/A; win by clearing the layout.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '52-cards.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Clear tableau by playing cards ±1 rank from waste',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '52-cards.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Play from layout only; one up or one down from waste',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '52-cards.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Win by clearing all cards',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '52-cards.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '52-cards.rules.objective',
+          '52-cards.rules.gameplay',
+        ],
+      },
+      {
+        id: '52-cards.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '52-cards.setup.players',
+          '52-cards.setup.deck',
+          '52-cards.setup.equipment',
+          '52-cards.setup.dealing',
+        ],
+      },
+      {
+        id: '52-cards.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '52-cards.rules.key.1',
+          '52-cards.rules.key.2',
+          '52-cards.rules.key.3',
+        ],
+      },
+      {
+        id: '52-cards.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '52-cards.score.description',
+          '52-cards.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '52-cards.setup.dealing',
+        '52-cards.rules.objective',
+      ],
+      deal: [
+        '52-cards.rules.gameplay',
+      ],
+      play_card: [
+        '52-cards.rules.gameplay',
+      ],
+      draw: [
+        '52-cards.rules.gameplay',
+      ],
+    },
   },
 }

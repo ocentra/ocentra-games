@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Omi. 4p partnerships. 32 cards A-7. Trump chosen by R of dealer after 4 cards. 8 tricks. Tokens: 4-4=none; 5-7 declarer=1, defenders=2; 8 tricks=3. First to 10 wins.',
-    Player: 'Omi: Four players, partners opposite. First 4 cards dealt, then you (right of dealer) name trumps. Four more cards each. Play eight tricks. Win 10 tokens to win the game.',
+    LLM: "1. After trump is announced, player to dealer's right leads any card. 2. Play proceeds counter-clockwise. Players must follow suit if able; otherwise may play any card. 3. Highest trump wins; if no trump played, highest card of suit led wins. 4. Trick winner gathers cards, leads next trick. 5. After 8 tricks, tokens are awarded according to the scoring table.",
+    Player: "1. After trump is announced, player to dealer's right leads any card. 2. Play proceeds counter-clockwise. Players must follow suit if able; otherwise may play any card. 3. Highest trump wins; if no trump played, highest card of suit led wins. 4. Trick winner gathers cards, leads next trick. 5. After 8 tricks, tokens are awarded according to the scoring table.",
     objective: 'Take more tricks than the opponents. Teams score token cards; first team to collect 10 or more tokens wins.',
     gameplay: "1. After trump is announced, player to dealer's right leads any card. 2. Play proceeds counter-clockwise. Players must follow suit if able; otherwise may play any card. 3. Highest trump wins; if no trump played, highest card of suit led wins. 4. Trick winner gathers cards, leads next trick. 5. After 8 tricks, tokens are awarded according to the scoring table.",
     keyRules: [
@@ -56,10 +56,183 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 8 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Token cards (2-6 of each suit) are used as scoring chips. Black and red tokens are kept separate. Expected outcome: 10.',
+      'Setup example: 8 card(s) per player.',
+      'Rule example: Take more tricks than the opponents. Teams score token cards; first team to collect 10 or more tokens wins.',
+      "Turn-flow example: 1. After trump is announced, player to dealer's right leads any card. 2. Play proceeds counter-clockwise. Players must follow suit if able; otherwise may play any card. 3. Highest trump wins; if no trump played, highest card of suit led wins. 4. Trick winner gathers cards, leads next trick. 5. After 8 tricks, tokens are awarded according to the scoring table.",
+      'Scoring example: Token cards (2-6 of each suit) are used as scoring chips. Black and red tokens are kept separate. First team to win 10 or more tokens. A team loses when they run out of tokens to pay..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'omi.rules.objective',
+        title: 'Objective',
+        text: 'Take more tricks than the opponents. Teams score token cards; first team to collect 10 or more tokens wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'omi.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. After trump is announced, player to dealer's right leads any card. 2. Play proceeds counter-clockwise. Players must follow suit if able; otherwise may play any card. 3. Highest trump wins; if no trump played, highest card of suit led wins. 4. Trick winner gathers cards, leads next trick. 5. After 8 tricks, tokens are awarded according to the scoring table.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'omi.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships; partners sit opposite (North-South vs East-West).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'omi.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack; only 32 cards used (A-K-Q-J-10-9-8-7). Rank A high to 7 low.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'omi.setup.equipment',
+        title: 'Equipment',
+        text: '32 playing cards; 20 token cards (2-6 of each suit). One player holds black tokens (clubs, spades 2-6); an opponent holds red tokens (hearts, diamonds 2-6).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'omi.setup.dealing',
+        title: 'Deal',
+        text: "Dealer shuffles and offers cut to opponent on left. Dealer deals 4 cards to each player. Player to dealer's right announces trump (without consulting partner). Dealer then deals 4 more cards to each (8 total).",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'omi.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to win 10 or more tokens. A team loses when they run out of tokens to pay.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'omi.score.description',
+        title: 'Scoring',
+        text: 'Token cards (2-6 of each suit) are used as scoring chips. Black and red tokens are kept separate.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'omi.rules.key.1',
+        title: 'Key rule 1',
+        text: "Trump chosen by player to dealer's right after seeing only first 4 cards.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'omi.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Must follow suit if able.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'omi.rules.key.3',
+        title: 'Key rule 3',
+        text: '8 tricks total.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'omi.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Token scoring: 4-4 split = no tokens, but extra token next time a team takes more than 4.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'omi.rules.key.5',
+        title: 'Key rule 5',
+        text: '5-7 tricks for trump-choosing team = 1 token; for non-declarers = 2 tokens.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'omi.rules.key.6',
+        title: 'Key rule 6',
+        text: 'All 8 tricks (Kapothi/Basthe) = 3 tokens.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'omi.rules.key.7',
+        title: 'Key rule 7',
+        text: 'First team to 10 tokens wins.',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'omi.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'omi.rules.objective',
+          'omi.rules.gameplay',
+        ],
+      },
+      {
+        id: 'omi.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'omi.setup.players',
+          'omi.setup.deck',
+          'omi.setup.equipment',
+          'omi.setup.dealing',
+        ],
+      },
+      {
+        id: 'omi.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'omi.rules.key.1',
+          'omi.rules.key.2',
+          'omi.rules.key.3',
+          'omi.rules.key.4',
+          'omi.rules.key.5',
+          'omi.rules.key.6',
+          'omi.rules.key.7',
+        ],
+      },
+      {
+        id: 'omi.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'omi.score.description',
+          'omi.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'omi.setup.dealing',
+        'omi.rules.objective',
+      ],
+      play_card: [
+        'omi.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Crazy Eights. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Crazy Eights is a popular shedding card game, especially beloved by children. The objective is simple: be the first player to discard all your cards. Players take turns playing cards to a central discard pile, matching either the rank or suit of the top card. The eponymous "crazy" 8s are wild cards that can be played on anything and allow the player to change the suit.',
+    LLM: 'Players play cards matching the current color or value, use action cards to change direction or color, and may stack same-color cards after a Taki card. The game resembles Uno but has its own deck and rules.',
+    Player: 'Players play cards matching the current color or value, use action cards to change direction or color, and may stack same-color cards after a Taki card. The game resembles Uno but has its own deck and rules.',
     objective: 'Be the first player to empty your hand by matching color, number, or action cards.',
     gameplay: 'Players play cards matching the current color or value, use action cards to change direction or color, and may stack same-color cards after a Taki card. The game resembles Uno but has its own deck and rules.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-10 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Be the first player to discard all cards from your hand. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first player to empty your hand by matching color, number, or action cards.',
+      'Turn-flow example: Players play cards matching the current color or value, use action cards to change direction or color, and may stack same-color cards after a Taki card. The game resembles Uno but has its own deck and rules.',
+      'Scoring example: Be the first player to discard all cards from your hand. Be the first player to discard all cards from your hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'taki.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to empty your hand by matching color, number, or action cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'taki.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players play cards matching the current color or value, use action cards to change direction or color, and may stack same-color cards after a Taki card. The game resembles Uno but has its own deck and rules.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'taki.setup.players',
+        title: 'Players',
+        text: '2-10 players use the table arrangement described for Taki.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'taki.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Taki color and action card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'taki.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Taki color and action card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'taki.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Taki color and action card deck and deal or lay out cards according to the documented Taki rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'taki.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'taki.score.description',
+        title: 'Scoring',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'taki.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Players match color, number, or legal action.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'taki.rules.key.2',
+        title: 'Key rule 2',
+        text: 'A Taki card lets a player play multiple cards of the same color.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'taki.rules.key.3',
+        title: 'Key rule 3',
+        text: 'First player to empty hand wins the hand.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'taki.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'taki.rules.objective',
+          'taki.rules.gameplay',
+        ],
+      },
+      {
+        id: 'taki.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'taki.setup.players',
+          'taki.setup.deck',
+          'taki.setup.equipment',
+          'taki.setup.dealing',
+        ],
+      },
+      {
+        id: 'taki.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'taki.rules.key.1',
+          'taki.rules.key.2',
+          'taki.rules.key.3',
+        ],
+      },
+      {
+        id: 'taki.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'taki.score.description',
+          'taki.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'taki.setup.dealing',
+        'taki.rules.objective',
+      ],
+      play_card: [
+        'taki.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Calculation (Strategy Solitaire). Logic: See rules.objective and rules.gameplay.',
-    Player: "Calculation (also known as Strategy or 'Broken Intervals') is a unique solitaire card game that deviates from standard 'Klondike' mechanics. Unlike most solitaires that build in simple 1-2-3 steps, each of the four foundation piles in Calculation builds at a different mathematical interval: Pile 1 goes 1, 2, 3...; Pile 2 goes 2, 4, 6...; Pile 3 goes 3, 6, 9...; and Pile 4 goes 4, 8, Q... It is a game of pure skill and memory where the layout of the 'Waste' piles determines victory.",
+    LLM: '1. Turn up a card from the Stock.\n2. If it can be played on a Foundation, do so.\n3. If not, you MUST place it on one of the 4 Waste piles.\n4. You can only move the TOP card of a Waste pile to a Foundation. You cannot move cards between Waste piles.',
+    Player: '1. Turn up a card from the Stock.\n2. If it can be played on a Foundation, do so.\n3. If not, you MUST place it on one of the 4 Waste piles.\n4. You can only move the TOP card of a Waste pile to a Foundation. You cannot move cards between Waste piles.',
     objective: 'Move all 52 cards onto the four foundation piles by building each foundation in its fixed interval sequence (Ace+1, 2+2, 3+3, 4+4) until every card is played; the game is lost if no further play is possible.',
     gameplay: '1. Turn up a card from the Stock.\n2. If it can be played on a Foundation, do so.\n3. If not, you MUST place it on one of the 4 Waste piles.\n4. You can only move the TOP card of a Waste pile to a Foundation. You cannot move cards between Waste piles.',
     keyRules: [
@@ -50,10 +50,129 @@
       go_out: 'Solitaire patience; no go-out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Move all 52 cards onto the 4 Foundation piles. Expected outcome: Move all 52 cards onto the 4 Foundation piles..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Move all 52 cards onto the four foundation piles by building each foundation in its fixed interval sequence (Ace+1, 2+2, 3+3, 4+4) until every card is played; the game is lost if no further play is possible.',
+      'Turn-flow example: 1. Turn up a card from the Stock.\n2. If it can be played on a Foundation, do so.\n3. If not, you MUST place it on one of the 4 Waste piles.\n4. You can only move the TOP card of a Waste pile to a Foundation. You cannot move cards between Waste piles.',
+      'Scoring example: Move all 52 cards onto the 4 Foundation piles. Move all 52 cards onto the 4 Foundation piles..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'calculation-strategy.rules.objective',
+        title: 'Objective',
+        text: 'Move all 52 cards onto the four foundation piles by building each foundation in its fixed interval sequence (Ace+1, 2+2, 3+3, 4+4) until every card is played; the game is lost if no further play is possible.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'calculation-strategy.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Turn up a card from the Stock.\n2. If it can be played on a Foundation, do so.\n3. If not, you MUST place it on one of the 4 Waste piles.\n4. You can only move the TOP card of a Waste pile to a Foundation. You cannot move cards between Waste piles.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'calculation-strategy.setup.players',
+        title: 'Players',
+        text: 'One player (solitaire). The game is played by a single player who turns cards from the stock and builds the four foundations or places cards on the four waste (tableau) piles.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'calculation-strategy.setup.deck',
+        title: 'Deck',
+        text: '52 cards. Remove one Ace, one 2, one 3, and one 4. Place them as the base of 4 Foundation piles.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'calculation-strategy.setup.equipment',
+        title: 'Equipment',
+        text: '52 cards. Remove one Ace, one 2, one 3, and one 4. Place them as the base of 4 Foundation piles.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'calculation-strategy.setup.dealing',
+        title: 'Deal',
+        text: 'Remove one A, 2, 3, 4; place as base of four foundations. Rest form stock. Turn from stock to foundation or waste.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'calculation-strategy.score.win-condition',
+        title: 'Win condition',
+        text: 'Move all 52 cards onto the 4 Foundation piles.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'calculation-strategy.score.description',
+        title: 'Scoring',
+        text: 'Move all 52 cards onto the 4 Foundation piles.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'calculation-strategy.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Four foundations build by intervals: +1, +2, +3, +4. Only top of waste movable to foundation.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'calculation-strategy.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'calculation-strategy.rules.objective',
+          'calculation-strategy.rules.gameplay',
+        ],
+      },
+      {
+        id: 'calculation-strategy.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'calculation-strategy.setup.players',
+          'calculation-strategy.setup.deck',
+          'calculation-strategy.setup.equipment',
+          'calculation-strategy.setup.dealing',
+        ],
+      },
+      {
+        id: 'calculation-strategy.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'calculation-strategy.rules.key.1',
+        ],
+      },
+      {
+        id: 'calculation-strategy.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'calculation-strategy.score.description',
+          'calculation-strategy.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'calculation-strategy.setup.dealing',
+        'calculation-strategy.rules.objective',
+      ],
+      play_card: [
+        'calculation-strategy.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Auction Forty-Fives. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Auction Forty-Fives (45s, Nova Scotia style) is a partnership trick game: 4 or 6 players, 5 cards each plus 4-card kitty. Bid in 5s (min 15-20); high bidder declares trump and may exchange with kitty. First team to 120 wins. Trump: 5 highest, then J, then A of hearts (always trump). Each trick 5 points; highest trump in trick +5. Special: 30 for 60 (win all tricks); 60 for 120 when below zero. Pagat spoil5/45; regional rules vary.',
+    LLM: 'Follow suit when trump led; else any. Trick = 5 pts; highest trump in trick +5. 30 for 60 = all tricks (60 if made, 30 if not); 60 for 120 only when team below zero. House rules vary.',
+    Player: 'Follow suit when trump led; else any. Trick = 5 pts; highest trump in trick +5. 30 for 60 = all tricks (60 if made, 30 if not); 60 for 120 only when team below zero. House rules vary.',
     objective: 'First team to 120 points. Bid in 5s; high bidder declares trump, may use kitty.',
     gameplay: 'Follow suit when trump led; else any. Trick = 5 pts; highest trump in trick +5. 30 for 60 = all tricks (60 if made, 30 if not); 60 for 120 only when team below zero. House rules vary.',
     keyRules: [
@@ -52,10 +52,159 @@
       go_out: 'Game ends when a team reaches 120 points.',
     },
     exampleHands: [
-      'Opening deal: 4-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_five_kitty before bidding.',
-      'Scoring check: 5 per trick; +5 for highest trump in trick. First to 120 wins. Expected outcome: 120.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: First team to 120 points. Bid in 5s; high bidder declares trump, may use kitty.',
+      'Turn-flow example: Follow suit when trump led; else any. Trick = 5 pts; highest trump in trick +5. 30 for 60 = all tricks (60 if made, 30 if not); 60 for 120 only when team below zero. House rules vary.',
+      'Scoring example: 5 per trick; +5 for highest trump in trick. First to 120 wins. First team to 120 points. Bid in 5s; high bidder declares trump, may use kitty..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'auction-forty-fives.rules.objective',
+        title: 'Objective',
+        text: 'First team to 120 points. Bid in 5s; high bidder declares trump, may use kitty.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Follow suit when trump led; else any. Trick = 5 pts; highest trump in trick +5. 30 for 60 = all tricks (60 if made, 30 if not); 60 for 120 only when team below zero. House rules vary.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.setup.players',
+        title: 'Players',
+        text: '4 or 6 in partnerships (opposite). 5 cards each (3+2), 4-card kitty.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.setup.deck',
+        title: 'Deck',
+        text: '52 cards. Trump: 5 high, then J, A of hearts always trump.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.setup.equipment',
+        title: 'Equipment',
+        text: '52-card deck; score to 120.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.setup.dealing',
+        title: 'Deal',
+        text: 'Left of dealer bids first; dealer may hold. High bidder names trump, may exchange with kitty.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to 120 points. Bid in 5s; high bidder declares trump, may use kitty.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.score.description',
+        title: 'Scoring',
+        text: '5 per trick; +5 for highest trump in trick. First to 120 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Bid 5s; high bidder declares trump, exchanges with kitty',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.rules.key.2',
+        title: 'Key rule 2',
+        text: '5 and J high in trump; heart Ace always trump',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.rules.key.3',
+        title: 'Key rule 3',
+        text: '120 to win; 30 for 60, 60 for 120 special bids',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'auction-forty-fives.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'auction-forty-fives.rules.objective',
+          'auction-forty-fives.rules.gameplay',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'auction-forty-fives.setup.players',
+          'auction-forty-fives.setup.deck',
+          'auction-forty-fives.setup.equipment',
+          'auction-forty-fives.setup.dealing',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'auction-forty-fives.rules.key.1',
+          'auction-forty-fives.rules.key.2',
+          'auction-forty-fives.rules.key.3',
+        ],
+      },
+      {
+        id: 'auction-forty-fives.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'auction-forty-fives.score.description',
+          'auction-forty-fives.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'auction-forty-fives.setup.dealing',
+        'auction-forty-fives.rules.objective',
+      ],
+      play_card: [
+        'auction-forty-fives.rules.gameplay',
+      ],
+      pass: [
+        'auction-forty-fives.rules.gameplay',
+      ],
+      bid: [
+        'auction-forty-fives.rules.gameplay',
+      ],
+      deal_five_kitty: [
+        'auction-forty-fives.rules.gameplay',
+      ],
+      tally_45s: [
+        'auction-forty-fives.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Lora. Balkan compendium, 4 players, 32-card deck (A-7). 8 rounds: 1)No Tricks(-1/trick) 2)No Hearts(-1/heart) 3)No Queens(-4/queen) 4)No Kâ™¥(-8) 5)No Last Trick(-8) 6)Lora(shedding, positive) 7)Negative Lora 8)Double Negative. Deal 8 each. Must follow suit. Lowest total score wins.',
-    Player: "Welcome to Lora! Over 8 rounds, you'll face different challenges: avoid winning tricks, avoid Hearts, avoid Queens, avoid the King of Hearts, avoid the last trick, then switch to shedding in The Lora rounds. Each round needs different strategyâ€”stay flexible!",
+    LLM: "Eight rounds played in sequence: 1. **No Tricks**: -1 pt per trick won. 2. **No Hearts**: -1 pt per Heart captured. 3. **No Queens (Jacks)**: -4 pts per Queen (or Jack) captured. 4. **No King of Hearts**: -8 pts for capturing the King of Hearts (The 'Hairy' King). 5. **No Last Trick**: -8 pts for winning the last trick. 6. **The Lora**: A shedding round. Players play cards in sequences (like Fan-Tan). First to empty their hand wins points. 7. **Negative Lora**: Inverse of round 6. 8. **Double Negative**: Points from all previous rounds combined into one super-avoidance round.",
+    Player: "Eight rounds played in sequence: 1. **No Tricks**: -1 pt per trick won. 2. **No Hearts**: -1 pt per Heart captured. 3. **No Queens (Jacks)**: -4 pts per Queen (or Jack) captured. 4. **No King of Hearts**: -8 pts for capturing the King of Hearts (The 'Hairy' King). 5. **No Last Trick**: -8 pts for winning the last trick. 6. **The Lora**: A shedding round. Players play cards in sequences (like Fan-Tan). First to empty their hand wins points. 7. **Negative Lora**: Inverse of round 6. 8. **Double Negative**: Points from all previous rounds combined into one super-avoidance round.",
     objective: 'Score the fewest points in negative rounds and most in positive rounds.',
     gameplay: "Eight rounds played in sequence: 1. **No Tricks**: -1 pt per trick won. 2. **No Hearts**: -1 pt per Heart captured. 3. **No Queens (Jacks)**: -4 pts per Queen (or Jack) captured. 4. **No King of Hearts**: -8 pts for capturing the King of Hearts (The 'Hairy' King). 5. **No Last Trick**: -8 pts for winning the last trick. 6. **The Lora**: A shedding round. Players play cards in sequences (like Fan-Tan). First to empty their hand wins points. 7. **Negative Lora**: Inverse of round 6. 8. **Double Negative**: Points from all previous rounds combined into one super-avoidance round.",
     keyRules: [
@@ -54,10 +54,171 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 8 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before round_1.',
-      "Scoring check: Points awarded/penalized based on each round's specific rules. Expected outcome: Lowest cumulative score after 8 rounds..",
+      'Setup example: 8 card(s) per player.',
+      'Rule example: Score the fewest points in negative rounds and most in positive rounds.',
+      "Turn-flow example: Eight rounds played in sequence: 1. **No Tricks**: -1 pt per trick won. 2. **No Hearts**: -1 pt per Heart captured. 3. **No Queens (Jacks)**: -4 pts per Queen (or Jack) captured. 4. **No King of Hearts**: -8 pts for capturing the King of Hearts (The 'Hairy' King). 5. **No Last Trick**: -8 pts for winning the last trick. 6. **The Lora**: A shedding round. Players play cards in sequences (like Fan-Tan). First to empty their hand wins points. 7. **Negative Lora**: Inverse of round 6. 8. **Double Negative**: Points from all previous rounds combined into one super-avoidance round.",
+      "Scoring example: Points awarded/penalized based on each round's specific rules. Lowest cumulative score after 8 rounds..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'lora.rules.objective',
+        title: 'Objective',
+        text: 'Score the fewest points in negative rounds and most in positive rounds.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'lora.rules.gameplay',
+        title: 'Turn flow',
+        text: "Eight rounds played in sequence: 1. **No Tricks**: -1 pt per trick won. 2. **No Hearts**: -1 pt per Heart captured. 3. **No Queens (Jacks)**: -4 pts per Queen (or Jack) captured. 4. **No King of Hearts**: -8 pts for capturing the King of Hearts (The 'Hairy' King). 5. **No Last Trick**: -8 pts for winning the last trick. 6. **The Lora**: A shedding round. Players play cards in sequences (like Fan-Tan). First to empty their hand wins points. 7. **Negative Lora**: Inverse of round 6. 8. **Double Negative**: Points from all previous rounds combined into one super-avoidance round.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'lora.setup.players',
+        title: 'Players',
+        text: '4 players individually.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'lora.setup.deck',
+        title: 'Deck',
+        text: '32 cards. French (Sh/Dl/Cl/Sp) or German (Acorns/Leaves/Hearts/Bells). Ace is high.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'lora.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck and score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'lora.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 8 cards.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'lora.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest cumulative score after 8 rounds.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'lora.score.description',
+        title: 'Scoring',
+        text: "Points awarded/penalized based on each round's specific rules.",
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'lora.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Standard trick-taking: Must follow suit. No trumps (except in specific variations).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'lora.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Rounds 1-5, 8 are negative (avoid points).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'lora.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Round 6-7 are shedding games (positive scoring).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'lora.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Each round has specific penalty weights.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'lora.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Lowest cumulative score after 8 rounds wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'lora.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'lora.rules.objective',
+          'lora.rules.gameplay',
+        ],
+      },
+      {
+        id: 'lora.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'lora.setup.players',
+          'lora.setup.deck',
+          'lora.setup.equipment',
+          'lora.setup.dealing',
+        ],
+      },
+      {
+        id: 'lora.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'lora.rules.key.1',
+          'lora.rules.key.2',
+          'lora.rules.key.3',
+          'lora.rules.key.4',
+          'lora.rules.key.5',
+        ],
+      },
+      {
+        id: 'lora.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'lora.score.description',
+          'lora.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'lora.setup.dealing',
+        'lora.rules.objective',
+      ],
+      deal: [
+        'lora.rules.gameplay',
+      ],
+      play_card: [
+        'lora.rules.gameplay',
+      ],
+      calculate: [
+        'lora.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Disney Lorcana. Logic: Be the first player to reach the required lore total.',
-    Player: 'Disney Lorcana is a commercial trading card game where players quest with character cards and race to collect lore.',
+    LLM: 'Players ink cards for resources, play characters and actions, quest for lore, challenge opposing characters, and use card effects to control the race.',
+    Player: 'Players ink cards for resources, play characters and actions, quest for lore, challenge opposing characters, and use card effects to control the race.',
     objective: 'Be the first player to reach the required lore total.',
     gameplay: 'Players ink cards for resources, play characters and actions, quest for lore, challenge opposing characters, and use card effects to control the race.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: First player to the published lore target wins. Expected outcome: 20.',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Be the first player to reach the required lore total.',
+      'Turn-flow example: Players ink cards for resources, play characters and actions, quest for lore, challenge opposing characters, and use card effects to control the race.',
+      'Scoring example: First player to the published lore target wins. Be the first player to reach the required lore total..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'disney-lorcana.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to reach the required lore total.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'disney-lorcana.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players ink cards for resources, play characters and actions, quest for lore, challenge opposing characters, and use card effects to control the race.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'disney-lorcana.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Disney Lorcana.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'disney-lorcana.setup.deck',
+        title: 'Deck',
+        text: 'Constructed Disney Lorcana deck of at least 60 cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'disney-lorcana.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed Disney Lorcana deck of at least 60 cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'disney-lorcana.setup.dealing',
+        title: 'Deal',
+        text: 'Each player brings a constructed deck, draws an opening hand, and uses cards as ink resources during play.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'disney-lorcana.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to reach the required lore total.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'disney-lorcana.score.description',
+        title: 'Scoring',
+        text: 'First player to the published lore target wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'disney-lorcana.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Constructed deck of at least 60 cards.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'disney-lorcana.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Cards may be used as ink resources.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'disney-lorcana.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Characters quest to gain lore.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'disney-lorcana.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Challenges remove or weaken opposing characters.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'disney-lorcana.rules.key.5',
+        title: 'Key rule 5',
+        text: 'First to the lore target wins.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'disney-lorcana.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'disney-lorcana.rules.objective',
+          'disney-lorcana.rules.gameplay',
+        ],
+      },
+      {
+        id: 'disney-lorcana.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'disney-lorcana.setup.players',
+          'disney-lorcana.setup.deck',
+          'disney-lorcana.setup.equipment',
+          'disney-lorcana.setup.dealing',
+        ],
+      },
+      {
+        id: 'disney-lorcana.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'disney-lorcana.rules.key.1',
+          'disney-lorcana.rules.key.2',
+          'disney-lorcana.rules.key.3',
+          'disney-lorcana.rules.key.4',
+          'disney-lorcana.rules.key.5',
+        ],
+      },
+      {
+        id: 'disney-lorcana.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'disney-lorcana.score.description',
+          'disney-lorcana.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'disney-lorcana.setup.dealing',
+        'disney-lorcana.rules.objective',
+      ],
+      play_card: [
+        'disney-lorcana.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Armchair Cricket. Logic: Score more runs than the opponent while preserving wickets, using the selected cricket-length format.',
-    Player: 'Armchair Cricket is a commercial cricket simulation card game using a dedicated 110-card pack where bowling and batting cards determine runs, wickets, and extras.',
+    LLM: 'The bowler plays a delivery card and the batsman responds with a shot card. Same-suit higher cards score runs by the difference; lower off-suit cards can produce wickets. Optional no-ball, extras, lower-order, and two-card-shot rules add cricket detail.',
+    Player: 'The bowler plays a delivery card and the batsman responds with a shot card. Same-suit higher cards score runs by the difference; lower off-suit cards can produce wickets. Optional no-ball, extras, lower-order, and two-card-shot rules add cricket detail.',
     objective: 'Score more runs than the opponent while preserving wickets, using the selected cricket-length format.',
     gameplay: 'The bowler plays a delivery card and the batsman responds with a shot card. Same-suit higher cards score runs by the difference; lower off-suit cards can produce wickets. Optional no-ball, extras, lower-order, and two-card-shot rules add cricket detail.',
     keyRules: [
@@ -53,10 +53,159 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: Runs and wickets follow cricket scoring; the side with more runs wins the match format. Expected outcome: Score more runs than the opponent while preserving wickets, using the selected cricket-length format..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Score more runs than the opponent while preserving wickets, using the selected cricket-length format.',
+      'Turn-flow example: The bowler plays a delivery card and the batsman responds with a shot card. Same-suit higher cards score runs by the difference; lower off-suit cards can produce wickets. Optional no-ball, extras, lower-order, and two-card-shot rules add cricket detail.',
+      'Scoring example: Runs and wickets follow cricket scoring; the side with more runs wins the match format. Score more runs than the opponent while preserving wickets, using the selected cricket-length format..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'armchair-cricket.rules.objective',
+        title: 'Objective',
+        text: 'Score more runs than the opponent while preserving wickets, using the selected cricket-length format.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'armchair-cricket.rules.gameplay',
+        title: 'Turn flow',
+        text: 'The bowler plays a delivery card and the batsman responds with a shot card. Same-suit higher cards score runs by the difference; lower off-suit cards can produce wickets. Optional no-ball, extras, lower-order, and two-card-shot rules add cricket detail.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'armchair-cricket.setup.players',
+        title: 'Players',
+        text: 'Two players represent bowler and batsman, or four players can play team versions.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'armchair-cricket.setup.deck',
+        title: 'Deck',
+        text: 'Use two identical 55-card decks with five cricket-equipment suits numbered 1 to 11.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'armchair-cricket.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated 110-card cricket deck with five suits numbered 1 to 11, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'armchair-cricket.setup.dealing',
+        title: 'Deal',
+        text: 'Deal hidden hands to the batting and bowling sides according to the selected cricket format.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'armchair-cricket.score.win-condition',
+        title: 'Win condition',
+        text: 'Score more runs than the opponent while preserving wickets, using the selected cricket-length format.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'armchair-cricket.score.description',
+        title: 'Scoring',
+        text: 'Runs and wickets follow cricket scoring; the side with more runs wins the match format.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'armchair-cricket.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Requires a dedicated cricket-themed card pack.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'armchair-cricket.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Bowler and batsman compare suit and value.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'armchair-cricket.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Higher same-suit batting cards score runs.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'armchair-cricket.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Different-suit lower batting cards can be out.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'armchair-cricket.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'armchair-cricket.rules.objective',
+          'armchair-cricket.rules.gameplay',
+        ],
+      },
+      {
+        id: 'armchair-cricket.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'armchair-cricket.setup.players',
+          'armchair-cricket.setup.deck',
+          'armchair-cricket.setup.equipment',
+          'armchair-cricket.setup.dealing',
+        ],
+      },
+      {
+        id: 'armchair-cricket.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'armchair-cricket.rules.key.1',
+          'armchair-cricket.rules.key.2',
+          'armchair-cricket.rules.key.3',
+          'armchair-cricket.rules.key.4',
+        ],
+      },
+      {
+        id: 'armchair-cricket.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'armchair-cricket.score.description',
+          'armchair-cricket.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'armchair-cricket.setup.dealing',
+        'armchair-cricket.rules.objective',
+      ],
+      play_card: [
+        'armchair-cricket.rules.gameplay',
+      ],
+      flip_top_card: [
+        'armchair-cricket.rules.gameplay',
+      ],
+    },
   },
 }

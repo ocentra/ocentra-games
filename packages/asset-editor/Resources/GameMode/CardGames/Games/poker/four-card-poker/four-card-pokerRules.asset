@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Four Card Poker. Logic: See rules.objective and rules.gameplay.',
-    Player: "Four Card Poker is a popular casino table game that pits the player against the house. Similar to Three Card Poker, it is a game of decision-making and hand valuation, but with a unique twist: the dealer receives a significant card advantage (six cards to the player's five) to offset the fact that the dealer does not need to 'qualify' to play. Despite the name, players and the dealer use their best four-card hand from their respective totals, leading to a unique ranking system where Three-of-a-Kind actually beats a Flush.",
+    LLM: "1. Players place an Ante bet.\n2. Cards are dealt. Players examine their 5-card hand and choose the best 4-card combination.\n3. Making a Choice: Players must either FOLD (losing the Ante) or make a PLAY bet.\n4. Play Bet: Unlike other games, you can bet 1x, 2x, or 3x your Ante.\n5. The Showdown: The Dealer reveals their 6 cards and makes their best 4-card hand. There is no 'dealer qualify' rule.",
+    Player: "1. Players place an Ante bet.\n2. Cards are dealt. Players examine their 5-card hand and choose the best 4-card combination.\n3. Making a Choice: Players must either FOLD (losing the Ante) or make a PLAY bet.\n4. Play Bet: Unlike other games, you can bet 1x, 2x, or 3x your Ante.\n5. The Showdown: The Dealer reveals their 6 cards and makes their best 4-card hand. There is no 'dealer qualify' rule.",
     objective: 'Form a better four-card poker hand than the dealer.',
     gameplay: "1. Players place an Ante bet.\n2. Cards are dealt. Players examine their 5-card hand and choose the best 4-card combination.\n3. Making a Choice: Players must either FOLD (losing the Ante) or make a PLAY bet.\n4. Play Bet: Unlike other games, you can bet 1x, 2x, or 3x your Ante.\n5. The Showdown: The Dealer reveals their 6 cards and makes their best 4-card hand. There is no 'dealer qualify' rule.",
     keyRules: [
@@ -51,10 +51,156 @@
       go_out: 'This game does not support go out.',
     },
     exampleHands: [
-      'Opening deal: 1-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; each_player_clockwise may use ante before deal.',
-      'Scoring check: Form a better four-card poker hand than the dealer. Expected outcome: Form a better four-card poker hand than the dealer..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Form a better four-card poker hand than the dealer.',
+      "Turn-flow example: 1. Players place an Ante bet.\n2. Cards are dealt. Players examine their 5-card hand and choose the best 4-card combination.\n3. Making a Choice: Players must either FOLD (losing the Ante) or make a PLAY bet.\n4. Play Bet: Unlike other games, you can bet 1x, 2x, or 3x your Ante.\n5. The Showdown: The Dealer reveals their 6 cards and makes their best 4-card hand. There is no 'dealer qualify' rule.",
+      'Scoring example: Form a better four-card poker hand than the dealer. Form a better four-card poker hand than the dealer..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'four-card-poker.rules.objective',
+        title: 'Objective',
+        text: 'Form a better four-card poker hand than the dealer.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'four-card-poker.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Players place an Ante bet.\n2. Cards are dealt. Players examine their 5-card hand and choose the best 4-card combination.\n3. Making a Choice: Players must either FOLD (losing the Ante) or make a PLAY bet.\n4. Play Bet: Unlike other games, you can bet 1x, 2x, or 3x your Ante.\n5. The Showdown: The Dealer reveals their 6 cards and makes their best 4-card hand. There is no 'dealer qualify' rule.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'four-card-poker.setup.players',
+        title: 'Players',
+        text: 'Typically 1 to 6 players seated at a specialized casino table.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'four-card-poker.setup.deck',
+        title: 'Deck',
+        text: 'One standard 52-card deck, usually shuffled by a machine after every hand.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'four-card-poker.setup.equipment',
+        title: 'Equipment',
+        text: 'One standard 52-card deck, usually shuffled by a machine after every hand.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'four-card-poker.setup.dealing',
+        title: 'Deal',
+        text: 'The Player receives 5 cards. The Dealer receives 6 cards (one of which is turned face up).',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'four-card-poker.score.win-condition',
+        title: 'Win condition',
+        text: 'Form a better four-card poker hand than the dealer.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'four-card-poker.score.description',
+        title: 'Scoring',
+        text: 'Form a better four-card poker hand than the dealer.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'four-card-poker.rules.key.1',
+        title: 'Key rule 1',
+        text: "Automatic Bonus: If the player has a Three-of-a-Kind or better, they win a bonus on the Ante bet, regardless of the dealer's hand.",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'four-card-poker.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Aces Up: This side bet pays if the player has at least a Pair of Aces in their best four-card hand.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'four-card-poker.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'four-card-poker.rules.objective',
+          'four-card-poker.rules.gameplay',
+        ],
+      },
+      {
+        id: 'four-card-poker.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'four-card-poker.setup.players',
+          'four-card-poker.setup.deck',
+          'four-card-poker.setup.equipment',
+          'four-card-poker.setup.dealing',
+        ],
+      },
+      {
+        id: 'four-card-poker.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'four-card-poker.rules.key.1',
+          'four-card-poker.rules.key.2',
+        ],
+      },
+      {
+        id: 'four-card-poker.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'four-card-poker.score.description',
+          'four-card-poker.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'four-card-poker.setup.dealing',
+        'four-card-poker.rules.objective',
+      ],
+      ante: [
+        'four-card-poker.rules.gameplay',
+      ],
+      fold: [
+        'four-card-poker.rules.gameplay',
+      ],
+      execute_deal: [
+        'four-card-poker.rules.gameplay',
+      ],
+      resolve_showdown: [
+        'four-card-poker.rules.gameplay',
+      ],
+      play_bet_1x: [
+        'four-card-poker.rules.gameplay',
+      ],
+      play_bet_2x: [
+        'four-card-poker.rules.gameplay',
+      ],
+      play_bet_3x: [
+        'four-card-poker.rules.gameplay',
+      ],
+    },
   },
 }

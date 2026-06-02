@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Whist. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Whist is the classic English partnership trick-taking game and ancestor of Bridge. 4 players, 2 teams. 52 cards, 13 each. Last card dealt (to dealer) turned face-up = trump. Eldest hand leads. Follow suit. Each trick over 6 = 1 point. Honours (A-K-Q-J of trump): 3 held = 2pts, 4 held = 4pts. Game to 5 (British) or 7 (American). Rubber = best of 3.',
+    LLM: 'Players sit in fixed partnerships, bid or choose contracts, then play tricks with follow-suit obligations. Trump or suit games reward trick capture while Noll reverses the goal toward taking as few tricks as possible.',
+    Player: 'Players sit in fixed partnerships, bid or choose contracts, then play tricks with follow-suit obligations. Trump or suit games reward trick capture while Noll reverses the goal toward taking as few tricks as possible.',
     objective: 'As a partnership, win the contracted number of tricks or avoid tricks in the Noll misere contract.',
     gameplay: 'Players sit in fixed partnerships, bid or choose contracts, then play tricks with follow-suit obligations. Trump or suit games reward trick capture while Noll reverses the goal toward taking as few tricks as possible.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Odd tricks (over 6) = 1pt each. Honours bonus. Game: 5pts (British) or 7pts (American). Rubber: best of 3 games. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: As a partnership, win the contracted number of tricks or avoid tricks in the Noll misere contract.',
+      'Turn-flow example: Players sit in fixed partnerships, bid or choose contracts, then play tricks with follow-suit obligations. Trump or suit games reward trick capture while Noll reverses the goal toward taking as few tricks as possible.',
+      'Scoring example: Odd tricks (over 6) = 1pt each. Honours bonus. Game: 5pts (British) or 7pts (American). Rubber: best of 3 games. Win majority of tricks. First to 5/7 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'priffe.rules.objective',
+        title: 'Objective',
+        text: 'As a partnership, win the contracted number of tricks or avoid tricks in the Noll misere contract.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'priffe.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players sit in fixed partnerships, bid or choose contracts, then play tricks with follow-suit obligations. Trump or suit games reward trick capture while Noll reverses the goal toward taking as few tricks as possible.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'priffe.setup.players',
+        title: 'Players',
+        text: '4 players use the table arrangement described for Priffe.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'priffe.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'priffe.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'priffe.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Standard 52-card pack and deal or lay out cards according to the documented Priffe rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'priffe.score.win-condition',
+        title: 'Win condition',
+        text: 'Win majority of tricks. First to 5/7 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'priffe.score.description',
+        title: 'Scoring',
+        text: 'Odd tricks (over 6) = 1pt each. Honours bonus. Game: 5pts (British) or 7pts (American). Rubber: best of 3 games.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'priffe.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Four players form two fixed partnerships.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'priffe.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Bidding selects the trump or suit game contract.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'priffe.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The Noll contract is a misere deal where the goal is to avoid tricks.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'priffe.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'priffe.rules.objective',
+          'priffe.rules.gameplay',
+        ],
+      },
+      {
+        id: 'priffe.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'priffe.setup.players',
+          'priffe.setup.deck',
+          'priffe.setup.equipment',
+          'priffe.setup.dealing',
+        ],
+      },
+      {
+        id: 'priffe.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'priffe.rules.key.1',
+          'priffe.rules.key.2',
+          'priffe.rules.key.3',
+        ],
+      },
+      {
+        id: 'priffe.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'priffe.score.description',
+          'priffe.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'priffe.setup.dealing',
+        'priffe.rules.objective',
+      ],
+      play_card: [
+        'priffe.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Arcadia. Logic: Complete the games scenario or defeat opponents through card-driven fantasy conflict.',
-    Player: 'Arcadia is a commercial collectible card game published by White Wolf, supporting deck construction and fantasy-themed card conflict for one to five players.',
+    LLM: 'Players deploy and resolve cards according to the Arcadia rules. Multiplayer support and card text make the game closer to a custom card-battle system than a standard-deck game.',
+    Player: 'Players deploy and resolve cards according to the Arcadia rules. Multiplayer support and card text make the game closer to a custom card-battle system than a standard-deck game.',
     objective: 'Complete the games scenario or defeat opponents through card-driven fantasy conflict.',
     gameplay: 'Players deploy and resolve cards according to the Arcadia rules. Multiplayer support and card text make the game closer to a custom card-battle system than a standard-deck game.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-5 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Victory is determined by the selected scenario or card-game win condition. Expected outcome: Complete the games scenario or defeat opponents through card-driven fantasy conflict..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Complete the games scenario or defeat opponents through card-driven fantasy conflict.',
+      'Turn-flow example: Players deploy and resolve cards according to the Arcadia rules. Multiplayer support and card text make the game closer to a custom card-battle system than a standard-deck game.',
+      'Scoring example: Victory is determined by the selected scenario or card-game win condition. Complete the games scenario or defeat opponents through card-driven fantasy conflict..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'arcadia.rules.objective',
+        title: 'Objective',
+        text: 'Complete the games scenario or defeat opponents through card-driven fantasy conflict.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'arcadia.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players deploy and resolve cards according to the Arcadia rules. Multiplayer support and card text make the game closer to a custom card-battle system than a standard-deck game.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'arcadia.setup.players',
+        title: 'Players',
+        text: 'One to five players use constructed or scenario-ready decks.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'arcadia.setup.deck',
+        title: 'Deck',
+        text: 'Use the commercial Arcadia card pool and deck rules.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'arcadia.setup.equipment',
+        title: 'Equipment',
+        text: 'Commercial Arcadia collectible card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'arcadia.setup.dealing',
+        title: 'Deal',
+        text: 'Set up player decks, draw hands, and prepare shared scenario elements if used.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'arcadia.score.win-condition',
+        title: 'Win condition',
+        text: 'Complete the games scenario or defeat opponents through card-driven fantasy conflict.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'arcadia.score.description',
+        title: 'Scoring',
+        text: 'Victory is determined by the selected scenario or card-game win condition.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'arcadia.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Uses a commercial collectible card pool.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'arcadia.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Supports solitaire or multiplayer forms.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'arcadia.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Card text and scenario rules define legal play.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'arcadia.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Victory depends on the chosen format.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'arcadia.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'arcadia.rules.objective',
+          'arcadia.rules.gameplay',
+        ],
+      },
+      {
+        id: 'arcadia.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'arcadia.setup.players',
+          'arcadia.setup.deck',
+          'arcadia.setup.equipment',
+          'arcadia.setup.dealing',
+        ],
+      },
+      {
+        id: 'arcadia.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'arcadia.rules.key.1',
+          'arcadia.rules.key.2',
+          'arcadia.rules.key.3',
+          'arcadia.rules.key.4',
+        ],
+      },
+      {
+        id: 'arcadia.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'arcadia.score.description',
+          'arcadia.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'arcadia.setup.dealing',
+        'arcadia.rules.objective',
+      ],
+      play_card: [
+        'arcadia.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Podrida. Spanish Oh Hell. Must trump.',
-    Player: 'Podrida: Exact bidding. Must trump when void. Spoiling.',
+    LLM: "1. Deal. Turn trump. 2. Bid tricks (exact). 3. Play. Follow suit. If cannot follow, MUST play trump (unlike Oh Hell). 4. Score: exact = points; off = penalty. 'Podrida' = spoiling others by giving wrong number of tricks.",
+    Player: "1. Deal. Turn trump. 2. Bid tricks (exact). 3. Play. Follow suit. If cannot follow, MUST play trump (unlike Oh Hell). 4. Score: exact = points; off = penalty. 'Podrida' = spoiling others by giving wrong number of tricks.",
     objective: 'Make exact bid. Bid number of tricks; make exactly that many. Score for exact; penalty for over/under.',
     gameplay: "1. Deal. Turn trump. 2. Bid tricks (exact). 3. Play. Follow suit. If cannot follow, MUST play trump (unlike Oh Hell). 4. Score: exact = points; off = penalty. 'Podrida' = spoiling others by giving wrong number of tricks.",
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-7 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before bid.',
-      'Scoring check: Exact bid = score. Over/under = penalty. Expected outcome: Highest score after all deals..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Make exact bid. Bid number of tricks; make exactly that many. Score for exact; penalty for over/under.',
+      "Turn-flow example: 1. Deal. Turn trump. 2. Bid tricks (exact). 3. Play. Follow suit. If cannot follow, MUST play trump (unlike Oh Hell). 4. Score: exact = points; off = penalty. 'Podrida' = spoiling others by giving wrong number of tricks.",
+      'Scoring example: Exact bid = score. Over/under = penalty. Highest score after all deals..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'podrida.rules.objective',
+        title: 'Objective',
+        text: 'Make exact bid. Bid number of tricks; make exactly that many. Score for exact; penalty for over/under.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'podrida.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Deal. Turn trump. 2. Bid tricks (exact). 3. Play. Follow suit. If cannot follow, MUST play trump (unlike Oh Hell). 4. Score: exact = points; off = penalty. 'Podrida' = spoiling others by giving wrong number of tricks.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'podrida.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'podrida.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52 (or variant pack).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'podrida.setup.equipment',
+        title: 'Equipment',
+        text: '52-card deck.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'podrida.setup.dealing',
+        title: 'Deal',
+        text: 'Varies by player count. One card turned for trump.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'podrida.score.win-condition',
+        title: 'Win condition',
+        text: 'Highest score after all deals.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'podrida.score.description',
+        title: 'Scoring',
+        text: 'Exact bid = score. Over/under = penalty.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'podrida.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Exact bidding. Predict tricks.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'podrida.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Cannot follow suit â†’ MUST trump.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'podrida.rules.key.3',
+        title: 'Key rule 3',
+        text: "Spoil others' contracts (podrida).",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'podrida.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Argentina/Mexico rule variants.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'podrida.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'podrida.rules.objective',
+          'podrida.rules.gameplay',
+        ],
+      },
+      {
+        id: 'podrida.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'podrida.setup.players',
+          'podrida.setup.deck',
+          'podrida.setup.equipment',
+          'podrida.setup.dealing',
+        ],
+      },
+      {
+        id: 'podrida.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'podrida.rules.key.1',
+          'podrida.rules.key.2',
+          'podrida.rules.key.3',
+          'podrida.rules.key.4',
+        ],
+      },
+      {
+        id: 'podrida.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'podrida.score.description',
+          'podrida.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'podrida.setup.dealing',
+        'podrida.rules.objective',
+      ],
+      deal: [
+        'podrida.rules.gameplay',
+      ],
+      play_card: [
+        'podrida.rules.gameplay',
+      ],
+      bid: [
+        'podrida.rules.gameplay',
+      ],
+      lead: [
+        'podrida.rules.gameplay',
+      ],
+    },
   },
 }

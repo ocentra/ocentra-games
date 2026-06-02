@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Babette. Logic: Transfer all cards to the foundations under the Babette building restrictions.',
-    Player: 'Babette is a two-deck solitaire with play similar to Labyrinth, using stock and foundation movement to clear a combined 104-card pack.',
+    LLM: 'Move exposed cards to foundations when legal and cycle the stock as allowed. Because the layout resembles Labyrinth, order of exposure and foundation timing are the main decisions.',
+    Player: 'Move exposed cards to foundations when legal and cycle the stock as allowed. Because the layout resembles Labyrinth, order of exposure and foundation timing are the main decisions.',
     objective: 'Transfer all cards to the foundations under the Babette building restrictions.',
     gameplay: 'Move exposed cards to foundations when legal and cycle the stock as allowed. Because the layout resembles Labyrinth, order of exposure and foundation timing are the main decisions.',
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 2 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; system may use deal before play.',
-      'Scoring check: Win by completing all foundations. Expected outcome: Transfer all cards to the foundations under the Babette building restrictions..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Transfer all cards to the foundations under the Babette building restrictions.',
+      'Turn-flow example: Move exposed cards to foundations when legal and cycle the stock as allowed. Because the layout resembles Labyrinth, order of exposure and foundation timing are the main decisions.',
+      'Scoring example: Win by completing all foundations. Transfer all cards to the foundations under the Babette building restrictions..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'babette.rules.objective',
+        title: 'Objective',
+        text: 'Transfer all cards to the foundations under the Babette building restrictions.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'babette.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Move exposed cards to foundations when legal and cycle the stock as allowed. Because the layout resembles Labyrinth, order of exposure and foundation timing are the main decisions.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'babette.setup.players',
+        title: 'Players',
+        text: 'One player arranges the two-deck solitaire layout.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'babette.setup.deck',
+        title: 'Deck',
+        text: 'Use two shuffled standard decks.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'babette.setup.equipment',
+        title: 'Equipment',
+        text: 'Two standard 52-card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'babette.setup.dealing',
+        title: 'Deal',
+        text: 'Deal the prescribed Babette layout and keep the undealt cards as stock for waste play.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'babette.score.win-condition',
+        title: 'Win condition',
+        text: 'Transfer all cards to the foundations under the Babette building restrictions.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'babette.score.description',
+        title: 'Scoring',
+        text: 'Win by completing all foundations.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'babette.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Two-deck solitaire layout.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'babette.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Foundations must be built in order.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'babette.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Stock and waste access determine whether buried cards can be reached.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'babette.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'babette.rules.objective',
+          'babette.rules.gameplay',
+        ],
+      },
+      {
+        id: 'babette.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'babette.setup.players',
+          'babette.setup.deck',
+          'babette.setup.equipment',
+          'babette.setup.dealing',
+        ],
+      },
+      {
+        id: 'babette.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'babette.rules.key.1',
+          'babette.rules.key.2',
+          'babette.rules.key.3',
+        ],
+      },
+      {
+        id: 'babette.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'babette.score.description',
+          'babette.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'babette.setup.dealing',
+        'babette.rules.objective',
+      ],
+      deal: [
+        'babette.rules.gameplay',
+      ],
+      play_card: [
+        'babette.rules.gameplay',
+      ],
+      draw: [
+        'babette.rules.gameplay',
+      ],
+    },
   },
 }

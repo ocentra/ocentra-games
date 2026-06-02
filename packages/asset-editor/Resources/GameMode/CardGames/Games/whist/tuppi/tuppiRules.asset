@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Whist. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Whist is the classic English partnership trick-taking game and ancestor of Bridge. 4 players, 2 teams. 52 cards, 13 each. Last card dealt (to dealer) turned face-up = trump. Eldest hand leads. Follow suit. Each trick over 6 = 1 point. Honours (A-K-Q-J of trump): 3 held = 2pts, 4 held = 4pts. Game to 5 (British) or 7 (American). Rubber = best of 3.',
+    LLM: 'Two partnerships play a Minnesota Whist-style trick game. Scoring is the key distinction: only one team has points at a time, so the win total must be built in consecutive scoring hands.',
+    Player: 'Two partnerships play a Minnesota Whist-style trick game. Scoring is the key distinction: only one team has points at a time, so the win total must be built in consecutive scoring hands.',
     objective: 'As a team, collect the required consecutive points before the opponents score and reset progress.',
     gameplay: 'Two partnerships play a Minnesota Whist-style trick game. Scoring is the key distinction: only one team has points at a time, so the win total must be built in consecutive scoring hands.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Odd tricks (over 6) = 1pt each. Honours bonus. Game: 5pts (British) or 7pts (American). Rubber: best of 3 games. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: As a team, collect the required consecutive points before the opponents score and reset progress.',
+      'Turn-flow example: Two partnerships play a Minnesota Whist-style trick game. Scoring is the key distinction: only one team has points at a time, so the win total must be built in consecutive scoring hands.',
+      'Scoring example: Odd tricks (over 6) = 1pt each. Honours bonus. Game: 5pts (British) or 7pts (American). Rubber: best of 3 games. Win majority of tricks. First to 5/7 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tuppi.rules.objective',
+        title: 'Objective',
+        text: 'As a team, collect the required consecutive points before the opponents score and reset progress.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tuppi.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Two partnerships play a Minnesota Whist-style trick game. Scoring is the key distinction: only one team has points at a time, so the win total must be built in consecutive scoring hands.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tuppi.setup.players',
+        title: 'Players',
+        text: '4 players use the table arrangement described for Tuppi.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tuppi.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tuppi.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tuppi.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Standard 52-card pack and deal or lay out cards according to the documented Tuppi rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tuppi.score.win-condition',
+        title: 'Win condition',
+        text: 'Win majority of tricks. First to 5/7 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tuppi.score.description',
+        title: 'Scoring',
+        text: 'Odd tricks (over 6) = 1pt each. Honours bonus. Game: 5pts (British) or 7pts (American). Rubber: best of 3 games.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tuppi.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Variant of Minnesota Whist.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tuppi.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Only one team can have points at a time.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tuppi.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Points needed to win must be collected consecutively.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tuppi.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tuppi.rules.objective',
+          'tuppi.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tuppi.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tuppi.setup.players',
+          'tuppi.setup.deck',
+          'tuppi.setup.equipment',
+          'tuppi.setup.dealing',
+        ],
+      },
+      {
+        id: 'tuppi.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tuppi.rules.key.1',
+          'tuppi.rules.key.2',
+          'tuppi.rules.key.3',
+        ],
+      },
+      {
+        id: 'tuppi.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tuppi.score.description',
+          'tuppi.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tuppi.setup.dealing',
+        'tuppi.rules.objective',
+      ],
+      play_card: [
+        'tuppi.rules.gameplay',
+      ],
+    },
   },
 }

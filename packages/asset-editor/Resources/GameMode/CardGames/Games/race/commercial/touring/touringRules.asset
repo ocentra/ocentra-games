@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Fast Track. Each player has own 54-card deck (52+2 Jokers). Goal: Move 4 marbles from Holding Pen around 68-space board into Home Base. Turn sequence: play 1 card to move marble(s), draw 1 card back to hand-size of 5. Card effects: 2-10=move forward that number, J/Q/K=10 or Start, A=1 or Start, 6=6 or Start with Play Again, 4=move backward 4, 7=move 7 OR split between 2 marbles, Joker=bump opponent OR Start with Play Again. Bumping: land exactly on opponent = they return to Holding Pen. Fast Track: central shortcut, risky but saves spaces. Play Again: granted by 6, A, Face Cards, Joker = extra turn.',
-    Player: 'Welcome to Fast Track! You have 4 marbles to move from your Holding Pen around the board and into your Home Base. Play cards to move them. Save your 6s, Aces, Face Cards, and Jokers for extra turns. Use backwards 4s to shortcut into Home. Most importantly: bump your opponents and send them back to start!',
+    LLM: 'Players use cards to advance their automobile journey and respond to obstacles. The game is a race-card predecessor to later road-race card games.',
+    Player: 'Players use cards to advance their automobile journey and respond to obstacles. The game is a race-card predecessor to later road-race card games.',
     objective: 'Complete the required mileage or route before the other players.',
     gameplay: 'Players use cards to advance their automobile journey and respond to obstacles. The game is a race-card predecessor to later road-race card games.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Winner determined by first player/team to place all 4 marbles in Home Base. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Complete the required mileage or route before the other players.',
+      'Turn-flow example: Players use cards to advance their automobile journey and respond to obstacles. The game is a race-card predecessor to later road-race card games.',
+      'Scoring example: Winner determined by first player/team to place all 4 marbles in Home Base. First player or team to move all 4 marbles from Holding Pen, around the track, and into Home Base..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'touring.rules.objective',
+        title: 'Objective',
+        text: 'Complete the required mileage or route before the other players.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'touring.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players use cards to advance their automobile journey and respond to obstacles. The game is a race-card predecessor to later road-race card games.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'touring.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Touring.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'touring.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Touring road and hazard card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'touring.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Touring road and hazard card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'touring.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Touring road and hazard card deck and deal or lay out cards according to the documented Touring rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'touring.score.win-condition',
+        title: 'Win condition',
+        text: 'First player or team to move all 4 marbles from Holding Pen, around the track, and into Home Base.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'touring.score.description',
+        title: 'Scoring',
+        text: 'Winner determined by first player/team to place all 4 marbles in Home Base.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'touring.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Originally patented and published in the early twentieth century.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'touring.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Players race through travel or mileage cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'touring.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Hazards and remedies create tempo swings.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'touring.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'touring.rules.objective',
+          'touring.rules.gameplay',
+        ],
+      },
+      {
+        id: 'touring.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'touring.setup.players',
+          'touring.setup.deck',
+          'touring.setup.equipment',
+          'touring.setup.dealing',
+        ],
+      },
+      {
+        id: 'touring.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'touring.rules.key.1',
+          'touring.rules.key.2',
+          'touring.rules.key.3',
+        ],
+      },
+      {
+        id: 'touring.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'touring.score.description',
+          'touring.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'touring.setup.dealing',
+        'touring.rules.objective',
+      ],
+      play_card: [
+        'touring.rules.gameplay',
+      ],
+    },
   },
 }

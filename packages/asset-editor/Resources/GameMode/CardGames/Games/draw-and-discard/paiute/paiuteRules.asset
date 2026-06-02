@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Paiute. Type: Draw-and-discard vying. 52 cards, 5 each. Turn-up = wild. Draw one, discard one. Combinations (high to low): Five of a Kind, Royal Flush, Straight Flush, Four/Two, Three/Three, Paiute (Three Pairs). Paiute callable only on first draw.',
-    Player: 'Welcome to Paiute. Draw and discard to build a winning hand. The turned card makes all cards of that rank wild. Call when you have Five of a Kind, Royal Flush, Straight Flush, Four/Two, Three/Three, or Paiute (Three Pairsâ€”only on your first draw).',
+    LLM: '1. **Turn**: Draw one (stock or discard top), discard one. Hand stays at 5 cards until a call. 2. **Call**: With a winning combination after drawing, place it face up. Five-card: discard your 6th card. Six-card: no discard; next player draws from stock or your discard. 3. **Round completion**: If caller is not the dealer, play continues so each player up to and including dealer gets one turn. 4. **Later calls**: Others may call if they equal or beat the best shown. 5. **Winner**: Highest combination wins the pot. Equal hands split the pot (or first-caller wins in some variants).',
+    Player: '1. **Turn**: Draw one (stock or discard top), discard one. Hand stays at 5 cards until a call. 2. **Call**: With a winning combination after drawing, place it face up. Five-card: discard your 6th card. Six-card: no discard; next player draws from stock or your discard. 3. **Round completion**: If caller is not the dealer, play continues so each player up to and including dealer gets one turn. 4. **Later calls**: Others may call if they equal or beat the best shown. 5. **Winner**: Highest combination wins the pot. Equal hands split the pot (or first-caller wins in some variants).',
     objective: 'Form the highest five- or six-card combination and call to win the pot.',
     gameplay: '1. **Turn**: Draw one (stock or discard top), discard one. Hand stays at 5 cards until a call. 2. **Call**: With a winning combination after drawing, place it face up. Five-card: discard your 6th card. Six-card: no discard; next player draws from stock or your discard. 3. **Round completion**: If caller is not the dealer, play continues so each player up to and including dealer gets one turn. 4. **Later calls**: Others may call if they equal or beat the best shown. 5. **Winner**: Highest combination wins the pot. Equal hands split the pot (or first-caller wins in some variants).',
     keyRules: [
@@ -54,10 +54,177 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal, turn_wild before play.',
-      'Scoring check: Stakes game. Each player antes; winner takes the pot. Some variants use scaled payments by hand rank. Expected outcome: Player with the highest called combination wins the pot..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Form the highest five- or six-card combination and call to win the pot.',
+      'Turn-flow example: 1. **Turn**: Draw one (stock or discard top), discard one. Hand stays at 5 cards until a call. 2. **Call**: With a winning combination after drawing, place it face up. Five-card: discard your 6th card. Six-card: no discard; next player draws from stock or your discard. 3. **Round completion**: If caller is not the dealer, play continues so each player up to and including dealer gets one turn. 4. **Later calls**: Others may call if they equal or beat the best shown. 5. **Winner**: Highest combination wins the pot. Equal hands split the pot (or first-caller wins in some variants).',
+      'Scoring example: Stakes game. Each player antes; winner takes the pot. Some variants use scaled payments by hand rank. Player with the highest called combination wins the pot..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'paiute.rules.objective',
+        title: 'Objective',
+        text: 'Form the highest five- or six-card combination and call to win the pot.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'paiute.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Turn**: Draw one (stock or discard top), discard one. Hand stays at 5 cards until a call. 2. **Call**: With a winning combination after drawing, place it face up. Five-card: discard your 6th card. Six-card: no discard; next player draws from stock or your discard. 3. **Round completion**: If caller is not the dealer, play continues so each player up to and including dealer gets one turn. 4. **Later calls**: Others may call if they equal or beat the best shown. 5. **Winner**: Highest combination wins the pot. Equal hands split the pot (or first-caller wins in some variants).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'paiute.setup.players',
+        title: 'Players',
+        text: 'Two to five players use a standard international 52-card pack; ace ranks high. Five cards are dealt to each player; the next card is turned face up to set the wild rank for that deal.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'paiute.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack. Ace ranks high.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'paiute.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck, chips or money for stakes.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'paiute.setup.dealing',
+        title: 'Deal',
+        text: 'Five cards to each player. Next card turned face up becomes the wild card (e.g. 3 â†’ all 3s wild). Remainder stacked face down with wild card partly visible = stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'paiute.score.win-condition',
+        title: 'Win condition',
+        text: 'Player with the highest called combination wins the pot.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'paiute.score.description',
+        title: 'Scoring',
+        text: 'Stakes game. Each player antes; winner takes the pot. Some variants use scaled payments by hand rank.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'paiute.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Turn-up card sets the wild rank for that deal.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'paiute.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Winning combinations: 5 or 6 cards. No value for mixed-suit straights or non-sequence flushes.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'paiute.rules.key.3',
+        title: 'Key rule 3',
+        text: "Paiute (Three Pairs) can only be called on a player's first draw (first round).",
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'paiute.rules.key.4',
+        title: 'Key rule 4',
+        text: 'If stock runs out, shuffle discard (except top) to form new stock.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'paiute.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Pick from discard = must discard a different card; pick from stock = may discard the drawn card.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'paiute.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'paiute.rules.objective',
+          'paiute.rules.gameplay',
+        ],
+      },
+      {
+        id: 'paiute.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'paiute.setup.players',
+          'paiute.setup.deck',
+          'paiute.setup.equipment',
+          'paiute.setup.dealing',
+        ],
+      },
+      {
+        id: 'paiute.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'paiute.rules.key.1',
+          'paiute.rules.key.2',
+          'paiute.rules.key.3',
+          'paiute.rules.key.4',
+          'paiute.rules.key.5',
+        ],
+      },
+      {
+        id: 'paiute.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'paiute.score.description',
+          'paiute.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'paiute.setup.dealing',
+        'paiute.rules.objective',
+      ],
+      deal: [
+        'paiute.rules.gameplay',
+      ],
+      call: [
+        'paiute.rules.gameplay',
+      ],
+      draw: [
+        'paiute.rules.gameplay',
+      ],
+      discard: [
+        'paiute.rules.gameplay',
+      ],
+      turn_wild: [
+        'paiute.rules.gameplay',
+      ],
+    },
   },
 }

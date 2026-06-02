@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Cucumber. Flow: deal 7, play 7 tricks under beat-or-lowest rule, assign penalty to final trick winner.',
-    Player: 'In Cucumber, avoid winning the final trick. Beat high cards when forced, but shape your hand for a safe ending.',
+    LLM: 'Forehand leads first trick. On each play, a player must either play a card equal to or higher than the current highest card in the trick, or play their lowest card. Highest card (or last of equals) wins trick and leads next. Winner of the final trick takes the penalty.',
+    Player: 'Forehand leads first trick. On each play, a player must either play a card equal to or higher than the current highest card in the trick, or play their lowest card. Highest card (or last of equals) wins trick and leads next. Winner of the final trick takes the penalty.',
     objective: 'Avoid winning the last trick of each hand; the player who takes the final trick receives penalty points. Stay below the elimination threshold (e.g. 21 or 30) and be the last player remaining.',
     gameplay: 'Forehand leads first trick. On each play, a player must either play a card equal to or higher than the current highest card in the trick, or play their lowest card. Highest card (or last of equals) wins trick and leads next. Winner of the final trick takes the penalty.',
     keyRules: [
@@ -54,10 +54,171 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-7 player(s), 7 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before trick_play.',
-      'Scoring check: Penalty-point accumulation game; final trick winner receives points by card value in many variants. Expected outcome: 21.',
+      'Setup example: 7 card(s) per player.',
+      'Rule example: Avoid winning the last trick of each hand; the player who takes the final trick receives penalty points. Stay below the elimination threshold (e.g. 21 or 30) and be the last player remaining.',
+      'Turn-flow example: Forehand leads first trick. On each play, a player must either play a card equal to or higher than the current highest card in the trick, or play their lowest card. Highest card (or last of equals) wins trick and leads next. Winner of the final trick takes the penalty.',
+      'Scoring example: Penalty-point accumulation game; final trick winner receives points by card value in many variants. Stay below elimination threshold and avoid taking final tricks across deals..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'cucumber.rules.objective',
+        title: 'Objective',
+        text: 'Avoid winning the last trick of each hand; the player who takes the final trick receives penalty points. Stay below the elimination threshold (e.g. 21 or 30) and be the last player remaining.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'cucumber.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Forehand leads first trick. On each play, a player must either play a card equal to or higher than the current highest card in the trick, or play their lowest card. Highest card (or last of equals) wins trick and leads next. Winner of the final trick takes the penalty.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'cucumber.setup.players',
+        title: 'Players',
+        text: 'From 2 to 7 players in the baseline Danish form (Agurk); the Swedish variant Gurka allows 3 to 8, and some regional forms use extra decks for more. The game was popular with students across Nordic countries; this build uses the common 2–7 player range with seven cards each.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'cucumber.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'cucumber.setup.equipment',
+        title: 'Equipment',
+        text: 'Deck and score tracking for penalty totals.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'cucumber.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 7 cards each in Danish Agurk baseline; undealt cards are set aside unseen.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'cucumber.score.win-condition',
+        title: 'Win condition',
+        text: 'Stay below elimination threshold and avoid taking final tricks across deals.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'cucumber.score.description',
+        title: 'Scoring',
+        text: 'Penalty-point accumulation game; final trick winner receives points by card value in many variants.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'cucumber.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Lose-last-trick objective: final trick winner is penalized.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'cucumber.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Beat-or-lowest rule governs legal play choices.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'cucumber.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Highest rank wins trick; in ties, last played equal rank wins.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'cucumber.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Penalty is typically the rank value of the losing last-trick card.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'cucumber.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Many tables eliminate players at threshold score (for example 21 or 30).',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'cucumber.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'cucumber.rules.objective',
+          'cucumber.rules.gameplay',
+        ],
+      },
+      {
+        id: 'cucumber.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'cucumber.setup.players',
+          'cucumber.setup.deck',
+          'cucumber.setup.equipment',
+          'cucumber.setup.dealing',
+        ],
+      },
+      {
+        id: 'cucumber.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'cucumber.rules.key.1',
+          'cucumber.rules.key.2',
+          'cucumber.rules.key.3',
+          'cucumber.rules.key.4',
+          'cucumber.rules.key.5',
+        ],
+      },
+      {
+        id: 'cucumber.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'cucumber.score.description',
+          'cucumber.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'cucumber.setup.dealing',
+        'cucumber.rules.objective',
+      ],
+      deal: [
+        'cucumber.rules.gameplay',
+      ],
+      award_pot: [
+        'cucumber.rules.gameplay',
+      ],
+      play_card: [
+        'cucumber.rules.gameplay',
+      ],
+    },
   },
 }

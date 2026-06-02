@@ -56,10 +56,183 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Each hand, the last player left holding cards receives a penalty point. The game is played over multiple hands until someone accumulates the agreed number of penalty points and loses. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the first player to play all your cards. The last player holding cards loses the hand and receives a penalty point.',
+      "Turn-flow example: The player to dealer's right leads any card. Other players must follow suit. A player who cannot follow suit must draw cards one at a time from the stock until finding a card of the required suit, which must then be played. The highest card of the led suit wins the trick, and the winner leads to the next trick. If the stock runs out, players who cannot follow suit simply pass without playing.",
+      'Scoring example: Each hand, the last player left holding cards receives a penalty point. The game is played over multiple hands until someone accumulates the agreed number of penalty points and loses. Avoid being the last player with cards; when a player reaches the agreed penalty point total they lose and the others are considered winners..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'burro.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to play all your cards. The last player holding cards loses the hand and receives a penalty point.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'burro.rules.gameplay',
+        title: 'Turn flow',
+        text: "The player to dealer's right leads any card. Other players must follow suit. A player who cannot follow suit must draw cards one at a time from the stock until finding a card of the required suit, which must then be played. The highest card of the led suit wins the trick, and the winner leads to the next trick. If the stock runs out, players who cannot follow suit simply pass without playing.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'burro.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 8\nOptimal Players: 4-5\nPartnerships: No, each plays for themselves',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'burro.setup.deck',
+        title: 'Deck',
+        text: 'Type: 48-card Spanish-suited pack\nNumber of Decks: 1\nCard Ranks: King (high), Horse, Maid, 9, 8, 7, 6, 5, 4, 3, 2, 1/Ace (low)\nAlternative: 40-card pack (omit 9s and 8s)',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'burro.setup.equipment',
+        title: 'Equipment',
+        text: '48-card Spanish pack (or 40-card)\nScore sheet for penalty points\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'burro.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: 4 cards each\nDealing Pattern: Anticlockwise, one card at a time\nStock: Remaining cards form face-down drawing stock',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'burro.score.win-condition',
+        title: 'Win condition',
+        text: 'Avoid being the last player with cards; when a player reaches the agreed penalty point total they lose and the others are considered winners.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'burro.score.description',
+        title: 'Scoring',
+        text: 'Each hand, the last player left holding cards receives a penalty point. The game is played over multiple hands until someone accumulates the agreed number of penalty points and loses.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'burro.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit if possible',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'burro.rules.key.2',
+        title: 'Key rule 2',
+        text: 'If unable to follow, draw from stock until finding playable card',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'burro.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Highest card of led suit wins the trick',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'burro.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Winner of trick leads to next trick',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'burro.rules.key.5',
+        title: 'Key rule 5',
+        text: 'When stock is exhausted, players who cannot follow pass',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'burro.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Last player with cards loses the hand',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'burro.rules.key.7',
+        title: 'Key rule 7',
+        text: 'Game ends when a player reaches agreed penalty point total',
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'burro.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'burro.rules.objective',
+          'burro.rules.gameplay',
+        ],
+      },
+      {
+        id: 'burro.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'burro.setup.players',
+          'burro.setup.deck',
+          'burro.setup.equipment',
+          'burro.setup.dealing',
+        ],
+      },
+      {
+        id: 'burro.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'burro.rules.key.1',
+          'burro.rules.key.2',
+          'burro.rules.key.3',
+          'burro.rules.key.4',
+          'burro.rules.key.5',
+          'burro.rules.key.6',
+          'burro.rules.key.7',
+        ],
+      },
+      {
+        id: 'burro.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'burro.score.description',
+          'burro.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'burro.setup.dealing',
+        'burro.rules.objective',
+      ],
+      play_card: [
+        'burro.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Hyakunin Isshu. Logic: See rules.objective and rules.gameplay.',
-    Player: "Hyakunin Isshu (ç™¾äººä¸€é¦– - 'One Hundred People, One Poem Each') is a traditional Japanese card game based on a classical anthology of waka poems. It is played as a competitive game called 'Karuta'. Players must match a poem being read aloud with the correct 'grabbing' card spread out on the floor. It is a game of extreme speed, memory, and auditory processing.",
+    LLM: "1. A reader ('Yomite') reads the first half (upper phrase) of a poem.\n2. Both players attempt to touch the grabbing card containing the second half (lower phrase).\n3. If you grab a card in your own territory, it is removed.\n4. If you grab a card in your opponent's territory, you send one card from your territory to theirs.\n5. **Otetsuki (Fault)**: Touching the wrong card results in a penalty (opponent sends a card).",
+    Player: "1. A reader ('Yomite') reads the first half (upper phrase) of a poem.\n2. Both players attempt to touch the grabbing card containing the second half (lower phrase).\n3. If you grab a card in your own territory, it is removed.\n4. If you grab a card in your opponent's territory, you send one card from your territory to theirs.\n5. **Otetsuki (Fault)**: Touching the wrong card results in a penalty (opponent sends a card).",
     objective: 'Empty your territory of cards before your opponent.',
     gameplay: "1. A reader ('Yomite') reads the first half (upper phrase) of a poem.\n2. Both players attempt to touch the grabbing card containing the second half (lower phrase).\n3. If you grab a card in your own territory, it is removed.\n4. If you grab a card in your opponent's territory, you send one card from your territory to theirs.\n5. **Otetsuki (Fault)**: Touching the wrong card results in a penalty (opponent sends a card).",
     keyRules: [
@@ -50,10 +50,129 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; all_simultaneous may use play_card before round end.',
-      'Scoring check: Empty your territory of cards before your opponent. Expected outcome: Empty your territory of cards before your opponent..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Empty your territory of cards before your opponent.',
+      "Turn-flow example: 1. A reader ('Yomite') reads the first half (upper phrase) of a poem.\n2. Both players attempt to touch the grabbing card containing the second half (lower phrase).\n3. If you grab a card in your own territory, it is removed.\n4. If you grab a card in your opponent's territory, you send one card from your territory to theirs.\n5. **Otetsuki (Fault)**: Touching the wrong card results in a penalty (opponent sends a card).",
+      'Scoring example: Empty your territory of cards before your opponent. Empty your territory of cards before your opponent..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'hyakunin-isshu.rules.objective',
+        title: 'Objective',
+        text: 'Empty your territory of cards before your opponent.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'hyakunin-isshu.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. A reader ('Yomite') reads the first half (upper phrase) of a poem.\n2. Both players attempt to touch the grabbing card containing the second half (lower phrase).\n3. If you grab a card in your own territory, it is removed.\n4. If you grab a card in your opponent's territory, you send one card from your territory to theirs.\n5. **Otetsuki (Fault)**: Touching the wrong card results in a penalty (opponent sends a card).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'hyakunin-isshu.setup.players',
+        title: 'Players',
+        text: 'Typically 1 vs 1 in competitive play.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'hyakunin-isshu.setup.deck',
+        title: 'Deck',
+        text: '100 poetry cards. In a match, only 50 are used (25 for each player).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'hyakunin-isshu.setup.equipment',
+        title: 'Equipment',
+        text: 'Uta-garuta deck (200 cards: 100 Yomifuda reading cards, 100 Torifuda grabbing cards), playing mat or flat surface, reader (yomite) to read the poems.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'hyakunin-isshu.setup.dealing',
+        title: 'Deal',
+        text: 'Shuffle the 100 Torifuda (grabbing cards). Each player places 25 cards in their territory (face-up). The remaining 50 Torifuda are not used in that round. The Yomifuda (reading deck) is kept separate for the reader.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'hyakunin-isshu.score.win-condition',
+        title: 'Win condition',
+        text: 'Empty your territory of cards before your opponent.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'hyakunin-isshu.score.description',
+        title: 'Scoring',
+        text: 'Empty your territory of cards before your opponent.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'hyakunin-isshu.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Reader recites the first phrase of a poem; first to touch the matching Torifuda wins that card. Correct touch in your territory removes the card; correct touch in opponent territory lets you send one card from your territory to theirs. Wrong touch (otetsuki) gives the opponent a card. First to empty their territory wins.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'hyakunin-isshu.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'hyakunin-isshu.rules.objective',
+          'hyakunin-isshu.rules.gameplay',
+        ],
+      },
+      {
+        id: 'hyakunin-isshu.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'hyakunin-isshu.setup.players',
+          'hyakunin-isshu.setup.deck',
+          'hyakunin-isshu.setup.equipment',
+          'hyakunin-isshu.setup.dealing',
+        ],
+      },
+      {
+        id: 'hyakunin-isshu.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'hyakunin-isshu.rules.key.1',
+        ],
+      },
+      {
+        id: 'hyakunin-isshu.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'hyakunin-isshu.score.description',
+          'hyakunin-isshu.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'hyakunin-isshu.setup.dealing',
+        'hyakunin-isshu.rules.objective',
+      ],
+      play_card: [
+        'hyakunin-isshu.rules.gameplay',
+      ],
+    },
   },
 }

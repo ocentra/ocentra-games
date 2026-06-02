@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Sink-Sink. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Sink-Sink is a last-trick card game from Niger; five cards each, follow suit, winner of the fifth trick wins the game.',
+    LLM: "1. Deal: Five cards each in two batches (three then two). Player to dealer's right cuts. Play proceeds counter-clockwise.\n2. Play: The player to dealer's right leads any card face up. Each player in turn must play a card of the same suit if possible; otherwise any card. Highest card of the suit led wins the trick.\n3. Next trick: The winner of the trick leads any card to start the next trick.\n4. Winning: After five tricks, whoever won the fifth (last) trick wins the game and deals next.",
+    Player: "1. Deal: Five cards each in two batches (three then two). Player to dealer's right cuts. Play proceeds counter-clockwise.\n2. Play: The player to dealer's right leads any card face up. Each player in turn must play a card of the same suit if possible; otherwise any card. Highest card of the suit led wins the trick.\n3. Next trick: The winner of the trick leads any card to start the next trick.\n4. Winning: After five tricks, whoever won the fifth (last) trick wins the game and deals next.",
     objective: 'Win the fifth and last trick to win the game. There is no point scoring; the only goal is to take the final trick.',
     gameplay: "1. Deal: Five cards each in two batches (three then two). Player to dealer's right cuts. Play proceeds counter-clockwise.\n2. Play: The player to dealer's right leads any card face up. Each player in turn must play a card of the same suit if possible; otherwise any card. Highest card of the suit led wins the trick.\n3. Next trick: The winner of the trick leads any card to start the next trick.\n4. Winning: After five tricks, whoever won the fifth (last) trick wins the game and deals next.",
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: No point scoring; the player who wins the fifth and last trick wins the game. Expected outcome: Win the fifth and last trick to win the game..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win the fifth and last trick to win the game. There is no point scoring; the only goal is to take the final trick.',
+      "Turn-flow example: 1. Deal: Five cards each in two batches (three then two). Player to dealer's right cuts. Play proceeds counter-clockwise.\n2. Play: The player to dealer's right leads any card face up. Each player in turn must play a card of the same suit if possible; otherwise any card. Highest card of the suit led wins the trick.\n3. Next trick: The winner of the trick leads any card to start the next trick.\n4. Winning: After five tricks, whoever won the fifth (last) trick wins the game and deals next.",
+      'Scoring example: No point scoring; the player who wins the fifth and last trick wins the game. Win the fifth and last trick to win the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'sink-sink.rules.objective',
+        title: 'Objective',
+        text: 'Win the fifth and last trick to win the game. There is no point scoring; the only goal is to take the final trick.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'sink-sink.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Deal: Five cards each in two batches (three then two). Player to dealer's right cuts. Play proceeds counter-clockwise.\n2. Play: The player to dealer's right leads any card face up. Each player in turn must play a card of the same suit if possible; otherwise any card. Highest card of the suit led wins the trick.\n3. Next trick: The winner of the trick leads any card to start the next trick.\n4. Winning: After five tricks, whoever won the fifth (last) trick wins the game and deals next.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'sink-sink.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: None',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'sink-sink.setup.deck',
+        title: 'Deck',
+        text: 'Type: 35 cards from standard 52-card pack (Kings, Queens, Jacks, Twos and Ace of Spades removed)\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'sink-sink.setup.equipment',
+        title: 'Equipment',
+        text: '35-card stripped deck (French suits)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'sink-sink.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: 5\nDealing Pattern: Three cards each, then two cards each (counter-clockwise from dealer)\nFirst dealer: any player by agreement; thereafter winner of previous game deals next',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'sink-sink.score.win-condition',
+        title: 'Win condition',
+        text: 'Win the fifth and last trick to win the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'sink-sink.score.description',
+        title: 'Scoring',
+        text: 'No point scoring; the player who wins the fifth and last trick wins the game.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'sink-sink.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must follow suit when possible; otherwise any card may be played',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'sink-sink.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Rank in each suit (high to low): A, 10, 9, 8, 7, 6, 5, 4, 3. In spades the highest card is 10 (Ace of Spades is removed)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'sink-sink.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winner of the last trick wins the game',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'sink-sink.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'sink-sink.rules.objective',
+          'sink-sink.rules.gameplay',
+        ],
+      },
+      {
+        id: 'sink-sink.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'sink-sink.setup.players',
+          'sink-sink.setup.deck',
+          'sink-sink.setup.equipment',
+          'sink-sink.setup.dealing',
+        ],
+      },
+      {
+        id: 'sink-sink.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'sink-sink.rules.key.1',
+          'sink-sink.rules.key.2',
+          'sink-sink.rules.key.3',
+        ],
+      },
+      {
+        id: 'sink-sink.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'sink-sink.score.description',
+          'sink-sink.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'sink-sink.setup.dealing',
+        'sink-sink.rules.objective',
+      ],
+      play_card: [
+        'sink-sink.rules.gameplay',
+      ],
+    },
   },
 }

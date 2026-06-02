@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Biritch (1886 original Bridge). 4 players, partnerships. 52 cards, 13 each. Dealer declares trumps or 'biritch' (no-trump). Partner's hand exposed as Dummy. Contre/sur-contre doubles. 30 pts = game, best of 3 = rubber. Honours scored separately.",
-    Player: "Constantinople, 1882. You hold: â™ AKQ73 â™¥J85 â™¦K92 â™£64. As dealer, you may declare trumps or pass to your partner. With 5 strong spades, you declare Spades. Your opponent contres! Do you sur-contre with your AKQ? Your partner's Dummy will be revealed after you decide...",
+    LLM: "Four players in fixed partnerships, as at short whist. No card is turned for trumps. After the deal the dealer may declare a suit for trumps or say pass, in which case the partner must declare. The declarer may instead say biritch (no trumps). After declaration either adversary may say contre (doubles trick values); the dealer side may say sur contre (quadruples), and doubling may continue until one side stops. The player to the left of the dealer leads. The dealer's partner then exposes all cards as Dummy, played by the dealer; Dummy may not suggest plays. Revokes and misdeals as at short whist. A game is 30 points in play; honours do not count toward the game. Best of three games wins the rubber.",
+    Player: "Four players in fixed partnerships, as at short whist. No card is turned for trumps. After the deal the dealer may declare a suit for trumps or say pass, in which case the partner must declare. The declarer may instead say biritch (no trumps). After declaration either adversary may say contre (doubles trick values); the dealer side may say sur contre (quadruples), and doubling may continue until one side stops. The player to the left of the dealer leads. The dealer's partner then exposes all cards as Dummy, played by the dealer; Dummy may not suggest plays. Revokes and misdeals as at short whist. A game is 30 points in play; honours do not count toward the game. Best of three games wins the rubber.",
     objective: 'Win tricks with your partnership. The first side to score 30 points in play wins a game. Best of three games (a rubber) wins the rubber.',
     gameplay: "Four players in fixed partnerships, as at short whist. No card is turned for trumps. After the deal the dealer may declare a suit for trumps or say pass, in which case the partner must declare. The declarer may instead say biritch (no trumps). After declaration either adversary may say contre (doubles trick values); the dealer side may say sur contre (quadruples), and doubling may continue until one side stops. The player to the left of the dealer leads. The dealer's partner then exposes all cards as Dummy, played by the dealer; Dummy may not suggest plays. Revokes and misdeals as at short whist. A game is 30 points in play; honours do not count toward the game. Best of three games wins the rubber.",
     keyRules: [
@@ -55,10 +55,204 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in deal; dealer may use deal_13 before declaration.',
-      'Scoring check: Odd tricks (above 6) count toward game score. 30 points = one game. Best 2 of 3 games = rubber. Honours scored separately. Expected outcome: NA.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Win tricks with your partnership. The first side to score 30 points in play wins a game. Best of three games (a rubber) wins the rubber.',
+      "Turn-flow example: Four players in fixed partnerships, as at short whist. No card is turned for trumps. After the deal the dealer may declare a suit for trumps or say pass, in which case the partner must declare. The declarer may instead say biritch (no trumps). After declaration either adversary may say contre (doubles trick values); the dealer side may say sur contre (quadruples), and doubling may continue until one side stops. The player to the left of the dealer leads. The dealer's partner then exposes all cards as Dummy, played by the dealer; Dummy may not suggest plays. Revokes and misdeals as at short whist. A game is 30 points in play; honours do not count toward the game. Best of three games wins the rubber.",
+      'Scoring example: Odd tricks (above 6) count toward game score. 30 points = one game. Best 2 of 3 games = rubber. Honours scored separately. First side to win 2 games wins the rubber..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'biritch.rules.objective',
+        title: 'Objective',
+        text: 'Win tricks with your partnership. The first side to score 30 points in play wins a game. Best of three games (a rubber) wins the rubber.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'biritch.rules.gameplay',
+        title: 'Turn flow',
+        text: "Four players in fixed partnerships, as at short whist. No card is turned for trumps. After the deal the dealer may declare a suit for trumps or say pass, in which case the partner must declare. The declarer may instead say biritch (no trumps). After declaration either adversary may say contre (doubles trick values); the dealer side may say sur contre (quadruples), and doubling may continue until one side stops. The player to the left of the dealer leads. The dealer's partner then exposes all cards as Dummy, played by the dealer; Dummy may not suggest plays. Revokes and misdeals as at short whist. A game is 30 points in play; honours do not count toward the game. Best of three games wins the rubber.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'biritch.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships, seated opposite each other. Cutting for partners, shuffling, and dealing are the same as at Short Whist.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'biritch.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck. Card ranking as at Whist: A (high), K, Q, J, 10, 9, 8, 7, 6, 5, 4, 3, 2.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'biritch.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck. Score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'biritch.setup.dealing',
+        title: 'Deal',
+        text: '13 cards dealt to each player. Unlike Whist, NO card is turned up for trumps.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'biritch.score.win-condition',
+        title: 'Win condition',
+        text: 'First side to win 2 games wins the rubber.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'biritch.score.description',
+        title: 'Scoring',
+        text: 'Odd tricks (above 6) count toward game score. 30 points = one game. Best 2 of 3 games = rubber. Honours scored separately.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'biritch.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dealer (or partner) declares trumps â€” no card turned up. Revolutionary departure from Whist.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'biritch.rules.key.2',
+        title: 'Key rule 2',
+        text: "'Biritch' = no-trump declaration. The origin of the word 'Bridge.'",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'biritch.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Dummy hand is exposed and played by the dealer.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'biritch.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Contre/sur-contre doubles/quadruples trick values infinitely.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'biritch.rules.key.5',
+        title: 'Key rule 5',
+        text: '30 points wins a game. Best of 3 games wins the rubber.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'biritch.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Honours score separately and do not affect games.',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'biritch.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'biritch.rules.objective',
+          'biritch.rules.gameplay',
+        ],
+      },
+      {
+        id: 'biritch.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'biritch.setup.players',
+          'biritch.setup.deck',
+          'biritch.setup.equipment',
+          'biritch.setup.dealing',
+        ],
+      },
+      {
+        id: 'biritch.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'biritch.rules.key.1',
+          'biritch.rules.key.2',
+          'biritch.rules.key.3',
+          'biritch.rules.key.4',
+          'biritch.rules.key.5',
+          'biritch.rules.key.6',
+        ],
+      },
+      {
+        id: 'biritch.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'biritch.score.description',
+          'biritch.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'biritch.setup.dealing',
+        'biritch.rules.objective',
+      ],
+      play_card: [
+        'biritch.rules.gameplay',
+      ],
+      deal_13: [
+        'biritch.rules.gameplay',
+      ],
+      declare_suit: [
+        'biritch.rules.gameplay',
+      ],
+      declare_biritch: [
+        'biritch.rules.gameplay',
+      ],
+      pass_to_partner: [
+        'biritch.rules.gameplay',
+      ],
+      contre: [
+        'biritch.rules.gameplay',
+      ],
+      sur_contre: [
+        'biritch.rules.gameplay',
+      ],
+      accept: [
+        'biritch.rules.gameplay',
+      ],
+      expose_partner_hand: [
+        'biritch.rules.gameplay',
+      ],
+      calculate_game_score: [
+        'biritch.rules.gameplay',
+      ],
+      calculate_honours: [
+        'biritch.rules.gameplay',
+      ],
+    },
   },
 }

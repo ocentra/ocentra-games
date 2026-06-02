@@ -10,7 +10,32 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Players start with lives (e.g. 3); lowest card each round loses a life. Last player left wins the pot.',
+      winCondition: 'Last player remaining after all others have lost their lives.',
+      targetScore: 1,
+      scoringDirection: 'high_wins',
+      cardValues: {
+        A: '11',
+        K: '10',
+        Q: '10',
+        J: '10',
+      },
+      nullReasons: {
+        targetScore: 'No fixed target score; last player left in wins.',
+        scoringDirection: 'Winner is last player standing; no point accumulation.',
+      },
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

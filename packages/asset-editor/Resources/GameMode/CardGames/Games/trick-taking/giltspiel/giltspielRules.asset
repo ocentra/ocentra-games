@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Giltspiel. Four players in fixed teams. Deal 5 from a 32-card German deck, turn trump, play up to 5 tricks while betting on Gleich, Hanger, and Spiel, then resolve showdown and score to 11 or 15.',
-    Player: 'Giltspiel: coordinate with partner, pressure figures through betting, and switch cleanly into showdown when Spiel is settled.',
+    LLM: 'Eldest hand leads. On each trick, a player who has led suit may either follow suit or play trump; if unable to follow suit they may play any card. If any trump is played, highest trump wins; otherwise highest card of led suit wins. Winner leads next. Cards remain face up in front of each player in play order. Three figures are scored each deal: Gleich (best set of equal ranks), Hanger (best suited sequence), and Spiel (team that wins at least 3 of 5 tricks). Betting on each figure can happen during play and can be conceded, seen, or raised. Play stops immediately when Spiel is decided or conceded, and unresolved Gleich/Hanger are settled by staged showdown reveals.',
+    Player: 'Eldest hand leads. On each trick, a player who has led suit may either follow suit or play trump; if unable to follow suit they may play any card. If any trump is played, highest trump wins; otherwise highest card of led suit wins. Winner leads next. Cards remain face up in front of each player in play order. Three figures are scored each deal: Gleich (best set of equal ranks), Hanger (best suited sequence), and Spiel (team that wins at least 3 of 5 tricks). Betting on each figure can happen during play and can be conceded, seen, or raised. Play stops immediately when Spiel is decided or conceded, and unresolved Gleich/Hanger are settled by staged showdown reveals.',
     objective: 'Be the first partnership to reach the agreed target (usually 11 or 15 points).',
     gameplay: 'Eldest hand leads. On each trick, a player who has led suit may either follow suit or play trump; if unable to follow suit they may play any card. If any trump is played, highest trump wins; otherwise highest card of led suit wins. Winner leads next. Cards remain face up in front of each player in play order. Three figures are scored each deal: Gleich (best set of equal ranks), Hanger (best suited sequence), and Spiel (team that wins at least 3 of 5 tricks). Betting on each figure can happen during play and can be conceded, seen, or raised. Play stops immediately when Spiel is decided or conceded, and unresolved Gleich/Hanger are settled by staged showdown reveals.',
     keyRules: [
@@ -53,10 +53,183 @@
       go_out: 'Rounds end by figure resolution, not empty-hand shedding.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play_and_bet.',
-      'Scoring check: Each deal awards figure values for Gleich, Hanger, and Spiel, with values increased by accepted bets and modified by concessions or penalties. Expected outcome: First partnership to reach agreed target score (typically 11 or 15) wins..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first partnership to reach the agreed target (usually 11 or 15 points).',
+      'Turn-flow example: Eldest hand leads. On each trick, a player who has led suit may either follow suit or play trump; if unable to follow suit they may play any card. If any trump is played, highest trump wins; otherwise highest card of led suit wins. Winner leads next. Cards remain face up in front of each player in play order. Three figures are scored each deal: Gleich (best set of equal ranks), Hanger (best suited sequence), and Spiel (team that wins at least 3 of 5 tricks). Betting on each figure can happen during play and can be conceded, seen, or raised. Play stops immediately when Spiel is decided or conceded, and unresolved Gleich/Hanger are settled by staged showdown reveals.',
+      'Scoring example: Each deal awards figure values for Gleich, Hanger, and Spiel, with values increased by accepted bets and modified by concessions or penalties. First partnership to reach agreed target score (typically 11 or 15) wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'giltspiel.rules.objective',
+        title: 'Objective',
+        text: 'Be the first partnership to reach the agreed target (usually 11 or 15 points).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'giltspiel.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Eldest hand leads. On each trick, a player who has led suit may either follow suit or play trump; if unable to follow suit they may play any card. If any trump is played, highest trump wins; otherwise highest card of led suit wins. Winner leads next. Cards remain face up in front of each player in play order. Three figures are scored each deal: Gleich (best set of equal ranks), Hanger (best suited sequence), and Spiel (team that wins at least 3 of 5 tricks). Betting on each figure can happen during play and can be conceded, seen, or raised. Play stops immediately when Spiel is decided or conceded, and unresolved Gleich/Hanger are settled by staged showdown reveals.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'giltspiel.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships, partners opposite.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'giltspiel.setup.deck',
+        title: 'Deck',
+        text: '32-card German suits (bells, acorns, hearts, leaves), rank high to low: A K O U 10 9 8 7.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'giltspiel.setup.equipment',
+        title: 'Equipment',
+        text: 'Scoresheet for partnership points.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'giltspiel.setup.dealing',
+        title: 'Deal',
+        text: 'Deal five cards each clockwise in two packets (2+3 or 3+2). Turn the next card up to set trump suit.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'giltspiel.score.win-condition',
+        title: 'Win condition',
+        text: 'First partnership to reach agreed target score (typically 11 or 15) wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'giltspiel.score.description',
+        title: 'Scoring',
+        text: 'Each deal awards figure values for Gleich, Hanger, and Spiel, with values increased by accepted bets and modified by concessions or penalties.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'giltspiel.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Initial value of each figure is 1 point and can be increased by accepted bets.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'giltspiel.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Bets on a figure alternate by team; a team that just had its bet seen cannot bet that figure again until the other team bets it.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'giltspiel.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Any player who bet or saw Gleich or Hanger must later prove they hold at least a minimal valid instance of that figure or incur penalty.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'giltspiel.rules.key.4',
+        title: 'Key rule 4',
+        text: 'When Spiel is decided early, trick play stops immediately and showdown begins for unresolved figures.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'giltspiel.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'giltspiel.rules.objective',
+          'giltspiel.rules.gameplay',
+        ],
+      },
+      {
+        id: 'giltspiel.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'giltspiel.setup.players',
+          'giltspiel.setup.deck',
+          'giltspiel.setup.equipment',
+          'giltspiel.setup.dealing',
+        ],
+      },
+      {
+        id: 'giltspiel.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'giltspiel.rules.key.1',
+          'giltspiel.rules.key.2',
+          'giltspiel.rules.key.3',
+          'giltspiel.rules.key.4',
+        ],
+      },
+      {
+        id: 'giltspiel.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'giltspiel.score.description',
+          'giltspiel.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'giltspiel.setup.dealing',
+        'giltspiel.rules.objective',
+      ],
+      deal: [
+        'giltspiel.rules.gameplay',
+      ],
+      fold: [
+        'giltspiel.rules.gameplay',
+      ],
+      call: [
+        'giltspiel.rules.gameplay',
+      ],
+      bet: [
+        'giltspiel.rules.gameplay',
+      ],
+      raise: [
+        'giltspiel.rules.gameplay',
+      ],
+      reveal_hand: [
+        'giltspiel.rules.gameplay',
+      ],
+      award_pot: [
+        'giltspiel.rules.gameplay',
+      ],
+      play_card: [
+        'giltspiel.rules.gameplay',
+      ],
+      concede_spiel: [
+        'giltspiel.rules.gameplay',
+      ],
+      contest_figure: [
+        'giltspiel.rules.gameplay',
+      ],
+    },
   },
 }

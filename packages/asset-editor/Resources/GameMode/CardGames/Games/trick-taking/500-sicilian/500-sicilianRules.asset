@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 500 (Sicilian). Logic: See rules.objective and rules.gameplay.',
-    Player: '500 Sicilian is a variant of the trick-taking game 500 adapted for the 40-card Sicilian/Italian deck (Coins, Cups, Swords, Clubs; 1-7 + Fante/Cavallo/Re). Bidding for tricks + trump suit. Misère available. Adapted scoring and hand structure for 40-card deck. First to 500 points wins. Kitty/widow for bid winner.',
+    LLM: 'Bid for tricks + trump. Winner takes kitty, discards. Follow suit, trump if void. Misère = lose all tricks. Make contract: score bid value. Fail: lose bid value. Non-bidders score tricks won.',
+    Player: 'Bid for tricks + trump. Winner takes kitty, discards. Follow suit, trump if void. Misère = lose all tricks. Make contract: score bid value. Fail: lose bid value. Non-bidders score tricks won.',
     objective: 'Reach 500 points first by making and fulfilling bids. Bid for number of tricks and trump (or Misère); bid winner takes the kitty, discards, and must make the contract to score; opponents score tricks they take.',
     gameplay: 'Bid for tricks + trump. Winner takes kitty, discards. Follow suit, trump if void. Misère = lose all tricks. Make contract: score bid value. Fail: lose bid value. Non-bidders score tricks won.',
     keyRules: [
@@ -54,10 +54,171 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-4 player(s), 9 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in bid; each_player_clockwise may use bid, pass before play.',
-      'Scoring check: Contract-based. Bid value scored if contract made; failed bid scores negative. Opponents score tricks. First to 500 wins. Expected outcome: 500.',
+      'Setup example: 9 card(s) per player.',
+      'Rule example: Reach 500 points first by making and fulfilling bids. Bid for number of tricks and trump (or Misère); bid winner takes the kitty, discards, and must make the contract to score; opponents score tricks they take.',
+      'Turn-flow example: Bid for tricks + trump. Winner takes kitty, discards. Follow suit, trump if void. Misère = lose all tricks. Make contract: score bid value. Fail: lose bid value. Non-bidders score tricks won.',
+      'Scoring example: Contract-based. Bid value scored if contract made; failed bid scores negative. Opponents score tricks. First to 500 wins. First to 500 points..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '500-sicilian.rules.objective',
+        title: 'Objective',
+        text: 'Reach 500 points first by making and fulfilling bids. Bid for number of tricks and trump (or Misère); bid winner takes the kitty, discards, and must make the contract to score; opponents score tricks they take.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '500-sicilian.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Bid for tricks + trump. Winner takes kitty, discards. Follow suit, trump if void. Misère = lose all tricks. Make contract: score bid value. Fail: lose bid value. Non-bidders score tricks won.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '500-sicilian.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '500-sicilian.setup.deck',
+        title: 'Deck',
+        text: '40 Sicilian cards: 4 suits (Coins/Cups/Swords/Clubs), 1-7 + Fante + Cavallo + Re.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '500-sicilian.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, scorepad',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '500-sicilian.setup.dealing',
+        title: 'Deal',
+        text: 'Varies. Kitty/widow for bid winner.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '500-sicilian.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 500 points.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '500-sicilian.score.description',
+        title: 'Scoring',
+        text: 'Contract-based. Bid value scored if contract made; failed bid scores negative. Opponents score tricks. First to 500 wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '500-sicilian.rules.key.1',
+        title: 'Key rule 1',
+        text: '40-card Sicilian deck',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '500-sicilian.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Bidding for trump + tricks',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '500-sicilian.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Kitty for bid winner',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: '500-sicilian.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Misère bid',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: '500-sicilian.rules.key.5',
+        title: 'Key rule 5',
+        text: 'First to 500 points',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '500-sicilian.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '500-sicilian.rules.objective',
+          '500-sicilian.rules.gameplay',
+        ],
+      },
+      {
+        id: '500-sicilian.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '500-sicilian.setup.players',
+          '500-sicilian.setup.deck',
+          '500-sicilian.setup.equipment',
+          '500-sicilian.setup.dealing',
+        ],
+      },
+      {
+        id: '500-sicilian.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '500-sicilian.rules.key.1',
+          '500-sicilian.rules.key.2',
+          '500-sicilian.rules.key.3',
+          '500-sicilian.rules.key.4',
+          '500-sicilian.rules.key.5',
+        ],
+      },
+      {
+        id: '500-sicilian.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '500-sicilian.score.description',
+          '500-sicilian.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '500-sicilian.setup.dealing',
+        '500-sicilian.rules.objective',
+      ],
+      play_card: [
+        '500-sicilian.rules.gameplay',
+      ],
+      pass: [
+        '500-sicilian.rules.gameplay',
+      ],
+      bid: [
+        '500-sicilian.rules.gameplay',
+      ],
+    },
   },
 }

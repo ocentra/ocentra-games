@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Pinochle. 4p partnerships. 48 cards. Bid 250+. Meld then tricks.',
-    Player: 'Pinochle: 4 players, partners opposite. Bid for trump, pass 4 cards. Meld, then play tricks.',
+    LLM: "1. Bid (min 250). Declarer names trump; partner passes 4 cards to declarer, declarer passes 4 back. 2. All four players lay meld face-up. 3. Declarer leads first trick. Must follow suit; highest wins. Counters (A, 10, K) score 10 pts each; last trick 10. If declarer's team fails the bid, bid is deducted.",
+    Player: "1. Bid (min 250). Declarer names trump; partner passes 4 cards to declarer, declarer passes 4 back. 2. All four players lay meld face-up. 3. Declarer leads first trick. Must follow suit; highest wins. Counters (A, 10, K) score 10 pts each; last trick 10. If declarer's team fails the bid, bid is deducted.",
     objective: "Score points through melding and trick-taking. The declarer's team must make at least the bid amount or the bid is deducted from their score. First team to the target score wins.",
     gameplay: "1. Bid (min 250). Declarer names trump; partner passes 4 cards to declarer, declarer passes 4 back. 2. All four players lay meld face-up. 3. Declarer leads first trick. Must follow suit; highest wins. Counters (A, 10, K) score 10 pts each; last trick 10. If declarer's team fails the bid, bid is deducted.",
     keyRules: [
@@ -53,10 +53,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 12 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in bid; each_player_clockwise may use bid before pass.',
-      'Scoring check: Meld points plus trick points. Counters (A, 10, K) = 10 pts each; last trick = 10. Expected outcome: 1000.',
+      'Setup example: 12 card(s) per player.',
+      "Rule example: Score points through melding and trick-taking. The declarer's team must make at least the bid amount or the bid is deducted from their score. First team to the target score wins.",
+      "Turn-flow example: 1. Bid (min 250). Declarer names trump; partner passes 4 cards to declarer, declarer passes 4 back. 2. All four players lay meld face-up. 3. Declarer leads first trick. Must follow suit; highest wins. Counters (A, 10, K) score 10 pts each; last trick 10. If declarer's team fails the bid, bid is deducted.",
+      'Scoring example: Meld points plus trick points. Counters (A, 10, K) = 10 pts each; last trick = 10. First team to target score (often 1000). Bid and make to add; fail bid = subtract bid..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'pinochle.rules.objective',
+        title: 'Objective',
+        text: "Score points through melding and trick-taking. The declarer's team must make at least the bid amount or the bid is deducted from their score. First team to the target score wins.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'pinochle.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Bid (min 250). Declarer names trump; partner passes 4 cards to declarer, declarer passes 4 back. 2. All four players lay meld face-up. 3. Declarer leads first trick. Must follow suit; highest wins. Counters (A, 10, K) score 10 pts each; last trick 10. If declarer's team fails the bid, bid is deducted.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'pinochle.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships (partners sit opposite).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'pinochle.setup.deck',
+        title: 'Deck',
+        text: '48-card Pinochle deck (two copies each of 9, 10, J, Q, K, A in all four suits).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'pinochle.setup.equipment',
+        title: 'Equipment',
+        text: '48-card Pinochle deck, score sheet.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'pinochle.setup.dealing',
+        title: 'Deal',
+        text: '1. Shuffle the 48-card deck thoroughly\n2. Deal 12 cards to each player (in batches of 3 or 4 cards)\n3. Rotation: Deal rotates clockwise after each hand',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'pinochle.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to target score (often 1000). Bid and make to add; fail bid = subtract bid.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'pinochle.score.description',
+        title: 'Scoring',
+        text: 'Meld points plus trick points. Counters (A, 10, K) = 10 pts each; last trick = 10.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'pinochle.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Rank: A, 10, K, Q, J, 9 (Ten second highest).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'pinochle.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Counters in tricks = 10 pts each; last trick = 10.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'pinochle.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Declarer leads first trick.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'pinochle.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Racehorse: partner passes 4 to declarer before play.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'pinochle.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'pinochle.rules.objective',
+          'pinochle.rules.gameplay',
+        ],
+      },
+      {
+        id: 'pinochle.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'pinochle.setup.players',
+          'pinochle.setup.deck',
+          'pinochle.setup.equipment',
+          'pinochle.setup.dealing',
+        ],
+      },
+      {
+        id: 'pinochle.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'pinochle.rules.key.1',
+          'pinochle.rules.key.2',
+          'pinochle.rules.key.3',
+          'pinochle.rules.key.4',
+        ],
+      },
+      {
+        id: 'pinochle.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'pinochle.score.description',
+          'pinochle.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'pinochle.setup.dealing',
+        'pinochle.rules.objective',
+      ],
+      play_card: [
+        'pinochle.rules.gameplay',
+      ],
+      pass: [
+        'pinochle.rules.gameplay',
+      ],
+      bid: [
+        'pinochle.rules.gameplay',
+      ],
+      meld: [
+        'pinochle.rules.gameplay',
+      ],
+    },
   },
 }

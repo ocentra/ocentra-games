@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use reveal_two_tiles before round end.',
-      'Scoring check: Players capture pairs of tiles that total 12. First to reach 50 captured tiles (25 pairs), or another predetermined total, wins the game. Expected outcome: 50.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the first player to reach 50 captured tiles (25 pairs), or another predetermined total, by turning up pairs of tiles that total 12.',
+      'Turn-flow example: 1. Setup: all 28 tiles are placed face down in a 4×7 grid. 2. On your turn, expose any two tiles. If the pair totals 12, remove them from the grid and take another turn (continue until you fail to get a total of 12). If the pair does not total 12, turn them face down again and the next player takes a turn. 3. The hand is over when the grid is empty. 4. Winner is the first to reach 50 captured tiles (25 pairs) or the agreed total.',
+      'Scoring example: Players capture pairs of tiles that total 12. First to reach 50 captured tiles (25 pairs), or another predetermined total, wins the game. First to 50 captured tiles (25 pairs) or agreed total wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'memory.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to reach 50 captured tiles (25 pairs), or another predetermined total, by turning up pairs of tiles that total 12.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'memory.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Setup: all 28 tiles are placed face down in a 4×7 grid. 2. On your turn, expose any two tiles. If the pair totals 12, remove them from the grid and take another turn (continue until you fail to get a total of 12). If the pair does not total 12, turn them face down again and the next player takes a turn. 3. The hand is over when the grid is empty. 4. Winner is the first to reach 50 captured tiles (25 pairs) or the agreed total.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'memory.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6 (any number can play)\nOptimal Players: 2\nPartnerships: No',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'memory.setup.deck',
+        title: 'Deck',
+        text: 'Type: Double-6 domino set\nNumber of Tiles: 28\nAll tiles used in the grid',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'memory.setup.equipment',
+        title: 'Equipment',
+        text: 'Double-6 domino set\nTable space for 4×7 grid',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'memory.setup.dealing',
+        title: 'Deal',
+        text: 'Players get no hands. All 28 tiles are dealt face down into a grid layout of 4 by 7 tiles.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'memory.score.win-condition',
+        title: 'Win condition',
+        text: 'First to 50 captured tiles (25 pairs) or agreed total wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'memory.score.description',
+        title: 'Scoring',
+        text: 'Players capture pairs of tiles that total 12. First to reach 50 captured tiles (25 pairs), or another predetermined total, wins the game.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'memory.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Each turn: expose two tiles. If they total 12, remove them and go again; otherwise turn them face down and pass the turn.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'memory.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Domino pairs that total 12: double-six with double-blank, 5-6 with 0-1; any seven (e.g. 1-6, 2-5, 3-4) pairs with any five (0-5, 1-4, 2-3) for nine combinations.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'memory.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Game ends when grid is empty. First to 50 tiles (25 pairs) or agreed total wins.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'memory.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'memory.rules.objective',
+          'memory.rules.gameplay',
+        ],
+      },
+      {
+        id: 'memory.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'memory.setup.players',
+          'memory.setup.deck',
+          'memory.setup.equipment',
+          'memory.setup.dealing',
+        ],
+      },
+      {
+        id: 'memory.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'memory.rules.key.1',
+          'memory.rules.key.2',
+          'memory.rules.key.3',
+        ],
+      },
+      {
+        id: 'memory.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'memory.score.description',
+          'memory.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'memory.setup.dealing',
+        'memory.rules.objective',
+      ],
+      reveal_two_tiles: [
+        'memory.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: FilicÄƒu (Romanian partnership trick-taker). Setup: 4 players in 2 fixed partnerships (opposite seats). 32-card German deck (Acorns, Leaves, Hearts, Bells). 8 cards dealt per player. Trump set by bottom card flipped by dealer (if Over-Knave, keep flipping). Gameplay: 8 tricks. Lead player (right of dealer) starts, proceeds anticlockwise. Follow suit if able; must trump if void; must play trump if no suit. Scoring: 1 point for each Ace, 1 for each Ten (8 total). Master status: partnership with 5+ points. Slave status: losing partnership (4-4 split special).',
-    Player: "Welcome to FilicÄƒu, a Romanian trick-taking partnership game. You and your opposite partner compete against the other pair. Play 8 tricks using a 32-card German deck. Capture Aces and Tens (1 point each). Watch out for the Over-Knavesâ€”they're the highest trumps! The partnership with the most points becomes the Masters.",
+    LLM: "1. Lead: Player to dealer's right leads.\n2. Follow Suit: You must follow suit if possible.\n3. Mandatory Trumping: If you cannot follow suit, you MUST play a trump if you have one. If you have neither the suit nor trumps, you may discard any card.\n4. Over-Knaves: These always belong to the trump suit, regardless of their printed suit logo.",
+    Player: "1. Lead: Player to dealer's right leads.\n2. Follow Suit: You must follow suit if possible.\n3. Mandatory Trumping: If you cannot follow suit, you MUST play a trump if you have one. If you have neither the suit nor trumps, you may discard any card.\n4. Over-Knaves: These always belong to the trump suit, regardless of their printed suit logo.",
     objective: 'Collect as many Aces and Tens as possible. There are 8 total points (4 Aces, 4 Tens).',
     gameplay: "1. Lead: Player to dealer's right leads.\n2. Follow Suit: You must follow suit if possible.\n3. Mandatory Trumping: If you cannot follow suit, you MUST play a trump if you have one. If you have neither the suit nor trumps, you may discard any card.\n4. Over-Knaves: These always belong to the trump suit, regardless of their printed suit logo.",
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'Game has no going out mechanic.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 8 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; system may use play_card before round end.',
-      'Scoring check: Players score 1 point for each Ace and 1 point for each Ten captured (8 total points available). Masters vs. Slaves status determined by point distribution. Expected outcome: First partnership to reach agreed cumulative score (typically 21 or 31 points across multiple rounds) wins. Within each round, highest point total wins..',
+      'Setup example: 8 card(s) per player.',
+      'Rule example: Collect as many Aces and Tens as possible. There are 8 total points (4 Aces, 4 Tens).',
+      "Turn-flow example: 1. Lead: Player to dealer's right leads.\n2. Follow Suit: You must follow suit if possible.\n3. Mandatory Trumping: If you cannot follow suit, you MUST play a trump if you have one. If you have neither the suit nor trumps, you may discard any card.\n4. Over-Knaves: These always belong to the trump suit, regardless of their printed suit logo.",
+      'Scoring example: Players score 1 point for each Ace and 1 point for each Ten captured (8 total points available). Masters vs. Slaves status determined by point distribution. First partnership to reach agreed cumulative score (typically 21 or 31 points across multiple rounds) wins. Within each round, highest point total wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'filic-u.rules.objective',
+        title: 'Objective',
+        text: 'Collect as many Aces and Tens as possible. There are 8 total points (4 Aces, 4 Tens).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'filic-u.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Lead: Player to dealer's right leads.\n2. Follow Suit: You must follow suit if possible.\n3. Mandatory Trumping: If you cannot follow suit, you MUST play a trump if you have one. If you have neither the suit nor trumps, you may discard any card.\n4. Over-Knaves: These always belong to the trump suit, regardless of their printed suit logo.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'filic-u.setup.players',
+        title: 'Players',
+        text: '4 players in two fixed partnerships (sitting opposite each other).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'filic-u.setup.deck',
+        title: 'Deck',
+        text: '32-card German deck. Suits: Acorns (Makk), Leaves (ZÃ¶ld), Hearts (Piros), Bells (TÃ¶k).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'filic-u.setup.equipment',
+        title: 'Equipment',
+        text: '32-card German deck. Suits: Acorns (Makk), Leaves (ZÃ¶ld), Hearts (Piros), Bells (TÃ¶k).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'filic-u.setup.dealing',
+        title: 'Deal',
+        text: "Deal all cards face down, 8 per player, proceeding anticlockwise. The dealer flips the bottom card of their hand to set the trump suit (if it's an Over-Knave, they keep flipping).",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'filic-u.score.win-condition',
+        title: 'Win condition',
+        text: 'First partnership to reach agreed cumulative score (typically 21 or 31 points across multiple rounds) wins. Within each round, highest point total wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'filic-u.score.description',
+        title: 'Scoring',
+        text: 'Players score 1 point for each Ace and 1 point for each Ten captured (8 total points available). Masters vs. Slaves status determined by point distribution.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'filic-u.rules.key.1',
+        title: 'Key rule 1',
+        text: 'No Passing: You cannot hold back a trump if you are void in the led suit.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'filic-u.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Anticlockwise: All play and dealing moves to the right.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'filic-u.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Winning condition: Collect as many Aces and Tens as possible.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'filic-u.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'filic-u.rules.objective',
+          'filic-u.rules.gameplay',
+        ],
+      },
+      {
+        id: 'filic-u.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'filic-u.setup.players',
+          'filic-u.setup.deck',
+          'filic-u.setup.equipment',
+          'filic-u.setup.dealing',
+        ],
+      },
+      {
+        id: 'filic-u.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'filic-u.rules.key.1',
+          'filic-u.rules.key.2',
+          'filic-u.rules.key.3',
+        ],
+      },
+      {
+        id: 'filic-u.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'filic-u.score.description',
+          'filic-u.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'filic-u.setup.dealing',
+        'filic-u.rules.objective',
+      ],
+      play_card: [
+        'filic-u.rules.gameplay',
+      ],
+    },
   },
 }

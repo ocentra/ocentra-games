@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Crazy Eights. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Crazy Eights is a popular shedding card game, especially beloved by children. The objective is simple: be the first player to discard all your cards. Players take turns playing cards to a central discard pile, matching either the rank or suit of the top card. The eponymous "crazy" 8s are wild cards that can be played on anything and allow the player to change the suit.',
+    LLM: "1. Starting Play: The player to the dealer's left goes first, then play proceeds clockwise\n2. Taking Turns: On your turn, you must either play a valid card or draw from the stock pile\n3. Playing Cards: Match the top card of the discard pile by rank, suit, or play a wild 8\n4. Drawing: If you cannot play, draw cards from the stock pile until you can play (or draw one card depending on house rules)\n5. Winning: The first player to play their last card wins the round",
+    Player: "1. Starting Play: The player to the dealer's left goes first, then play proceeds clockwise\n2. Taking Turns: On your turn, you must either play a valid card or draw from the stock pile\n3. Playing Cards: Match the top card of the discard pile by rank, suit, or play a wild 8\n4. Drawing: If you cannot play, draw cards from the stock pile until you can play (or draw one card depending on house rules)\n5. Winning: The first player to play their last card wins the round",
     objective: 'Be the first player to discard all cards from your hand.',
     gameplay: "1. Starting Play: The player to the dealer's left goes first, then play proceeds clockwise\n2. Taking Turns: On your turn, you must either play a valid card or draw from the stock pile\n3. Playing Cards: Match the top card of the discard pile by rank, suit, or play a wild 8\n4. Drawing: If you cannot play, draw cards from the stock pile until you can play (or draw one card depending on house rules)\n5. Winning: The first player to play their last card wins the round",
     keyRules: [
@@ -53,7 +53,166 @@
       meld: 'This game has no meld action.',
       go_out: 'This game has no go-out action.',
     },
-    exampleHands: [],
+    exampleHands: [
+      'Setup example: 2 players: 7 cards; 3-4 players: 5 cards; 5-7 players: 5 cards.',
+      'Rule example: Be the first player to discard all cards from your hand.',
+      "Turn-flow example: 1. Starting Play: The player to the dealer's left goes first, then play proceeds clockwise\n2. Taking Turns: On your turn, you must either play a valid card or draw from the stock pile\n3. Playing Cards: Match the top card of the discard pile by rank, suit, or play a wild 8\n4. Drawing: If you cannot play, draw cards from the stock pile until you can play (or draw one card depending on house rules)\n5. Winning: The first player to play their last card wins the round",
+      'Scoring example: Be the first player to discard all cards from your hand. Be the first player to discard all cards from your hand..',
+    ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'crazy-eights.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'crazy-eights.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Starting Play: The player to the dealer's left goes first, then play proceeds clockwise\n2. Taking Turns: On your turn, you must either play a valid card or draw from the stock pile\n3. Playing Cards: Match the top card of the discard pile by rank, suit, or play a wild 8\n4. Drawing: If you cannot play, draw cards from the stock pile until you can play (or draw one card depending on house rules)\n5. Winning: The first player to play their last card wins the round",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'crazy-eights.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 7\nOptimal Players: 3-5\nPartnerships: No (individual play)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'crazy-eights.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included (optional in some variations)',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'crazy-eights.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard deck of playing cards\nFlat surface for discard pile',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'crazy-eights.setup.dealing',
+        title: 'Deal',
+        text: 'Players  Cards per Player \n---------------------------\n 2 players  7 cards each \n 3-4 players  5 cards each \n 5-7 players  5 cards each \nDealing Pattern: Clockwise, one card at a time\nIf the turned-up card is an 8, it is buried in the middle of the pack and the next card is turned up\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'crazy-eights.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'crazy-eights.score.description',
+        title: 'Scoring',
+        text: 'Be the first player to discard all cards from your hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'crazy-eights.rules.key.1',
+        title: 'Key rule 1',
+        text: "Matching: A card must match the top discard card by rank OR suit (unless it's an 8)",
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'crazy-eights.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Wild 8s: 8s can be played on any card regardless of rank or suit',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'crazy-eights.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Declaring Suit: When playing an 8, the player immediately declares the new suit to be matched',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'crazy-eights.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Stock Pile: If the stock pile runs out, shuffle the discard pile (except the top card) to form a new stock',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'crazy-eights.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Last Card: Some variations require saying "Last card" when down to one card',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'crazy-eights.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'crazy-eights.rules.objective',
+          'crazy-eights.rules.gameplay',
+        ],
+      },
+      {
+        id: 'crazy-eights.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'crazy-eights.setup.players',
+          'crazy-eights.setup.deck',
+          'crazy-eights.setup.equipment',
+          'crazy-eights.setup.dealing',
+        ],
+      },
+      {
+        id: 'crazy-eights.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'crazy-eights.rules.key.1',
+          'crazy-eights.rules.key.2',
+          'crazy-eights.rules.key.3',
+          'crazy-eights.rules.key.4',
+          'crazy-eights.rules.key.5',
+        ],
+      },
+      {
+        id: 'crazy-eights.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'crazy-eights.score.description',
+          'crazy-eights.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'crazy-eights.setup.dealing',
+        'crazy-eights.rules.objective',
+      ],
+      play_card: [
+        'crazy-eights.rules.gameplay',
+      ],
+    },
   },
 }

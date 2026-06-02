@@ -11,19 +11,45 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Streak scoring by team. Normal win gives 1 point; Dekabes gives 2. After a tied blocked round, next winner gets 2 (or 4 with Dekabes). Losing team resets to 0 each round.',
+      winCondition: 'First team to reach 4 or more points wins the game.',
+      targetScore: 4,
+      scoringDirection: 'high_wins',
+      cardValues: {
         normal_round_win: '1 point',
         dekabes_win: '2 points',
         post_tied_block_round_win: '2 points',
         post_tied_block_round_dekabes_win: '4 points',
       },
+      sourceCardValues: {
+        raw: {
+          normal_round_win: '1 point',
+          dekabes_win: '2 points',
+          post_tied_block_round_win: '2 points',
+          post_tied_block_round_dekabes_win: '4 points',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: 'Tied blocked round scores no points and carries a doubled value to the next scored round.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],
     winCondition: 'First team to reach 4 or more points wins the game.',
     cardValues: {},
-    penalties: '{\n  "losing_team_reset": "At end of each scored round, losing team score returns to 0."\n}',
+    penalties: '{"losing_team_reset":"At end of each scored round, losing team score returns to 0."}',
     targetScore: 4,
     scoringDirection: 'high_wins',
     rankingAsset: {

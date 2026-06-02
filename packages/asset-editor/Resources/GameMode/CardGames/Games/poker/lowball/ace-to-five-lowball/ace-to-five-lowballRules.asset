@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Ace-To-Five Lowball. Flow: forced bet, deal 5 down, bet, draw, bet, showdown. Rank by ace-to-five low.',
-    Player: 'Ace-to-five lowball: build the lowest hand, draw wisely, and avoid rough lows.',
+    LLM: 'Players contribute forced bets (ante or blinds), receive five down cards, complete first betting, perform a single draw (discard 0-5 then draw equal replacements, or stand pat), complete final betting, and go to showdown.',
+    Player: 'Players contribute forced bets (ante or blinds), receive five down cards, complete first betting, perform a single draw (discard 0-5 then draw equal replacements, or stand pat), complete final betting, and go to showdown.',
     objective: 'Make the lowest five-card hand by ace-to-five ranking.',
     gameplay: 'Players contribute forced bets (ante or blinds), receive five down cards, complete first betting, perform a single draw (discard 0-5 then draw equal replacements, or stand pat), complete final betting, and go to showdown.',
     keyRules: [
@@ -54,10 +54,195 @@
       go_out: 'Game ends at showdown when all betting is complete; no go-out-to-win mechanic.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in ante; each_player_clockwise may use ante before initial_deal.',
-      'Scoring check: Pot game; best low hand wins the pot at showdown. Expected outcome: NA.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Make the lowest five-card hand by ace-to-five ranking.',
+      'Turn-flow example: Players contribute forced bets (ante or blinds), receive five down cards, complete first betting, perform a single draw (discard 0-5 then draw equal replacements, or stand pat), complete final betting, and go to showdown.',
+      'Scoring example: Pot game; best low hand wins the pot at showdown. Lowest valid ace-to-five hand at showdown wins..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'ace-to-five-lowball.rules.objective',
+        title: 'Objective',
+        text: 'Make the lowest five-card hand by ace-to-five ranking.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'ace-to-five-lowball.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players contribute forced bets (ante or blinds), receive five down cards, complete first betting, perform a single draw (discard 0-5 then draw equal replacements, or stand pat), complete final betting, and go to showdown.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'ace-to-five-lowball.setup.players',
+        title: 'Players',
+        text: 'Two to eight players; the game is similar to Five Card Draw with one draw round. Typically played with blinds (dealer, small blind, big blind) or an ante; best with about six at the table.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'ace-to-five-lowball.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck; optional joker bug in some house rules.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'ace-to-five-lowball.setup.equipment',
+        title: 'Equipment',
+        text: 'Deck, chips, dealer button, and blind markers if blind structure is used.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'ace-to-five-lowball.setup.dealing',
+        title: 'Deal',
+        text: 'Deal 5 cards face-down to each player.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'ace-to-five-lowball.score.win-condition',
+        title: 'Win condition',
+        text: 'Lowest valid ace-to-five hand at showdown wins.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'ace-to-five-lowball.score.description',
+        title: 'Scoring',
+        text: 'Pot game; best low hand wins the pot at showdown.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'ace-to-five-lowball.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Aces are always low.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'ace-to-five-lowball.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Straights and flushes are ignored for low ranking.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'ace-to-five-lowball.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Best hand is A-2-3-4-5 (wheel).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'ace-to-five-lowball.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Hands are compared from highest card downward among low hands.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'ace-to-five-lowball.rules.key.5',
+        title: 'Key rule 5',
+        text: 'In some California rules, made sevens may be forced to bet.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'ace-to-five-lowball.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'ace-to-five-lowball.rules.objective',
+          'ace-to-five-lowball.rules.gameplay',
+        ],
+      },
+      {
+        id: 'ace-to-five-lowball.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'ace-to-five-lowball.setup.players',
+          'ace-to-five-lowball.setup.deck',
+          'ace-to-five-lowball.setup.equipment',
+          'ace-to-five-lowball.setup.dealing',
+        ],
+      },
+      {
+        id: 'ace-to-five-lowball.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'ace-to-five-lowball.rules.key.1',
+          'ace-to-five-lowball.rules.key.2',
+          'ace-to-five-lowball.rules.key.3',
+          'ace-to-five-lowball.rules.key.4',
+          'ace-to-five-lowball.rules.key.5',
+        ],
+      },
+      {
+        id: 'ace-to-five-lowball.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'ace-to-five-lowball.score.description',
+          'ace-to-five-lowball.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'ace-to-five-lowball.setup.dealing',
+        'ace-to-five-lowball.rules.objective',
+      ],
+      ante: [
+        'ace-to-five-lowball.rules.gameplay',
+      ],
+      deal: [
+        'ace-to-five-lowball.rules.gameplay',
+      ],
+      fold: [
+        'ace-to-five-lowball.rules.gameplay',
+      ],
+      check: [
+        'ace-to-five-lowball.rules.gameplay',
+      ],
+      call: [
+        'ace-to-five-lowball.rules.gameplay',
+      ],
+      bet: [
+        'ace-to-five-lowball.rules.gameplay',
+      ],
+      raise: [
+        'ace-to-five-lowball.rules.gameplay',
+      ],
+      reveal_hand: [
+        'ace-to-five-lowball.rules.gameplay',
+      ],
+      award_pot: [
+        'ace-to-five-lowball.rules.gameplay',
+      ],
+      draw: [
+        'ace-to-five-lowball.rules.gameplay',
+      ],
+      discard: [
+        'ace-to-five-lowball.rules.gameplay',
+      ],
+    },
   },
 }

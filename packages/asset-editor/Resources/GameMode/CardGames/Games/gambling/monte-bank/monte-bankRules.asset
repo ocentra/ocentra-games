@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Monte Bank. Logic: Win stakes from the bank by backing the successful card outcome.',
-    Player: 'Monte Bank is a Spanish gambling card game for two or more players using a 40-card Spanish pack and banked stakes.',
+    LLM: 'Players place bets and the banker reveals cards, paying or collecting according to the Monte result.',
+    Player: 'Players place bets and the banker reveals cards, paying or collecting according to the Monte result.',
     objective: 'Win stakes from the bank by backing the successful card outcome.',
     gameplay: 'Players place bets and the banker reveals cards, paying or collecting according to the Monte result.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-12 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Stakes are paid or lost against the bank. Expected outcome: Win stakes from the bank by backing the successful card outcome..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Win stakes from the bank by backing the successful card outcome.',
+      'Turn-flow example: Players place bets and the banker reveals cards, paying or collecting according to the Monte result.',
+      'Scoring example: Stakes are paid or lost against the bank. Win stakes from the bank by backing the successful card outcome..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'monte-bank.rules.objective',
+        title: 'Objective',
+        text: 'Win stakes from the bank by backing the successful card outcome.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'monte-bank.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players place bets and the banker reveals cards, paying or collecting according to the Monte result.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'monte-bank.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Monte Bank.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'monte-bank.setup.deck',
+        title: 'Deck',
+        text: '40-card Spanish pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'monte-bank.setup.equipment',
+        title: 'Equipment',
+        text: '40-card Spanish pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'monte-bank.setup.dealing',
+        title: 'Deal',
+        text: 'The banker manages the Spanish pack and exposes cards for the stake decisions.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'monte-bank.score.win-condition',
+        title: 'Win condition',
+        text: 'Win stakes from the bank by backing the successful card outcome.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'monte-bank.score.description',
+        title: 'Scoring',
+        text: 'Stakes are paid or lost against the bank.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'monte-bank.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Spanish gambling game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'monte-bank.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Uses a 40-card Spanish pack.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'monte-bank.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Two or more players.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'monte-bank.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Banker manages the deal.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'monte-bank.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Chance is dominant.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'monte-bank.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'monte-bank.rules.objective',
+          'monte-bank.rules.gameplay',
+        ],
+      },
+      {
+        id: 'monte-bank.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'monte-bank.setup.players',
+          'monte-bank.setup.deck',
+          'monte-bank.setup.equipment',
+          'monte-bank.setup.dealing',
+        ],
+      },
+      {
+        id: 'monte-bank.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'monte-bank.rules.key.1',
+          'monte-bank.rules.key.2',
+          'monte-bank.rules.key.3',
+          'monte-bank.rules.key.4',
+          'monte-bank.rules.key.5',
+        ],
+      },
+      {
+        id: 'monte-bank.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'monte-bank.score.description',
+          'monte-bank.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'monte-bank.setup.dealing',
+        'monte-bank.rules.objective',
+      ],
+      play_card: [
+        'monte-bank.rules.gameplay',
+      ],
+    },
   },
 }

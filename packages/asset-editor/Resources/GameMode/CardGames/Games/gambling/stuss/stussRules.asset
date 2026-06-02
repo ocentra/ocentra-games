@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Basset. Logic: Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
-    Player: 'Basset is a historical Italian gambling card game in which players bet against a banker on ranks that may appear from the pack.',
+    LLM: 'Cards are dealt from the dealer hand rather than from a shoe. Equal-card draws are especially favorable to the house, increasing the bank advantage over traditional faro.',
+    Player: 'Cards are dealt from the dealer hand rather than from a shoe. Equal-card draws are especially favorable to the house, increasing the bank advantage over traditional faro.',
     objective: 'Bet on card outcomes against the dealer under the harsher Stuss version of faro rules.',
     gameplay: 'Cards are dealt from the dealer hand rather than from a shoe. Equal-card draws are especially favorable to the house, increasing the bank advantage over traditional faro.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Bets are paid or lost against the bank according to the exposed-card result. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Bet on card outcomes against the dealer under the harsher Stuss version of faro rules.',
+      'Turn-flow example: Cards are dealt from the dealer hand rather than from a shoe. Equal-card draws are especially favorable to the house, increasing the bank advantage over traditional faro.',
+      'Scoring example: Bets are paid or lost against the bank according to the exposed-card result. Win stakes by backing ranks that appear in the favourable positions of the banked deal..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'stuss.rules.objective',
+        title: 'Objective',
+        text: 'Bet on card outcomes against the dealer under the harsher Stuss version of faro rules.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'stuss.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Cards are dealt from the dealer hand rather than from a shoe. Equal-card draws are especially favorable to the house, increasing the bank advantage over traditional faro.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'stuss.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Stuss.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'stuss.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'stuss.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'stuss.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Standard 52-card pack and deal or lay out cards according to the documented Stuss rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'stuss.score.win-condition',
+        title: 'Win condition',
+        text: 'Win stakes by backing ranks that appear in the favourable positions of the banked deal.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'stuss.score.description',
+        title: 'Scoring',
+        text: 'Bets are paid or lost against the bank according to the exposed-card result.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'stuss.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Variant of faro.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'stuss.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Cards are dealt from the hand.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'stuss.rules.key.3',
+        title: 'Key rule 3',
+        text: 'The house wins all money when two equal cards are drawn.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'stuss.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'stuss.rules.objective',
+          'stuss.rules.gameplay',
+        ],
+      },
+      {
+        id: 'stuss.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'stuss.setup.players',
+          'stuss.setup.deck',
+          'stuss.setup.equipment',
+          'stuss.setup.dealing',
+        ],
+      },
+      {
+        id: 'stuss.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'stuss.rules.key.1',
+          'stuss.rules.key.2',
+          'stuss.rules.key.3',
+        ],
+      },
+      {
+        id: 'stuss.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'stuss.score.description',
+          'stuss.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'stuss.setup.dealing',
+        'stuss.rules.objective',
+      ],
+      play_card: [
+        'stuss.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Seep. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Seep is a four-player partnership fishing game played in the Punjab (India and Pakistan). Players capture cards from a layout and build houses; first team to lead by 100 points wins a baazi.',
+    LLM: 'Deal: First dealer random; dealer gives 4 cards to player on right and 4 face down on table. That player bids 9–13 (capture value) if possible, then must create a house of that value, pick up cards of that value, or throw the bid card as loose. Dealer then deals remainder in fours counter-clockwise (bidder has 11 cards, others 12). Play proceeds counter-clockwise. Each turn: play one card to (1) create or add to a house, (2) pick up matching cards or houses, or (3) throw a loose card. Houses are piles of 9–13 capture value; ordinary houses can be broken or cemented; cemented houses cannot be broken. Must pick up all cards that match the played card. Sweep (taking all floor cards) scores 50 (25 on first play, 0 on last). Last picker takes any remaining loose cards.',
+    Player: 'Deal: First dealer random; dealer gives 4 cards to player on right and 4 face down on table. That player bids 9–13 (capture value) if possible, then must create a house of that value, pick up cards of that value, or throw the bid card as loose. Dealer then deals remainder in fours counter-clockwise (bidder has 11 cards, others 12). Play proceeds counter-clockwise. Each turn: play one card to (1) create or add to a house, (2) pick up matching cards or houses, or (3) throw a loose card. Houses are piles of 9–13 capture value; ordinary houses can be broken or cemented; cemented houses cannot be broken. Must pick up all cards that match the played card. Sweep (taking all floor cards) scores 50 (25 on first play, 0 on last). Last picker takes any remaining loose cards.',
     objective: 'Capture cards worth points from the layout (floor). The game ends when one team has a lead of at least 100 points over the other (a baazi). Capture by playing a card that matches the capture value of one or more cards or houses on the table; build houses (piles that can only be captured as a unit) to protect or consolidate captures.',
     gameplay: 'Deal: First dealer random; dealer gives 4 cards to player on right and 4 face down on table. That player bids 9–13 (capture value) if possible, then must create a house of that value, pick up cards of that value, or throw the bid card as loose. Dealer then deals remainder in fours counter-clockwise (bidder has 11 cards, others 12). Play proceeds counter-clockwise. Each turn: play one card to (1) create or add to a house, (2) pick up matching cards or houses, or (3) throw a loose card. Houses are piles of 9–13 capture value; ordinary houses can be broken or cemented; cemented houses cannot be broken. Must pick up all cards that match the played card. Sweep (taking all floor cards) scores 50 (25 on first play, 0 on last). Last picker takes any remaining loose cards.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Spades 1–13 points (K=13 down to A=1), aces of other suits 1 each, 10♦ = 6; total 100. Sweep: 50 (25 on first play, 0 on last). First team to lead by 100 wins one baazi. Team scoring under 9 in a deal loses a baazi. Expected outcome: 100.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Capture cards worth points from the layout (floor). The game ends when one team has a lead of at least 100 points over the other (a baazi). Capture by playing a card that matches the capture value of one or more cards or houses on the table; build houses (piles that can only be captured as a unit) to protect or consolidate captures.',
+      'Turn-flow example: Deal: First dealer random; dealer gives 4 cards to player on right and 4 face down on table. That player bids 9–13 (capture value) if possible, then must create a house of that value, pick up cards of that value, or throw the bid card as loose. Dealer then deals remainder in fours counter-clockwise (bidder has 11 cards, others 12). Play proceeds counter-clockwise. Each turn: play one card to (1) create or add to a house, (2) pick up matching cards or houses, or (3) throw a loose card. Houses are piles of 9–13 capture value; ordinary houses can be broken or cemented; cemented houses cannot be broken. Must pick up all cards that match the played card. Sweep (taking all floor cards) scores 50 (25 on first play, 0 on last). Last picker takes any remaining loose cards.',
+      'Scoring example: Spades 1–13 points (K=13 down to A=1), aces of other suits 1 each, 10♦ = 6; total 100. Sweep: 50 (25 on first play, 0 on last). First team to lead by 100 wins one baazi. Team scoring under 9 in a deal loses a baazi. First team to achieve a lead of 100 or more points over the other team wins one baazi. Team scoring fewer than 9 points in a deal loses a baazi immediately..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'seep.rules.objective',
+        title: 'Objective',
+        text: 'Capture cards worth points from the layout (floor). The game ends when one team has a lead of at least 100 points over the other (a baazi). Capture by playing a card that matches the capture value of one or more cards or houses on the table; build houses (piles that can only be captured as a unit) to protect or consolidate captures.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'seep.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Deal: First dealer random; dealer gives 4 cards to player on right and 4 face down on table. That player bids 9–13 (capture value) if possible, then must create a house of that value, pick up cards of that value, or throw the bid card as loose. Dealer then deals remainder in fours counter-clockwise (bidder has 11 cards, others 12). Play proceeds counter-clockwise. Each turn: play one card to (1) create or add to a house, (2) pick up matching cards or houses, or (3) throw a loose card. Houses are piles of 9–13 capture value; ordinary houses can be broken or cemented; cemented houses cannot be broken. Must pick up all cards that match the played card. Sweep (taking all floor cards) scores 50 (25 on first play, 0 on last). Last picker takes any remaining loose cards.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'seep.setup.players',
+        title: 'Players',
+        text: 'Four players in fixed partnerships (partners opposite). Deal and play counter-clockwise. Two-player variant exists.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'seep.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack, no jokers. English pattern.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'seep.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck, score sheet (optional), table space.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'seep.setup.dealing',
+        title: 'Deal',
+        text: 'Dealer gives 4 cards to player on right and 4 face down on table. That player bids (9–13) and plays one card from the four; dealer then deals the rest in groups of four counter-clockwise. Bidder ends with 11 cards, others 12.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'seep.score.win-condition',
+        title: 'Win condition',
+        text: 'First team to achieve a lead of 100 or more points over the other team wins one baazi. Team scoring fewer than 9 points in a deal loses a baazi immediately.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'seep.score.description',
+        title: 'Scoring',
+        text: 'Spades 1–13 points (K=13 down to A=1), aces of other suits 1 each, 10♦ = 6; total 100. Sweep: 50 (25 on first play, 0 on last). First team to lead by 100 wins one baazi. Team scoring under 9 in a deal loses a baazi.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'seep.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Capture value: A=1, 2–10 face, J=11, Q=12, K=13',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'seep.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Only spades (1–13), aces of other suits (1 each), and 10♦ (6) score; total 100 points',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'seep.rules.key.3',
+        title: 'Key rule 3',
+        text: 'First team to lead by 100 wins one baazi; team scoring under 9 in a deal loses a baazi immediately',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'seep.rules.key.4',
+        title: 'Key rule 4',
+        text: 'House owner must hold a card matching house value until captured or broken',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'seep.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'seep.rules.objective',
+          'seep.rules.gameplay',
+        ],
+      },
+      {
+        id: 'seep.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'seep.setup.players',
+          'seep.setup.deck',
+          'seep.setup.equipment',
+          'seep.setup.dealing',
+        ],
+      },
+      {
+        id: 'seep.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'seep.rules.key.1',
+          'seep.rules.key.2',
+          'seep.rules.key.3',
+          'seep.rules.key.4',
+        ],
+      },
+      {
+        id: 'seep.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'seep.score.description',
+          'seep.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'seep.setup.dealing',
+        'seep.rules.objective',
+      ],
+      play_card: [
+        'seep.rules.gameplay',
+      ],
+    },
   },
 }

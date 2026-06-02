@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Beleaguered Castle. Type: Open Packer Solitaire. Rules: Build foundations UP by suit. Build tableau DOWN any suit. Empty spaces fill with any card.',
-    Player: 'The 2 of Spades is buried under a King. You need to move that King, but the only empty space is on the other side of the board. Can you shift the sequence of Diamonds to free up a slot?',
+    LLM: '1. **Foundations**: Build UP by suit (e.g., 2♥ on A♥). 2. **Wings (Tableau)**: The top (exposed) card of any Wing is available for play. You can build DOWN on the wings regardless of suit (e.g., playing a 6♠ on a 7♦). 3. **Moving Cards**: Only one card can be moved at a time. 4. **Empty Spaces**: If a Wing becomes empty, you can fill the space with ANY available card (usually a King is best to start a new sequence).',
+    Player: '1. **Foundations**: Build UP by suit (e.g., 2♥ on A♥). 2. **Wings (Tableau)**: The top (exposed) card of any Wing is available for play. You can build DOWN on the wings regardless of suit (e.g., playing a 6♠ on a 7♦). 3. **Moving Cards**: Only one card can be moved at a time. 4. **Empty Spaces**: If a Wing becomes empty, you can fill the space with ANY available card (usually a King is best to start a new sequence).',
     objective: 'Build all four Foundation piles up from Ace to King in the same suit.',
     gameplay: '1. **Foundations**: Build UP by suit (e.g., 2♥ on A♥). 2. **Wings (Tableau)**: The top (exposed) card of any Wing is available for play. You can build DOWN on the wings regardless of suit (e.g., playing a 6♠ on a 7♦). 3. **Moving Cards**: Only one card can be moved at a time. 4. **Empty Spaces**: If a Wing becomes empty, you can fill the space with ANY available card (usually a King is best to start a new sequence).',
     keyRules: [
@@ -52,10 +52,162 @@
       go_out: 'The game concludes automatically when all cards reach the foundations or no moves remain.',
     },
     exampleHands: [
-      'Opening deal: 1-1 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in setup; system may use extract_aces, deal_wings before play_loop.',
-      'Scoring check: Standard Solitaire scoring based on the number of cards moved to foundations. Expected outcome: 52.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Build all four Foundation piles up from Ace to King in the same suit.',
+      'Turn-flow example: 1. **Foundations**: Build UP by suit (e.g., 2♥ on A♥). 2. **Wings (Tableau)**: The top (exposed) card of any Wing is available for play. You can build DOWN on the wings regardless of suit (e.g., playing a 6♠ on a 7♦). 3. **Moving Cards**: Only one card can be moved at a time. 4. **Empty Spaces**: If a Wing becomes empty, you can fill the space with ANY available card (usually a King is best to start a new sequence).',
+      'Scoring example: Standard Solitaire scoring based on the number of cards moved to foundations. Successful placement of all 52 cards on foundations..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'beleaguered-castle.rules.objective',
+        title: 'Objective',
+        text: 'Build all four Foundation piles up from Ace to King in the same suit.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'beleaguered-castle.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. **Foundations**: Build UP by suit (e.g., 2♥ on A♥). 2. **Wings (Tableau)**: The top (exposed) card of any Wing is available for play. You can build DOWN on the wings regardless of suit (e.g., playing a 6♠ on a 7♦). 3. **Moving Cards**: Only one card can be moved at a time. 4. **Empty Spaces**: If a Wing becomes empty, you can fill the space with ANY available card (usually a King is best to start a new sequence).',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'beleaguered-castle.setup.players',
+        title: 'Players',
+        text: 'One player (solitaire). The player acts alone: they remove the four Aces to form the foundations, deal the remaining 48 cards into eight wings, then move exposed cards between the tableau and foundations until all cards are built up or no legal moves remain.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'beleaguered-castle.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'beleaguered-castle.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard pack.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'beleaguered-castle.setup.dealing',
+        title: 'Deal',
+        text: '1. Remove the 4 Aces and place them in a vertical column in the center (The Foundations). 2. Deal the remaining 48 cards face up into 8 horizontal rows (Wings) on either side of the Aces (4 rows left, 4 rows right). Each row has 6 cards overlapping so only the end card is accessible.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'beleaguered-castle.score.win-condition',
+        title: 'Win condition',
+        text: 'Successful placement of all 52 cards on foundations.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'beleaguered-castle.score.description',
+        title: 'Scoring',
+        text: 'Standard Solitaire scoring based on the number of cards moved to foundations.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'beleaguered-castle.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Any suit can be built on any suit in the tableau (unlike Solitaire/Klondike where it must be alternating colors).',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'beleaguered-castle.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Only the top card is movable.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'beleaguered-castle.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Empty spaces are critical—creating one is usually the primary Short-Term Goal.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'beleaguered-castle.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'beleaguered-castle.rules.objective',
+          'beleaguered-castle.rules.gameplay',
+        ],
+      },
+      {
+        id: 'beleaguered-castle.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'beleaguered-castle.setup.players',
+          'beleaguered-castle.setup.deck',
+          'beleaguered-castle.setup.equipment',
+          'beleaguered-castle.setup.dealing',
+        ],
+      },
+      {
+        id: 'beleaguered-castle.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'beleaguered-castle.rules.key.1',
+          'beleaguered-castle.rules.key.2',
+          'beleaguered-castle.rules.key.3',
+        ],
+      },
+      {
+        id: 'beleaguered-castle.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'beleaguered-castle.score.description',
+          'beleaguered-castle.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'beleaguered-castle.setup.dealing',
+        'beleaguered-castle.rules.objective',
+      ],
+      play_card: [
+        'beleaguered-castle.rules.gameplay',
+      ],
+      extract_aces: [
+        'beleaguered-castle.rules.gameplay',
+      ],
+      deal_wings: [
+        'beleaguered-castle.rules.gameplay',
+      ],
+      move_tableau_to_foundation: [
+        'beleaguered-castle.rules.gameplay',
+      ],
+      move_tableau_to_tableau: [
+        'beleaguered-castle.rules.gameplay',
+      ],
+      move_to_empty_wing: [
+        'beleaguered-castle.rules.gameplay',
+      ],
+    },
   },
 }

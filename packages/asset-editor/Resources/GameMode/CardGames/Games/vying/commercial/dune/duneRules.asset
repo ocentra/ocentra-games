@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Dune. Logic: Advance a faction plan and satisfy the published victory condition through influence, conflict, and card effects.',
-    Player: 'Dune is an out-of-print collectible card game, also called Eye of the Storm, based on the Dune setting.',
+    LLM: 'Players deploy cards, manage spice or other resources, attack political positions, and resolve proprietary card effects tied to Dune factions.',
+    Player: 'Players deploy cards, manage spice or other resources, attack political positions, and resolve proprietary card effects tied to Dune factions.',
     objective: 'Advance a faction plan and satisfy the published victory condition through influence, conflict, and card effects.',
     gameplay: 'Players deploy cards, manage spice or other resources, attack political positions, and resolve proprietary card effects tied to Dune factions.',
     keyRules: [
@@ -54,10 +54,165 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: The game ends when a player meets the published faction or victory condition. Expected outcome: Advance a faction plan and satisfy the published victory condition through influence, conflict, and card effects..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Advance a faction plan and satisfy the published victory condition through influence, conflict, and card effects.',
+      'Turn-flow example: Players deploy cards, manage spice or other resources, attack political positions, and resolve proprietary card effects tied to Dune factions.',
+      'Scoring example: The game ends when a player meets the published faction or victory condition. Advance a faction plan and satisfy the published victory condition through influence, conflict, and card effects..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'dune.rules.objective',
+        title: 'Objective',
+        text: 'Advance a faction plan and satisfy the published victory condition through influence, conflict, and card effects.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'dune.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players deploy cards, manage spice or other resources, attack political positions, and resolve proprietary card effects tied to Dune factions.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'dune.setup.players',
+        title: 'Players',
+        text: '2-8 players use the table arrangement described for Dune.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'dune.setup.deck',
+        title: 'Deck',
+        text: 'Constructed Dune collectible card decks',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'dune.setup.equipment',
+        title: 'Equipment',
+        text: 'Constructed Dune collectible card decks, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'dune.setup.dealing',
+        title: 'Deal',
+        text: 'Players bring constructed decks and establish faction, resource, and starting hand areas according to the game rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'dune.score.win-condition',
+        title: 'Win condition',
+        text: 'Advance a faction plan and satisfy the published victory condition through influence, conflict, and card effects.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'dune.score.description',
+        title: 'Scoring',
+        text: 'The game ends when a player meets the published faction or victory condition.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'dune.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Collectible card game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'dune.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Constructed decks.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'dune.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Two to eight players.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'dune.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Faction and resource management.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'dune.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Political and combat effects decide the game.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'dune.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'dune.rules.objective',
+          'dune.rules.gameplay',
+        ],
+      },
+      {
+        id: 'dune.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'dune.setup.players',
+          'dune.setup.deck',
+          'dune.setup.equipment',
+          'dune.setup.dealing',
+        ],
+      },
+      {
+        id: 'dune.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'dune.rules.key.1',
+          'dune.rules.key.2',
+          'dune.rules.key.3',
+          'dune.rules.key.4',
+          'dune.rules.key.5',
+        ],
+      },
+      {
+        id: 'dune.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'dune.score.description',
+          'dune.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'dune.setup.dealing',
+        'dune.rules.objective',
+      ],
+      play_card: [
+        'dune.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Legends of the Three Kingdoms. Logic: Win through the objective assigned to your role or faction while using character powers and cards.',
-    Player: 'Legends of the Three Kingdoms is a Chinese commercial card game using hidden roles, characters, and action cards.',
+    LLM: 'Players receive roles and characters, play action cards, attack or assist others, and infer hidden allegiances from table behaviour.',
+    Player: 'Players receive roles and characters, play action cards, attack or assist others, and infer hidden allegiances from table behaviour.',
     objective: 'Win through the objective assigned to your role or faction while using character powers and cards.',
     gameplay: 'Players receive roles and characters, play action cards, attack or assist others, and infer hidden allegiances from table behaviour.',
     keyRules: [
@@ -54,10 +54,168 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 4-10 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: Published scoring or victory conditions determine the winner. Expected outcome: Win through the objective assigned to your role or faction while using character powers and cards..',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win through the objective assigned to your role or faction while using character powers and cards.',
+      'Turn-flow example: Players receive roles and characters, play action cards, attack or assist others, and infer hidden allegiances from table behaviour.',
+      'Scoring example: Published scoring or victory conditions determine the winner. Win through the objective assigned to your role or faction while using character powers and cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'legends-of-the-three-kingdoms.rules.objective',
+        title: 'Objective',
+        text: 'Win through the objective assigned to your role or faction while using character powers and cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'legends-of-the-three-kingdoms.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players receive roles and characters, play action cards, attack or assist others, and infer hidden allegiances from table behaviour.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'legends-of-the-three-kingdoms.setup.players',
+        title: 'Players',
+        text: '4 or more players use the table arrangement described for Legends of the Three Kingdoms.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'legends-of-the-three-kingdoms.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Legends of the Three Kingdoms character and action cards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'legends-of-the-three-kingdoms.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Legends of the Three Kingdoms character and action cards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'legends-of-the-three-kingdoms.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare the dedicated Legends of the Three Kingdoms cards and any shared table, score, or resource areas from the published rules.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'legends-of-the-three-kingdoms.score.win-condition',
+        title: 'Win condition',
+        text: 'Win through the objective assigned to your role or faction while using character powers and cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'legends-of-the-three-kingdoms.score.description',
+        title: 'Scoring',
+        text: 'Published scoring or victory conditions determine the winner.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'legends-of-the-three-kingdoms.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Dedicated character card game.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'legends-of-the-three-kingdoms.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Hidden roles or factions drive goals.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'legends-of-the-three-kingdoms.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Character powers alter card play.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'legends-of-the-three-kingdoms.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Social deduction and combat overlap.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'legends-of-the-three-kingdoms.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Role objective determines victory.',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'legends-of-the-three-kingdoms.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'legends-of-the-three-kingdoms.rules.objective',
+          'legends-of-the-three-kingdoms.rules.gameplay',
+        ],
+      },
+      {
+        id: 'legends-of-the-three-kingdoms.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'legends-of-the-three-kingdoms.setup.players',
+          'legends-of-the-three-kingdoms.setup.deck',
+          'legends-of-the-three-kingdoms.setup.equipment',
+          'legends-of-the-three-kingdoms.setup.dealing',
+        ],
+      },
+      {
+        id: 'legends-of-the-three-kingdoms.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'legends-of-the-three-kingdoms.rules.key.1',
+          'legends-of-the-three-kingdoms.rules.key.2',
+          'legends-of-the-three-kingdoms.rules.key.3',
+          'legends-of-the-three-kingdoms.rules.key.4',
+          'legends-of-the-three-kingdoms.rules.key.5',
+        ],
+      },
+      {
+        id: 'legends-of-the-three-kingdoms.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'legends-of-the-three-kingdoms.score.description',
+          'legends-of-the-three-kingdoms.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'legends-of-the-three-kingdoms.setup.dealing',
+        'legends-of-the-three-kingdoms.rules.objective',
+      ],
+      play_card: [
+        'legends-of-the-three-kingdoms.rules.gameplay',
+      ],
+      flip_top_card: [
+        'legends-of-the-three-kingdoms.rules.gameplay',
+      ],
+    },
   },
 }

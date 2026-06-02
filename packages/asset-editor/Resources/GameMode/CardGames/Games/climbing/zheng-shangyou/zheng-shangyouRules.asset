@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Zhēng Shàngyóu. Logic: See rules.objective and rules.gameplay.',
-    Player: "Zhēng Shàngyóu ('Struggling Upstream' / 'Climb to the Top') is a Chinese shedding/climbing game similar to President. 54-card deck (52 + 2 jokers). Play ascending combinations (singles/pairs/triples/sequences/bombs). First out wins. Ranking: 3-A-2-BlackJoker-RedJoker. Bombs beat any combination.",
+    LLM: 'Lead any combination. Others must play same type, higher rank, or pass. Combinations: single, pair, triple, sequence (3+), full house. Bombs (4+ same rank) beat anything. Pass = out until new trick. Last out loses.',
+    Player: 'Lead any combination. Others must play same type, higher rank, or pass. Combinations: single, pair, triple, sequence (3+), full house. Bombs (4+ same rank) beat anything. Pass = out until new trick. Last out loses.',
     objective: 'Be the first to play out all your cards to gain 2 points (or second to gain 1 point) toward a game total of usually 11; the last player left with cards loses the hand and is penalised in the next deal.',
     gameplay: 'Lead any combination. Others must play same type, higher rank, or pass. Combinations: single, pair, triple, sequence (3+), full house. Bombs (4+ same rank) beat anything. Pass = out until new trick. Last out loses.',
     keyRules: [
@@ -54,10 +54,168 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-5 player(s), 11 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_counterclockwise may use play_combination, pass before round end.',
-      'Scoring check: 1st out=2pts, 2nd=1pt. Play to 11. Expected outcome: 11.',
+      'Setup example: 11 card(s) per player.',
+      'Rule example: Be the first to play out all your cards to gain 2 points (or second to gain 1 point) toward a game total of usually 11; the last player left with cards loses the hand and is penalised in the next deal.',
+      'Turn-flow example: Lead any combination. Others must play same type, higher rank, or pass. Combinations: single, pair, triple, sequence (3+), full house. Bombs (4+ same rank) beat anything. Pass = out until new trick. Last out loses.',
+      'Scoring example: 1st out=2pts, 2nd=1pt. Play to 11. First to shed all cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'zheng-shangyou.rules.objective',
+        title: 'Objective',
+        text: 'Be the first to play out all your cards to gain 2 points (or second to gain 1 point) toward a game total of usually 11; the last player left with cards loses the hand and is penalised in the next deal.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'zheng-shangyou.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Lead any combination. Others must play same type, higher rank, or pass. Combinations: single, pair, triple, sequence (3+), full house. Bombs (4+ same rank) beat anything. Pass = out until new trick. Last out loses.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'zheng-shangyou.setup.players',
+        title: 'Players',
+        text: 'Three to five players (four or more in some descriptions; best with 4–6).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'zheng-shangyou.setup.deck',
+        title: 'Deck',
+        text: '54 cards: standard 52 plus two distinguishable jokers (Red and Black). Rank order 3 low to A, then 2, Black Joker, Red Joker.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'zheng-shangyou.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'zheng-shangyou.setup.dealing',
+        title: 'Deal',
+        text: 'Dealt singly anticlockwise from dealer until pack is exhausted; depending on player count some players may have one more card.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'zheng-shangyou.score.win-condition',
+        title: 'Win condition',
+        text: 'First to shed all cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'zheng-shangyou.score.description',
+        title: 'Scoring',
+        text: '1st out=2pts, 2nd=1pt. Play to 11.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'zheng-shangyou.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Climbing mechanic',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'zheng-shangyou.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Bombs beat any combination',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'zheng-shangyou.rules.key.3',
+        title: 'Key rule 3',
+        text: '2s rank above Aces',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'zheng-shangyou.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Jokers highest',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'zheng-shangyou.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Sequences exclude 2s/jokers',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'zheng-shangyou.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'zheng-shangyou.rules.objective',
+          'zheng-shangyou.rules.gameplay',
+        ],
+      },
+      {
+        id: 'zheng-shangyou.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'zheng-shangyou.setup.players',
+          'zheng-shangyou.setup.deck',
+          'zheng-shangyou.setup.equipment',
+          'zheng-shangyou.setup.dealing',
+        ],
+      },
+      {
+        id: 'zheng-shangyou.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'zheng-shangyou.rules.key.1',
+          'zheng-shangyou.rules.key.2',
+          'zheng-shangyou.rules.key.3',
+          'zheng-shangyou.rules.key.4',
+          'zheng-shangyou.rules.key.5',
+        ],
+      },
+      {
+        id: 'zheng-shangyou.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'zheng-shangyou.score.description',
+          'zheng-shangyou.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'zheng-shangyou.setup.dealing',
+        'zheng-shangyou.rules.objective',
+      ],
+      pass: [
+        'zheng-shangyou.rules.gameplay',
+      ],
+      play_combination: [
+        'zheng-shangyou.rules.gameplay',
+      ],
+    },
   },
 }

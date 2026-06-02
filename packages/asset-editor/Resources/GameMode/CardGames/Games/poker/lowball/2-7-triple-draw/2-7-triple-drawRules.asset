@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 2-7 Triple Draw. Logic: See rules.objective and rules.gameplay.',
-    Player: '2-7 Triple Draw (Deuce to Seven) is a lowball draw poker game where the lowest hand wins. Players get five cards and three drawing rounds to improve; straights and flushes count against you; aces are high. Best possible hand is 7-5-4-3-2 offsuit.',
+    LLM: 'Five cards each; betting then draw (discard and replace), betting, draw, betting, draw, betting, showdown. Three draws; stand pat or draw 0-5 cards each time.',
+    Player: 'Five cards each; betting then draw (discard and replace), betting, draw, betting, draw, betting, showdown. Three draws; stand pat or draw 0-5 cards each time.',
     objective: 'Make the lowest possible five-card hand. Win the pot at showdown.',
     gameplay: 'Five cards each; betting then draw (discard and replace), betting, draw, betting, draw, betting, showdown. Three draws; stand pat or draw 0-5 cards each time.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-8 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Pot won by lowest hand at showdown. No point scoring—chip pot. Expected outcome: Make the lowest possible five-card hand. Win the pot at showdown..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Make the lowest possible five-card hand. Win the pot at showdown.',
+      'Turn-flow example: Five cards each; betting then draw (discard and replace), betting, draw, betting, draw, betting, showdown. Three draws; stand pat or draw 0-5 cards each time.',
+      'Scoring example: Pot won by lowest hand at showdown. No point scoring—chip pot. Make the lowest possible five-card hand. Win the pot at showdown..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '2-7-triple-draw.rules.objective',
+        title: 'Objective',
+        text: 'Make the lowest possible five-card hand. Win the pot at showdown.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '2-7-triple-draw.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Five cards each; betting then draw (discard and replace), betting, draw, betting, draw, betting, showdown. Three draws; stand pat or draw 0-5 cards each time.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '2-7-triple-draw.setup.players',
+        title: 'Players',
+        text: '2–8 (ideally 4–8)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '2-7-triple-draw.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '2-7-triple-draw.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck, chips',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '2-7-triple-draw.setup.dealing',
+        title: 'Deal',
+        text: 'Five cards each; three draw rounds (discard and replace) with betting between each.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '2-7-triple-draw.score.win-condition',
+        title: 'Win condition',
+        text: 'Make the lowest possible five-card hand. Win the pot at showdown.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '2-7-triple-draw.score.description',
+        title: 'Scoring',
+        text: 'Pot won by lowest hand at showdown. No point scoring—chip pot.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '2-7-triple-draw.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Low hand wins',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '2-7-triple-draw.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Straights and flushes are bad',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '2-7-triple-draw.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Aces high',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: '2-7-triple-draw.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Best hand: 7-5-4-3-2 offsuit',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '2-7-triple-draw.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '2-7-triple-draw.rules.objective',
+          '2-7-triple-draw.rules.gameplay',
+        ],
+      },
+      {
+        id: '2-7-triple-draw.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '2-7-triple-draw.setup.players',
+          '2-7-triple-draw.setup.deck',
+          '2-7-triple-draw.setup.equipment',
+          '2-7-triple-draw.setup.dealing',
+        ],
+      },
+      {
+        id: '2-7-triple-draw.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '2-7-triple-draw.rules.key.1',
+          '2-7-triple-draw.rules.key.2',
+          '2-7-triple-draw.rules.key.3',
+          '2-7-triple-draw.rules.key.4',
+        ],
+      },
+      {
+        id: '2-7-triple-draw.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '2-7-triple-draw.score.description',
+          '2-7-triple-draw.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '2-7-triple-draw.setup.dealing',
+        '2-7-triple-draw.rules.objective',
+      ],
+      play_card: [
+        '2-7-triple-draw.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Kaluki (European). Type: Rummy. Deck: 2x52+2 Jokers (106 cards). Hand: 13 cards. Opening: 51 point minimum. Melds: Sets (3-4 same rank) and Runs (3+ consecutive, Ace high). Jokers wild (15 penalty if held). Building allowed after opening. Goal: Empty hand first, minimize penalty points.',
-    Player: "Welcome to Kaluki! You need 51 points to openâ€”can you get there with Aces and Face cards? Watch those Jokersâ€”15 penalty points each if you're caught holding them! Will you draw from the stock or grab that discard you need?",
+    LLM: "1. **Drawing**: Each turn, draw either the top card of the stock or the top discard. 2. **Melding**: If you can form valid melds meeting the initial point requirement (51 points), lay them face-up. 3. **Building**: After initial meld, add cards to any existing meld (yours or opponents'). 4. **Discarding**: End turn by discarding one card face-up.",
+    Player: "1. **Drawing**: Each turn, draw either the top card of the stock or the top discard. 2. **Melding**: If you can form valid melds meeting the initial point requirement (51 points), lay them face-up. 3. **Building**: After initial meld, add cards to any existing meld (yours or opponents'). 4. **Discarding**: End turn by discarding one card face-up.",
     objective: 'Empty your hand by forming melds on the table and have the lowest total points at the end of the session.',
     gameplay: "1. **Drawing**: Each turn, draw either the top card of the stock or the top discard. 2. **Melding**: If you can form valid melds meeting the initial point requirement (51 points), lay them face-up. 3. **Building**: After initial meld, add cards to any existing meld (yours or opponents'). 4. **Discarding**: End turn by discarding one card face-up.",
     keyRules: [
@@ -56,10 +56,210 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal_cards before turn_play.',
-      'Scoring check: Winner of a round scores 0. Losers score points for cards left in hand. Expected outcome: 150.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Empty your hand by forming melds on the table and have the lowest total points at the end of the session.',
+      "Turn-flow example: 1. **Drawing**: Each turn, draw either the top card of the stock or the top discard. 2. **Melding**: If you can form valid melds meeting the initial point requirement (51 points), lay them face-up. 3. **Building**: After initial meld, add cards to any existing meld (yours or opponents'). 4. **Discarding**: End turn by discarding one card face-up.",
+      'Scoring example: Winner of a round scores 0. Losers score points for cards left in hand. Game continues until all but one player have been eliminated by exceeding 150 penalty points. The last surviving player wins the pool..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'kaluki-european.rules.objective',
+        title: 'Objective',
+        text: 'Empty your hand by forming melds on the table and have the lowest total points at the end of the session.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'kaluki-european.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. **Drawing**: Each turn, draw either the top card of the stock or the top discard. 2. **Melding**: If you can form valid melds meeting the initial point requirement (51 points), lay them face-up. 3. **Building**: After initial meld, add cards to any existing meld (yours or opponents'). 4. **Discarding**: End turn by discarding one card face-up.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'kaluki-european.setup.players',
+        title: 'Players',
+        text: '2 to 5 players (optimal with 4).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'kaluki-european.setup.deck',
+        title: 'Deck',
+        text: '106 cards. Two standard 52-card decks plus 2 Jokers. Suits are Hearts, Diamonds, Clubs, Spades.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'kaluki-european.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard cards, score sheet, chips or counters for stakes (optional).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'kaluki-european.setup.dealing',
+        title: 'Deal',
+        text: 'Each player receives 13 cards dealt singly. The next card is turned face-up to start the discard pile; remaining cards form the stock.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'kaluki-european.score.win-condition',
+        title: 'Win condition',
+        text: 'Game continues until all but one player have been eliminated by exceeding 150 penalty points. The last surviving player wins the pool.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'kaluki-european.score.description',
+        title: 'Scoring',
+        text: 'Winner of a round scores 0. Losers score points for cards left in hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'kaluki-european.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Initial meld must total at least 51 points (house rule may vary to 40)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'kaluki-european.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Sets: 3-4 cards of same rank, all different suits (no duplicates)',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'kaluki-european.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Runs: 3+ consecutive cards of same suit; Aces are high only (A-K-Q valid, 3-2-A invalid)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'kaluki-european.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Jokers are wild and can substitute any card in a meld',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'kaluki-european.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Jokers in hand at end of play count as 15 penalty points',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'kaluki-european.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Building: After initial meld, add cards to extend existing melds on table',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+      {
+        id: 'kaluki-european.rules.key.7',
+        title: 'Key rule 7',
+        text: "Joker Exchange: A melded Joker can be 'stolen' by replacing it with the natural card it represents",
+        sourceFields: [
+          'rules.keyRules.6',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'kaluki-european.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'kaluki-european.rules.objective',
+          'kaluki-european.rules.gameplay',
+        ],
+      },
+      {
+        id: 'kaluki-european.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'kaluki-european.setup.players',
+          'kaluki-european.setup.deck',
+          'kaluki-european.setup.equipment',
+          'kaluki-european.setup.dealing',
+        ],
+      },
+      {
+        id: 'kaluki-european.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'kaluki-european.rules.key.1',
+          'kaluki-european.rules.key.2',
+          'kaluki-european.rules.key.3',
+          'kaluki-european.rules.key.4',
+          'kaluki-european.rules.key.5',
+          'kaluki-european.rules.key.6',
+          'kaluki-european.rules.key.7',
+        ],
+      },
+      {
+        id: 'kaluki-european.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'kaluki-european.score.description',
+          'kaluki-european.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'kaluki-european.setup.dealing',
+        'kaluki-european.rules.objective',
+      ],
+      deal: [
+        'kaluki-european.rules.gameplay',
+      ],
+      play_card: [
+        'kaluki-european.rules.gameplay',
+      ],
+      draw: [
+        'kaluki-european.rules.gameplay',
+      ],
+      discard: [
+        'kaluki-european.rules.gameplay',
+      ],
+      meld: [
+        'kaluki-european.rules.gameplay',
+      ],
+      deal_cards: [
+        'kaluki-european.rules.gameplay',
+      ],
+      draw_stock: [
+        'kaluki-european.rules.gameplay',
+      ],
+      draw_discard: [
+        'kaluki-european.rules.gameplay',
+      ],
+      build: [
+        'kaluki-european.rules.gameplay',
+      ],
+      calculate_penalties: [
+        'kaluki-european.rules.gameplay',
+      ],
+    },
   },
 }

@@ -54,10 +54,171 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-4 player(s), 10 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in bidding; each_player_clockwise may use bid, pass before play.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 10 card(s) per player.',
+      "Rule example: Complete a predetermined amount of 'Bullet' points while keeping your 'Mountain' (penalty points) low.",
+      'Turn-flow example: Three or four players (dealer sits out if four). Deal: 2 cards each, 2 to talon, then 2-2-2-2 each (10 cards per player). Bidding: eldest hand starts; players bid number of tricks (6–10) and trump (spades, clubs, diamonds, hearts, no trump) or misère. Highest bidder becomes declarer, takes talon, discards two cards, declares contract. Defenders choose to whist or pass; if both pass, declarer wins without play. Play: eldest hand leads; must follow suit, else must trump if possible. Trick winner leads next. Declarer must make contracted tricks; defenders who whist must make their quota.',
+      'Scoring example: Points or match rules. First to close the Bullet (pool) while keeping Mountain (dump penalties) low; or play to agreed match length..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'preferans-russian-classic.rules.objective',
+        title: 'Objective',
+        text: "Complete a predetermined amount of 'Bullet' points while keeping your 'Mountain' (penalty points) low.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'preferans-russian-classic.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Three or four players (dealer sits out if four). Deal: 2 cards each, 2 to talon, then 2-2-2-2 each (10 cards per player). Bidding: eldest hand starts; players bid number of tricks (6–10) and trump (spades, clubs, diamonds, hearts, no trump) or misère. Highest bidder becomes declarer, takes talon, discards two cards, declares contract. Defenders choose to whist or pass; if both pass, declarer wins without play. Play: eldest hand leads; must follow suit, else must trump if possible. Trick winner leads next. Declarer must make contracted tricks; defenders who whist must make their quota.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'preferans-russian-classic.setup.players',
+        title: 'Players',
+        text: "Typically 3 active players. If 4, the dealer sits out and gets 'Buy-in' points.",
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'preferans-russian-classic.setup.deck',
+        title: 'Deck',
+        text: '32 cards (remove 2s through 6s).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'preferans-russian-classic.setup.equipment',
+        title: 'Equipment',
+        text: '32 cards (remove 2s through 6s).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'preferans-russian-classic.setup.dealing',
+        title: 'Deal',
+        text: "2 cards each, 2 to the 'Talon' (the Widow), continuing until everyone has 10 cards.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'preferans-russian-classic.score.win-condition',
+        title: 'Win condition',
+        text: 'First to close the Bullet (pool) while keeping Mountain (dump penalties) low; or play to agreed match length.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'preferans-russian-classic.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'preferans-russian-classic.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Deal 10 cards each, 2 to talon; eldest hand leads bidding.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'preferans-russian-classic.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Bid tricks (6–10) and trump (spades, clubs, diamonds, hearts, no trump) or misère; highest bidder is declarer.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'preferans-russian-classic.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Declarer takes talon, discards two, declares contract; defenders choose to whist or pass.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'preferans-russian-classic.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Follow suit; when void, must trump if possible. Trick winner leads next.',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'preferans-russian-classic.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Score by pool (bullet), whists, and mountain (dump penalties).',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'preferans-russian-classic.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'preferans-russian-classic.rules.objective',
+          'preferans-russian-classic.rules.gameplay',
+        ],
+      },
+      {
+        id: 'preferans-russian-classic.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'preferans-russian-classic.setup.players',
+          'preferans-russian-classic.setup.deck',
+          'preferans-russian-classic.setup.equipment',
+          'preferans-russian-classic.setup.dealing',
+        ],
+      },
+      {
+        id: 'preferans-russian-classic.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'preferans-russian-classic.rules.key.1',
+          'preferans-russian-classic.rules.key.2',
+          'preferans-russian-classic.rules.key.3',
+          'preferans-russian-classic.rules.key.4',
+          'preferans-russian-classic.rules.key.5',
+        ],
+      },
+      {
+        id: 'preferans-russian-classic.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'preferans-russian-classic.score.description',
+          'preferans-russian-classic.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'preferans-russian-classic.setup.dealing',
+        'preferans-russian-classic.rules.objective',
+      ],
+      play_card: [
+        'preferans-russian-classic.rules.gameplay',
+      ],
+      pass: [
+        'preferans-russian-classic.rules.gameplay',
+      ],
+      bid: [
+        'preferans-russian-classic.rules.gameplay',
+      ],
+    },
   },
 }

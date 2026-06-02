@@ -11,13 +11,41 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Points are tallied at the end of the game (deck exhaustion).',
+      winCondition: 'First to reach 101 or higher (or highest score after fixed rounds).',
+      targetScore: 101,
+      scoringDirection: 'high_wins',
+      cardValues: {
         Jack: '1 point',
         Ace: '1 point',
         '10 of Diamonds': '2 points',
         '2 of Clubs': '2 points',
         'Most Cards': '30 points',
       },
+      sourceCardValues: {
+        raw: {
+          Jack: '1 point',
+          Ace: '1 point',
+          '10 of Diamonds': '2 points',
+          '2 of Clubs': '2 points',
+          'Most Cards': '30 points',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {
+        nullReasons: 'Not applicable.',
+        cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
+      },
+      splitRules: 'If cards are equal (26-26), the 30 points for Carte are not awarded.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,

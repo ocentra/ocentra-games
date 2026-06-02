@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 52 Pick-up. Logic: See rules.objective and rules.gameplay.',
-    Player: '52 Pick-up is a social prank using a standard pack: one player offers a game, scatters the cards, and the other player is left to pick them up. It is recorded as a social card-game joke rather than a strategic contest.',
+    LLM: 'The guesser draws a word card and chooses a numbered word without seeing it. Other players secretly write one-word clues. Identical or too-similar clues are removed before the guesser sees the remaining clues and makes one guess, passes, or misses.',
+    Player: 'The guesser draws a word card and chooses a numbered word without seeing it. Other players secretly write one-word clues. Identical or too-similar clues are removed before the guesser sees the remaining clues and makes one guess, passes, or misses.',
     objective: 'As a group, score as many correct guesses as possible from the thirteen-card deck.',
     gameplay: 'The guesser draws a word card and chooses a numbered word without seeing it. Other players secretly write one-word clues. Identical or too-similar clues are removed before the guesser sees the remaining clues and makes one guess, passes, or misses.',
     keyRules: [
@@ -52,10 +52,150 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 3-7 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: No scoring; the activity ends when the deck has been picked up. Expected outcome: 1.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: As a group, score as many correct guesses as possible from the thirteen-card deck.',
+      'Turn-flow example: The guesser draws a word card and chooses a numbered word without seeing it. Other players secretly write one-word clues. Identical or too-similar clues are removed before the guesser sees the remaining clues and makes one guess, passes, or misses.',
+      'Scoring example: No scoring; the activity ends when the deck has been picked up. No formal winner is defined..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'just-one.rules.objective',
+        title: 'Objective',
+        text: 'As a group, score as many correct guesses as possible from the thirteen-card deck.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'just-one.rules.gameplay',
+        title: 'Turn flow',
+        text: 'The guesser draws a word card and chooses a numbered word without seeing it. Other players secretly write one-word clues. Identical or too-similar clues are removed before the guesser sees the remaining clues and makes one guess, passes, or misses.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'just-one.setup.players',
+        title: 'Players',
+        text: '3-7 players use the table arrangement described for Just One.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'just-one.setup.deck',
+        title: 'Deck',
+        text: 'Commercial Just One word cards plus writing boards',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'just-one.setup.equipment',
+        title: 'Equipment',
+        text: 'Commercial Just One word cards plus writing boards, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'just-one.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Commercial Just One word cards plus writing boards and deal or lay out cards according to the documented Just One rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'just-one.score.win-condition',
+        title: 'Win condition',
+        text: 'No formal winner is defined.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'just-one.score.description',
+        title: 'Scoring',
+        text: 'No scoring; the activity ends when the deck has been picked up.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'just-one.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Duplicate clues are cancelled before the guess.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'just-one.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The group uses thirteen cards per game.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'just-one.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Correct guesses score; wrong guesses cost an extra card.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'just-one.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'just-one.rules.objective',
+          'just-one.rules.gameplay',
+        ],
+      },
+      {
+        id: 'just-one.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'just-one.setup.players',
+          'just-one.setup.deck',
+          'just-one.setup.equipment',
+          'just-one.setup.dealing',
+        ],
+      },
+      {
+        id: 'just-one.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'just-one.rules.key.1',
+          'just-one.rules.key.2',
+          'just-one.rules.key.3',
+        ],
+      },
+      {
+        id: 'just-one.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'just-one.score.description',
+          'just-one.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'just-one.setup.dealing',
+        'just-one.rules.objective',
+      ],
+      play_card: [
+        'just-one.rules.gameplay',
+      ],
+      flip_top_card: [
+        'just-one.rules.gameplay',
+      ],
+    },
   },
 }

@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 52 Pick-up. Logic: See rules.objective and rules.gameplay.',
-    Player: '52 Pick-up is a social prank using a standard pack: one player offers a game, scatters the cards, and the other player is left to pick them up. It is recorded as a social card-game joke rather than a strategic contest.',
+    LLM: 'Players take role actions to move, shore up flooded tiles, give cards, and claim treasures using matching treasure cards. After each turn, the flood deck floods or sinks island tiles, while Waters Rise cards increase pressure and reshuffle threats. The group wins or loses together.',
+    Player: 'Players take role actions to move, shore up flooded tiles, give cards, and claim treasures using matching treasure cards. After each turn, the flood deck floods or sinks island tiles, while Waters Rise cards increase pressure and reshuffle threats. The group wins or loses together.',
     objective: 'Collect all four treasures and move every adventurer to the helicopter landing tile before the island sinks.',
     gameplay: 'Players take role actions to move, shore up flooded tiles, give cards, and claim treasures using matching treasure cards. After each turn, the flood deck floods or sinks island tiles, while Waters Rise cards increase pressure and reshuffle threats. The group wins or loses together.',
     keyRules: [
@@ -52,10 +52,150 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: No scoring; the activity ends when the deck has been picked up. Expected outcome: 1.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Collect all four treasures and move every adventurer to the helicopter landing tile before the island sinks.',
+      'Turn-flow example: Players take role actions to move, shore up flooded tiles, give cards, and claim treasures using matching treasure cards. After each turn, the flood deck floods or sinks island tiles, while Waters Rise cards increase pressure and reshuffle threats. The group wins or loses together.',
+      'Scoring example: No scoring; the activity ends when the deck has been picked up. No formal winner is defined..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'forbidden-island.rules.objective',
+        title: 'Objective',
+        text: 'Collect all four treasures and move every adventurer to the helicopter landing tile before the island sinks.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'forbidden-island.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players take role actions to move, shore up flooded tiles, give cards, and claim treasures using matching treasure cards. After each turn, the flood deck floods or sinks island tiles, while Waters Rise cards increase pressure and reshuffle threats. The group wins or loses together.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'forbidden-island.setup.players',
+        title: 'Players',
+        text: '2-4 players use the table arrangement described for Forbidden Island.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'forbidden-island.setup.deck',
+        title: 'Deck',
+        text: 'Commercial Forbidden Island treasure and flood decks with island tiles and pawns',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'forbidden-island.setup.equipment',
+        title: 'Equipment',
+        text: 'Commercial Forbidden Island treasure and flood decks with island tiles and pawns, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'forbidden-island.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Commercial Forbidden Island treasure and flood decks with island tiles and pawns and deal or lay out cards according to the documented Forbidden Island rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'forbidden-island.score.win-condition',
+        title: 'Win condition',
+        text: 'No formal winner is defined.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'forbidden-island.score.description',
+        title: 'Scoring',
+        text: 'No scoring; the activity ends when the deck has been picked up.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'forbidden-island.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The flood deck maps directly to island locations.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'forbidden-island.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Treasure cards are collected as sets to claim treasures.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'forbidden-island.rules.key.3',
+        title: 'Key rule 3',
+        text: 'All players share a cooperative win or loss.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'forbidden-island.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'forbidden-island.rules.objective',
+          'forbidden-island.rules.gameplay',
+        ],
+      },
+      {
+        id: 'forbidden-island.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'forbidden-island.setup.players',
+          'forbidden-island.setup.deck',
+          'forbidden-island.setup.equipment',
+          'forbidden-island.setup.dealing',
+        ],
+      },
+      {
+        id: 'forbidden-island.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'forbidden-island.rules.key.1',
+          'forbidden-island.rules.key.2',
+          'forbidden-island.rules.key.3',
+        ],
+      },
+      {
+        id: 'forbidden-island.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'forbidden-island.score.description',
+          'forbidden-island.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'forbidden-island.setup.dealing',
+        'forbidden-island.rules.objective',
+      ],
+      play_card: [
+        'forbidden-island.rules.gameplay',
+      ],
+      flip_top_card: [
+        'forbidden-island.rules.gameplay',
+      ],
+    },
   },
 }

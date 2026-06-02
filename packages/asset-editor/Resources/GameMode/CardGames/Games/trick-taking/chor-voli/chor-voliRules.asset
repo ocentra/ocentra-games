@@ -55,10 +55,174 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Win chips from the pool by forming stronger 3-card combinations than opponents. The player with the highest four of a kind (if dealt) wins all four chips immediately.',
+      'Turn-flow example: 1. Before deal: Each player contributes 1 chip to the pool\n2. Deal: 13 cards to each player\n3. If a player has four of a kind: No play occurs; highest four of a kind wins all 4 chips\n4. Otherwise: Players sort hands into up to four 3-card combinations\n5. Discard face down any cards not part of valid combinations (each card used in only one combination)\n6. Showdowns occur in order: strongest combination first, then second strongest, etc.\n7. Winner of each showdown takes 1 chip from the pool',
+      'Scoring example: Points or match rules. Win by game rules..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'chor-voli.rules.objective',
+        title: 'Objective',
+        text: 'Win chips from the pool by forming stronger 3-card combinations than opponents. The player with the highest four of a kind (if dealt) wins all four chips immediately.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'chor-voli.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Before deal: Each player contributes 1 chip to the pool\n2. Deal: 13 cards to each player\n3. If a player has four of a kind: No play occurs; highest four of a kind wins all 4 chips\n4. Otherwise: Players sort hands into up to four 3-card combinations\n5. Discard face down any cards not part of valid combinations (each card used in only one combination)\n6. Showdowns occur in order: strongest combination first, then second strongest, etc.\n7. Winner of each showdown takes 1 chip from the pool',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'chor-voli.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 4\nMaximum Players: 4\nOptimal Players: 4\nPartnerships: No, individual play',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'chor-voli.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card international pack\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'chor-voli.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nChips or counters for scoring\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'chor-voli.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: 13 cards each\nDealing Pattern: Counterclockwise\nDealer: Left-hand opponent cuts, dealer can deal in any convenient packets',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'chor-voli.score.win-condition',
+        title: 'Win condition',
+        text: 'Win by game rules.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'chor-voli.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'chor-voli.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Three-card combinations rank (high to low): Three of a kind, Running flush (3-card straight flush), Run (3-card straight), Flush (3 cards same suit), Three unrelated cards',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'chor-voli.rules.key.2',
+        title: 'Key rule 2',
+        text: "Three unrelated cards must have no suit connection and no pair - if two cards share a suit or form a pair, they cannot be 'unrelated'",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'chor-voli.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Each card can only be used in one combination',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'chor-voli.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Unused cards are discarded face down and do not play',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+      {
+        id: 'chor-voli.rules.key.5',
+        title: 'Key rule 5',
+        text: 'Four of a kind ends the hand immediately with that player winning',
+        sourceFields: [
+          'rules.keyRules.4',
+        ],
+      },
+      {
+        id: 'chor-voli.rules.key.6',
+        title: 'Key rule 6',
+        text: 'Combinations compared using standard Brag hand rankings',
+        sourceFields: [
+          'rules.keyRules.5',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'chor-voli.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'chor-voli.rules.objective',
+          'chor-voli.rules.gameplay',
+        ],
+      },
+      {
+        id: 'chor-voli.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'chor-voli.setup.players',
+          'chor-voli.setup.deck',
+          'chor-voli.setup.equipment',
+          'chor-voli.setup.dealing',
+        ],
+      },
+      {
+        id: 'chor-voli.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'chor-voli.rules.key.1',
+          'chor-voli.rules.key.2',
+          'chor-voli.rules.key.3',
+          'chor-voli.rules.key.4',
+          'chor-voli.rules.key.5',
+          'chor-voli.rules.key.6',
+        ],
+      },
+      {
+        id: 'chor-voli.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'chor-voli.score.description',
+          'chor-voli.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'chor-voli.setup.dealing',
+        'chor-voli.rules.objective',
+      ],
+      play_card: [
+        'chor-voli.rules.gameplay',
+      ],
+    },
   },
 }

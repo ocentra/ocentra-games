@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 52 Pick-up. Logic: See rules.objective and rules.gameplay.',
-    Player: '52 Pick-up is a social prank using a standard pack: one player offers a game, scatters the cards, and the other player is left to pick them up. It is recorded as a social card-game joke rather than a strategic contest.',
+    LLM: 'Players use proprietary cards representing academic events and political obstacles. The source establishes it as a distinct card game product, so exact effects should come from the rulebook and card text.',
+    Player: 'Players use proprietary cards representing academic events and political obstacles. The source establishes it as a distinct card game product, so exact effects should come from the rulebook and card text.',
     objective: 'Navigate the satirical tenure-themed card effects to outscore or outlast the other players.',
     gameplay: 'Players use proprietary cards representing academic events and political obstacles. The source establishes it as a distinct card game product, so exact effects should come from the rulebook and card text.',
     keyRules: [
@@ -52,10 +52,150 @@
       go_out: 'A player exits the game only when their stack is empty; the round terminates for the loser.',
     },
     exampleHands: [
-      'Opening deal: 2-2 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in turning_round; current_player may use flip_top_card before payment_round.',
-      'Scoring check: No scoring; the activity ends when the deck has been picked up. Expected outcome: 1.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Navigate the satirical tenure-themed card effects to outscore or outlast the other players.',
+      'Turn-flow example: Players use proprietary cards representing academic events and political obstacles. The source establishes it as a distinct card game product, so exact effects should come from the rulebook and card text.',
+      'Scoring example: No scoring; the activity ends when the deck has been picked up. No formal winner is defined..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'survival-of-the-witless.rules.objective',
+        title: 'Objective',
+        text: 'Navigate the satirical tenure-themed card effects to outscore or outlast the other players.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'survival-of-the-witless.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players use proprietary cards representing academic events and political obstacles. The source establishes it as a distinct card game product, so exact effects should come from the rulebook and card text.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'survival-of-the-witless.setup.players',
+        title: 'Players',
+        text: '2 or more players use the table arrangement described for Survival of the Witless.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'survival-of-the-witless.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Survival of the Witless card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'survival-of-the-witless.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Survival of the Witless card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'survival-of-the-witless.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Survival of the Witless card deck and deal or lay out cards according to the documented Survival of the Witless rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'survival-of-the-witless.score.win-condition',
+        title: 'Win condition',
+        text: 'No formal winner is defined.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'survival-of-the-witless.score.description',
+        title: 'Scoring',
+        text: 'No scoring; the activity ends when the deck has been picked up.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'survival-of-the-witless.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Commercial card game released by Avalanche Press.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'survival-of-the-witless.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Theme is academic tenure satire.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'survival-of-the-witless.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Do not infer protected card effects without source rules.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'survival-of-the-witless.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'survival-of-the-witless.rules.objective',
+          'survival-of-the-witless.rules.gameplay',
+        ],
+      },
+      {
+        id: 'survival-of-the-witless.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'survival-of-the-witless.setup.players',
+          'survival-of-the-witless.setup.deck',
+          'survival-of-the-witless.setup.equipment',
+          'survival-of-the-witless.setup.dealing',
+        ],
+      },
+      {
+        id: 'survival-of-the-witless.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'survival-of-the-witless.rules.key.1',
+          'survival-of-the-witless.rules.key.2',
+          'survival-of-the-witless.rules.key.3',
+        ],
+      },
+      {
+        id: 'survival-of-the-witless.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'survival-of-the-witless.score.description',
+          'survival-of-the-witless.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'survival-of-the-witless.setup.dealing',
+        'survival-of-the-witless.rules.objective',
+      ],
+      play_card: [
+        'survival-of-the-witless.rules.gameplay',
+      ],
+      flip_top_card: [
+        'survival-of-the-witless.rules.gameplay',
+      ],
+    },
   },
 }

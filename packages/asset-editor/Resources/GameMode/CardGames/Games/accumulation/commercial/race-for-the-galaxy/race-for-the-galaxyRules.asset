@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Twenty-Four. Logic: See rules.objective and rules.gameplay.',
-    Player: '24 is a mathematical card game: use four numbers (from four cards) and only +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· (and parentheses) to make exactly 24. All four numbers must be used once. First to call a correct solution wins the four cards (or they go to opponent); play until one player has no cards. Popular in China since at least the 1960s (Shanghai); also played in North America.',
+    LLM: 'Players simultaneously choose phase cards, then all selected phases resolve. Hand cards act both as playable developments/worlds and as currency to pay for them, creating a tight hand-management engine.',
+    Player: 'Players simultaneously choose phase cards, then all selected phases resolve. Hand cards act both as playable developments/worlds and as currency to pay for them, creating a tight hand-management engine.',
     objective: 'Score the most victory points through developed cards, settled worlds, and bonus scoring.',
     gameplay: 'Players simultaneously choose phase cards, then all selected phases resolve. Hand cards act both as playable developments/worlds and as currency to pay for them, creating a tight hand-management engine.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: None; win = other player has no cards. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Score the most victory points through developed cards, settled worlds, and bonus scoring.',
+      'Turn-flow example: Players simultaneously choose phase cards, then all selected phases resolve. Hand cards act both as playable developments/worlds and as currency to pay for them, creating a tight hand-management engine.',
+      "Scoring example: None; win = other player has no cards. Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'race-for-the-galaxy.rules.objective',
+        title: 'Objective',
+        text: 'Score the most victory points through developed cards, settled worlds, and bonus scoring.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'race-for-the-galaxy.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players simultaneously choose phase cards, then all selected phases resolve. Hand cards act both as playable developments/worlds and as currency to pay for them, creating a tight hand-management engine.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'race-for-the-galaxy.setup.players',
+        title: 'Players',
+        text: '2-4 players use the table arrangement described for Race for the Galaxy.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'race-for-the-galaxy.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Race for the Galaxy card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'race-for-the-galaxy.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Race for the Galaxy card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'race-for-the-galaxy.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Race for the Galaxy card deck and deal or lay out cards according to the documented Race for the Galaxy rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'race-for-the-galaxy.score.win-condition',
+        title: 'Win condition',
+        text: "Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'race-for-the-galaxy.score.description',
+        title: 'Scoring',
+        text: 'None; win = other player has no cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'race-for-the-galaxy.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Players secretly choose phases each round.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'race-for-the-galaxy.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Cards in hand are also the currency for playing other cards.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'race-for-the-galaxy.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Victory comes from tableau points, chips, and bonus cards.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'race-for-the-galaxy.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'race-for-the-galaxy.rules.objective',
+          'race-for-the-galaxy.rules.gameplay',
+        ],
+      },
+      {
+        id: 'race-for-the-galaxy.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'race-for-the-galaxy.setup.players',
+          'race-for-the-galaxy.setup.deck',
+          'race-for-the-galaxy.setup.equipment',
+          'race-for-the-galaxy.setup.dealing',
+        ],
+      },
+      {
+        id: 'race-for-the-galaxy.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'race-for-the-galaxy.rules.key.1',
+          'race-for-the-galaxy.rules.key.2',
+          'race-for-the-galaxy.rules.key.3',
+        ],
+      },
+      {
+        id: 'race-for-the-galaxy.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'race-for-the-galaxy.score.description',
+          'race-for-the-galaxy.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'race-for-the-galaxy.setup.dealing',
+        'race-for-the-galaxy.rules.objective',
+      ],
+      play_card: [
+        'race-for-the-galaxy.rules.gameplay',
+      ],
+    },
   },
 }

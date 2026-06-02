@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: "Game: Verish' Ne Verish'. Logic: See rules.objective and rules.gameplay.",
-    Player: "Verish' Ne Verish' ('Believe It or Not') is the Russian version of BS/Cheat. 2-6+ players. Deal all cards. Play face-down declaring rank. Players call 'Ne Veryu!' to challenge. Wrong challengee picks up pile; wrong challenger picks up pile. Shed all cards to win.",
+    LLM: "Play 1+ cards face-down declaring rank. Next player: add same rank OR challenge ('Ne Veryu!'). Caught bluffing = pick up pile. Wrong challenge = challenger picks up. Four-of-a-kind auto-discards (variant).",
+    Player: "Play 1+ cards face-down declaring rank. Next player: add same rank OR challenge ('Ne Veryu!'). Caught bluffing = pick up pile. Wrong challenge = challenger picks up. Four-of-a-kind auto-discards (variant).",
     objective: 'Get rid of all your cards. Last player left with cards loses.',
     gameplay: "Play 1+ cards face-down declaring rank. Next player: add same rank OR challenge ('Ne Veryu!'). Caught bluffing = pick up pile. Wrong challenge = challenger picks up. Four-of-a-kind auto-discards (variant).",
     keyRules: [
@@ -53,10 +53,168 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play.',
-      'Scoring check: First out wins. Last = loser. Expected outcome: Shed all cards first..',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Get rid of all your cards. Last player left with cards loses.',
+      "Turn-flow example: Play 1+ cards face-down declaring rank. Next player: add same rank OR challenge ('Ne Veryu!'). Caught bluffing = pick up pile. Wrong challenge = challenger picks up. Four-of-a-kind auto-discards (variant).",
+      'Scoring example: First out wins. Last = loser. Shed all cards first..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'verish-ne-verish.rules.objective',
+        title: 'Objective',
+        text: 'Get rid of all your cards. Last player left with cards loses.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'verish-ne-verish.rules.gameplay',
+        title: 'Turn flow',
+        text: "Play 1+ cards face-down declaring rank. Next player: add same rank OR challenge ('Ne Veryu!'). Caught bluffing = pick up pile. Wrong challenge = challenger picks up. Four-of-a-kind auto-discards (variant).",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'verish-ne-verish.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'verish-ne-verish.setup.deck',
+        title: 'Deck',
+        text: '36 or 52 cards. Deal all evenly.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'verish-ne-verish.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'verish-ne-verish.setup.dealing',
+        title: 'Deal',
+        text: 'All cards dealt.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'verish-ne-verish.score.win-condition',
+        title: 'Win condition',
+        text: 'Shed all cards first.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'verish-ne-verish.score.description',
+        title: 'Scoring',
+        text: 'First out wins. Last = loser.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'verish-ne-verish.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Face-down play with rank declaration',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'verish-ne-verish.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Ne Veryu! challenge',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'verish-ne-verish.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Bluffer or challenger picks up pile',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'verish-ne-verish.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Four-of-a-kind auto-discard variant',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'verish-ne-verish.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'verish-ne-verish.rules.objective',
+          'verish-ne-verish.rules.gameplay',
+        ],
+      },
+      {
+        id: 'verish-ne-verish.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'verish-ne-verish.setup.players',
+          'verish-ne-verish.setup.deck',
+          'verish-ne-verish.setup.equipment',
+          'verish-ne-verish.setup.dealing',
+        ],
+      },
+      {
+        id: 'verish-ne-verish.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'verish-ne-verish.rules.key.1',
+          'verish-ne-verish.rules.key.2',
+          'verish-ne-verish.rules.key.3',
+          'verish-ne-verish.rules.key.4',
+        ],
+      },
+      {
+        id: 'verish-ne-verish.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'verish-ne-verish.score.description',
+          'verish-ne-verish.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'verish-ne-verish.setup.dealing',
+        'verish-ne-verish.rules.objective',
+      ],
+      deal: [
+        'verish-ne-verish.rules.gameplay',
+      ],
+      declare: [
+        'verish-ne-verish.rules.gameplay',
+      ],
+      play_card: [
+        'verish-ne-verish.rules.gameplay',
+      ],
+      challenge: [
+        'verish-ne-verish.rules.gameplay',
+      ],
+      finish_game: [
+        'verish-ne-verish.rules.gameplay',
+      ],
+    },
   },
 }

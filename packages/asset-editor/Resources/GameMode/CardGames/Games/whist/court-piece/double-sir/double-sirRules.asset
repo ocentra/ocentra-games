@@ -52,10 +52,153 @@
       go_out: 'Double Sir (Court Piece) is modeled as a Trick-taking flow; go out is not a core player action in its documented rules.',
     },
     exampleHands: [
-      'Opening deal: 4-4 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before main_play.',
-      'Scoring check: Scoring uses the documented rules for Double Sir (Court Piece) and determines round or match winners accordingly. Expected outcome: NA.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Capture as many tricks as possible. The team that wins at least 7 of the 13 tricks wins the round.',
+      "Turn-flow example: 1. Standard Trick Play: The trump caller leads the first trick. Players must follow suit if possible.\n2. The Consecutive Rule: Tricks are NOT picked up after each round. They remain face down in a pile in the center of the table.\n3. Capturing: To pick up the pile of tricks, the same player (not just the same team) must win TWO consecutive tricks. When that happens, that player's team collects the entire centre pile.\n4. Reset: Once the tricks are collected, the pile in the center is empty. The winner of the last trick leads the next.",
+      'Scoring example: Scoring uses the documented rules for Double Sir (Court Piece) and determines round or match winners accordingly. Capture as many tricks as possible. The team that wins at least 7 of the 13 tricks wins the round..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'double-sir.rules.objective',
+        title: 'Objective',
+        text: 'Capture as many tricks as possible. The team that wins at least 7 of the 13 tricks wins the round.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'double-sir.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Standard Trick Play: The trump caller leads the first trick. Players must follow suit if possible.\n2. The Consecutive Rule: Tricks are NOT picked up after each round. They remain face down in a pile in the center of the table.\n3. Capturing: To pick up the pile of tricks, the same player (not just the same team) must win TWO consecutive tricks. When that happens, that player's team collects the entire centre pile.\n4. Reset: Once the tricks are collected, the pile in the center is empty. The winner of the last trick leads the next.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'double-sir.setup.players',
+        title: 'Players',
+        text: '4 players in fixed partnerships (2 vs 2).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'double-sir.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52ndcard deck. Aces are high (A, K, Q, J, 10... 2).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'double-sir.setup.equipment',
+        title: 'Equipment',
+        text: '52ndcard deck, score pad.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'double-sir.setup.dealing',
+        title: 'Deal',
+        text: "Dealer is chosen by lot. Dealer deals 5 cards to each player. The player to the dealer's right (the 'Trump Caller') chooses the trump suit. Then the dealer deals the remaining cards in batches of 4.",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'double-sir.score.win-condition',
+        title: 'Win condition',
+        text: 'Capture as many tricks as possible. The team that wins at least 7 of the 13 tricks wins the round.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'double-sir.score.description',
+        title: 'Scoring',
+        text: 'Scoring uses the documented rules for Double Sir (Court Piece) and determines round or match winners accordingly.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'double-sir.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The 13th trick is always collected by the winner of that trick, along with any remaining cards in the center pile.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'double-sir.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Only the same player (not the partner) winning two consecutive tricks may collect the centre pile.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'double-sir.rules.key.3',
+        title: 'Key rule 3',
+        text: 'If tricks 1-12 are not collected (no one wins two in a row), the winner of the 13th trick takes the entire board (very rare).',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'double-sir.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'double-sir.rules.objective',
+          'double-sir.rules.gameplay',
+        ],
+      },
+      {
+        id: 'double-sir.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'double-sir.setup.players',
+          'double-sir.setup.deck',
+          'double-sir.setup.equipment',
+          'double-sir.setup.dealing',
+        ],
+      },
+      {
+        id: 'double-sir.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'double-sir.rules.key.1',
+          'double-sir.rules.key.2',
+          'double-sir.rules.key.3',
+        ],
+      },
+      {
+        id: 'double-sir.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'double-sir.score.description',
+          'double-sir.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'double-sir.setup.dealing',
+        'double-sir.rules.objective',
+      ],
+      deal: [
+        'double-sir.rules.gameplay',
+      ],
+      declare: [
+        'double-sir.rules.gameplay',
+      ],
+      play_card: [
+        'double-sir.rules.gameplay',
+      ],
+    },
   },
 }

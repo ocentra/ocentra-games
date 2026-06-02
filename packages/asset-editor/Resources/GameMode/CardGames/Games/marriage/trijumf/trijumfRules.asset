@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Trijumf. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Trijumf (Croatian Triumph) is a popular trick-taking game played along the Croatian coast and islands. It combines elements of Briscola and Tressette using a 40-card Italian deck. Features A-3-K ranking, trump suits, AkuÅ¾anje (declarations for bonus points), and plays to 401 or 501 points.',
+    LLM: 'Play tricks. Follow suit. Must trump if void in suit. AkuÅ¾anje: Declare K+Kt of same suit = 20 pts (40 if trump suit). Score card values. Last trick = 10 bonus.',
+    Player: 'Play tricks. Follow suit. Must trump if void in suit. AkuÅ¾anje: Declare K+Kt of same suit = 20 pts (40 if trump suit). Score card values. Last trick = 10 bonus.',
     objective: 'The player or partnership aims to be the first to reach at least 401 card points over one or more deals; 501 is sometimes used for longer games.',
     gameplay: 'Play tricks. Follow suit. Must trump if void in suit. AkuÅ¾anje: Declare K+Kt of same suit = 20 pts (40 if trump suit). Score card values. Last trick = 10 bonus.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Card values + last trick bonus + declarations. 130 per hand. Game to 401/501. Expected outcome: Reach 401 (or 501) points first..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: The player or partnership aims to be the first to reach at least 401 card points over one or more deals; 501 is sometimes used for longer games.',
+      'Turn-flow example: Play tricks. Follow suit. Must trump if void in suit. AkuÅ¾anje: Declare K+Kt of same suit = 20 pts (40 if trump suit). Score card values. Last trick = 10 bonus.',
+      'Scoring example: Card values + last trick bonus + declarations. 130 per hand. Game to 401/501. Reach 401 (or 501) points first..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'trijumf.rules.objective',
+        title: 'Objective',
+        text: 'The player or partnership aims to be the first to reach at least 401 card points over one or more deals; 501 is sometimes used for longer games.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'trijumf.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Play tricks. Follow suit. Must trump if void in suit. AkuÅ¾anje: Declare K+Kt of same suit = 20 pts (40 if trump suit). Score card values. Last trick = 10 bonus.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'trijumf.setup.players',
+        title: 'Players',
+        text: '2 or 4 (partnerships)',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'trijumf.setup.deck',
+        title: 'Deck',
+        text: '40 cards (Triestine). Rank: A-3-K-Kt-J-7-6-5-4-2. Values: A=11, 3=10, K=4, Kt=3, J=2. Total 120 + 10 for last trick = 130.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'trijumf.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards, score sheet',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'trijumf.setup.dealing',
+        title: 'Deal',
+        text: '10 cards each. Trump determined by card flip or declaration.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'trijumf.score.win-condition',
+        title: 'Win condition',
+        text: 'Reach 401 (or 501) points first.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'trijumf.score.description',
+        title: 'Scoring',
+        text: 'Card values + last trick bonus + declarations. 130 per hand. Game to 401/501.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'trijumf.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must trump if void (unusual for Italian games)',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'trijumf.rules.key.2',
+        title: 'Key rule 2',
+        text: 'AkuÅ¾anje (declarations) for 20/40 pts',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'trijumf.rules.key.3',
+        title: 'Key rule 3',
+        text: 'A=11, 3=10 (Briscola-style values)',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: 'trijumf.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Last trick = 10 bonus points',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'trijumf.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'trijumf.rules.objective',
+          'trijumf.rules.gameplay',
+        ],
+      },
+      {
+        id: 'trijumf.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'trijumf.setup.players',
+          'trijumf.setup.deck',
+          'trijumf.setup.equipment',
+          'trijumf.setup.dealing',
+        ],
+      },
+      {
+        id: 'trijumf.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'trijumf.rules.key.1',
+          'trijumf.rules.key.2',
+          'trijumf.rules.key.3',
+          'trijumf.rules.key.4',
+        ],
+      },
+      {
+        id: 'trijumf.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'trijumf.score.description',
+          'trijumf.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'trijumf.setup.dealing',
+        'trijumf.rules.objective',
+      ],
+      play_card: [
+        'trijumf.rules.gameplay',
+      ],
+    },
   },
 }

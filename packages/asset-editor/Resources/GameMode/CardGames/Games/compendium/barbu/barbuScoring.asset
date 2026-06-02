@@ -10,7 +10,27 @@
     icon: '🎯',
   },
   data: {
-    scoringRules: {},
+    scoringRules: {
+      summary: 'Total points are tracked across 28 hands. Because points in negative contracts equal points in positive contracts, the total sum of all player scores at the end of the game should be zero.',
+      winCondition: 'Highest net score after 28 rounds.',
+      targetScore: null,
+      scoringDirection: 'high_wins',
+      cardValues: {},
+      nullReasons: {
+        targetScore: 'No fixed target; play 28 rounds then compare totals.',
+        cardValues: 'Barbu scoring is driven by contract-specific bonuses, penalties, and doubles rather than fixed per-card values.',
+      },
+      splitRules: 'No ties; use placement order if points are equal.',
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
+    },
     scoringType: 'custom',
     patternMultipliers: null,
     priorityOrder: [],

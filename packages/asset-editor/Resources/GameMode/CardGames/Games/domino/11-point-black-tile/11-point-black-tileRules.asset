@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: 11 Point Black Tile. Logic: See rules.objective and rules.gameplay.',
-    Player: '11 Point Black Tile is a Hearts-style trick-taking game played with a double-six domino set. It uses negative scoring: the double-0 counts 4 points and each of the seven tiles in the 3-suit counts 1 point (11 points total per deal). Lower score wins. Three or four players pass three tiles left before play; the leader nominates the suit for each trick.',
+    LLM: 'Leader plays a tile and nominates which suit (0-6 or doubles) is led. Others must follow suit if possible; otherwise discard. Highest tile in led suit wins the trick. Winner leads next trick.',
+    Player: 'Leader plays a tile and nominates which suit (0-6 or doubles) is led. Others must follow suit if possible; otherwise discard. Highest tile in led suit wins the trick. Winner leads next trick.',
     objective: 'Avoid taking tricks containing counter tiles; lowest total score wins. The name comes from the 11 points in play per deal (double-0 = 4, seven 3-suit tiles = 7).',
     gameplay: 'Leader plays a tile and nominates which suit (0-6 or doubles) is led. Others must follow suit if possible; otherwise discard. Highest tile in led suit wins the trick. Winner leads next trick.',
     keyRules: [
@@ -53,10 +53,156 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-4 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: Double-0 = 4 points; each 3-suit tile = 1 point. There are 21-point and 30-point variants. Expected outcome: Avoid taking tricks containing counter tiles; lowest total score wins. The name comes from the 11 points in play per deal (double-0 = 4, seven 3-suit tiles = 7)..',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Avoid taking tricks containing counter tiles; lowest total score wins. The name comes from the 11 points in play per deal (double-0 = 4, seven 3-suit tiles = 7).',
+      'Turn-flow example: Leader plays a tile and nominates which suit (0-6 or doubles) is led. Others must follow suit if possible; otherwise discard. Highest tile in led suit wins the trick. Winner leads next trick.',
+      'Scoring example: Double-0 = 4 points; each 3-suit tile = 1 point. There are 21-point and 30-point variants. Avoid taking tricks containing counter tiles; lowest total score wins. The name comes from the 11 points in play per deal (double-0 = 4, seven 3-suit tiles = 7)..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: '11-point-black-tile.rules.objective',
+        title: 'Objective',
+        text: 'Avoid taking tricks containing counter tiles; lowest total score wins. The name comes from the 11 points in play per deal (double-0 = 4, seven 3-suit tiles = 7).',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: '11-point-black-tile.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Leader plays a tile and nominates which suit (0-6 or doubles) is led. Others must follow suit if possible; otherwise discard. Highest tile in led suit wins the trick. Winner leads next trick.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: '11-point-black-tile.setup.players',
+        title: 'Players',
+        text: '3 players: 9 tiles each (one face-down); 4 players: 7 tiles each',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: '11-point-black-tile.setup.deck',
+        title: 'Deck',
+        text: 'Double-six domino set (28 tiles)',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: '11-point-black-tile.setup.equipment',
+        title: 'Equipment',
+        text: 'Double-six domino set',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: '11-point-black-tile.setup.dealing',
+        title: 'Deal',
+        text: 'Each player passes 3 tiles face-down to the player on their left before play',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: '11-point-black-tile.score.win-condition',
+        title: 'Win condition',
+        text: 'Avoid taking tricks containing counter tiles; lowest total score wins. The name comes from the 11 points in play per deal (double-0 = 4, seven 3-suit tiles = 7).',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: '11-point-black-tile.score.description',
+        title: 'Scoring',
+        text: 'Double-0 = 4 points; each 3-suit tile = 1 point. There are 21-point and 30-point variants.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: '11-point-black-tile.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Pass 3 tiles left before play',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: '11-point-black-tile.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Leader nominates suit for each trick',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: '11-point-black-tile.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Follow suit when possible',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+      {
+        id: '11-point-black-tile.rules.key.4',
+        title: 'Key rule 4',
+        text: 'Lowest score wins',
+        sourceFields: [
+          'rules.keyRules.3',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: '11-point-black-tile.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          '11-point-black-tile.rules.objective',
+          '11-point-black-tile.rules.gameplay',
+        ],
+      },
+      {
+        id: '11-point-black-tile.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          '11-point-black-tile.setup.players',
+          '11-point-black-tile.setup.deck',
+          '11-point-black-tile.setup.equipment',
+          '11-point-black-tile.setup.dealing',
+        ],
+      },
+      {
+        id: '11-point-black-tile.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          '11-point-black-tile.rules.key.1',
+          '11-point-black-tile.rules.key.2',
+          '11-point-black-tile.rules.key.3',
+          '11-point-black-tile.rules.key.4',
+        ],
+      },
+      {
+        id: '11-point-black-tile.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          '11-point-black-tile.score.description',
+          '11-point-black-tile.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        '11-point-black-tile.setup.dealing',
+        '11-point-black-tile.rules.objective',
+      ],
+      play_card: [
+        '11-point-black-tile.rules.gameplay',
+      ],
+    },
   },
 }

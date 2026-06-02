@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Fan Tan (Sevens). Logic: See rules.objective and rules.gameplay.',
-    Player: "Fan Tan, also widely known as 'Sevens', 'Domino', or 'Parliament', is a classic layout-based card game where the objective is to be the first to get rid of all your cards. Players build upon a central layout of cards, starting with the Sevens and expanding outward to the Ace and Two in each suit. It is a game of both luck and light strategy, as players can choose to hold back key 'blocking' cards to prevent opponents from playing.",
+    LLM: 'The seven of clubs starts the layout. Players add legal cards from hand to the growing suit sequences; if unable to play, a player says lappu and takes a card from the previous player.',
+    Player: 'The seven of clubs starts the layout. Players add legal cards from hand to the growing suit sequences; if unable to play, a player says lappu and takes a card from the previous player.',
     objective: 'Be the first player to play all cards from hand into the shared layout.',
     gameplay: 'The seven of clubs starts the layout. Players add legal cards from hand to the growing suit sequences; if unable to play, a player says lappu and takes a card from the previous player.',
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'First to empty hand wins automatically.',
     },
     exampleHands: [
-      'Opening deal: 3-5 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play_round.',
-      'Scoring check: Be the first player to shed all cards from your hand. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Be the first player to play all cards from hand into the shared layout.',
+      'Turn-flow example: The seven of clubs starts the layout. Players add legal cards from hand to the growing suit sequences; if unable to play, a player says lappu and takes a card from the previous player.',
+      'Scoring example: Be the first player to shed all cards from your hand. Be the first player to shed all cards from your hand..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'ristiseiska.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to play all cards from hand into the shared layout.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'ristiseiska.rules.gameplay',
+        title: 'Turn flow',
+        text: 'The seven of clubs starts the layout. Players add legal cards from hand to the growing suit sequences; if unable to play, a player says lappu and takes a card from the previous player.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'ristiseiska.setup.players',
+        title: 'Players',
+        text: '3-5 players use the table arrangement described for Ristiseiska.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'ristiseiska.setup.deck',
+        title: 'Deck',
+        text: 'Standard 52-card pack',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'ristiseiska.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card pack, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'ristiseiska.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Standard 52-card pack and deal or lay out cards according to the documented Ristiseiska rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'ristiseiska.score.win-condition',
+        title: 'Win condition',
+        text: 'Be the first player to shed all cards from your hand.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'ristiseiska.score.description',
+        title: 'Scoring',
+        text: 'Be the first player to shed all cards from your hand.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'ristiseiska.rules.key.1',
+        title: 'Key rule 1',
+        text: 'The player holding the seven of clubs begins.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'ristiseiska.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Cards are built into a rectangular Domino-style layout.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'ristiseiska.rules.key.3',
+        title: 'Key rule 3',
+        text: 'A player unable to play takes a card from the previous player.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'ristiseiska.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'ristiseiska.rules.objective',
+          'ristiseiska.rules.gameplay',
+        ],
+      },
+      {
+        id: 'ristiseiska.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'ristiseiska.setup.players',
+          'ristiseiska.setup.deck',
+          'ristiseiska.setup.equipment',
+          'ristiseiska.setup.dealing',
+        ],
+      },
+      {
+        id: 'ristiseiska.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'ristiseiska.rules.key.1',
+          'ristiseiska.rules.key.2',
+          'ristiseiska.rules.key.3',
+        ],
+      },
+      {
+        id: 'ristiseiska.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'ristiseiska.score.description',
+          'ristiseiska.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'ristiseiska.setup.dealing',
+        'ristiseiska.rules.objective',
+      ],
+      deal: [
+        'ristiseiska.rules.gameplay',
+      ],
+      play_card: [
+        'ristiseiska.rules.gameplay',
+      ],
+      pass: [
+        'ristiseiska.rules.gameplay',
+      ],
+    },
   },
 }

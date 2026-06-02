@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Twenty-Four. Logic: See rules.objective and rules.gameplay.',
-    Player: '24 is a mathematical card game: use four numbers (from four cards) and only +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· (and parentheses) to make exactly 24. All four numbers must be used once. First to call a correct solution wins the four cards (or they go to opponent); play until one player has no cards. Popular in China since at least the 1960s (Shanghai); also played in North America.',
+    LLM: 'Players keep a hand of item cards and add one item at a time to the camel load, then refill. When the load exceeds the limit, the player who broke the camel scores zero while others score cards in hand.',
+    Player: 'Players keep a hand of item cards and add one item at a time to the camel load, then refill. When the load exceeds the limit, the player who broke the camel scores zero while others score cards in hand.',
     objective: 'Avoid being the player who breaks the camel back while preserving low penalty exposure.',
     gameplay: 'Players keep a hand of item cards and add one item at a time to the camel load, then refill. When the load exceeds the limit, the player who broke the camel scores zero while others score cards in hand.',
     keyRules: [
@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 5 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before round end.',
-      'Scoring check: None; win = other player has no cards. Expected outcome: 1.',
+      'Setup example: 5 card(s) per player.',
+      'Rule example: Avoid being the player who breaks the camel back while preserving low penalty exposure.',
+      'Turn-flow example: Players keep a hand of item cards and add one item at a time to the camel load, then refill. When the load exceeds the limit, the player who broke the camel scores zero while others score cards in hand.',
+      "Scoring example: None; win = other player has no cards. Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards..",
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'straw.rules.objective',
+        title: 'Objective',
+        text: 'Avoid being the player who breaks the camel back while preserving low penalty exposure.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'straw.rules.gameplay',
+        title: 'Turn flow',
+        text: 'Players keep a hand of item cards and add one item at a time to the camel load, then refill. When the load exceeds the limit, the player who broke the camel scores zero while others score cards in hand.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'straw.setup.players',
+        title: 'Players',
+        text: '2-6 players use the table arrangement described for Straw.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'straw.setup.deck',
+        title: 'Deck',
+        text: 'Dedicated Straw item card deck',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'straw.setup.equipment',
+        title: 'Equipment',
+        text: 'Dedicated Straw item card deck, score area, and enough table space for play.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'straw.setup.dealing',
+        title: 'Deal',
+        text: 'Prepare Dedicated Straw item card deck and deal or lay out cards according to the documented Straw rules before play begins.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'straw.score.win-condition',
+        title: 'Win condition',
+        text: "Make 24 from the four numbers showing using +, Ã¢Ë†â€™, Ãƒâ€”, ÃƒÂ· and parentheses. First correct solution wins the four cards (given to opponent's stack); wrong or no solution means you take the cards.",
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'straw.score.description',
+        title: 'Scoring',
+        text: 'None; win = other player has no cards.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'straw.rules.key.1',
+        title: 'Key rule 1',
+        text: 'One card is added to the camel each turn.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'straw.rules.key.2',
+        title: 'Key rule 2',
+        text: 'The player who breaks the camel back scores zero for the round.',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'straw.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Other players score the weight left in hand.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'straw.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'straw.rules.objective',
+          'straw.rules.gameplay',
+        ],
+      },
+      {
+        id: 'straw.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'straw.setup.players',
+          'straw.setup.deck',
+          'straw.setup.equipment',
+          'straw.setup.dealing',
+        ],
+      },
+      {
+        id: 'straw.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'straw.rules.key.1',
+          'straw.rules.key.2',
+          'straw.rules.key.3',
+        ],
+      },
+      {
+        id: 'straw.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'straw.score.description',
+          'straw.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'straw.setup.dealing',
+        'straw.rules.objective',
+      ],
+      play_card: [
+        'straw.rules.gameplay',
+      ],
+    },
   },
 }

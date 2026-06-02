@@ -52,10 +52,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-6 player(s), 0 card(s) per player, 1 deck(s), initial visibility face_up.',
-      'Opening flow: start in play; current_player may use play_card before round end.',
-      'Scoring check: Card points from captured cards plus bonuses for matrimonial combinations. Card values follow Briscola conventions: aces are worth 11 points, threes 10 points, kings 4, queens or horses 3, jacks 2, and all other cards 0. Points accumulate across deals. Expected outcome: 151.',
+      'Setup example: 0 card(s) per player.',
+      'Rule example: Be the first player to achieve the winning condition through strategic play of cards.',
+      'Turn-flow example: 1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
+      'Scoring example: Card points from captured cards plus bonuses for matrimonial combinations. Card values follow Briscola conventions: aces are worth 11 points, threes 10 points, kings 4, queens or horses 3, jacks 2, and all other cards 0. Points accumulate across deals. The first player to reach or exceed 151 total card points, including matrimonio bonuses, wins the game..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'briscola-151.rules.objective',
+        title: 'Objective',
+        text: 'Be the first player to achieve the winning condition through strategic play of cards.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'briscola-151.rules.gameplay',
+        title: 'Turn flow',
+        text: '1. Setup: prepare players, deck or tiles, and opening layout according to the variant. 2. Turn loop: each player performs one legal action (play, capture, build, bet, or pass/draw as applicable). 3. Resolution: each action updates control of tricks/cards/pot/layout. 4. End condition: when hand-ending criteria are met, scoring is computed and match state advances.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'briscola-151.setup.players',
+        title: 'Players',
+        text: 'Minimum Players: 2\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: Optional',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'briscola-151.setup.deck',
+        title: 'Deck',
+        text: 'Type: Standard 52-card deck\nNumber of Decks: 1\nJokers: Not included',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'briscola-151.setup.equipment',
+        title: 'Equipment',
+        text: 'Standard 52-card deck\nScore sheet (optional)\nTable space',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'briscola-151.setup.dealing',
+        title: 'Deal',
+        text: 'Cards per Player: Varies by player count\nDealing Pattern: Clockwise\n--',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'briscola-151.score.win-condition',
+        title: 'Win condition',
+        text: 'The first player to reach or exceed 151 total card points, including matrimonio bonuses, wins the game.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'briscola-151.score.description',
+        title: 'Scoring',
+        text: 'Card points from captured cards plus bonuses for matrimonial combinations. Card values follow Briscola conventions: aces are worth 11 points, threes 10 points, kings 4, queens or horses 3, jacks 2, and all other cards 0. Points accumulate across deals.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'briscola-151.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Play proceeds in turn order with only legal actions allowed.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'briscola-151.rules.key.2',
+        title: 'Key rule 2',
+        text: "Round resolution follows the variant's scoring and bonus conditions.",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'briscola-151.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Match winner is determined by agreed target score or elimination condition.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'briscola-151.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'briscola-151.rules.objective',
+          'briscola-151.rules.gameplay',
+        ],
+      },
+      {
+        id: 'briscola-151.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'briscola-151.setup.players',
+          'briscola-151.setup.deck',
+          'briscola-151.setup.equipment',
+          'briscola-151.setup.dealing',
+        ],
+      },
+      {
+        id: 'briscola-151.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'briscola-151.rules.key.1',
+          'briscola-151.rules.key.2',
+          'briscola-151.rules.key.3',
+        ],
+      },
+      {
+        id: 'briscola-151.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'briscola-151.score.description',
+          'briscola-151.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'briscola-151.setup.dealing',
+        'briscola-151.rules.objective',
+      ],
+      play_card: [
+        'briscola-151.rules.gameplay',
+      ],
+    },
   },
 }

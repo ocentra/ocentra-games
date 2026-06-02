@@ -11,7 +11,11 @@
   },
   data: {
     scoringRules: {
-      sourceCardValues: {
+      summary: 'Closest to 21 without exceeding wins. 21 is automatic winner.',
+      winCondition: 'Closest to 21 without busting',
+      targetScore: 21,
+      scoringDirection: 'closest_to_target',
+      cardValues: {
         '1': '1',
         '2': '2',
         '3': '3',
@@ -25,6 +29,34 @@
         '11': '11',
         '12': '12 or 9',
       },
+      sourceCardValues: {
+        raw: {
+          '1': '1',
+          '2': '2',
+          '3': '3',
+          '4': '4',
+          '5': '5',
+          '6': '6',
+          '7': '7',
+          '8': '8',
+          '9': '9',
+          '10': '10',
+          '11': '11',
+          '12': '12 or 9',
+        },
+        note: 'Some source card values are descriptive or non-numeric and are preserved here for source review.',
+      },
+      nullReasons: {},
+      splitRules: null,
+      sourceFields: [
+        'scoring.description',
+        'scoring.winCondition',
+        'scoring.cardValues',
+        'scoring.targetScore',
+        'scoring.scoringDirection',
+        'scoring.nullReasons',
+        'scoring.splitRules',
+      ],
     },
     scoringType: 'custom',
     patternMultipliers: null,
@@ -43,7 +75,7 @@
       '10': 10,
       '11': 11,
     },
-    penalties: '{\n  "bust": "lose_bet"\n}',
+    penalties: '{"bust":"lose_bet"}',
     targetScore: 21,
     scoringDirection: 'closest_to_target',
     rankingAsset: {

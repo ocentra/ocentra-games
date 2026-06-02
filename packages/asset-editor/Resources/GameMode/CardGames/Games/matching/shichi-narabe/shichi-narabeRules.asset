@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Shichi Narabe. Logic: See rules.objective and rules.gameplay.',
-    Player: 'In Shichi Narabe, lay your cards into suit rows starting from the sevens. Use passes carefully, since exceeding your pass limit can force bankruptcy and last place.',
+    LLM: 'The player associated with the seven of diamonds starts, then play continues clockwise. On a turn, play one legal adjacent rank in a suit row or pass. Legal plays extend each suit outward from 7 toward K and A. Each player may pass at most three times; a player who must pass again while still holding cards goes bankrupt and is ranked behind active finishers.',
+    Player: 'The player associated with the seven of diamonds starts, then play continues clockwise. On a turn, play one legal adjacent rank in a suit row or pass. Legal plays extend each suit outward from 7 toward K and A. Each player may pass at most three times; a player who must pass again while still holding cards goes bankrupt and is ranked behind active finishers.',
     objective: 'Empty your hand as early as possible while avoiding bankruptcy from overusing passes.',
     gameplay: 'The player associated with the seven of diamonds starts, then play continues clockwise. On a turn, play one legal adjacent rank in a suit row or pass. Legal plays extend each suit outward from 7 toward K and A. Each player may pass at most three times; a player who must pass again while still holding cards goes bankrupt and is ranked behind active finishers.',
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 13 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in deal; dealer may use deal before play_loop.',
-      'Scoring check: No fixed point values in the base game; results are by finishing order, with bankrupt players ranked behind finishers. Expected outcome: 1.',
+      'Setup example: 13 card(s) per player.',
+      'Rule example: Empty your hand as early as possible while avoiding bankruptcy from overusing passes.',
+      'Turn-flow example: The player associated with the seven of diamonds starts, then play continues clockwise. On a turn, play one legal adjacent rank in a suit row or pass. Legal plays extend each suit outward from 7 toward K and A. Each player may pass at most three times; a player who must pass again while still holding cards goes bankrupt and is ranked behind active finishers.',
+      'Scoring example: No fixed point values in the base game; results are by finishing order, with bankrupt players ranked behind finishers. Finish your hand before opponents; avoid bankruptcy from a fourth forced pass..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'shichi-narabe.rules.objective',
+        title: 'Objective',
+        text: 'Empty your hand as early as possible while avoiding bankruptcy from overusing passes.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'shichi-narabe.rules.gameplay',
+        title: 'Turn flow',
+        text: 'The player associated with the seven of diamonds starts, then play continues clockwise. On a turn, play one legal adjacent rank in a suit row or pass. Legal plays extend each suit outward from 7 toward K and A. Each player may pass at most three times; a player who must pass again while still holding cards goes bankrupt and is ranked behind active finishers.',
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'shichi-narabe.setup.players',
+        title: 'Players',
+        text: '3 or more players; 3-5 is commonly preferred.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'shichi-narabe.setup.deck',
+        title: 'Deck',
+        text: 'Use a standard 52-card deck; add one Joker for the Joker variant.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'shichi-narabe.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards and table space for a 13x4 suit layout.',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'shichi-narabe.setup.dealing',
+        title: 'Deal',
+        text: 'Deal all cards one-by-one clockwise. All players who hold sevens place them face up to start the layout.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'shichi-narabe.score.win-condition',
+        title: 'Win condition',
+        text: 'Finish your hand before opponents; avoid bankruptcy from a fourth forced pass.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'shichi-narabe.score.description',
+        title: 'Scoring',
+        text: 'No fixed point values in the base game; results are by finishing order, with bankrupt players ranked behind finishers.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'shichi-narabe.rules.key.1',
+        title: 'Key rule 1',
+        text: 'All sevens are laid out before normal turns begin.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'shichi-narabe.rules.key.2',
+        title: 'Key rule 2',
+        text: 'Each player has a strict pass limit (typically three).',
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'shichi-narabe.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Finishing order determines ranking; bankrupt players are last.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'shichi-narabe.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'shichi-narabe.rules.objective',
+          'shichi-narabe.rules.gameplay',
+        ],
+      },
+      {
+        id: 'shichi-narabe.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'shichi-narabe.setup.players',
+          'shichi-narabe.setup.deck',
+          'shichi-narabe.setup.equipment',
+          'shichi-narabe.setup.dealing',
+        ],
+      },
+      {
+        id: 'shichi-narabe.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'shichi-narabe.rules.key.1',
+          'shichi-narabe.rules.key.2',
+          'shichi-narabe.rules.key.3',
+        ],
+      },
+      {
+        id: 'shichi-narabe.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'shichi-narabe.score.description',
+          'shichi-narabe.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'shichi-narabe.setup.dealing',
+        'shichi-narabe.rules.objective',
+      ],
+      deal: [
+        'shichi-narabe.rules.gameplay',
+      ],
+      play_card: [
+        'shichi-narabe.rules.gameplay',
+      ],
+      pass: [
+        'shichi-narabe.rules.gameplay',
+      ],
+    },
   },
 }

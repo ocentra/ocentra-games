@@ -50,10 +50,147 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 3-8 player(s), 4 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in dealer_choice; dealer may use set_monte, take_monte_and_knock before exchange_round.',
-      'Scoring check: Points or match rules. Expected outcome: NA.',
+      'Setup example: 4 card(s) per player.',
+      "Rule example: Have the highest total value in one suit (maximum 41) or collect a 'mambassa' (four equal cards or four-card sequence). Avoid having the lowest hand when someone knocks.",
+      "Turn-flow example: Player to dealer's right begins; play passes anticlockwise. Each player may exchange 0, 1, 2, 3 or all 4 hand cards for an equal number from the face-up monte; if they did not exchange all 4 they may optionally discard one card face down to the bottom of the stock and draw the top card. Exchanging all 4 or exchanging none and not drawing counts as a knock; after a knock each other player has one more turn, then hands are exposed and compared.",
+      'Scoring example: Points or match rules. Last player with tokens wins the pool. Each hand the player(s) with the worst hand pay one token to the pool. Four Aces (Mambassa) or Quarantuna declared ends the hand immediately with special payouts..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'mambassa.rules.objective',
+        title: 'Objective',
+        text: "Have the highest total value in one suit (maximum 41) or collect a 'mambassa' (four equal cards or four-card sequence). Avoid having the lowest hand when someone knocks.",
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'mambassa.rules.gameplay',
+        title: 'Turn flow',
+        text: "Player to dealer's right begins; play passes anticlockwise. Each player may exchange 0, 1, 2, 3 or all 4 hand cards for an equal number from the face-up monte; if they did not exchange all 4 they may optionally discard one card face down to the bottom of the stock and draw the top card. Exchanging all 4 or exchanging none and not drawing counts as a knock; after a knock each other player has one more turn, then hands are exposed and compared.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'mambassa.setup.players',
+        title: 'Players',
+        text: '3-8 players (optimal with 5-6). Each player starts with 4 tokens (vite/lives).',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'mambassa.setup.deck',
+        title: 'Deck',
+        text: '40-card Italian-suited Piacentine deck. Rank: Ace (11), King (10), Horse (10), Jack (10), 7, 6, 5, 4, 3, 2 (face value). No 8s, 9s, or 10s.',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'mambassa.setup.equipment',
+        title: 'Equipment',
+        text: '40-card Italian Piacentine deck; tokens (four per player, one agreed value).',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'mambassa.setup.dealing',
+        title: 'Deal',
+        text: "4 cards face down to each player. Dealer looks at next 4 cards and either places them face up as the 'monte' or takes them as a hand (which counts as a knock).",
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'mambassa.score.win-condition',
+        title: 'Win condition',
+        text: 'Last player with tokens wins the pool. Each hand the player(s) with the worst hand pay one token to the pool. Four Aces (Mambassa) or Quarantuna declared ends the hand immediately with special payouts.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'mambassa.score.description',
+        title: 'Scoring',
+        text: 'Points or match rules.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'mambassa.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Each turn: exchange 0–4 cards with the monte, then optionally discard one to bottom of stock and draw one from top. Exchanging all 4 or exchanging 0 and not drawing counts as a knock. After a knock, each other player has one more turn. Lowest hand(s) pay one token to the pool. Four Aces (Mambassa) or Quarantuna (41 in one suit) declared immediately ends the hand with special payouts.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'mambassa.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'mambassa.rules.objective',
+          'mambassa.rules.gameplay',
+        ],
+      },
+      {
+        id: 'mambassa.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'mambassa.setup.players',
+          'mambassa.setup.deck',
+          'mambassa.setup.equipment',
+          'mambassa.setup.dealing',
+        ],
+      },
+      {
+        id: 'mambassa.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'mambassa.rules.key.1',
+        ],
+      },
+      {
+        id: 'mambassa.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'mambassa.score.description',
+          'mambassa.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'mambassa.setup.dealing',
+        'mambassa.rules.objective',
+      ],
+      draw: [
+        'mambassa.rules.gameplay',
+      ],
+      discard: [
+        'mambassa.rules.gameplay',
+      ],
+      set_monte: [
+        'mambassa.rules.gameplay',
+      ],
+      take_monte_and_knock: [
+        'mambassa.rules.gameplay',
+      ],
+      exchange_with_monte: [
+        'mambassa.rules.gameplay',
+      ],
+      knock: [
+        'mambassa.rules.gameplay',
+      ],
+      compare_hands: [
+        'mambassa.rules.gameplay',
+      ],
+    },
   },
 }

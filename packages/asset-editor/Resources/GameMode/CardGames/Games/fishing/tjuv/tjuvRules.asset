@@ -10,8 +10,8 @@
     icon: '🃏',
   },
   data: {
-    LLM: 'Game: Tjuv. Logic: See rules.objective and rules.gameplay.',
-    Player: "Tjuv (Swedish for 'Thief') is a fishing card game for two or more players. It is sometimes known as Tattare. Unlike traditional Casino, capturing is based on suit and rank hierarchy rather than numerical value. A unique feature is the ability to 'steal' captured piles from opponents if you have a matching card of higher rank.",
+    LLM: "1. Play a card. If it matches suit of a table card and is HIGHER rank, capture it. 2. Can also capture an opponent's pile if your card matches the top card's suit and is higher. 3. If no capture, place card on table. 4. Draw to maintain 3 cards. 5. Game ends when talon is empty.",
+    Player: "1. Play a card. If it matches suit of a table card and is HIGHER rank, capture it. 2. Can also capture an opponent's pile if your card matches the top card's suit and is higher. 3. If no capture, place card on table. 4. Draw to maintain 3 cards. 5. Game ends when talon is empty.",
     objective: 'Capture the most cards by playing cards of the same suit and higher rank than table cards or opponent pile tops; the player with the most captured cards at the end wins.',
     gameplay: "1. Play a card. If it matches suit of a table card and is HIGHER rank, capture it. 2. Can also capture an opponent's pile if your card matches the top card's suit and is higher. 3. If no capture, place card on table. 4. Draw to maintain 3 cards. 5. Game ends when talon is empty.",
     keyRules: [
@@ -52,10 +52,153 @@
       go_out: 'This game has no go-out action.',
     },
     exampleHands: [
-      'Opening deal: 2-5 player(s), 3 card(s) per player, 1 deck(s), initial visibility face_down.',
-      'Opening flow: start in play; each_player_clockwise may use play_card before draw.',
-      'Scoring check: Player with most cards wins. Expected outcome: Capture the most cards..',
+      'Setup example: 3 card(s) per player.',
+      'Rule example: Capture the most cards by playing cards of the same suit and higher rank than table cards or opponent pile tops; the player with the most captured cards at the end wins.',
+      "Turn-flow example: 1. Play a card. If it matches suit of a table card and is HIGHER rank, capture it. 2. Can also capture an opponent's pile if your card matches the top card's suit and is higher. 3. If no capture, place card on table. 4. Draw to maintain 3 cards. 5. Game ends when talon is empty.",
+      'Scoring example: Player with most cards wins. Capture the most cards..',
     ],
     bonusRules: '',
+    rules: [
+      {
+        id: 'tjuv.rules.objective',
+        title: 'Objective',
+        text: 'Capture the most cards by playing cards of the same suit and higher rank than table cards or opponent pile tops; the player with the most captured cards at the end wins.',
+        sourceFields: [
+          'rules.objective',
+        ],
+      },
+      {
+        id: 'tjuv.rules.gameplay',
+        title: 'Turn flow',
+        text: "1. Play a card. If it matches suit of a table card and is HIGHER rank, capture it. 2. Can also capture an opponent's pile if your card matches the top card's suit and is higher. 3. If no capture, place card on table. 4. Draw to maintain 3 cards. 5. Game ends when talon is empty.",
+        sourceFields: [
+          'rules.gameplay',
+        ],
+      },
+      {
+        id: 'tjuv.setup.players',
+        title: 'Players',
+        text: 'Two or more players.',
+        sourceFields: [
+          'setup.players',
+        ],
+      },
+      {
+        id: 'tjuv.setup.deck',
+        title: 'Deck',
+        text: '36-card deck: A, K, Q, J, 10, 9, 8, 7, 6 in each suit (no 2-5). Rank: A (high) to 6 (low).',
+        sourceFields: [
+          'setup.deck',
+        ],
+      },
+      {
+        id: 'tjuv.setup.equipment',
+        title: 'Equipment',
+        text: 'Cards',
+        sourceFields: [
+          'setup.equipment',
+        ],
+      },
+      {
+        id: 'tjuv.setup.dealing',
+        title: 'Deal',
+        text: 'Three cards to each player. Each player places their lowest card face up on the table (or one of equal lowest). With two players the dealer adds one card from the deck to the table; with three or more the dealer reduces the table to three cards then deals one more to each. Three cards face up on table; remainder forms the talon.',
+        sourceFields: [
+          'setup.dealing',
+        ],
+      },
+      {
+        id: 'tjuv.score.win-condition',
+        title: 'Win condition',
+        text: 'Capture the most cards.',
+        sourceFields: [
+          'scoring.winCondition',
+        ],
+      },
+      {
+        id: 'tjuv.score.description',
+        title: 'Scoring',
+        text: 'Player with most cards wins.',
+        sourceFields: [
+          'scoring.description',
+        ],
+      },
+      {
+        id: 'tjuv.rules.key.1',
+        title: 'Key rule 1',
+        text: 'Must be HIGHER rank in SAME suit to capture.',
+        sourceFields: [
+          'rules.keyRules.0',
+        ],
+      },
+      {
+        id: 'tjuv.rules.key.2',
+        title: 'Key rule 2',
+        text: "Can steal opponent's pile (top card rule).",
+        sourceFields: [
+          'rules.keyRules.1',
+        ],
+      },
+      {
+        id: 'tjuv.rules.key.3',
+        title: 'Key rule 3',
+        text: 'Draw to refill hand.',
+        sourceFields: [
+          'rules.keyRules.2',
+        ],
+      },
+    ],
+    ruleGroups: [
+      {
+        id: 'tjuv.group.overview',
+        label: 'Objective',
+        ruleIds: [
+          'tjuv.rules.objective',
+          'tjuv.rules.gameplay',
+        ],
+      },
+      {
+        id: 'tjuv.group.setup',
+        label: 'Setup',
+        ruleIds: [
+          'tjuv.setup.players',
+          'tjuv.setup.deck',
+          'tjuv.setup.equipment',
+          'tjuv.setup.dealing',
+        ],
+      },
+      {
+        id: 'tjuv.group.key-rules',
+        label: 'Key Rules',
+        ruleIds: [
+          'tjuv.rules.key.1',
+          'tjuv.rules.key.2',
+          'tjuv.rules.key.3',
+        ],
+      },
+      {
+        id: 'tjuv.group.scoring',
+        label: 'Scoring',
+        ruleIds: [
+          'tjuv.score.description',
+          'tjuv.score.win-condition',
+        ],
+      },
+    ],
+    actionRuleLinks: {
+      setup_round: [
+        'tjuv.setup.dealing',
+        'tjuv.rules.objective',
+      ],
+      play_card: [
+        'tjuv.rules.gameplay',
+      ],
+      draw: [
+        'tjuv.rules.gameplay',
+      ],
+      end_game: [
+        'tjuv.rules.gameplay',
+      ],
+    },
   },
 }
