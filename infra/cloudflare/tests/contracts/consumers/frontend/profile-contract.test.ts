@@ -12,15 +12,17 @@ import { formatBearerToken } from '@/utils/auth';
 
 const pactDir = path.resolve(process.cwd(), 'tests/contracts/pacts');
 
-describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
-  const provider = new PactV4({
+const createProvider = () =>
+  new PactV4({
     consumer: 'Frontend-Profile',
     provider: 'Cloudflare Worker',
     dir: pactDir,
     logLevel: 'info',
   });
 
+describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
   it('profile by id: returns 200 with profile data for authenticated user', async () => {
+    const provider = createProvider();
     const userId = TestConfig.TestUserId;
     const pathSegment = ApiEndpoint.Profile.ById(userId);
 
@@ -65,6 +67,7 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
   });
 
   it('profile: returns 401 when authentication is missing', async () => {
+    const provider = createProvider();
     const pathSegment = ApiEndpoint.Profile.ById(TestConfig.TestUserId);
 
     await provider
@@ -95,6 +98,7 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
   });
 
   it('profile add-badge: returns 403 for client-authoritative profile badge mutation', async () => {
+    const provider = createProvider();
     const pathSegment = `${ApiEndpoint.Profile.ById(TestConfig.TestUserId)}/${ProfileDOSegment.AddBadge}`;
 
     await provider
@@ -145,6 +149,7 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
   });
 
   it('profile update-stats: returns 403 for client-authoritative public stats mutation', async () => {
+    const provider = createProvider();
     const pathSegment = `${ApiEndpoint.Profile.ById(TestConfig.TestUserId)}/${ProfileDOSegment.UpdateStats}`;
 
     await provider
