@@ -6,6 +6,7 @@ import {
 import type { ShopPageContentData } from './ShopPageSvgContent';
 import { MiniIcon, Panel, Txt } from './ShopPageSvgPrimitives';
 import type { ShopPageSvgControls } from './ShopPageSvgSurfaceControls';
+import type { ShopAccountSummary } from './ShopPageSvgTypes';
 import { fitSingleLineTextSize } from './ShopPageSvgUtils';
 
 function HeaderBadge({
@@ -111,6 +112,7 @@ export function HeaderLayer({
   showHeaderSubtitle = true,
   showBalancePanel = true,
   acBalance,
+  accountSummary,
   content,
   cfg,
   onArenaCreditsInfo,
@@ -128,6 +130,7 @@ export function HeaderLayer({
   showHeaderSubtitle?: boolean;
   showBalancePanel?: boolean;
   acBalance: number | null;
+  accountSummary?: ShopAccountSummary | null;
   content: ShopPageContentData;
   cfg: ShopPageSvgControls;
   onArenaCreditsInfo: () => void;
@@ -158,7 +161,9 @@ export function HeaderLayer({
   const titleRight = visibleBadgeCount > 0 ? badgesX - token.bodyGap : x + w - token.pad;
   const titleW = Math.max(120, titleRight - bodyX);
   const titleSize = Math.min(cfg.header.titleSize, fitSingleLineTextSize(copy.title, titleW, compact ? 14 : 18, cfg.header.titleSize, 0.48));
-  const balanceValue = acBalance === null ? content.uiCopy.status.unknownValue : acBalance.toLocaleString();
+  const hasAccount = Boolean(accountSummary?.displayName?.trim() || accountSummary?.email?.trim() || accountSummary?.photoUrl?.trim() || accountSummary?.isGuest);
+  const balanceValue = !hasAccount ? content.uiCopy.rightPanel.profileName : acBalance === null ? content.uiCopy.status.unknownValue : acBalance.toLocaleString();
+  const balanceSub = !hasAccount ? content.uiCopy.rightPanel.emailUnavailable : copy.balanceSub;
   return (
     <g>
       {showMarketplacePanel ? (
@@ -217,7 +222,7 @@ export function HeaderLayer({
           <Txt x={balanceX + token.balanceTextX} y={y + token.balanceTitleY} fill={cfg.colors.balanceText} size={token.balanceTitleSize} weight={token.balanceTitleWeight} cfg={cfg}>{copy.balanceTitle}</Txt>
           <Txt x={balanceX + token.balanceTextX} y={y + token.balanceValueY} fill={cfg.colors.gold} size={token.balanceValueSize} weight={token.balanceValueWeight} cfg={cfg}>{balanceValue}</Txt>
           <Txt x={balanceX + token.balanceUnitX} y={y + token.balanceUnitY} size={token.balanceUnitSize} weight={token.balanceUnitWeight} fill={cfg.colors.balanceUnitText} cfg={cfg}>{copy.balanceUnit}</Txt>
-          <Txt x={balanceX + token.balanceTextX} y={y + token.balanceSubY} fill={cfg.colors.headerBadgeSubText} size={token.balanceSubSize} cfg={cfg}>{copy.balanceSub}</Txt>
+          <Txt x={balanceX + token.balanceTextX} y={y + token.balanceSubY} fill={cfg.colors.headerBadgeSubText} size={token.balanceSubSize} cfg={cfg}>{balanceSub}</Txt>
         </Panel>
       </g> : null}
     </g>

@@ -67,11 +67,21 @@ function rightPanelFullTitle(id: ShopRightTabId, content: ShopPageContentData): 
   return withoutPreviewSuffix(rightPanelMeta(id, content).title);
 }
 
+function hasAccountIdentity(accountSummary: ShopAccountSummary | null | undefined): boolean {
+  return Boolean(accountSummary?.displayName?.trim() || accountSummary?.email?.trim() || accountSummary?.photoUrl?.trim() || accountSummary?.isGuest);
+}
+
 function accountDisplayName(accountSummary: ShopAccountSummary | null | undefined, content: ShopPageContentData): string {
-  return accountSummary?.displayName?.trim() || content.uiCopy.status.unknownValue;
+  if (!hasAccountIdentity(accountSummary)) {
+    return content.uiCopy.rightPanel.profileName;
+  }
+  return accountSummary?.displayName?.trim() || accountSummary?.email?.trim() || (accountSummary?.isGuest ? content.uiCopy.rightPanel.guestProfile : content.uiCopy.status.unknownValue);
 }
 
 function accountEmail(accountSummary: ShopAccountSummary | null | undefined, content: ShopPageContentData): string {
+  if (!hasAccountIdentity(accountSummary)) {
+    return content.uiCopy.rightPanel.emailUnavailable;
+  }
   return accountSummary?.email?.trim() || (accountSummary?.isGuest ? content.uiCopy.rightPanel.guestProfile : content.uiCopy.rightPanel.emailUnavailable);
 }
 

@@ -47,6 +47,10 @@ import {
 } from '../../Common/DeckPreview/DeckPreviewView';
 import { CardImageViewer } from '../../Common/CardImageViewer/CardImageViewer';
 import { avatarImageUrls } from '@ocentra/app-assets/avatars';
+import {
+  ocentraLogoCommetImageUrl,
+  ocentraLogoImageUrl,
+} from '@ocentra/app-assets/commons';
 import type { ShopPaymentProvider } from '@ocentra/endpoint-domain/schemas/shop';
 import type {
   ShopAccountSummary,
@@ -155,6 +159,71 @@ type Metrics = {
   headerStatsX: number;
   showHeaderMarketplace: boolean;
 };
+
+function ShopLoadingOverlay({
+  x,
+  y,
+  w,
+  h,
+  cfg,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  cfg: ShopPageSvgControls;
+}) {
+  const cx = x + w / 2;
+  const cy = y + h / 2;
+  const orbitSize = Math.max(132, Math.min(260, Math.min(w, h) * 0.42));
+  const logoSize = orbitSize * 0.78;
+  const cometSize = orbitSize;
+  const cometHeadR = Math.max(6, orbitSize * 0.038);
+
+  return (
+    <g role="status" aria-label="Loading marketplace" className="shop-loading-overlay">
+      <rect x={x} y={y} width={w} height={h} fill={cfg.svgDefaults.canvasFill} opacity="0.9" />
+      <circle cx={cx} cy={cy} r={orbitSize * 0.47} fill="none" stroke={cfg.colors.activeBlue} strokeWidth="1.3" strokeOpacity="0.38" />
+      <circle cx={cx} cy={cy} r={orbitSize * 0.38} fill="rgba(5, 22, 36, 0.42)" stroke="#7d49ff" strokeWidth="1" strokeOpacity="0.28" />
+      <g>
+        <animateTransform
+          attributeName="transform"
+          type="rotate"
+          from={`0 ${cx} ${cy}`}
+          to={`360 ${cx} ${cy}`}
+          dur="10s"
+          repeatCount="indefinite"
+        />
+        <image
+          href={ocentraLogoCommetImageUrl}
+          x={cx - cometSize / 2}
+          y={cy - cometSize / 2}
+          width={cometSize}
+          height={cometSize}
+          opacity="0.92"
+          preserveAspectRatio="xMidYMid meet"
+        />
+        <circle
+          cx={cx}
+          cy={cy - orbitSize * 0.47}
+          r={cometHeadR}
+          fill="#ffffff"
+          className="shop-loading-overlay__comet-head"
+        />
+      </g>
+      <image
+        href={ocentraLogoImageUrl}
+        x={cx - logoSize / 2}
+        y={cy - logoSize / 2}
+        width={logoSize}
+        height={logoSize}
+        opacity="0.95"
+        preserveAspectRatio="xMidYMid meet"
+        className="shop-loading-overlay__logo"
+      />
+    </g>
+  );
+}
 
 type TileItem = ShopStaticItem & {
   product?: ShopProduct;
@@ -3244,6 +3313,7 @@ export function ShopPageSvgSurface({
           showHeaderSubtitle={chrome.showHeaderSubtitle}
           showBalancePanel={chrome.showHeaderBalance}
           acBalance={acBalance}
+          accountSummary={accountSummary}
           content={shopContent}
           cfg={cfg}
           onArenaCreditsInfo={() => {
@@ -3308,10 +3378,7 @@ export function ShopPageSvgSurface({
         />
         {chrome.showFooter ? <FooterLayer x={cfg.layout.outerPad} y={cfg.layout.footerY} w={canvasWidth - cfg.layout.outerPad * 2} h={cfg.layout.footerH} content={shopContent} cfg={cfg} /> : null}
         {loadingProducts ? (
-          <g>
-            <rect x={metrics.mainX} y={mainBodyY} width={metrics.mainW} height={mainSectionBottomY - mainBodyY} fill="rgba(2,10,19,.52)" />
-            <Txt x={metrics.mainX + metrics.mainW / 2} y={mainBodyY + 250} anchor="middle" size="24" weight="950" fill="#bcecff" cfg={cfg}>{shopContent.uiCopy.status.loadingMarketplace}</Txt>
-          </g>
+          <ShopLoadingOverlay x={metrics.mainX} y={mainBodyY} w={metrics.mainW} h={mainSectionBottomY - mainBodyY} cfg={cfg} />
         ) : null}
         {error ? (
           <g>

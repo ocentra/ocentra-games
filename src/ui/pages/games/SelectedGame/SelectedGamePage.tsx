@@ -15,6 +15,7 @@ import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { SelectedGameShowcase } from '@ocentra/core-ui/Common/SelectedGameShowcase/SelectedGameShowcase';
+import { DynamicBackground } from '@ocentra/core-ui/Background/DynamicBackground';
 import { APP_VERSION } from '@/constants/version';
 import { GameNotFound } from '@/ui/pages/games/NotFound/GameNotFound';
 import { ScreenLoadingFallback } from '@/ui/components/Loading/ScreenLoadingFallback';
@@ -357,6 +358,7 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
       className="generic-game-page"
       viewportLocked
       workClassName="selected-game-shell-work"
+      background={<DynamicBackground />}
       header={
         <UnifiedHeader
           showPrimaryNavigation={false}
