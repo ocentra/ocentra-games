@@ -27,6 +27,7 @@ function resolveWebServerTimeoutMs(): number {
 const playwrightPort = resolvePlaywrightPort()
 const playwrightBaseUrl = process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${playwrightPort}`
 const webServerTimeoutMs = resolveWebServerTimeoutMs()
+const webServerCommand = process.env.PLAYWRIGHT_WEB_SERVER_COMMAND || `cross-env VITE_PREVIEW_PORT=${playwrightPort} npm run dev -- --quick=web-preview-local`
 
 export default defineConfig({
   testDir: '.',
@@ -115,7 +116,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `cross-env VITE_PREVIEW_PORT=${playwrightPort} npm run dev -- --quick=web-preview-local`,
+    command: webServerCommand,
     url: playwrightBaseUrl,
     reuseExistingServer:
       process.env.PLAYWRIGHT_REUSE_SERVER === '0'
