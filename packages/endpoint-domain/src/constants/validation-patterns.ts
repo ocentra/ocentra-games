@@ -31,5 +31,6 @@ export const ValidationPattern = {
   SeasonId: /^(current|season-[A-Za-z0-9_-]+)$/,
   DisputeId: /^[A-Za-z0-9_-]+$/,
   TournamentId: /^[A-Za-z0-9_-]+$/,
+  PaymentMethodToken: /^[A-Za-z0-9._:-]+$/,
   PrintableAscii: /^[ -~]*$/,
 } as const;

@@ -3137,7 +3137,12 @@ function createFraudPaths() {
             additionalProperties: false,
             properties: {
               [FraudCheckField.Amount]: { type: OpenApiSchemaType.Number, minimum: 0 },
-              [FraudCheckField.PaymentMethod]: { type: OpenApiSchemaType.String, minLength: 1, maxLength: 64 },
+              [FraudCheckField.PaymentMethod]: {
+                type: OpenApiSchemaType.String,
+                minLength: 1,
+                maxLength: 64,
+                pattern: ValidationPattern.PaymentMethodToken.source,
+              },
               [FraudCheckField.Currency]: {
                 type: OpenApiSchemaType.String,
                 enum: FiatCurrencyValues,
