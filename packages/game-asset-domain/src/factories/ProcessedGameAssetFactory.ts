@@ -269,7 +269,8 @@ function normalizeNumericRecord(value: unknown): Record<string, number> {
       }
 
       if (typeof entryValue === 'string') {
-        const parsed = Number(entryValue);
+        const numericTokens = entryValue.match(/-?\d+(?:\.\d+)?/g) ?? [];
+        const parsed = numericTokens.length === 1 ? Number(numericTokens[0]) : Number(entryValue);
         if (Number.isFinite(parsed)) {
           return [[key, parsed]];
         }
@@ -311,6 +312,17 @@ function buildScoringRulesSourceCardValues(value: unknown, numericValues: Record
   }
   return {
     sourceCardValues: value,
+  };
+}
+
+function buildScoringNullReasons(game: Game, numericCardValues: Record<string, number>): Record<string, unknown> {
+  const sourceNullReasons = game.scoring.nullReasons ?? {};
+  if (Object.keys(numericCardValues).length > 0 || isMeaningfulPublicValue(sourceNullReasons.cardValues)) {
+    return sourceNullReasons;
+  }
+  return {
+    ...sourceNullReasons,
+    cardValues: 'Processed source does not define per-card numeric values; scoring is described by scoring.description and scoring.winCondition.',
   };
 }
 
@@ -645,6 +657,7 @@ function buildActionRuleLinks(game: Game, slug: string): Record<string, string[]
 }
 
 function buildScoringRules(game: Game, sourceCardValues: Record<string, unknown> | null): Record<string, unknown> {
+  const numericCardValues = normalizeNumericRecord(game.scoring.cardValues);
   return {
     summary: game.scoring.description,
     winCondition: game.scoring.winCondition,
@@ -652,7 +665,7 @@ function buildScoringRules(game: Game, sourceCardValues: Record<string, unknown>
     scoringDirection: game.scoring.scoringDirection,
     cardValues: game.scoring.cardValues,
     ...(sourceCardValues ? { sourceCardValues } : {}),
-    nullReasons: game.scoring.nullReasons ?? {},
+    nullReasons: buildScoringNullReasons(game, numericCardValues),
     splitRules: game.scoring.splitRules ?? null,
     sourceFields: [
       'scoring.description',

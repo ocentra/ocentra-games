@@ -442,12 +442,15 @@ function resolveAssetRef(ref: unknown, bundle: ParsedBundle, resources: Resource
   const record = asRecord(ref);
   const guid = asText(record.guid);
   const refPath = asText(record.path);
-  if (guid) {
-    return bundle.assetsByGuid.get(guid) ?? resources.assetsByGuid.get(guid) ?? null;
-  }
   if (refPath) {
     const normalizedPath = normalizeResourcePath(refPath);
-    return bundle.assetsByPath.get(normalizedPath) ?? resources.assetsByPath.get(normalizedPath) ?? null;
+    const resolvedByPath = bundle.assetsByPath.get(normalizedPath) ?? resources.assetsByPath.get(normalizedPath);
+    if (resolvedByPath) {
+      return resolvedByPath;
+    }
+  }
+  if (guid) {
+    return bundle.assetsByGuid.get(guid) ?? resources.assetsByGuid.get(guid) ?? null;
   }
   return null;
 }
@@ -847,6 +850,7 @@ function validateSelectedGameReadiness(
   const actions = findBundleAsset(parsedBundle, 'GameActionSet');
   const validationFixtures = findBundleAsset(parsedBundle, 'GameValidationFixtures');
   const deck = resolveAssetRef(asRecord(gameMode?.data).deckAsset, parsedBundle, resources);
+  const layout = resolveAssetRef(asRecord(gameMode?.data).selectedGameLayoutAsset, parsedBundle, resources);
   const ranking =
     resolveAssetRef(asRecord(gameMode?.data).rankingAsset, parsedBundle, resources)
     ?? resolveAssetRef(asRecord(scoring?.data).rankingAsset, parsedBundle, resources);
@@ -864,6 +868,7 @@ function validateSelectedGameReadiness(
     actions,
     validationFixtures,
     images,
+    layout,
   }, {
     label: gameMode?.system?.displayName ?? sourcePath,
     requireRichGameInfo: true,
