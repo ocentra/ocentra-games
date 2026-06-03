@@ -7,6 +7,7 @@ import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { FraudDetectionDOSegment } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import { OpenApiExampleValue } from '@ocentra/endpoint-domain/constants/openapi-examples';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
+import { FraudCheckField } from '@ocentra/endpoint-domain/constants/worker-contract-values';
 import { TestConfig } from '@tests/constants/test-constants';
 import { getValidRequestHeaders } from '@tests/helpers/test-helpers';
 import { Logger, getStackTrace, flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
@@ -96,6 +97,27 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       }
       expect(typeof lastScore).toBe('number');
       expect(lastScore).toBeGreaterThanOrEqual(0);
+    });
+
+    it(testName('Check: rejects non-token payment method values'), async () => {
+      const userId = `fraud-payment-method-${Date.now()}`;
+      const url = buildApiUrl(ApiEndpoint.Fraud.Check, { baseUrl: TestConfig.TestApiUrlPlaceholder });
+      const response = await worker.fetch(url, {
+        method: HttpMethod.Post,
+        headers: {
+          ...getValidRequestHeaders(userId),
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        },
+        body: JSON.stringify({
+          ...OpenApiExampleValue.FraudCheckRequest,
+          [FraudCheckField.PaymentMethod]: 'not a token',
+        }),
+      });
+
+      expect(response.status).toBe(HttpStatus.BadRequest);
+      const data = (await response.json()) as { error?: string; issues?: Array<{ path?: string[] }> };
+      expect(data.error).toBe('Bad Request');
+      expect(data.issues?.some((issue) => issue.path?.includes(FraudCheckField.PaymentMethod))).toBe(true);
     });
 
     it(testName('Risk endpoint: returns risk/score for current authenticated profile'), async () => {

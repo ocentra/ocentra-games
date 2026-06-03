@@ -13,6 +13,7 @@ import {
 import { MatchRecordSchema } from './matches';
 import { PlayerDisplayNameSchema } from './players';
 import { QueryParam } from '../constants/query';
+import { ValidationPattern } from '../constants/validation-patterns';
 import {
   ConsumeGpCurrencyValues,
   PLAN_TIER_IDS
@@ -35,6 +36,8 @@ import {
   SettingsThemeValues,
   TournamentResultField,
 } from '../constants/worker-contract-values';
+
+const FraudPaymentMethodSchema = schema.string().min(1).max(64).regex(ValidationPattern.PaymentMethodToken);
 
 export const AdminBaseRequestSchema = schema.object({
   action: schema.string().min(1).optional(),
@@ -69,7 +72,7 @@ export const AdminModerationResolveRequestSchema = schema.object({
 
 export const FraudCheckRequestSchema = schema.object({
   [FraudCheckField.Amount]: schema.coerce.number().nonnegative(),
-  [FraudCheckField.PaymentMethod]: schema.string().min(1).max(64),
+  [FraudCheckField.PaymentMethod]: FraudPaymentMethodSchema,
   [FraudCheckField.Currency]: schema.enum(FiatCurrencyValues),
 }).strict();
 
@@ -538,7 +541,7 @@ export const AdminReportResolveRequestSchema = schema.object({
 
 export const FraudCheckPreviewRequestSchema = schema.object({
   amount: schema.coerce.number().nonnegative().optional(),
-  paymentMethod: schema.string().min(1).max(64).optional(),
+  paymentMethod: FraudPaymentMethodSchema.optional(),
   currency: schema.string().min(1).max(64).optional(),
 }).strict();
 
