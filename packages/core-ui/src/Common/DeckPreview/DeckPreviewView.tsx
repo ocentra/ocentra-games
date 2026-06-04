@@ -390,6 +390,19 @@ function DeckPreviewAxisHeader({
     return <img src={axis.imagePath} alt={axis.label} title={axis.label} style={styles.compactAxisImage} />;
   }
 
+  const glyph = axis.symbol || axis.icon;
+  if (glyph) {
+    return (
+      <span
+        aria-label={axis.label}
+        title={axis.label}
+        style={{ ...styles.compactAxisGlyph, color: resolveDeckAxisColor(axis.color) }}
+      >
+        {glyph}
+      </span>
+    );
+  }
+
   const suit = getDeckPreviewAxisSuit(axis);
   if (suit) {
     return (
@@ -411,13 +424,38 @@ function DeckPreviewAxisHeader({
       title={axis.label}
       style={{ ...styles.compactAxisGlyph, color: resolveDeckAxisColor(axis.color) }}
     >
-      {axis.symbol || axis.icon || axis.label}
+      {axis.label}
     </span>
   );
 }
 
 function getDeckPreviewAxisSuit(axis: DeckPreviewAxis) {
-  return normalizeSuit(axis.symbol) ?? normalizeSuit(axis.icon) ?? normalizeSuit(axis.label) ?? normalizeSuit(axis.key);
+  return normalizeExplicitSuit(axis.label) ?? normalizeExplicitSuit(axis.key);
+}
+
+function normalizeExplicitSuit(value: unknown) {
+  const normalized = String(value ?? '').trim().toLowerCase();
+  if (
+    normalized === 'club' ||
+    normalized === 'clubs' ||
+    normalized === 'diamond' ||
+    normalized === 'diamonds' ||
+    normalized === 'heart' ||
+    normalized === 'hearts' ||
+    normalized === 'spade' ||
+    normalized === 'spades' ||
+    normalized === '\u2663' ||
+    normalized === '\u2667' ||
+    normalized === '\u2666' ||
+    normalized === '\u2662' ||
+    normalized === '\u2665' ||
+    normalized === '\u2661' ||
+    normalized === '\u2660' ||
+    normalized === '\u2664'
+  ) {
+    return normalizeSuit(normalized);
+  }
+  return null;
 }
 
 function DeckPreviewCellView({

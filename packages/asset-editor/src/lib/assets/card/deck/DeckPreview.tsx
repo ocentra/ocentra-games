@@ -78,7 +78,8 @@ export const DeckPreview: React.FC<DeckPreviewProps> = ({
   const [model, setModel] = useState<DeckPreviewModel | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCell, setSelectedCell] = useState<DeckPreviewCell | null>(null);
-  const compactStyle = compact
+  const isCompactPreview = useResponsiveDeckPreviewMode(compact);
+  const compactStyle = isCompactPreview
     ? buildDeckPreviewCompactStyle({
       ...DEFAULT_SELECTED_GAME_DECK_VISUAL_CONTROLS,
       ...compactControls,
@@ -169,13 +170,13 @@ export const DeckPreview: React.FC<DeckPreviewProps> = ({
       className={[
         'preview-panel__content',
         'preview-panel__content--deck',
-        compact ? 'preview-panel__content--deck-compact' : '',
+        isCompactPreview ? 'preview-panel__content--deck-compact' : '',
       ].filter(Boolean).join(' ')}
       style={compactStyle}
     >
       <DeckPreviewView
         model={model}
-        compact={compact}
+        compact={isCompactPreview}
         onCellClick={enableCardDetail ? setSelectedCell : undefined}
         renderPiece={(cell) => <PreviewPieceCell cell={cell} />}
         renderAxis={(axis) => axis.imageHash ? <PreviewAxisImage axis={axis} /> : undefined}
@@ -187,6 +188,24 @@ export const DeckPreview: React.FC<DeckPreviewProps> = ({
     </div>
   );
 };
+
+function useResponsiveDeckPreviewMode(compact: boolean): boolean {
+  const [isNarrowViewport, setIsNarrowViewport] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth <= 700 : false
+  );
+
+  useEffect(() => {
+    if (compact || typeof window === 'undefined') {
+      return;
+    }
+    const update = () => setIsNarrowViewport(window.innerWidth <= 700);
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, [compact]);
+
+  return compact || isNarrowViewport;
+}
 
 function px(value: number | undefined): string | undefined {
   return typeof value === 'number' && Number.isFinite(value) ? `${value}px` : undefined;
