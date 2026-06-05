@@ -7,6 +7,7 @@ import { CardGameScoring } from '@ocentra/game-asset-domain/game/scoring/CardGam
 import { GameInfo } from '@ocentra/game-asset-domain/game/gameInfo/GameInfo';
 import { CardGameLayout } from '@ocentra/game-asset-domain/ui/layout/CardGameLayout';
 import { PageLayout, type PageLayoutDocument } from '@ocentra/game-asset-domain/ui/pageLayout/PageLayout';
+import { DEFAULT_SELECTED_GAME_CONTENT_PLAN } from '@ocentra/game-asset-domain/ui/selectedGame/SelectedGamePresentation';
 import { Deck } from '@ocentra/game-asset-domain/card/deck/Deck';
 import { ImageCarousel } from '@ocentra/game-asset-domain/content/imageCarousel/ImageCarousel';
 import { CardGameMode, type CardGameAssetLinks } from '@ocentra/game-asset-domain/gameMode/cardGameMode/CardGameMode';
@@ -171,6 +172,7 @@ async function createPageLayoutAsset(
         ],
       },
       layoutControls: {},
+      contentPlan: DEFAULT_SELECTED_GAME_CONTENT_PLAN,
       preview: {
         sampleGameRef: {
           gameId: context.gameId,

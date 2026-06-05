@@ -13,6 +13,10 @@ const sampleGamePath = path.resolve(
   process.cwd(),
   '../card-games/src/processed-games/accumulation/buta-no-shippo.json',
 );
+const briscolaGamePath = path.resolve(
+  process.cwd(),
+  '../card-games/src/processed-games/trick-taking/briscola/briscola.json',
+);
 
 describe('buildCreateGameModeOptionsFromProcessedGame', () => {
   it('maps processed public content into separated game assets and keeps sources editor-only', () => {
@@ -178,6 +182,39 @@ describe('buildCreateGameModeOptionsFromProcessedGame', () => {
     expect(new Set(slides.map((slide) => slide.imageHash)).size).toBe(3);
     expect(slides.every((slide) => slide.label.includes('fallback art'))).toBe(true);
     expect(options.assetDataOverrides.cardGame.bannerImage).toBe(slides[0].imageHash);
+  });
+
+  it('extracts numeric scoring values from source card-value text', () => {
+    const options = buildCreateGameModeOptionsFromProcessedGame({ processedGamePath: briscolaGamePath });
+
+    expect(options.assetDataOverrides.scoring.cardValues).toMatchObject({
+      Ace: 11,
+      Three: 10,
+      King: 4,
+      Queen: 3,
+      Jack: 2,
+    });
+    expect(options.assetDataOverrides.scoring.scoringRules.sourceCardValues).toBeUndefined();
+    expect(options.assetDataOverrides.scoring.scoringRules.nullReasons).toEqual({});
+  });
+
+  it('preserves source null reasons when source card values are empty', () => {
+    const source = JSON.parse(fs.readFileSync(briscolaGamePath, 'utf8'));
+    source.scoring.cardValues = {};
+    source.scoring.nullReasons = {
+      cardValues: 'The source scores tricks rather than assigning fixed values to every card rank.',
+    };
+
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'processed-game-factory-'));
+    const tempPath = path.join(tempDir, 'empty-card-values-with-reason-source.json');
+    fs.writeFileSync(tempPath, `${JSON.stringify(source, null, 2)}\n`, 'utf8');
+
+    const options = buildCreateGameModeOptionsFromProcessedGame({ processedGamePath: tempPath });
+
+    expect(options.assetDataOverrides.scoring.cardValues).toEqual({});
+    expect(options.assetDataOverrides.scoring.scoringRules.nullReasons).toMatchObject({
+      cardValues: 'The source scores tricks rather than assigning fixed values to every card rank.',
+    });
   });
 
   it('rejects processed-game migrations outside categorized CardGames/Games folders', () => {

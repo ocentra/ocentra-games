@@ -99,13 +99,6 @@ function firstNumber(...values: unknown[]): number | null {
   return null;
 }
 
-function formatPlayerRange(minPlayers: number | null, maxPlayers: number | null): string {
-  if (minPlayers !== null && maxPlayers !== null) {
-    return minPlayers === maxPlayers ? `${minPlayers}` : `${minPlayers}-${maxPlayers}`;
-  }
-  return `${minPlayers ?? maxPlayers ?? 'unknown'}`;
-}
-
 function firstNumberFromText(text: unknown, pattern: RegExp): number | null {
   const value = asText(text);
   const match = value.match(pattern);
@@ -264,7 +257,8 @@ function normalizeNumericRecord(value: unknown): Record<string, number> {
         return [[key, entryValue]];
       }
       if (typeof entryValue === 'string') {
-        const parsed = Number(entryValue);
+        const numericTokens = entryValue.match(/-?\d+(?:\.\d+)?/g) ?? [];
+        const parsed = numericTokens.length === 1 ? Number(numericTokens[0]) : Number(entryValue);
         if (Number.isFinite(parsed)) {
           return [[key, parsed]];
         }

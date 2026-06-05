@@ -209,10 +209,28 @@ describe('createGameModeBundle', () => {
     const pageLayoutFiles = bundle.files.filter((file) => file.metadata.assetType === 'PageLayout');
     expect(pageLayoutFiles).toHaveLength(2);
     for (const file of pageLayoutFiles) {
-      const parsed = JSON5.parse(file.content) as { data?: { preview?: { sampleGameRef?: { guid?: string; gameId?: string; path?: string } } } };
+      const parsed = JSON5.parse(file.content) as {
+        data?: {
+          kind?: string;
+          contentPlan?: { tabs?: Array<{ id?: string; source?: string; tip?: string }> };
+          preview?: { sampleGameRef?: { guid?: string; gameId?: string; path?: string } };
+        };
+      };
       expect(parsed.data?.preview?.sampleGameRef?.gameId).toBe('solitaire');
       expect(parsed.data?.preview?.sampleGameRef?.guid).toBe(bundle.mainAssetGuid);
       expect(parsed.data?.preview?.sampleGameRef?.path).toBe(bundle.mainAssetPath);
+      if (parsed.data?.kind === 'selected-game') {
+        expect(parsed.data.contentPlan?.tabs?.map((tab) => tab.id)).toEqual([
+          'about',
+          'rules',
+          'deck',
+          'ranking',
+          'scoring',
+          'strategy',
+          'systems',
+        ]);
+        expect(parsed.data.contentPlan?.tabs?.every((tab) => tab.source && tab.tip)).toBe(true);
+      }
     }
 
     const refGuids = new Set<string>();
